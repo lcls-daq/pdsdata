@@ -7,7 +7,16 @@ namespace Pds {
 
   class TypeId {
   public:
-    enum Type {Any, Id_Xtc, Id_Frame, Id_Waveform, Id_AcqConfig, NumberOf};
+    enum Type {Any, 
+	       Id_Xtc,          // generic hierarchical container
+	       Id_Frame,        // raw image
+	       Id_Waveform,     // raw waveform
+	       Id_AcqConfig,
+	       Id_TwoDGaussian, // 2-D Gaussian + covariances
+	       Id_TwoDGaussianAndFrame,
+	       Id_Opal1kConfig,
+	       Id_CameraFexConfig,
+	       NumberOf};
 
     TypeId(unsigned v);
     TypeId(const TypeId& v);
@@ -17,7 +26,7 @@ namespace Pds {
     uint32_t version() const;
     uint32_t value()   const;
 
-    static const char* TypeId::name(Type type);
+    static const char* name(Type type);
     
   private:
     uint32_t _value;
