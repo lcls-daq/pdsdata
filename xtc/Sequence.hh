@@ -48,6 +48,7 @@ namespace Pds {
     enum {Function = (m_function << v_function)};
     enum {EventM   = (TransitionId::L1Accept << v_service)};
     enum {Control  = (m_cntrl    << v_cntrl)};
+    enum {NumFiducialBits = 17};
   private:
     ClockTime _clock;
     unsigned  _low;
