@@ -13,9 +13,9 @@ namespace Pds {
 	       Id_Waveform,     // raw waveform
 	       Id_AcqConfig,
 	       Id_TwoDGaussian, // 2-D Gaussian + covariances
-	       Id_TwoDGaussianAndFrame,
 	       Id_Opal1kConfig,
-	       Id_CameraFexConfig,
+	       Id_FrameFexConfig,
+	       Id_EvrConfig,
 	       NumberOf};
 
     TypeId(unsigned v);

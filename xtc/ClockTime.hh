@@ -14,6 +14,7 @@ namespace Pds {
     unsigned nanoseconds() const { return low; }
 
     ClockTime& operator=(const ClockTime&);
+    bool operator>(const ClockTime&) const; 
 
     unsigned low;
     unsigned high;
@@ -26,6 +27,11 @@ inline Pds::ClockTime& Pds::ClockTime::operator=(const Pds::ClockTime& input)
   low  = input.low;
   high = input.high;
   return *this;
+}
+
+inline bool Pds::ClockTime::operator>(const Pds::ClockTime& t) const
+{
+  return (high > t.high) | (high == t.high && low > t.low);
 }
 
 #endif
