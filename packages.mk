@@ -1,2 +1,2 @@
 # List of packages (low level first)
-packages := acqiris xtc
+packages := acqiris camera evr opal1k xtc
