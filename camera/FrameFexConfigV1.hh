@@ -7,11 +7,12 @@ namespace Camera {
 
   class FrameFexConfigV1 {
   public:
-    enum Forwarding { FullFrame, RegionOfInterest, Summary };
-    enum Processing { None, GssFullFrame, GssRegionOfInterest, GssThreshold };
+    enum Forwarding { NoFrame, FullFrame, RegionOfInterest };
+    enum Processing { NoProcessing, GssFullFrame, GssRegionOfInterest, GssThreshold };
 
     FrameFexConfigV1();
-    FrameFexConfigV1( unsigned          forwarding, // bit mask of Forwarding
+    FrameFexConfigV1( Forwarding        forwarding,
+		      unsigned          fwd_prescale,
 		      Processing        processing,
 		      const FrameCoord& roiBegin,
 		      const FrameCoord& roiEnd,
@@ -21,7 +22,8 @@ namespace Camera {
 
     FrameFexConfigV1(const FrameFexConfigV1&);
 
-    bool              forwarding(Forwarding) const;
+    Forwarding        forwarding() const;
+    unsigned          forward_prescale() const;
     Processing        processing() const;
     const FrameCoord& roiBegin  () const;
     const FrameCoord& roiEnd    () const;
@@ -33,6 +35,7 @@ namespace Camera {
 
   private:
     uint32_t   _forwarding;
+    uint32_t   _forward_prescale;
     uint32_t   _processing;
     FrameCoord _roiBegin;    
     FrameCoord _roiEnd;
