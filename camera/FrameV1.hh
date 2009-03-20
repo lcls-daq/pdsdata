@@ -1,3 +1,6 @@
+//
+//  Class for rectangular frame data
+//
 #ifndef Pds_FrameV1_hh
 #define Pds_FrameV1_hh
 
@@ -13,21 +16,29 @@ namespace Camera {
     //  Copy constructor
     FrameV1(const FrameV1&);
   public:
+    //  number of pixels in a row
     unsigned width () const;
+    //  number of pixels in a column
     unsigned height() const;
+    //  number of bits per pixel
     unsigned depth () const;
+    //  fixed offset/pedestal value of pixel data
     unsigned offset() const;
 
+    // number of bytes per pixel
     unsigned depth_bytes() const;
+    // size of pixel data appended to the end of this structure
     unsigned data_size  () const;
 
+    //  beginning of pixel data
     const unsigned char* data() const;
+    //  location of individual pixel datum
     const unsigned char* pixel(unsigned x,unsigned y) const;
   private:
-    uint32_t _width;
-    uint32_t _height;
-    uint32_t _depth;
-    uint32_t _offset;
+    uint32_t _width;  // pixels per row
+    uint32_t _height; // pixels per column
+    uint32_t _depth;  // bits per pixel
+    uint32_t _offset; // fixed offset/pedestal value of pixel data
   };
 
   inline unsigned FrameV1::width () const

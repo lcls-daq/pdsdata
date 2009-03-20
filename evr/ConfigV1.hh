@@ -1,3 +1,6 @@
+//
+//  Class for configuration of the Event Receiver
+//
 #ifndef Evr_ConfigV1_hh
 #define Evr_ConfigV1_hh
 
@@ -21,19 +24,26 @@ namespace EvrData {
 		 unsigned delay,
 		 unsigned width);
   public:
+    //  internal pulse generation channel
     unsigned pulse  () const;
 
+    //  id of generated pulse for each mode (edge/level)
     int trigger() const;
     int set    () const;
     int clear  () const;
 
+    //  positive(negative) level
     bool polarity          () const;
+    //  enable pulse generation masks
     bool map_set_enable    () const;
     bool map_reset_enable  () const;
     bool map_trigger_enable() const;
 
+    //  pulse event prescale
     unsigned prescale() const;
+    //  delay in 119MHz clks
     unsigned delay   () const;
+    //  width in 119MHz clks
     unsigned width   () const;
   private:
     uint32_t _pulse;
@@ -53,11 +63,14 @@ namespace EvrData {
     OutputMap ( Source, unsigned source_id, 
 		Conn  , unsigned conn_id );
   public:
+    //  source (generated pulse) of output generation
     Source   source   () const;
     unsigned source_id() const;
+    //  connector for output destination
     Conn     conn     () const;
     unsigned conn_id  () const;
   public:
+    //  encoded source value
     unsigned map      () const;
   private:
     uint32_t _v;
@@ -71,12 +84,15 @@ namespace EvrData {
 	      unsigned noutputs,
 	      const OutputMap* outputs);
 
+    //  pulse configurations appended to this structure
     unsigned npulses() const;
     const PulseConfig& pulse(unsigned) const;
 
+    //  output configurations appended to this structure
     unsigned noutputs() const;
     const OutputMap& output_map(unsigned) const;
 
+    //  size including appended PulseConfig's and OutputMap's
     unsigned size() const;
   private:
     uint32_t _npulses;

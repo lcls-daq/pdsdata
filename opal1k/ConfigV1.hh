@@ -1,3 +1,6 @@
+//
+//  Class for configuration of Adimec Opal-1000 monochrome camera
+//
 #ifndef Opal1k_ConfigV1_hh
 #define Opal1k_ConfigV1_hh
 
@@ -34,31 +37,61 @@ namespace Opal1k {
 	     bool             enable_pixel_correction,
 	     const uint16_t*  lut);
 
+    //
     //  Accessors
+    //
+
+    //  offset/pedestal setting for camera (before gain)
     unsigned short   black_level() const;
+
+    //  camera gain setting in percentile [100-3200] = [1x-32x]
     unsigned short   gain_percent() const;
+
+    //  offset/pedestal value in pixel counts
     unsigned short   output_offset() const;
+
+    //  bit-depth of pixel counts
     Depth            output_resolution() const;
     unsigned         output_resolution_bits() const;
+
+    //  vertical re-binning of output (consecutive rows summed)
     Binning          vertical_binning() const;
+
+    //  geometric transformation of the image
     Mirroring        output_mirroring() const;
+
+    //  true: remap the pixels to appear in natural geometric order 
+    //        (left->right, top->bottom)
+    // false: pixels appear on dual taps from different rows
+    //        (left->right, top->bottom) alternated with
+    //        (left->right, bottom->top) pixel by pixel
     bool             vertical_remapping() const;
+
+    //  correct defective pixels internally
     bool             defect_pixel_correction_enabled() const;
 
+    //  apply output lookup table corrections
     bool             output_lookup_table_enabled() const;
+    //  location of output lookup table: output_value[input_value]
+    //  (appended to the end of this structure)
     const
     uint16_t*        output_lookup_table() const;
 
+    //  defective pixel count
     unsigned         number_of_defect_pixels() const;
     void             set_number_of_defect_pixels(unsigned);
+    //  location of defective pixel coordinates appended to
+    //  the end of this structure
     const
     Camera::FrameCoord* defect_pixel_coordinates() const;
     Camera::FrameCoord* defect_pixel_coordinates();
 
+    //  total size of this structure 
+    //  (including defective pixel coords and output lookup table)
     unsigned         size() const;
 
   private:
-    uint32_t _offsetAndGain;
+    uint32_t _offsetAndGain; // offset and gain
     uint32_t _outputOptions; // bit mask of output formatting options
     uint32_t _defectPixelCount;
   };
