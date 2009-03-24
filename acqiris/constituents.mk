@@ -1,2 +1,2 @@
 libnames := acqdata
-libsrcs_acqdata := src/ConfigV1.cc src/AcqDataDescV1.cc
+libsrcs_acqdata := src/ConfigV1.cc src/DataDescV1.cc

@@ -10,7 +10,7 @@ namespace Pds {
     enum Type {Any, 
 	       Id_Xtc,          // generic hierarchical container
 	       Id_Frame,        // raw image
-	       Id_Waveform,     // raw waveform
+	       Id_AcqWaveform,
 	       Id_AcqConfig,
 	       Id_TwoDGaussian, // 2-D Gaussian + covariances
 	       Id_Opal1kConfig,

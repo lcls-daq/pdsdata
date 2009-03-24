@@ -13,66 +13,66 @@ Pds::TypeId ConfigV1::typeId() {
 
 ConfigV1::ConfigV1() {}
 
-HorizConfigV1::HorizConfigV1() {}
+HorizV1::HorizV1() {}
 
-HorizConfigV1::HorizConfigV1(double   sampInterval,
-                            double   delayTime,   
-                            uint32_t nbrSamples,  
-                            uint32_t nbrSegments) :
+HorizV1::HorizV1(double   sampInterval,
+                 double   delayTime,   
+                 uint32_t nbrSamples,  
+                 uint32_t nbrSegments) :
   _sampInterval(sampInterval),
   _delayTime   (delayTime),   
   _nbrSamples  (nbrSamples),  
   _nbrSegments (nbrSegments)
 {}
 
-double   HorizConfigV1::sampInterval() const {return _sampInterval;}
-double   HorizConfigV1::delayTime()    const {return _delayTime;}
-uint32_t HorizConfigV1::nbrSamples()   const {return _nbrSamples;}
-uint32_t HorizConfigV1::nbrSegments()  const {return _nbrSegments;}
+double   HorizV1::sampInterval() const {return _sampInterval;}
+double   HorizV1::delayTime()    const {return _delayTime;}
+uint32_t HorizV1::nbrSamples()   const {return _nbrSamples;}
+uint32_t HorizV1::nbrSegments()  const {return _nbrSegments;}
 
-TrigConfigV1::TrigConfigV1() {}
+TrigV1::TrigV1() {}
 
-TrigConfigV1::TrigConfigV1(uint32_t trigCoupling,
-                           uint32_t trigInput,   
-                           uint32_t trigSlope,   
-                           double   trigLevel) :
+TrigV1::TrigV1(uint32_t trigCoupling,
+               uint32_t trigInput,   
+               uint32_t trigSlope,   
+               double   trigLevel) :
   _trigCoupling(trigCoupling),
   _trigInput   (trigInput),   
   _trigSlope   (trigSlope),   
   _trigLevel   (trigLevel)
 {}
 
-uint32_t TrigConfigV1::trigCoupling() const {return _trigCoupling;}
-uint32_t TrigConfigV1::trigInput()    const {return _trigInput;}
-uint32_t TrigConfigV1::trigSlope()    const {return _trigSlope;}
-double   TrigConfigV1::trigLevel()    const {return _trigLevel;}
+uint32_t TrigV1::trigCoupling() const {return _trigCoupling;}
+uint32_t TrigV1::trigInput()    const {return _trigInput;}
+uint32_t TrigV1::trigSlope()    const {return _trigSlope;}
+double   TrigV1::trigLevel()    const {return _trigLevel;}
 
-VertConfigV1::VertConfigV1() {}
-VertConfigV1::VertConfigV1(double   fullScale,
-                           double   offset,
-                           uint32_t coupling,    
-                           uint32_t bandwidth) :
+VertV1::VertV1() {}
+VertV1::VertV1(double   fullScale,
+               double   offset,
+               uint32_t coupling,    
+               uint32_t bandwidth) :
   _fullScale(fullScale),  _offset(offset),
   _coupling(coupling), _bandwidth(bandwidth) {}
 
 ConfigV1::ConfigV1 (uint32_t nbrConvertersPerChannel,
                     uint32_t channelMask,
                     uint32_t nbrBanks,
-                    const TrigConfigV1& trigConfig,
-                    const HorizConfigV1& horizConfig,
-                    const VertConfigV1* vertConfig) :
+                    const TrigV1& trig,
+                    const HorizV1& horiz,
+                    const VertV1* vert) :
   _nbrConvertersPerChannel(nbrConvertersPerChannel),
-  _channelMask(channelMask),_trigConfig(trigConfig),
-  _horizConfig(horizConfig) {
+  _channelMask(channelMask),_trig(trig),
+  _horiz(horiz) {
   for (unsigned i=0;i<MaxChan;i++) {
-    _vertConfig[i]=vertConfig[i];
+    _vert[i]=vert[i];
   }
 }
 
-double   VertConfigV1::fullScale() const {return _fullScale;}
-double   VertConfigV1::offset()    const {return _offset;}
-uint32_t VertConfigV1::coupling()  const {return _coupling;}
-uint32_t VertConfigV1::bandwidth() const {return _bandwidth;}
+double   VertV1::fullScale() const {return _fullScale;}
+double   VertV1::offset()    const {return _offset;}
+uint32_t VertV1::coupling()  const {return _coupling;}
+uint32_t VertV1::bandwidth() const {return _bandwidth;}
 
 uint32_t ConfigV1::nbrConvertersPerChannel() const {return _nbrConvertersPerChannel;}
 
@@ -86,14 +86,14 @@ uint32_t ConfigV1::nbrChannels() const {
 
 uint32_t ConfigV1::nbrBanks() const {return _nbrBanks;}
 
-HorizConfigV1& ConfigV1::horizConfig() {return _horizConfig;}
+HorizV1& ConfigV1::horiz() {return _horiz;}
 
-TrigConfigV1& ConfigV1::trigConfig() {return _trigConfig;}
+TrigV1& ConfigV1::trig() {return _trig;}
 
-VertConfigV1& ConfigV1::vertConfig(uint32_t channel) {return _vertConfig[channel];}
+VertV1& ConfigV1::vert(uint32_t channel) {return _vert[channel];}
 
-const HorizConfigV1& ConfigV1::horizConfig() const {return _horizConfig;}
+const HorizV1& ConfigV1::horiz() const {return _horiz;}
 
-const TrigConfigV1& ConfigV1::trigConfig() const {return _trigConfig;}
+const TrigV1& ConfigV1::trig() const {return _trig;}
 
-const VertConfigV1& ConfigV1::vertConfig(uint32_t channel) const {return _vertConfig[channel];}
+const VertV1& ConfigV1::vert(uint32_t channel) const {return _vert[channel];}

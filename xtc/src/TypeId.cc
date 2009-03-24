@@ -22,7 +22,7 @@ const char* TypeId::name(Type type)
     "Any",
     "Xtc",
     "Frame",
-    "Waveform",
+    "AcqWaveform",
     "AcqConfig",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
