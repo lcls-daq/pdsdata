@@ -1,4 +1,4 @@
-2009-Mar-24     cpo     Tag V00-02-02.  Removed WaveformV1.hh and AcqDataDescV1.*.
+2009-Mar-24     cpo     Tag V00-02-02.  Removed WaveformV1.hh and AcqDataDescV1.* and DataCallback.hh.
 2009-Mar-24     cpo     Tag V00-02-01.  Improved acqiris data support.
 2009-Mar-04	weaver	Tag V00-02-00.  Added camera, evr, opal1k data formats.
 
