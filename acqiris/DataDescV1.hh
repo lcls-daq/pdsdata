@@ -61,6 +61,8 @@ namespace Pds {
       static uint32_t waveformSize(const HorizV1& hconfig);
       static uint32_t totalSize(const HorizV1& hconfig);
       static Pds::TypeId typeId();
+      enum {NumberOfBits=10};
+      enum {BitShift=6};
     private:
       // extra space required by Acqiris DMA engine.  may need
       // to change if readmode changes.
