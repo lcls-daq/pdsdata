@@ -62,6 +62,7 @@ namespace Pds {
 
     class ConfigV1 {
     public:
+      enum {Version=1};
       enum {MaxChan=20};
       ConfigV1 ();
       ConfigV1 (uint32_t nbrConvertersPerChannel,

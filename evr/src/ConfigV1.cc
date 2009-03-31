@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+using namespace Pds;
 using namespace EvrData;
 
 enum { Trigger_Shift=0, Set_Shift=8, Clear_Shift=16 };

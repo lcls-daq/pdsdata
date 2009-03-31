@@ -21,8 +21,8 @@ namespace Pds {
     TransitionId::Value  service()      const;
     unsigned isExtended()   const;
     unsigned notEvent()     const;
-    unsigned low()          const;
-    unsigned high()         const;
+    unsigned low()          const;  // 119MHz clocks since fiducial
+    unsigned high()         const;  // pulseId (fiducial count)
     unsigned highAll()      const;
     const ClockTime& clock() const;
   public:

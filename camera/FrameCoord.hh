@@ -3,16 +3,18 @@
 
 #include <stdint.h>
 
-namespace Camera {
+namespace Pds {
+  namespace Camera {
 
-  class FrameCoord {
-  public:
-    FrameCoord() {}
-    FrameCoord(unsigned short x, unsigned short y) : column(x), row(y) {}
-    uint16_t column;
-    uint16_t row;
+    class FrameCoord {
+    public:
+      FrameCoord() {}
+      FrameCoord(unsigned short x, unsigned short y) : column(x), row(y) {}
+      uint16_t column;
+      uint16_t row;
+    };
+
   };
-
-}
+};
 
 #endif

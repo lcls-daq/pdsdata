@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+using namespace Pds;
 using namespace Camera;
 
 TwoDGaussianV1::TwoDGaussianV1() {}

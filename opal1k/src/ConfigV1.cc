@@ -3,6 +3,7 @@
 
 #include <string.h>
 
+using namespace Pds;
 using namespace Opal1k;
 
 enum { Black_Offset =  0,

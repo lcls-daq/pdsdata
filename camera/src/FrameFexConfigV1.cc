@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+using namespace Pds;
 using namespace Camera;
 
 FrameFexConfigV1::FrameFexConfigV1() {}
