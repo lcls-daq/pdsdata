@@ -8,21 +8,18 @@
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/acqiris/ConfigV1.hh"
+#include "pdsdata/acqiris/DataDescV1.hh"
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
-#include "pdsdata/opal1k/ConfigV1.hh"
+#include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
-#include "pdsdata/acqiris/DataDescV1.hh"
 
 class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};
   myLevelIter(Xtc* xtc, unsigned depth) : XtcIterator(xtc), _depth(depth) {}
-  void process(const Acqiris::ConfigV1& config) {
-    printf("*** Processing Acqiris configuration object, number of samples %u\n",
-           config.horiz().nbrSamples());
-  }
+
   void process(const DetInfo& d, const Camera::FrameV1& f) {
     printf("*** Processing frame object\n");
   }
@@ -40,6 +37,9 @@ public:
   }
   void process(const DetInfo&, const EvrData::ConfigV1&) {
     printf("*** Processing EVR config object\n");
+  }
+  void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
+    printf("*** Processing 2DGauss object\n");
   }
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
@@ -67,17 +67,20 @@ public:
       process(info, *(const Acqiris::DataDescV1*)(xtc->payload()));
       break;
     case (TypeId::Id_AcqConfig) :
-      unsigned version = xtc->contains.version();
-      switch (version) {
-      case 1:
-        process(*(const Acqiris::ConfigV1*)(xtc->payload()));
-        break;
-      default:
-        printf("Unsupported acqiris configuration version %d\n",version);
-      break;
+      {      
+	unsigned version = xtc->contains.version();
+	switch (version) {
+	case 1:
+	  process(info,*(const Acqiris::ConfigV1*)(xtc->payload()));
+	  break;
+	default:
+	  printf("Unsupported acqiris configuration version %d\n",version);
+	  break;
+	}
       }
+      break;
     case (TypeId::Id_TwoDGaussian) :
-      //      process(info, *(const Camera::TwoDGaussian*)(xtc->payload()));
+      process(info, *(const Camera::TwoDGaussianV1*)(xtc->payload()));
       break;
     case (TypeId::Id_Opal1kConfig) :
       process(info, *(const Opal1k::ConfigV1*)(xtc->payload()));
@@ -130,9 +133,9 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  XtcFileIterator iter(file,0x100000);
+  XtcFileIterator iter(file,0x400000);
   Dgram* dg;
-  while (dg = iter.next()) {
+  while ((dg = iter.next())) {
     printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
            dg->seq.high(),dg->seq.low(),dg->xtc.sizeofPayload());
     myLevelIter iter(&(dg->xtc),0);
