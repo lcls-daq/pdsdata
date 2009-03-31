@@ -1,4 +1,5 @@
-2009-Mar-24     cpo     Tag V00-02-04.   Add xtcreader to new app directory.
+2009-Mar-31	weaver	Tag V00-02-05.	Removed TypeId(unsigned) ctor which ignored versions.  Added TwoDGaussianV1.hh.
+2009-Mar-24     cpo     Tag V00-02-04.  Add xtcreader to new app directory.
 2009-Mar-24     cpo     Tag V00-02-03.  Removed WaveformV1.hh and AcqDataDescV1.* and DataCallback.hh.  Added acqiris bit field locations in DataDescV1.hh.
 2009-Mar-24     cpo     Tag V00-02-01.  Improved acqiris data support.
 2009-Mar-04	weaver	Tag V00-02-00.  Added camera, evr, opal1k data formats.

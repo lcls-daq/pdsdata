@@ -6,8 +6,6 @@ using namespace Pds;
 TypeId::TypeId(Type type, uint32_t version) :
   _value((version<<16)|type) {}
 
-TypeId::TypeId(unsigned v) : _value(v) {}
-
 TypeId::TypeId(const TypeId& v) : _value(v._value) {}
 
 uint32_t TypeId::value() const {return _value;}
@@ -24,6 +22,10 @@ const char* TypeId::name(Type type)
     "Frame",
     "AcqWaveform",
     "AcqConfig",
+    "TwoDGaussian",
+    "Opal1kConfig",
+    "FrameFexConfig",
+    "EvrConfig"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

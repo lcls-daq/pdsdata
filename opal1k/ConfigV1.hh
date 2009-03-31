@@ -14,6 +14,7 @@ namespace Opal1k {
 
   class ConfigV1 {
   public:
+    enum { Version=1 };
     enum Depth     { Eight_bit, Ten_bit, Twelve_bit };
     enum Binning   { x1, x2, x4, x8 };
     enum Mirroring { None, HFlip, VFlip, HVFlip };

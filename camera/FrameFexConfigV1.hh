@@ -10,6 +10,7 @@ namespace Camera {
 
   class FrameFexConfigV1 {
   public:
+    enum { Version=1 };
     enum Forwarding { NoFrame, FullFrame, RegionOfInterest };
     enum Processing { NoProcessing, GssFullFrame, GssRegionOfInterest, GssThreshold };
 

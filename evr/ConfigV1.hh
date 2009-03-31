@@ -78,6 +78,7 @@ namespace EvrData {
 
   class ConfigV1 {
   public:
+    enum { Version=1 };
     ConfigV1 ();
     ConfigV1 (unsigned npulses,
 	      const PulseConfig* pulses,

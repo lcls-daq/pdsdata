@@ -18,7 +18,6 @@ namespace Pds {
 	       Id_EvrConfig,
 	       NumberOf};
 
-    TypeId(unsigned v);
     TypeId(const TypeId& v);
     TypeId(Type type, uint32_t version);
 
