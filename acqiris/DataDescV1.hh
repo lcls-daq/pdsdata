@@ -55,8 +55,10 @@ namespace Pds {
       uint32_t nbrSamplesInSeg() const;
       uint32_t nbrSegments() const;
       TimestampV1& timestamp(uint32_t seg);
-      uint16_t* waveform(const HorizV1& hconfig);
+      int16_t* waveform(const HorizV1& hconfig);
+      uint32_t indexFirstPoint();
       DataDescV1* nextChannel(const HorizV1& hconfig);
+
       static uint32_t timestampSize(const HorizV1& hconfig);
       static uint32_t waveformSize(const HorizV1& hconfig);
       static uint32_t totalSize(const HorizV1& hconfig);

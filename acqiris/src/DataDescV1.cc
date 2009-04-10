@@ -32,8 +32,12 @@ TimestampV1& DataDescV1::timestamp(uint32_t seg) {
   return _timestamp()[seg];
 }
 
-uint16_t* DataDescV1::waveform(const HorizV1& hconfig) {
-  return (uint16_t*)(&(_timestamp()[hconfig.nbrSegments()]));
+int16_t* DataDescV1::waveform(const HorizV1& hconfig) {
+  return (int16_t*)(&(_timestamp()[hconfig.nbrSegments()]));
+}
+
+uint32_t DataDescV1::indexFirstPoint() {
+  return _indexFirstPoint;
 }
 
 uint32_t DataDescV1::timestampSize(const HorizV1& hconfig) {
