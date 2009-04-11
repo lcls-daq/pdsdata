@@ -17,6 +17,7 @@ namespace Pds {
       double   offset()    const;
       uint32_t coupling()  const;
       uint32_t bandwidth() const;
+      double   slope()     const;
     private:
       double   _fullScale;
       double   _offset;

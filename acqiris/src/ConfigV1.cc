@@ -1,5 +1,6 @@
 
 #include "pdsdata/acqiris/ConfigV1.hh"
+#include "pdsdata/acqiris/DataDescV1.hh"
 
 using namespace Pds;
 
@@ -69,6 +70,18 @@ ConfigV1::ConfigV1 (uint32_t nbrConvertersPerChannel,
   }
 }
 
+// this constants reflects two things:
+// 1) the fact that 511 ADC counts = +0.5*fullscale-1bit
+//    and -512 ADC counts = -0.5*fullscale
+//    since the value read out is a signed 10-bit number,
+//    and since the fullscale voltage covers -512 to +511.
+// 2) the 10-bit acqiris data is shifted left by 6 bits,
+//    presumably to take advantage of improved CPU performance
+//    using signed arithmetic to compute voltages.
+static const unsigned normalize=
+(1<<Acqiris::DataDescV1::NumberOfBits)*(1<<Acqiris::DataDescV1::BitShift);
+
+double   VertV1::slope() const {return _fullScale/(float)(normalize);}
 double   VertV1::fullScale() const {return _fullScale;}
 double   VertV1::offset()    const {return _offset;}
 uint32_t VertV1::coupling()  const {return _coupling;}
