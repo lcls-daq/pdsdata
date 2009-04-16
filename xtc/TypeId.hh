@@ -16,6 +16,7 @@ namespace Pds {
 	       Id_Opal1kConfig,
 	       Id_FrameFexConfig,
 	       Id_EvrConfig,
+	       Id_TM6740Config,
 	       NumberOf};
 
     TypeId(const TypeId& v);

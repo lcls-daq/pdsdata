@@ -25,7 +25,8 @@ const char* TypeId::name(Type type)
     "TwoDGaussian",
     "Opal1kConfig",
     "FrameFexConfig",
-    "EvrConfig"
+    "EvrConfig",
+    "TM6740Config"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
