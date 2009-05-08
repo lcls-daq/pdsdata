@@ -4,6 +4,9 @@ libsrcs_xtcdata := src/TypeId.cc \
                    src/Src.cc \
                    src/TransitionId.cc \
                    src/XtcFileIterator.cc \
+                   src/ClockTime.cc \
+                   src/TimeStamp.cc \
+                   src/Sequence.cc \
                    src/Level.cc \
                    src/ProcInfo.cc \
                    src/DetInfo.cc

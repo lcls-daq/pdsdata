@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
   Dgram* dg;
   while ((dg = iter.next())) {
     printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
-           dg->seq.high(),dg->seq.low(),dg->xtc.sizeofPayload());
+           dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
     myLevelIter iter(&(dg->xtc),0);
     iter.iterate();
   }
