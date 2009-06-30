@@ -98,7 +98,7 @@ unsigned OutputMap::map() const
   enum { Pulse_Offset=0, 
 	 DBus_Offset=32, 
 	 Prescaler_Offset=40 }; 
-  unsigned map;
+  unsigned map=0;
   Source src    = source();
   unsigned    src_id =source_id();
   switch(src) {
