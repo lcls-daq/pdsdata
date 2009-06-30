@@ -7,7 +7,7 @@
 namespace Pds {
 
   namespace Acqiris {
-
+#pragma pack(4)
     class VertV1 {
     public:
       VertV1();
@@ -91,7 +91,7 @@ namespace Pds {
       HorizV1  _horiz;
       VertV1   _vert[MaxChan];
     };
-
+#pragma pack()
   }
 }
 
