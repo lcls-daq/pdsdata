@@ -1,4 +1,4 @@
-tgtnames = xtcreader agatfile
+tgtnames = xtcreader
 
 ifneq ($(findstring x86_64-linux,$(tgt_arch)),)
 syslibdir := /usr/lib64
