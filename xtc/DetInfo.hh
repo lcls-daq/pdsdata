@@ -12,8 +12,8 @@ namespace Pds {
   public:
 
     enum Detector {NoDetector,AmoIms,AmoPem,AmoETof,AmoITof,AmoMbs,AmoIis,
-                   AmoXes,NumDetector};
-    enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,NumDevice};
+                   AmoXes,Camp,NumDetector};
+    enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,NumDevice};
 
     DetInfo(uint32_t processId,
             Detector det, uint32_t detId,
