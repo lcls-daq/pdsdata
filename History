@@ -1,4 +1,4 @@
-2009-Jul-14	weaver			Added run control configuration classes.  Removed
+2009-Jul-14	weaver	Tag V00-05-00.	Added run control configuration classes.  Removed
 					Pause/Resume and added Begin/EndCalibCycle transitions.
 					Changed ClockTime default ctor to not zero memory.
 2009-Jul-10     cpo                     Improvements to acqiris configuration classes.
