@@ -1,6 +1,8 @@
 #ifndef Pds_ClockTime_hh
 #define Pds_ClockTime_hh
 
+#include <stdint.h>
+
 namespace Pds {
   class ClockTime {
   public:
@@ -17,8 +19,8 @@ namespace Pds {
     bool operator>(const ClockTime&) const; 
 
   private:
-    unsigned _low;
-    unsigned _high;
+    uint32_t _low;
+    uint32_t _high;
   };
 }
 #endif

@@ -1,6 +1,8 @@
 #ifndef PDS_TIMESTAMP_HH
 #define PDS_TIMESTAMP_HH
 
+#include <stdint.h>
+
 namespace Pds {
   class TimeStamp {
   public:
@@ -26,8 +28,8 @@ namespace Pds {
     bool       operator> (const TimeStamp&) const;
 
   private:
-    unsigned _low;
-    unsigned _high;
+    uint32_t _low;
+    uint32_t _high;
   };
 }
 
