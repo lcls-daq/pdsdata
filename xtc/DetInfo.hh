@@ -11,8 +11,8 @@ namespace Pds {
   class DetInfo : public Src {
   public:
 
-    enum Detector {NoDetector,AmoIms,AmoPem,AmoETof,AmoITof,AmoMbs,AmoIis,
-                   AmoXes,Camp,NumDetector};
+    enum Detector {NoDetector,AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbs,AmoIis,AmoBps,
+                   Camp,NumDetector};
     enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,NumDevice};
 
     DetInfo(uint32_t processId,

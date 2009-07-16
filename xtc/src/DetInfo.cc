@@ -28,8 +28,8 @@ const char* DetInfo::name(Detector det){
     "AmoITof",
     "AmoMbs",
     "AmoIis",
-    "AmoXes",
     "AmoBps"
+    "Camp"
   };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
 }
@@ -41,6 +41,7 @@ const char* DetInfo::name(Device dev) {
     "Acqiris",
     "Opal1000",
     "TM6740",
+    "pnCCD",
     "NumDevice"
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
