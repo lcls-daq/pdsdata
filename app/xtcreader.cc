@@ -44,10 +44,10 @@ public:
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
-    printf("%s level: ",Level::name(level));
+    printf("%s level contains: %s: ",Level::name(level), TypeId::name(xtc->contains.id()));
     const DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
-      printf("%s%d %s%d\n",
+      printf("%s,%d  %s,%d\n",
              DetInfo::name(info.detector()),info.detId(),
              DetInfo::name(info.device()),info.devId());
     } else {

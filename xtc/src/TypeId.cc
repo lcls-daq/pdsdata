@@ -27,8 +27,9 @@ const char* TypeId::name(Type type)
     "FrameFexConfig",
     "EvrConfig",
     "TM6740Config",
-    "RunControlConfig",
-    "RunMonitorConfig"
+    "ControlConfig",
+    "pnCCDframe",
+    "pnCCDconfig"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

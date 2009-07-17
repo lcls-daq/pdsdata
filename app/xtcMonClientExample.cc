@@ -13,6 +13,7 @@
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
+#include "pdsdata/pnCCD/fformat.h"
 
 #include "XtcMonitorClient.hh"
 
@@ -20,6 +21,7 @@ class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};
   myLevelIter(Xtc* xtc, unsigned depth) : XtcIterator(xtc), _depth(depth) {}
+  fileHeaderType fileHdrBuffer[1024];
 
   void process(const DetInfo& d, const Camera::FrameV1& f) {
     printf("*** Processing frame object\n");
@@ -42,10 +44,32 @@ public:
   void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
     printf("*** Processing 2DGauss object\n");
   }
+  void process(const DetInfo& di, fileHeaderType* FileHdr) {
+    printf("*** Processing pnCCD config\n");
+    printf("\tpnCCD File Header:\n");
+    printf("\tmyLength  %d, fhLength %d, nCCDs %d, width %d, maxHeight %d, version %d\n\t dataSetID %s\n", 
+			FileHdr->myLength, FileHdr->fhLength, FileHdr->nCCDs, FileHdr->width, 
+			FileHdr->maxHeight, FileHdr->version, FileHdr->dataSetID);
+    if (FileHdr->version > 5) {
+      printf("\tthe_width %d, the_maxHeight %d\n", FileHdr->the_width, FileHdr->the_maxHeight);
+    }
+    memcpy((char*)fileHdrBuffer, (char*)FileHdr, 1024);
+  }
+  void process(const DetInfo& di, frameHeaderType* frh) {
+    printf("*** Processing pnCCD frame data\n");
+    printf("\tpnCCD Frame Header:\n");
+    printf("\tstart %d, info %d, id %d, height %d, tv_sec %d, tv_usec %d, index %d, temp %lf\n", 
+			frh->start, frh->info, frh->id, frh->height, 
+			frh->tv_sec, frh->tv_usec, frh->index, frh->temp);
+    if (fileHdrBuffer->version > 5) {
+      printf("\tthe_start %d, the_height %d, external_id %d, aux_value %lf\n", 
+			frh->the_start, frh->the_height, frh->external_id, frh->aux_value);
+    }
+  }
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
-    printf("%s level: ",Level::name(level));
+    printf("%s level contains: %s: ",Level::name(level), TypeId::name(xtc->contains.id()));
     const DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
       printf("%s %d %s %d\n",
@@ -92,6 +116,12 @@ public:
     case (TypeId::Id_EvrConfig) :
       process(info, *(const EvrData::ConfigV1*)(xtc->payload()));
       break;
+    case (TypeId::Id_pnCCDconfig) :
+      process(info, (fileHeaderType*) xtc->payload());
+      break;
+    case (TypeId::Id_pnCCDframe) :
+      process(info, (frameHeaderType*) xtc->payload());
+      break;
     default :
       break;
     }
@@ -128,6 +158,7 @@ int main(int argc, char* argv[]) {
       exit(0);
     case 'p':
       strcpy(partitionTag, optarg);
+      // the run method will only return if it encounters an error
       fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag));
       break;
     default:
