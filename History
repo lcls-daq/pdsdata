@@ -1,3 +1,4 @@
+2009-Jul17	jackp			Added pnCCD support and made strings match enums
 2009-Jul16      cpo                     Put CAMP stuff in DetInfo enums.
 2009-Jul-14	weaver	Tag V00-05-00.	Added run control configuration classes.  Removed
 					Pause/Resume and added Begin/EndCalibCycle transitions.
