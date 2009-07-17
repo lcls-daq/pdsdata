@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  XtcFileIterator iter(file,0x400000);
+  XtcFileIterator iter(file,0x900000);
   Dgram* dg;
   while ((dg = iter.next())) {
     printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
