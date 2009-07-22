@@ -22,6 +22,7 @@ namespace Pds {
 	       Id_pnCCDconfig,
 	       NumberOf};
 
+    TypeId() {}
     TypeId(const TypeId& v);
     TypeId(Type type, uint32_t version);
 

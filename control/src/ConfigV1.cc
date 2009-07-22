@@ -13,13 +13,16 @@ static void appendChannels(const std::list<PVControl>& pvcs,
 			   const std::list<PVMonitor>& pvms, 
 			   ConfigV1* s)
 {
+  std::list<PVControl> sorted_pvcs (pvcs); sorted_pvcs.sort();
+  std::list<PVMonitor> sorted_pvms (pvms); sorted_pvms.sort();
+
   PVControl* c = reinterpret_cast<PVControl*>(s+1);
-  for(std::list<PVControl>::const_iterator iter = pvcs.begin();
-      iter != pvcs.end(); ++iter)
+  for(std::list<PVControl>::const_iterator iter = sorted_pvcs.begin();
+      iter != sorted_pvcs.end(); ++iter)
     *c++ = *iter;
   PVMonitor* m = reinterpret_cast<PVMonitor*>(c);
-  for(std::list<PVMonitor>::const_iterator iter = pvms.begin();
-      iter != pvms.end(); ++iter)
+  for(std::list<PVMonitor>::const_iterator iter = sorted_pvms.begin();
+      iter != sorted_pvms.end(); ++iter)
     *m++ = *iter;
 }
 

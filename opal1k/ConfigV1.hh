@@ -20,6 +20,8 @@ namespace Pds {
       enum Binning   { x1, x2, x4, x8 };
       enum Mirroring { None, HFlip, VFlip, HVFlip };
       enum { LUT_Size=4096 };
+      enum { Row_Pixels=1024 };
+      enum { Column_Pixels=1024 };
 
       ConfigV1();
       ConfigV1(unsigned short  black,

@@ -12,12 +12,13 @@ namespace Pds {
     TimeStamp();
     TimeStamp(const TimeStamp&);
     TimeStamp(const TimeStamp&, unsigned control);
-    TimeStamp(unsigned ticks, unsigned fiducials, unsigned control=0);
+    TimeStamp(unsigned ticks, unsigned fiducials, unsigned vector, unsigned control=0);
 
   public:
-    unsigned ticks()  const;
+    unsigned ticks    () const;
     unsigned fiducials() const;
-    unsigned control() const;
+    unsigned control  () const;
+    unsigned vector   () const;
 
   public:
     TimeStamp& operator= (const TimeStamp&);

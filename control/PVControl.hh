@@ -1,8 +1,8 @@
 //
 //  Class for Process Variable Control
 //
-#ifndef Pds_PVControl_hh
-#define Pds_PVControl_hh
+#ifndef PdsData_PVControl_hh
+#define PdsData_PVControl_hh
 
 #include <stdint.h>
 
@@ -15,15 +15,18 @@ namespace Pds {
       enum { NameSize=32 };
     public:
       PVControl();
-      PVControl(const char* pvname, double setValue);
+      PVControl(const char* pvname, unsigned index, double setValue);
       PVControl(const PVControl&);
       ~PVControl();
     public:
+      bool operator<(const PVControl&) const;
+    public:
       const char* name () const;
+      unsigned    index() const;
       double      value() const;
     private:
       char     _name[NameSize];
-      uint32_t _reserved;
+      uint32_t _index;
       double   _value;
     };
 

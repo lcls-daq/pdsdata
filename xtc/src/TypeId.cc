@@ -27,7 +27,7 @@ const char* TypeId::name(Type type)
     "FrameFexConfig",
     "EvrConfig",
     "TM6740Config",
-    "ControlConfig",
+    "RunControlConfig",
     "pnCCDframe",
     "pnCCDconfig"
   };

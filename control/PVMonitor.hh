@@ -1,8 +1,8 @@
 //
 //  Class for Process Variable Monitoring
 //
-#ifndef Pds_PVMonitor_hh
-#define Pds_PVMonitor_hh
+#ifndef PdsData_PVMonitor_hh
+#define PdsData_PVMonitor_hh
 
 #include <stdint.h>
 
@@ -13,21 +13,23 @@ namespace Pds {
     class PVMonitor {
     public:
       enum { NameSize=32 };
-      enum AlarmType { Low =0x1, 
-		       High=0x2, 
-		       LoLo=0x4, 
-		       HiHi=0x8 };  // maps to PV alarms
     public:
       PVMonitor();
-      PVMonitor(const char* pvname, unsigned restrictedAlarms);
+      PVMonitor(const char* pvname, unsigned index, double loValue, double hiValue);
       PVMonitor(const PVMonitor&);
       ~PVMonitor();
     public:
+      bool operator<(const PVMonitor&) const;
+    public:
       const char* name            () const;
-      unsigned    restrictedAlarms() const;
+      unsigned    index           () const;
+      double      loValue         () const;
+      double      hiValue         () const;
     private:
       char     _name[NameSize];
-      uint32_t _restricted;
+      uint32_t _index;
+      double   _loValue;
+      double   _hiValue;
     };
 
   };

@@ -2,6 +2,7 @@
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/Level.hh"
 #include <stdint.h>
+#include <stdio.h>
 
 using namespace Pds;
 
@@ -45,4 +46,13 @@ const char* DetInfo::name(Device dev) {
     "NumDevice"
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
+}
+
+const char* DetInfo::name(const DetInfo& src) {
+  const int MaxLength=32;
+  static char _name[MaxLength];
+  snprintf(_name, MaxLength, "%s-%d|%s-%d", 
+	   name(src.detector()), src.detId(),
+	   name(src.device  ()), src.devId());
+  return _name;
 }

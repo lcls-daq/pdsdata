@@ -15,6 +15,7 @@ namespace Pds {
                    Camp,NumDetector};
     enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,NumDevice};
 
+    DetInfo() {}
     DetInfo(uint32_t processId,
             Detector det, uint32_t detId,
             Device dev,   uint32_t devId);
@@ -27,6 +28,7 @@ namespace Pds {
 
     static const char* name(Detector);
     static const char* name(Device);
+    static const char* name(const DetInfo&);
   };
 
 }
