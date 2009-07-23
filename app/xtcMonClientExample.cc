@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/ProcInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
@@ -133,6 +134,8 @@ private:
 
 class MyXtcMonitorClient : public XtcMonitorClient {
   public:
+    MyXtcMonitorClient() {
+    }
     virtual void processDgram(Dgram* dg) {
       printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
 	     dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
@@ -142,7 +145,7 @@ class MyXtcMonitorClient : public XtcMonitorClient {
 };
 
 void usage(char* progname) {
-  fprintf(stderr,"Usage: %s [-p <partitionTag>] [-h]\n", progname);
+  fprintf(stderr,"Usage: %s [-t <partitionTag>] [-h]\n", progname);
 }
 
 int main(int argc, char* argv[]) {
@@ -150,13 +153,13 @@ int main(int argc, char* argv[]) {
   char partitionTag[128] = "";
   MyXtcMonitorClient myClient;
 
-  while ((c = getopt(argc, argv, "?hp:")) != -1) {
+  while ((c = getopt(argc, argv, "?ht:")) != -1) {
     switch (c) {
     case '?':
     case 'h':
       usage(argv[0]);
       exit(0);
-    case 'p':
+    case 't':
       strcpy(partitionTag, optarg);
       // the run method will only return if it encounters an error
       fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag));
