@@ -28,11 +28,13 @@ void usage(char* progname) {
 
 char toMonQname[128] = "/PdsToMonitorMsgQueue_";
 char fromMonQname[128] = "/PdsFromMonitorMsgQueue_";
+char shmName[128] = "/PdsMonitorSharedMemory_";
 
 void sigfunc(int sig_no) {
    printf("Unlinking ... \n");
    if (mq_unlink(toMonQname) == (mqd_t)-1) perror("mq_unlink To Monitor");
    if (mq_unlink(fromMonQname) == (mqd_t)-1) perror("mq_unlink From Monitor");
+   shm_unlink(shmName);
    printf("Finished. %d\n", sig_no);
    exit(EXIT_SUCCESS);
 }
@@ -89,7 +91,6 @@ int main(int argc, char* argv[]) {
   mqd_t myOutputQueue;
   mqd_t myInputQueue;
   unsigned priority = 0;
-  char shmName[128] = "/PdsMonitorSharedMemory_";
   struct timespec start, now, sleepTime;
   unsigned pageSize = (unsigned)sysconf(_SC_PAGESIZE);
   (void) signal(SIGINT, sigfunc);
@@ -164,6 +165,7 @@ int main(int argc, char* argv[]) {
 
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
 
+  if (!shm_unlink(shmName)) perror("shm_unlink found a remnant of previous lives");
   int shm = shm_open(shmName, OFLAGS, PERMS);
   if (shm < 0) perror("shm_open");
 
@@ -177,6 +179,8 @@ int main(int argc, char* argv[]) {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
   printf("Opening shared memory took %lld nanonseconds.\n", timeDiff(&now, &start));
 
+  if (mq_unlink(toMonQname) != (mqd_t)-1) perror("mq_unlink To Monitor found a remnant of previous lives");
+  if (mq_unlink(fromMonQname) != (mqd_t)-1) perror("mq_unlink From Monitor found a remnant of previous lives");
   myOutputQueue = mq_open(toMonQname, O_CREAT|O_RDWR, PERMS, &mymq_attr);
   if (myOutputQueue == (mqd_t)-1) perror("mq_open output");
   myInputQueue = mq_open(fromMonQname, O_CREAT|O_RDWR, PERMS, &mymq_attr);
