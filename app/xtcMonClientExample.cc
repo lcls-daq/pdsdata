@@ -149,7 +149,7 @@ void usage(char* progname) {
 }
 
 int main(int argc, char* argv[]) {
-  int c;
+  int c=0;
   char partitionTag[128] = "";
   MyXtcMonitorClient myClient;
 
@@ -168,5 +168,6 @@ int main(int argc, char* argv[]) {
       usage(argv[0]);
     }
   }
+  if (c<1) usage(argv[0]);
   return 1;
 }

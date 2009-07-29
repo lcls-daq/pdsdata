@@ -23,12 +23,14 @@
 #define OFLAGS (O_CREAT|O_RDWR)
 
 void usage(char* progname) {
-  fprintf(stderr,"Usage: %s -f <filename> -n <numberOfBuffers> -s <sizeOfBuffers> [-r <ratePerSec>] [-p <partitionTag>] [-h]\n", progname);
+  fprintf(stderr,"Usage: %s -f <filename> -n <numberOfBuffers> -s <sizeOfBuffers> [-r <ratePerSec>] [-p <partitionTag>] [-l] [-h]\n", progname);
 }
 
 char toMonQname[128] = "/PdsToMonitorMsgQueue_";
 char fromMonQname[128] = "/PdsFromMonitorMsgQueue_";
 char shmName[128] = "/PdsMonitorSharedMemory_";
+bool loop = false;
+bool L1AcceptOnly = false;
 
 void sigfunc(int sig_no) {
    printf("Unlinking ... \n");
@@ -54,7 +56,7 @@ class Msg {
     unsigned _sizeOfBuffers;
 };
 
-long long int timeDiff(struct timespec *end, struct timespec *start) {
+long long int timeDiff(struct timespec* end, struct timespec* start) {
   long long int diff;
   diff =  (end->tv_sec - start->tv_sec) * 1000000000;
   diff += end->tv_nsec;
@@ -62,18 +64,34 @@ long long int timeDiff(struct timespec *end, struct timespec *start) {
   return diff;
 }
 
-Dgram* next(FILE* _file, unsigned _maxDgramSize, char *_bufferP) {
+Dgram* next(FILE* _file, unsigned _maxDgramSize, char* _bufferP) {
   Dgram& dg = *(Dgram*)_bufferP;
   unsigned header = sizeof(dg);
   fread(&dg, header, 1, _file);
-  if (feof(_file)) return 0;
+  if (feof(_file)) {
+   if (loop) {
+     rewind(_file);
+     return next(_file, _maxDgramSize, _bufferP);
+   } else {
+     return 0;
+   }
+  }
   unsigned payloadSize = dg.xtc.sizeofPayload();
   if ((payloadSize+header)>_maxDgramSize) {
       printf("Datagram size 0x%x larger than maximum: 0x%x\n",payloadSize+sizeof(dg), _maxDgramSize); 
       return 0;
    }
    fread(_bufferP+header, payloadSize, 1, _file);
-   return (feof(_file)) ? 0 : &dg;
+   if (feof(_file)) {
+     if (loop) {
+       rewind(_file);
+       return next(_file, _maxDgramSize, _bufferP);
+     }
+     else {
+       return 0;
+     }
+   }
+   return &dg;
 }
 
 
@@ -99,7 +117,7 @@ int main(int argc, char* argv[]) {
   printf("sizeof timespec %d\n", sizeof(struct timespec));
   //printf("Pagesize=%lx\n", pageSize);
 
-  while ((c = getopt(argc, argv, "hf:r:n:s:p:")) != -1) {
+  while ((c = getopt(argc, argv, "hf:r:n:s:p:l")) != -1) {
     switch (c) {
     case 'h':
       usage(argv[0]);
@@ -123,6 +141,11 @@ int main(int argc, char* argv[]) {
       strcat(toMonQname, partitionTag);
       strcat(fromMonQname, partitionTag);
       strcat(shmName, partitionTag);
+      break;
+    case 'l':
+      printf("Setting loop from %d ", loop);
+      loop = true;
+      printf("to %d\n", loop);
       break;
     default:
       fprintf(stderr, "I don't understand %c!\n", c);
@@ -198,6 +221,12 @@ int main(int argc, char* argv[]) {
     else {
       bufferP = myShm + (sizeOfBuffers * myMsg.bufferIndex());
       if ((dg = next(file, sizeOfBuffers, bufferP))) {
+	if ((dg->seq.service()==TransitionId::L1Accept) && loop) L1AcceptOnly = true;
+	else if (L1AcceptOnly) {
+	  while (dg->seq.service()!=TransitionId::L1Accept) {
+	    dg = next(file, sizeOfBuffers, bufferP);
+	  }
+	}
 	if (mq_send(myOutputQueue, (const char *)&myMsg, sizeof(myMsg), 0)) perror("mq_send buffer");
 	printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x, using buffer %d, spareTime %lld\n",TransitionId::name(dg->seq.service()),
 		 dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload(), myMsg.bufferIndex(), period - busyTime);
@@ -209,7 +238,7 @@ int main(int argc, char* argv[]) {
       sleepTime.tv_nsec = period - busyTime;
       if (nanosleep(&sleepTime, &now)<0) perror("nanosleep");
     }
-  } while (dg);
+  } while (dg || loop);
 
   fclose(file);
   sigfunc(0);
