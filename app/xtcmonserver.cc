@@ -78,7 +78,7 @@ Dgram* next(FILE* _file, unsigned _maxDgramSize, char* _bufferP) {
   }
   unsigned payloadSize = dg.xtc.sizeofPayload();
   if ((payloadSize+header)>_maxDgramSize) {
-      printf("Datagram size 0x%x larger than maximum: 0x%x\n",payloadSize+sizeof(dg), _maxDgramSize); 
+      printf("Datagram size 0x%x larger than maximum: 0x%x\n",(unsigned)payloadSize+(unsigned)sizeof(dg), _maxDgramSize); 
       return 0;
    }
    fread(_bufferP+header, payloadSize, 1, _file);
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
   (void) signal(SIGINT, sigfunc);
   Msg myMsg;
 
-  printf("sizeof timespec %d\n", sizeof(struct timespec));
+  //printf("sizeof timespec %d\n", sizeof(struct timespec));
   //printf("Pagesize=%lx\n", pageSize);
 
   while ((c = getopt(argc, argv, "hf:r:n:s:p:l")) != -1) {
@@ -143,9 +143,8 @@ int main(int argc, char* argv[]) {
       strcat(shmName, partitionTag);
       break;
     case 'l':
-      printf("Setting loop from %d ", loop);
       loop = true;
-      printf("to %d\n", loop);
+      printf("Enabling infinite looping\n");
       break;
     default:
       fprintf(stderr, "I don't understand %c!\n", c);
@@ -197,7 +196,7 @@ int main(int argc, char* argv[]) {
   myShm = (char*)mmap(NULL, sizeOfShm, PROT_READ|PROT_WRITE, MAP_SHARED, shm, 0);
   //myShm = (char*)mmap(NULL, 0x08000, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_LOCKED, shm, 0);
   if (myShm == MAP_FAILED) perror("mmap");
-  else printf("Shared memory at %x\n", (unsigned)myShm);
+  else printf("Shared memory at %p\n", (void*)myShm);
 
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
   printf("Opening shared memory took %lld nanonseconds.\n", timeDiff(&now, &start));
@@ -238,7 +237,7 @@ int main(int argc, char* argv[]) {
       sleepTime.tv_nsec = period - busyTime;
       if (nanosleep(&sleepTime, &now)<0) perror("nanosleep");
     }
-  } while (dg || loop);
+  } while (dg);
 
   fclose(file);
   sigfunc(0);

@@ -93,7 +93,7 @@ int XtcMonitorClient::run(char * tag) {
 	if (shm < 0) perror("shm_open");
 	myShm = (char*)mmap(NULL, sizeOfShm, PROT_READ, MAP_SHARED, shm, 0);
 	if (myShm == MAP_FAILED) perror("mmap");
-	else printf("Shared memory at %x\n", (unsigned)myShm);
+	else printf("Shared memory at %p\n", (void*)myShm);
       }
       dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * myMsg.bufferIndex()));
       this->processDgram(dg);
