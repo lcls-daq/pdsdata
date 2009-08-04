@@ -1,5 +1,12 @@
 #include "pdsdata/xtc/Sequence.hh"
 
+/* bit field access enums
+*	v is the index of the rightmost bit
+*	k is the number bits in the field
+*	m is the mask, right justified
+*	s is the mask shifted into place
+*/
+
 namespace Pds {
   enum {v_cntrl   = 0, k_cntrl   = 8};
   enum {v_service = 0, k_service = 4};

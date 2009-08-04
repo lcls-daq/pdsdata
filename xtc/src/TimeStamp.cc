@@ -1,5 +1,12 @@
 #include "pdsdata/xtc/TimeStamp.hh"
 
+/* bit field access enums
+*       v is the index of the rightmost bit
+*       k is the number bits in the field
+*       m is the mask, right justified
+*       s is the mask shifted into place
+*/
+
 namespace Pds {
   enum {v_ticks =  0, k_ticks = 24};
   enum {v_cntrl = 24, k_cntrl = 8};
@@ -25,11 +32,6 @@ Pds::TimeStamp::TimeStamp(const Pds::TimeStamp& input, unsigned control) :
   _low((input._low & s_ticks) | ((control & m_cntrl) << v_cntrl)),
   _high(input._high)
 {}
-
-// Pds::TimeStamp::TimeStamp(unsigned low, unsigned high) :
-//   _low ((low  & s_ticks)),
-//   _high(high)
-// {}
 
 Pds::TimeStamp::TimeStamp(unsigned low, unsigned high, unsigned vector, unsigned control) :
   _low ((low  & s_ticks) | ((control & m_cntrl) << v_cntrl)),
