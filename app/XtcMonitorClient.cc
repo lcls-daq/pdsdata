@@ -54,7 +54,7 @@ int XtcMonitorClient::run(char * tag) {
   struct mq_attr mymq_attr;
   Dgram* dg = NULL;
   Msg myMsg;
-  enum {PERMS  = S_IRUSR|S_IRUSR|S_IRUSR|S_IROTH|S_IROTH|S_IROTH|S_IRGRP|S_IRGRP|S_IRGRP};
+  enum {PERMS  = S_IRUSR|S_IRGRP|S_IROTH};
   enum {OFLAGS = O_RDONLY};
 
 
