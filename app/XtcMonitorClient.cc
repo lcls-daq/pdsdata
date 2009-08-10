@@ -54,16 +54,17 @@ int XtcMonitorClient::run(char * tag) {
   struct mq_attr mymq_attr;
   Dgram* dg = NULL;
   Msg myMsg;
-  enum {PERMS  = S_IRUSR|S_IRGRP|S_IROTH};
+  enum {PERMS_IN  = S_IRUSR|S_IRGRP|S_IROTH};
+  enum {PERMS_OUT  = S_IWUSR|S_IWGRP|S_IWOTH};
   enum {OFLAGS = O_RDONLY};
 
 
-  mqd_t myOutputQueue = mq_open(toServerQname, O_WRONLY, PERMS, &mymq_attr);
+  mqd_t myOutputQueue = mq_open(toServerQname, O_WRONLY, PERMS_OUT, &mymq_attr);
   if (myOutputQueue == (mqd_t)-1) {
     perror("mq_open output");
     error++;
   }
-  mqd_t myInputQueue = mq_open(fromServerQname, O_RDONLY, PERMS, &mymq_attr);
+  mqd_t myInputQueue = mq_open(fromServerQname, O_RDONLY, PERMS_IN, &mymq_attr);
   if (myInputQueue == (mqd_t)-1) {
     perror("mq_open input");
     error++;
@@ -89,7 +90,7 @@ int XtcMonitorClient::run(char * tag) {
 	  sizeOfShm += pageSize - remainder;
 	  printf(" to 0x%x\n", sizeOfShm);
 	}
-	int shm = shm_open(shmName, OFLAGS, PERMS);
+	int shm = shm_open(shmName, OFLAGS, PERMS_IN);
 	if (shm < 0) perror("shm_open");
 	myShm = (char*)mmap(NULL, sizeOfShm, PROT_READ, MAP_SHARED, shm, 0);
 	if (myShm == MAP_FAILED) perror("mmap");
