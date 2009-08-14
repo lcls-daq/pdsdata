@@ -7,7 +7,8 @@ namespace Pds {
   class TimeStamp {
   public:
     enum {NumFiducialBits = 17};
-
+    enum {MaxFiducials = (1<<17)-32};
+    enum {ErrFiducial = (1<<17)-1};
   public:
     TimeStamp();
     TimeStamp(const TimeStamp&);
