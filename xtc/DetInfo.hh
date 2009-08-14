@@ -11,7 +11,7 @@ namespace Pds {
   class DetInfo : public Src {
   public:
 
-    enum Detector {NoDetector,AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbs,AmoIis,AmoBps,
+    enum Detector {NoDetector,AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbes,AmoVmi,AmoBps,
                    Camp,NumDetector};
     enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,NumDevice};
 
@@ -19,6 +19,8 @@ namespace Pds {
     DetInfo(uint32_t processId,
             Detector det, uint32_t detId,
             Device dev,   uint32_t devId);
+
+    bool operator==(const DetInfo&) const;
 
     uint32_t processId() const;
     Detector detector()  const;

@@ -13,6 +13,8 @@ DetInfo::DetInfo(uint32_t processId,
   _phy = ((det&0xff)<<24) | ((detId&0xff)<<16) | ((dev&0xff)<<8) |(devId&0xff);
 }
 
+bool DetInfo::operator==(const DetInfo& s) const { return _phy==s._phy; }
+
 uint32_t DetInfo::processId() const { return _log&0xffffff; }
 
 DetInfo::Detector DetInfo::detector() const {return (Detector)((_phy&0xff000000)>>24);}
@@ -23,13 +25,13 @@ uint32_t          DetInfo::devId()    const {return _phy&0xff;}
 const char* DetInfo::name(Detector det){
   static const char* _detNames[] = {
     "NoDetector",
-    "AmoIms",
-    "AmoPem",
-    "AmoETof",
-    "AmoITof",
-    "AmoMbs",
-    "AmoIis",
-    "AmoBps",
+    "amoIMS",
+    "amoGD",
+    "amoETOF",
+    "amoITOF",
+    "amoMBES",
+    "amoVMI",
+    "amoBPS",
     "Camp"
   };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
