@@ -58,19 +58,24 @@ int XtcMonitorClient::run(char * tag) {
   enum {PERMS_OUT  = S_IWUSR|S_IWGRP|S_IWOTH};
   enum {OFLAGS = O_RDONLY};
 
+  mqd_t myOutputQueue;
+  do {  // make a few tries to open the first queue
+	  myOutputQueue = mq_open(toServerQname, O_WRONLY, PERMS_OUT, &mymq_attr);
+	  if (myOutputQueue == (mqd_t)-1) {
+		perror("mq_open output");
+		error+=1 ;
+		sleep(1);
+	  } else error = 0;
+  } while (error && (error < 4));
 
-  mqd_t myOutputQueue = mq_open(toServerQname, O_WRONLY, PERMS_OUT, &mymq_attr);
-  if (myOutputQueue == (mqd_t)-1) {
-    perror("mq_open output");
-    error++;
-  }
   mqd_t myInputQueue = mq_open(fromServerQname, O_RDONLY, PERMS_IN, &mymq_attr);
   if (myInputQueue == (mqd_t)-1) {
-    perror("mq_open input");
-    error++;
-  }
+	perror("mq_open input");
+	error+=1;
+	sleep(1);
+  };
 
-  if ((myInputQueue == (mqd_t)-1) || (myOutputQueue == (mqd_t)-1)) {
+  if (error) {
     fprintf(stderr, "Could not open at least one message queue!\n");
     fprintf(stderr, "To Server:%d, From Server:%d\n", myOutputQueue, myInputQueue);
     fprintf(stderr, "To Server:%s, From Server:%s\n", toServerQname, fromServerQname);
