@@ -29,7 +29,8 @@ const char* TypeId::name(Type type)
     "TM6740Config",
     "RunControlConfig",
     "pnCCDframe",
-    "pnCCDconfig"
+    "pnCCDconfig",
+    "Id_FEEGasDetEnergy"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
