@@ -101,10 +101,16 @@ int XtcMonitorClient::run(char * tag) {
 	if (myShm == MAP_FAILED) perror("mmap");
 	else printf("Shared memory at %p\n", (void*)myShm);
       }
-      dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * myMsg.bufferIndex()));
-      this->processDgram(dg);
-      if (mq_send(myOutputQueue, (const char *)&myMsg, sizeof(myMsg), priority)) {
-	perror("mq_send back buffer");
+      int i = myMsg.bufferIndex();
+      if ( (i>=0) && (i<myMsg.numberOfBuffers())) {
+	dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * i));
+	this->processDgram(dg);
+	if (mq_send(myOutputQueue, (const char *)&myMsg, sizeof(myMsg), priority)) {
+	  perror("mq_send back buffer");
+	  error++;
+	}
+      } else {
+        fprintf(stderr, "ILLEGAL BUFFER INDEX %d\n", i);
 	error++;
       }
     }
