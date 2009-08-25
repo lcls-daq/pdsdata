@@ -1,8 +1,9 @@
-tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample acqconfig agatfile
+#tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample acqconfig agatfile
+tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample 
 
-CXXFLAGS += -pthread -m32 -I/reg/g/pcds/package/root/include
+#CXXFLAGS += -pthread -m32 -I/reg/g/pcds/package/root/include
 
-LXFLAGS += -L/reg/g/pcds/package/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic
+#LXFLAGS += -L/reg/g/pcds/package/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic
 
 ifneq ($(findstring x86_64-linux,$(tgt_arch)),)
 syslibdir := /usr/lib64
