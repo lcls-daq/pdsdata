@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <getopt.h>
-#include "cadef.h"
 #include "XtcEpicsFileReader.hh"
 
 namespace Pds
