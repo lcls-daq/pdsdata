@@ -20,6 +20,7 @@ namespace Pds {
 	       Id_ControlConfig,
 	       Id_pnCCDframe,
 	       Id_pnCCDconfig,
+           Id_Epics,        // Epics Data Type
 	       Id_FEEGasDetEnergy,
 	       NumberOf};
 

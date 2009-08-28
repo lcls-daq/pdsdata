@@ -30,7 +30,8 @@ const char* TypeId::name(Type type)
     "RunControlConfig",
     "pnCCDframe",
     "pnCCDconfig",
-    "Id_FEEGasDetEnergy"
+    "Epics",    
+    "FEEGasDetEnergy"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

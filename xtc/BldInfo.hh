@@ -11,11 +11,11 @@ namespace Pds {
   class BldInfo : public Src {
   public:
 
-    enum Type { PulseEnergy, PhotonEnergy, NumberOf };
+    enum Type { PulseEnergy, PhotonEnergy, FEEGasDetEnergy, NumberOf };
 
     BldInfo() {}
     BldInfo(uint32_t processId,
-	    Type     type);
+        Type     type);
 
     uint32_t processId() const;
     Type     type()  const;

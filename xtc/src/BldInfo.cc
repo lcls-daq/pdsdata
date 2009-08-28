@@ -17,7 +17,8 @@ BldInfo::Type BldInfo::type() const {return (BldInfo::Type)(_phy); }
 const char* BldInfo::name(const BldInfo& src){
   static const char* _typeNames[] = {
     "PulseEnergy",
-    "PhotonEnergy"
+    "PhotonEnergy",
+    "FEEGasDetEnergy",
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }
