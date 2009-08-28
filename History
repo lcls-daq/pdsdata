@@ -1,3 +1,4 @@
+2009-Aug27      tomytsai    Add 1. epics xtc data reading library under pdsdata/epics 2. xtc reader sample program in pdsdata/app and change xtc typeid changes for epics and bld data
 2009-Aug24      cpo                     Add Matt's BldInfo classes and put it TypeId for the FEE GasDet.
 		weaver			Add missing transitions {Map,Unconfigure,Unmap} into xtcmonserver.
 2009-Aug15	weaver	Tag V00-05-03.  Applied Bozek's detector name changes.
