@@ -311,7 +311,7 @@ int EpicsPvTime<iDbrType1, EpicsPvBase> ::printPv() const
     char sTimeText[40];
     
     struct tm tmTimeStamp;
-    localtime_r( (const time_t*) &this->stamp.secPastEpoch, &tmTimeStamp );
+    localtime_r( (const time_t*) (void*) &this->stamp.secPastEpoch, &tmTimeStamp );
     tmTimeStamp.tm_year += 20; // Epics Epoch starts from 1990, whereas linux time.h Epoch starts from 1970    
     
     strftime(sTimeText, sizeof(sTimeText), timeFormatStr, &tmTimeStamp );

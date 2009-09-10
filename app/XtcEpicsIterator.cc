@@ -6,7 +6,7 @@ namespace Pds
 {
 
 using std::string;
-const Src XtcEpicsIterator::srcLevel(Level::Recorder);
+const Src XtcEpicsIterator::srcLevel(Level::Recorder); // For direct file recording
 
 int XtcEpicsIterator::process(Xtc* xtc) 
 {    
