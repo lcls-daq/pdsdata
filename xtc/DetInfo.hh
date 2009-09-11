@@ -12,7 +12,7 @@ namespace Pds {
   public:
 
     enum Detector {NoDetector,AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbes,AmoVmi,AmoBps,
-                   Camp,NumDetector};
+                   Camp,EpicsArch,NumDetector};
     enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,NumDevice};
 
     DetInfo() {}

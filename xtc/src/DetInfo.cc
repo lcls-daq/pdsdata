@@ -32,6 +32,7 @@ const char* DetInfo::name(Detector det){
     "amoMBES",
     "amoVMI",
     "amoBPS",
+    "epicsArch",
     "Camp"
   };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
