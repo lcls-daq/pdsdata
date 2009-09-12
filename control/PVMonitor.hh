@@ -15,6 +15,7 @@ namespace Pds {
       enum { NameSize=32 };
     public:
       PVMonitor();
+      PVMonitor(const char* pvname, double loValue, double hiValue);
       PVMonitor(const char* pvname, unsigned index, double loValue, double hiValue);
       PVMonitor(const PVMonitor&);
       ~PVMonitor();
@@ -22,6 +23,7 @@ namespace Pds {
       bool operator<(const PVMonitor&) const;
     public:
       const char* name            () const;
+      bool        array           () const;
       unsigned    index           () const;
       double      loValue         () const;
       double      hiValue         () const;
