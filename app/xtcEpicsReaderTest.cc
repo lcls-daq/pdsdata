@@ -15,7 +15,7 @@ using namespace Pds;
 
 void showUsageXtcEpicsTest()
 {
-    printf( "Usage:  xtcEpicsTest  [-r|--read] [-v|--version] [-h|--help] <xtc filename>  <pv1 name> [ <pv2 name> ... ]\n" 
+    printf( "Usage:  xtcEpicsTest  [-v|--version] [-h|--help] <xtc filename>  <pv1 name> [ <pv2 name> ... ]\n" 
       "  Options:\n"
       "    -v      Show file version\n"
       "    -h      Show Usage\n"

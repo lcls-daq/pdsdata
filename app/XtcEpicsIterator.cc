@@ -6,7 +6,7 @@ namespace Pds
 {
 
 using std::string;
-const Src XtcEpicsIterator::srcLevel(Level::Recorder); // For direct file recording
+const Src XtcEpicsIterator::srcLevel(Level::Segment); // For direct file recording
 
 int XtcEpicsIterator::process(Xtc* xtc) 
 {    
@@ -19,7 +19,8 @@ int XtcEpicsIterator::process(Xtc* xtc)
     
     if (level != srcLevel.level()) 
     {
-        printf("XtcEpicsIterator::level is not correct (should be %s)\n", Level::name( srcLevel.level() ) );
+        printf("XtcEpicsIterator::level (%s) is not correct (should be %s)\n", 
+          Level::name( level ), Level::name( srcLevel.level() ) );
         return 0; // return Zero to stop recursive processing
     }
     
@@ -33,7 +34,7 @@ int XtcEpicsIterator::process(Xtc* xtc)
         iter.iterate();
         break;
       }
-    case ( typeXtc ) :
+    case ( typeIdXtc ) :
       {
         if ( iVersion != iXtcVersion ) 
         {
@@ -46,7 +47,7 @@ int XtcEpicsIterator::process(Xtc* xtc)
       }
       break;
     default :
-        printf("XtcEpicsIterator::type id %s is not correct\n", TypeId::name( xtcTypeId ) );
+        printf("XtcEpicsIterator::type id %s is not correct (should be %s)\n", TypeId::name( xtcTypeId ), TypeId::name( typeIdXtc ) );
         return 0; // return Zero to stop recursive processing
     }
 
