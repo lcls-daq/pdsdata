@@ -32,8 +32,8 @@ const char* DetInfo::name(Detector det){
     "amoMBES",
     "amoVMI",
     "amoBPS",
-    "epicsArch",
-    "Camp"
+    "Camp",
+    "epicsArch",    
   };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
 }
@@ -46,7 +46,6 @@ const char* DetInfo::name(Device dev) {
     "Opal1000",
     "TM6740",
     "pnCCD",
-    "NumDevice"
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
 }
@@ -55,7 +54,7 @@ const char* DetInfo::name(const DetInfo& src) {
   const int MaxLength=32;
   static char _name[MaxLength];
   snprintf(_name, MaxLength, "%s-%d|%s-%d", 
-	   name(src.detector()), src.detId(),
-	   name(src.device  ()), src.devId());
+       name(src.detector()), src.detId(),
+       name(src.device  ()), src.devId());
   return _name;
 }

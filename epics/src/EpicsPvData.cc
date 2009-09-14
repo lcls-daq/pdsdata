@@ -21,7 +21,7 @@ const EpicsPvHeader::TPrintPvFuncPointer EpicsPvHeader::lfuncPrintPvFunctionTabl
 };
 
     
-int EpicsPvHeader::printPv()
+int EpicsPvHeader::printPv() const
 {    
     if ( dbr_type_is_CTRL(iDbrType ) || dbr_type_is_TIME(iDbrType) )
         ( this ->* lfuncPrintPvFunctionTable[iDbrType] ) ();
