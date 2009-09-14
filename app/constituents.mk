@@ -12,7 +12,7 @@ syslibdir := /usr/lib
 endif
 
 tgtsrcs_xtcreader := xtcreader.cc
-tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata
+tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics
 tgtslib_xtcreader := $(syslibdir)/rt
 
 tgtsrcs_agatfile := agatfile.cc
@@ -39,6 +39,6 @@ tgtlibs_agatfile := pdsdata/xtcdata pdsdata/acqdata
 tgtslib_agatfile := $(syslibdir)/rt
 
 tgtsrcs_xtcEpicsReaderTest := xtcEpicsReaderTest.cc XtcEpicsFileReader.cc XtcEpicsFileReader.hh XtcEpicsIterator.cc XtcEpicsIterator.hh
-tgtincs_xtcEpicsReaderTest := epics/include epics/include/os/Linux
+tgtincs_xtcEpicsReaderTest := 
 tgtlibs_xtcEpicsReaderTest := pdsdata/xtcdata pdsdata/epics
 tgtslib_xtcEpicsReaderTest := 
