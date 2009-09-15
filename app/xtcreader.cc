@@ -16,6 +16,7 @@
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/epics/EpicsPvData.hh"
 #include "pdsdata/epics/EpicsXtcSettings.hh"
+#include "pdsdata/bld/bldData.hh"
 
 class myLevelIter : public XtcIterator {
 public:
@@ -49,6 +50,11 @@ public:
     epicsPv.printPv();
     printf( "\n" );
   }    
+  void process(const DetInfo&, const BldDataFEEGasDetEnergy& bldData) {
+    printf("*** Processing FEEGasDetEnergy object\n");
+    bldData.print();
+    printf( "\n" );    
+  }
   
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
@@ -116,6 +122,11 @@ public:
       process(info, *(const EpicsPvHeader*)(xtc->payload()));
       break;
     }            
+    case (TypeId::Id_FEEGasDetEnergy) :
+    {
+      process(info, *(const BldDataFEEGasDetEnergy*) xtc->payload() );
+      break;        
+    }
     default :
       printf("Unsupported TypeId %d\n", (int) xtc->contains.id());
       break;

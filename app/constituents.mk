@@ -12,7 +12,7 @@ syslibdir := /usr/lib
 endif
 
 tgtsrcs_xtcreader := xtcreader.cc
-tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics
+tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/bld
 tgtslib_xtcreader := $(syslibdir)/rt
 
 tgtsrcs_agatfile := agatfile.cc
