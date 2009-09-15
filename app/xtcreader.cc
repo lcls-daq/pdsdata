@@ -15,6 +15,7 @@
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/epics/EpicsPvData.hh"
+#include "pdsdata/epics/EpicsXtcSettings.hh"
 
 class myLevelIter : public XtcIterator {
 public:
@@ -107,9 +108,9 @@ public:
     case (TypeId::Id_Epics) :      
     {
       int iVersion = xtc->contains.version();
-      if ( iVersion != 1 ) 
+      if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
       {
-          printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, 1 );
+          printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
           break;
       }
       process(info, *(const EpicsPvHeader*)(xtc->payload()));
