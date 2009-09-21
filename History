@@ -1,3 +1,4 @@
+2009-Sep21      tomytsai    Add xtc support for EBeam bld
 2009-Sep14      tomytsai    Add Epics data parsing in app/xtcreader.cc
 2009-Aug27      tomytsai    Add 1. epics xtc data reading library under pdsdata/epics 2. xtc reader sample program in pdsdata/app and change xtc typeid changes for epics and bld data
 2009-Aug24      cpo                     Add Matt's BldInfo classes and put it TypeId for the FEE GasDet.
