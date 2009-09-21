@@ -31,7 +31,8 @@ const char* TypeId::name(Type type)
     "pnCCDframe",
     "pnCCDconfig",
     "Epics",    
-    "FEEGasDetEnergy"
+    "FEEGasDetEnergy",
+    "EBeamBld"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

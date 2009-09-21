@@ -16,7 +16,7 @@ BldInfo::Type BldInfo::type() const {return (BldInfo::Type)(_phy); }
 
 const char* BldInfo::name(const BldInfo& src){
   static const char* _typeNames[] = {
-    "PulseEnergy",
+    "EBeam",
     "PhotonEnergy",
     "FEEGasDetEnergy",
   };

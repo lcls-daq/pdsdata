@@ -8,21 +8,22 @@ namespace Pds {
   class TypeId {
   public:
     enum Type {Any, 
-	       Id_Xtc,          // generic hierarchical container
-	       Id_Frame,        // raw image
-	       Id_AcqWaveform,
-	       Id_AcqConfig,
-	       Id_TwoDGaussian, // 2-D Gaussian + covariances
-	       Id_Opal1kConfig,
-	       Id_FrameFexConfig,
-	       Id_EvrConfig,
-	       Id_TM6740Config,
-	       Id_ControlConfig,
-	       Id_pnCCDframe,
-	       Id_pnCCDconfig,
-	       Id_Epics,        // Epics Data Type
-	       Id_FEEGasDetEnergy,
-	       NumberOf};
+           Id_Xtc,          // generic hierarchical container
+           Id_Frame,        // raw image
+           Id_AcqWaveform,
+           Id_AcqConfig,
+           Id_TwoDGaussian, // 2-D Gaussian + covariances
+           Id_Opal1kConfig,
+           Id_FrameFexConfig,
+           Id_EvrConfig,
+           Id_TM6740Config,
+           Id_ControlConfig,
+           Id_pnCCDframe,
+           Id_pnCCDconfig,
+           Id_Epics,        // Epics Data Type
+           Id_FEEGasDetEnergy,
+           Id_EBeam,
+           NumberOf};
 
     TypeId() {}
     TypeId(const TypeId& v);

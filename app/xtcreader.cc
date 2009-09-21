@@ -54,8 +54,12 @@ public:
     printf("*** Processing FEEGasDetEnergy object\n");
     bldData.print();
     printf( "\n" );    
-  }
-  
+  }  
+  void process(const DetInfo&, const BldDataEBeam& bldData) {
+    printf("*** Processing EBeam object\n");
+    bldData.print();
+    printf( "\n" );    
+  }  
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
@@ -125,6 +129,11 @@ public:
     case (TypeId::Id_FEEGasDetEnergy) :
     {
       process(info, *(const BldDataFEEGasDetEnergy*) xtc->payload() );
+      break;        
+    }
+    case (TypeId::Id_EBeam) :
+    {
+      process(info, *(const BldDataEBeam*) xtc->payload() );
       break;        
     }
     default :
