@@ -15,5 +15,11 @@ int BldDataFEEGasDetEnergy::print() const
 
 int BldDataEBeam::print() const
 {    
+    printf( "ebeamCharge   ( in nC )  : %lf\n", fEbeamCharge  ); 
+    printf( "ebeamL3Energy ( in MeV ) : %lf\n", fEbeamL3Energy); 
+    printf( "ebeamLTUPosX  ( in mm )  : %lf\n", fEbeamLTUPosX ); 
+    printf( "ebeamLTUPosY  ( in mm )  : %lf\n", fEbeamLTUPosY ); 
+    printf( "ebeamLTUAngX  ( in mrad ): %lf\n", fEbeamLTUAngX ); 
+    printf( "ebeamLTUAngY  ( in mrad ): %lf\n", fEbeamLTUAngY );
     return 0;
 }
