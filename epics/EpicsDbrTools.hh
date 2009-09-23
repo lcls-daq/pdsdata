@@ -361,8 +361,8 @@ template <> struct DbrTypeFromInt<DBR_CTRL_DOUBLE> { typedef dbr_ctrl_double TDb
 template <int iDbrType> struct DbrTypeTraits
 { 
     enum { 
-      iDiffDbrOrgToDbrTime = 2*iSizeBasicDbrTypes,
-      iDiffDbrOrgToDbrCtrl = 4*iSizeBasicDbrTypes };
+      iDiffDbrOrgToDbrTime = DBR_TIME_DOUBLE - DBR_DOUBLE,
+      iDiffDbrOrgToDbrCtrl = DBR_CTRL_DOUBLE - DBR_DOUBLE };
       
     enum { 
       iDbrTimeType = iDbrType + iDiffDbrOrgToDbrTime,
