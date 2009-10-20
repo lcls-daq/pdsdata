@@ -26,10 +26,10 @@ int BldDataEBeam::print() const
 
 int BldDataPhaseCavity::print() const
 {    
-    printf("PV 1: %lf\n", f1 );
-    printf("PV 2: %lf\n", f2 );
-    printf("PV 3: %lf\n", f3 );
-    printf("PV 4: %lf\n", f4 );
+    printf("FitTime1: %lf\n", fFitTime1 );
+    printf("FitTime2: %lf\n", fFitTime2 );
+    printf("Charge1:  %lf\n", fCharge1 );
+    printf("Charge2:  %lf\n", fCharge2 );
     
     return 0;
 }

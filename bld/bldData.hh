@@ -33,14 +33,17 @@ public:
     int print() const;    
 };
 
+
 class BldDataPhaseCavity
-{    
+{
+    // PV names: UND:R02:IOC:16:BAT:FitTime1, UND:R02:IOC:16:BAT:FitTime2, 
+    //           UND:R02:IOC:16:BAT:Charge1,  UND:R02:IOC:16:BAT:Charge2
 public:
     /* Data structure */
-    double f1;   /* in ?? Unit */ 
-    double f2;   /* in ?? Unit */ 
-    double f3;   /* in ?? Unit */ 
-    double f4;   /* in ?? Unit */ 
+    double fFitTime1;   /* in ?? Unit */ 
+    double fFitTime2;   /* in ?? Unit */ 
+    double fCharge1;    /* in ?? Unit */ 
+    double fCharge2;    /* in ?? Unit */ 
     
     int print() const;
 };
