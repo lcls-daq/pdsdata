@@ -33,5 +33,17 @@ public:
     int print() const;    
 };
 
+class BldDataPhaseCavity
+{    
+public:
+    /* Data structure */
+    double f1;   /* in ?? Unit */ 
+    double f2;   /* in ?? Unit */ 
+    double f3;   /* in ?? Unit */ 
+    double f4;   /* in ?? Unit */ 
+    
+    int print() const;
+};
+
 }
 #endif

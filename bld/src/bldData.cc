@@ -23,3 +23,13 @@ int BldDataEBeam::print() const
     printf( "ebeamLTUAngY  ( in mrad ): %lf\n", fEbeamLTUAngY );
     return 0;
 }
+
+int BldDataPhaseCavity::print() const
+{    
+    printf("PV 1: %lf\n", f1 );
+    printf("PV 2: %lf\n", f2 );
+    printf("PV 3: %lf\n", f3 );
+    printf("PV 4: %lf\n", f4 );
+    
+    return 0;
+}

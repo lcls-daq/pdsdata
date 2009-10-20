@@ -23,6 +23,7 @@ namespace Pds {
            Id_Epics,        // Epics Data Type
            Id_FEEGasDetEnergy,
            Id_EBeam,
+           Id_PhaseCavity,
            NumberOf};
 
     TypeId() {}

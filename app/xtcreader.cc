@@ -60,6 +60,11 @@ public:
     bldData.print();
     printf( "\n" );    
   }  
+  void process(const DetInfo&, const BldDataPhaseCavity& bldData) {
+    printf("*** Processing PhaseCavity object\n");
+    bldData.print();
+    printf( "\n" );    
+  }  
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
@@ -134,6 +139,11 @@ public:
     case (TypeId::Id_EBeam) :
     {
       process(info, *(const BldDataEBeam*) xtc->payload() );
+      break;        
+    }    
+    case (TypeId::Id_PhaseCavity) :
+    {
+      process(info, *(const BldDataPhaseCavity*) xtc->payload() );
       break;        
     }
     default :
