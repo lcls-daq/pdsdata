@@ -6,6 +6,8 @@
 namespace Pds 
 {
     
+#pragma pack(4)
+
 class BldDataFEEGasDetEnergy
 {
     // PV names: GDET:FEE1:11:ENRC,GDET:FEE1:12:ENRC,GDET:FEE1:21:ENRC,GDET:FEE1:22:ENRC
@@ -46,5 +48,6 @@ public:
     int print() const;
 };
 
+#pragma pack()
 }
 #endif
