@@ -8,6 +8,8 @@
 
 namespace Pds {
 
+#pragma pack(4)
+
   namespace ControlData {
 
     class PVControl {
@@ -34,6 +36,7 @@ namespace Pds {
 
   };
 
+#pragma pack()
 };
 
 #endif
