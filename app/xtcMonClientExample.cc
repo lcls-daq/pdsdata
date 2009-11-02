@@ -14,6 +14,7 @@
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
+#include "pdsdata/pnCCD/format.h"
 #include "pdsdata/pnCCD/fformat.h"
 
 #include "XtcMonitorClient.hh"
@@ -48,24 +49,19 @@ public:
   void process(const DetInfo& di, fileHeaderType* FileHdr) {
     printf("*** Processing pnCCD config\n");
     printf("\tpnCCD File Header:\n");
-    printf("\tmyLength  %d, fhLength %d, nCCDs %d, width %d, maxHeight %d, version %d\n\t dataSetID %s\n", 
-			FileHdr->myLength, FileHdr->fhLength, FileHdr->nCCDs, FileHdr->width, 
+    printf("\tmyLength  %d, fhLength %d, nCCDs %d, width %d, maxHeight %d, version %d\n\t dataSetID %s\n",
+			FileHdr->myLength, FileHdr->fhLength, FileHdr->nCCDs, FileHdr->width,
 			FileHdr->maxHeight, FileHdr->version, FileHdr->dataSetID);
     if (FileHdr->version > 5) {
       printf("\tthe_width %d, the_maxHeight %d\n", FileHdr->the_width, FileHdr->the_maxHeight);
     }
     memcpy((char*)fileHdrBuffer, (char*)FileHdr, 1024);
   }
-  void process(const DetInfo& di, frameHeaderType* frh) {
-    printf("*** Processing pnCCD frame data\n");
-    printf("\tpnCCD Frame Header:\n");
-    printf("\tstart %d, info %d, id %d, height %d, tv_sec %d, tv_usec %d, index %d, temp %lf\n", 
-			frh->start, frh->info, frh->id, frh->height, 
-			frh->tv_sec, frh->tv_usec, frh->index, frh->temp);
-    if (fileHdrBuffer->version > 5) {
-      printf("\tthe_start %d, the_height %d, external_id %d, aux_value %lf\n", 
-			frh->the_start, frh->the_height, frh->external_id, frh->aux_value);
-    }
+  void process(const DetInfo& di, PnccdFrameHeaderType* frh) {
+    printf("\tpnCCD frame: %x, %x, %x, %x\n", frh->specialWord, frh->frameNumber,
+                                              frh->TimeStampHi, frh->TimeStampLo);
+    unsigned* p = (unsigned*)(frh+1);
+    printf("\tpnCCD data begins %x %x %x %x %x %x %x\n", p[0], p[1], p[2], p[3], p[4], p[5], p[6]);
   }
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
@@ -73,13 +69,17 @@ public:
     printf("%s level contains: %s: ",Level::name(level), TypeId::name(xtc->contains.id()));
     const DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
-      printf("%s %d %s %d\n",
+      printf("%s %d %s %d",
              DetInfo::name(info.detector()),info.detId(),
              DetInfo::name(info.device()),info.devId());
     } else {
       ProcInfo& info = *(ProcInfo*)(&xtc->src);
-      printf("IpAddress 0x%x ProcessId 0x%x\n",info.ipAddr(),info.processId());
+      printf("IpAddress 0x%x ProcessId 0x%x",info.ipAddr(),info.processId());
     }
+    if (xtc->damage.value()) {
+      printf(", damage 0x%x", xtc->damage.value());
+    }
+    printf("\n");
     switch (xtc->contains.id()) {
     case (TypeId::Id_Xtc) : {
       myLevelIter iter(xtc,_depth+1);
@@ -121,7 +121,7 @@ public:
       process(info, (fileHeaderType*) xtc->payload());
       break;
     case (TypeId::Id_pnCCDframe) :
-      process(info, (frameHeaderType*) xtc->payload());
+      process(info, (PnccdFrameHeaderType*) xtc->payload());
       break;
     default :
       break;
