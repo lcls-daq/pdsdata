@@ -1,3 +1,4 @@
+2009-Nov03	weaver			Add simple apps app/bldreader,dmgreader.
 2009-Oct30	cpo	Tag V01-05-02.  Put in pragma pack(4) in PVControl.hh and PVMonitor.hh as suggested by Andy.
 2009-Oct28	cpo	Tag V01-05-01.  Put back support for x86_64 in packages.mk.
                                         Put in pragma pack(4) in bldData.hh.

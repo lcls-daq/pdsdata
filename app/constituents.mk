@@ -1,5 +1,5 @@
 #tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample acqconfig agatfile
-tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest
+tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest dmgreader bldreader
 
 #CXXFLAGS += -pthread -m32 -I/reg/g/pcds/package/root/include
 
@@ -14,6 +14,14 @@ endif
 tgtsrcs_xtcreader := xtcreader.cc
 tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/bld
 tgtslib_xtcreader := $(syslibdir)/rt
+
+tgtsrcs_dmgreader := dmgreader.cc
+tgtlibs_dmgreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/bld
+tgtslib_dmgreader := $(syslibdir)/rt
+
+tgtsrcs_bldreader := bldreader.cc
+tgtlibs_bldreader := pdsdata/xtcdata pdsdata/bld
+tgtslib_bldreader := $(syslibdir)/rt
 
 tgtsrcs_agatfile := agatfile.cc
 tgtlibs_agatfile := pdsdata/xtcdata pdsdata/acqdata 
