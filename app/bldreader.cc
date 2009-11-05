@@ -183,8 +183,6 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  printf("begin %d  -  end %d\n",begin.seconds(),end.seconds());
-
   bld.header();
   XtcFileIterator iter(file,0x900000);
   Dgram* dg;

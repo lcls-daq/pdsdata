@@ -38,7 +38,8 @@ using namespace Pds;
 void XtcIterator::iterate(Xtc* root) 
   {
     if (root->damage.value() & ( 1 << Damage::IncompleteContribution)){
-      return;
+      if (root->contains.id() == TypeId::Any)
+	return;
     }
 
     Xtc* xtc     = (Xtc*)root->payload();

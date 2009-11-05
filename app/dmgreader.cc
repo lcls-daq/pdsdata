@@ -5,6 +5,9 @@
 
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
+#include "pdsdata/xtc/BldInfo.hh"
+#include "pdsdata/xtc/DetInfo.hh"
+#include "pdsdata/xtc/ProcInfo.hh"
 
 class myLevelIter : public XtcIterator {
 public:
@@ -14,10 +17,31 @@ public:
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
-    printf("%s level contains %s  dmg %x: ",
-	   Level::name(level), 
-	   TypeId::name(xtc->contains.id()),
-	   xtc->damage.value());
+    if (level == Level::Source) {
+      const DetInfo& info = static_cast<const DetInfo&>(xtc->src);
+      printf("%s contains %s  ext %x  dmg %x\n",
+	     DetInfo::name(info),
+	     TypeId::name(xtc->contains.id()),
+	     xtc->extent,
+	     xtc->damage.value());
+    }
+    else if (level == Level::Reporter) {
+      const BldInfo& info = static_cast<const BldInfo&>(xtc->src);
+      printf("%s contains %s  ext %x  dmg %x\n",
+	     BldInfo::name(info),
+	     TypeId::name(xtc->contains.id()),
+	     xtc->extent,
+	     xtc->damage.value());
+    }
+    else {
+      const ProcInfo&info = static_cast<const ProcInfo&>(xtc->src);
+      printf("%x/%d contains %s  ext %x  dmg %x\n",
+	     info.ipAddr(),info.processId(),
+	     TypeId::name(xtc->contains.id()),
+	     xtc->extent,
+	     xtc->damage.value());
+    }
+    
     if (xtc->contains.id() == TypeId::Id_Xtc) {
       myLevelIter iter(xtc,_depth+1);
       iter.iterate();
@@ -70,10 +94,12 @@ int main(int argc, char* argv[]) {
   unsigned long long bytes=0;
   while ((dg = iter.next())) {
     if (dg->xtc.damage.value()&damage) {
-      printf("%s transition: time %08x/%08x  stamp %08x/%08x, payloadSize 0x%x  pos 0x%llx\n",
+      printf("%s transition: time %08x/%08x  stamp %08x/%08x, dmg %08x, payloadSize 0x%x  pos 0x%llx\n",
 	     TransitionId::name(dg->seq.service()),
 	     dg->seq.clock().seconds(),dg->seq.clock().nanoseconds(),
-	     dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload(),
+	     dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
+	     dg->xtc.damage.value(),
+	     dg->xtc.sizeofPayload(),
 	     bytes);
       myLevelIter iter(&(dg->xtc),0);
       iter.iterate();
