@@ -25,6 +25,6 @@ unsigned FrameV1::sizeofData(ConfigV1& cfg) const {
   return (cfg.payloadSizePerLink()-sizeof(*this))/sizeof(uint16_t);
 }
 
-const FrameV1& FrameV1::next(ConfigV1& cfg) const {
-  return *(const FrameV1*)(((char*)this)+cfg.payloadSizePerLink());
+const FrameV1* FrameV1::next(ConfigV1& cfg) const {
+  return (const FrameV1*)(((char*)this)+cfg.payloadSizePerLink());
 }
