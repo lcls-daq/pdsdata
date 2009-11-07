@@ -1,3 +1,4 @@
+2009-Nov05      cpo                     Support for pnCCD data (Config and Frame objects).
 2009-Nov05	weaver			Added Damage bit ContainsIncomplete to indicate when an
 					IncompleteContribution may be found within.
 2009-Nov03	weaver			Add simple apps app/bldreader,dmgreader.
