@@ -5,7 +5,7 @@
 
 namespace Pds {
 
-  namespace pnCCDData {
+  namespace PNCCD {
 
     class ConfigV1 {
     public:

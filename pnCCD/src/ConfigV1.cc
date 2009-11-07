@@ -3,7 +3,7 @@
 #include <string.h>
 
 using namespace Pds;
-using namespace pnCCDData;
+using namespace PNCCD;
 
 ConfigV1::ConfigV1() {}
 
