@@ -11,8 +11,6 @@
 using namespace Pds;
 using namespace PNCCD;
 
-FrameV1::FrameV1() {}
-
 uint32_t FrameV1::specialWord() const { return _specialWord; }
 
 uint32_t FrameV1::frameNumber() const { return _frameNumber; }

@@ -17,7 +17,6 @@ namespace Pds {
     class FrameV1 {
       public:
         enum {Version=1};
-        FrameV1();
 
         uint32_t specialWord() const;
         uint32_t frameNumber() const;
@@ -29,10 +28,10 @@ namespace Pds {
         unsigned sizeofData(const ConfigV1& cfg) const;
 
       private:
-        const uint32_t    _specialWord;
-        const uint32_t    _frameNumber;
-        const uint32_t    _timeStampHi;
-        const uint32_t    _timeStampLo;
+        uint32_t _specialWord;
+        uint32_t _frameNumber;
+        uint32_t _timeStampHi;
+        uint32_t _timeStampLo;
     };
   }
 }
