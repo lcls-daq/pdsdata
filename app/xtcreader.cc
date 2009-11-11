@@ -55,6 +55,11 @@ public:
     bldData.print();
     printf( "\n" );    
   }  
+  void process(const DetInfo&, const BldDataEBeamV0& bldData) {
+    printf("*** Processing EBeamV0 object\n");
+    bldData.print();
+    printf( "\n" );    
+  }  
   void process(const DetInfo&, const BldDataEBeam& bldData) {
     printf("*** Processing EBeam object\n");
     bldData.print();
@@ -138,8 +143,16 @@ public:
     }
     case (TypeId::Id_EBeam) :
     {
-      process(info, *(const BldDataEBeam*) xtc->payload() );
-      break;        
+      switch(xtc->contains.version()) {
+      case 0:
+	process(info, *(const BldDataEBeamV0*) xtc->payload() );
+	break; 
+      case 1:
+	process(info, *(const BldDataEBeam*) xtc->payload() );
+	break; 
+      default:
+	break;
+      }       
     }    
     case (TypeId::Id_PhaseCavity) :
     {

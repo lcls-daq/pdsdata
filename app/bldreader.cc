@@ -16,8 +16,9 @@ static const double damaged = -1.e9;
 class bldData {
 public:
   void reset() { 
-    gasdet = 0;
-    ebeam  = 0;
+    gasdet   = 0;
+    ebeam    = 0;
+    ebeamV0  = 0;
     phasecav = 0;
   }
   void dump() const {
@@ -35,20 +36,30 @@ public:
 			 damaged,
 			 damaged,
 			 damaged);
-    if (ebeam)    printf("%g\t%g\t%g\t%g\t%g\t%g\t",
-			 ebeam->fEbeamCharge,
-			 ebeam->fEbeamL3Energy,
-			 ebeam->fEbeamLTUPosX,
-			 ebeam->fEbeamLTUPosY,
-			 ebeam->fEbeamLTUAngX,
-			 ebeam->fEbeamLTUAngY);
-    else          printf("%g\t%g\t%g\t%g\t%g\t%g\t",
-			 damaged,
-			 damaged,
-			 damaged,
-			 damaged,
-			 damaged,
-			 damaged);
+    if (ebeam)        printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
+			     ebeam->fEbeamCharge,
+			     ebeam->fEbeamL3Energy,
+			     ebeam->fEbeamLTUPosX,
+			     ebeam->fEbeamLTUPosY,
+			     ebeam->fEbeamLTUAngX,
+			     ebeam->fEbeamLTUAngY,
+			     ebeam->fEbeamPkCurrBC2);
+    else if (ebeamV0) printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
+			     ebeamV0->fEbeamCharge,
+			     ebeamV0->fEbeamL3Energy,
+			     ebeamV0->fEbeamLTUPosX,
+			     ebeamV0->fEbeamLTUPosY,
+			     ebeamV0->fEbeamLTUAngX,
+			     ebeamV0->fEbeamLTUAngY,
+			     damaged);
+    else              printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged);
     if (phasecav) printf("%g\t%g\t%g\t%g\n", 
 			 phasecav->fFitTime1,
 			 phasecav->fFitTime2,
@@ -74,6 +85,7 @@ public:
 				     "ebeamLTUPosY[mm]",
 				     "ebeamLTUAngX[mrad]",
 				     "ebeamLTUAngY[mrad]",
+				     "ebeamPkCurrBC2[Amp]",
 				     "PhCav:FitTime1[ps]",
 				     "PhCav:FitTime2[ps]",
 				     "PhCav:Charge1[pC]",
@@ -87,6 +99,7 @@ public:
   unsigned                      nanoseconds;
   unsigned                      pulseId;
   const BldDataFEEGasDetEnergy* gasdet;
+  const BldDataEBeamV0*         ebeamV0;
   const BldDataEBeam*           ebeam;
   const BldDataPhaseCavity*     phasecav;
 };
@@ -109,7 +122,16 @@ public:
       const BldInfo& info = static_cast<const BldInfo&>(xtc->src);
       switch(info.type()) {
       case BldInfo::EBeam          : 
-	bld.ebeam    = reinterpret_cast<const BldDataEBeam*>          (xtc->payload()); 
+	switch(xtc->contains.version()) {
+	case 0:
+	  bld.ebeamV0  = reinterpret_cast<const BldDataEBeamV0*>      (xtc->payload()); 
+	  break;
+	case 1:
+	  bld.ebeam    = reinterpret_cast<const BldDataEBeam*>        (xtc->payload()); 
+	  break;
+	default:
+	  break;
+	}
 	break;
       case BldInfo::PhaseCavity    : 
 	bld.phasecav = reinterpret_cast<const BldDataPhaseCavity*>    (xtc->payload()); 
