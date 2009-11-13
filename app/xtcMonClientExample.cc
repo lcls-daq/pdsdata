@@ -14,16 +14,17 @@
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
-#include "pdsdata/pnCCD/format.h"
-#include "pdsdata/pnCCD/fformat.h"
+#include "pdsdata/pnCCD/FrameV1.hh"
+#include "pdsdata/pnCCD/ConfigV1.hh"
 
 #include "XtcMonitorClient.hh"
+
+static PNCCD::ConfigV1 cfg;
 
 class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};
   myLevelIter(Xtc* xtc, unsigned depth) : XtcIterator(xtc), _depth(depth) {}
-  fileHeaderType fileHdrBuffer[1024];
 
   void process(const DetInfo& d, const Camera::FrameV1& f) {
     printf("*** Processing frame object\n");
@@ -46,22 +47,34 @@ public:
   void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
     printf("*** Processing 2DGauss object\n");
   }
-  void process(const DetInfo& di, fileHeaderType* FileHdr) {
-    printf("*** Processing pnCCD config\n");
-    printf("\tpnCCD File Header:\n");
-    printf("\tmyLength  %d, fhLength %d, nCCDs %d, width %d, maxHeight %d, version %d\n\t dataSetID %s\n",
-			FileHdr->myLength, FileHdr->fhLength, FileHdr->nCCDs, FileHdr->width,
-			FileHdr->maxHeight, FileHdr->version, FileHdr->dataSetID);
-    if (FileHdr->version > 5) {
-      printf("\tthe_width %d, the_maxHeight %d\n", FileHdr->the_width, FileHdr->the_maxHeight);
-    }
-    memcpy((char*)fileHdrBuffer, (char*)FileHdr, 1024);
+  void process(const DetInfo&, const PNCCD::ConfigV1& config) {
+    cfg = config;
+    printf("*** Processing pnCCD config.  Number of Links: %d, PayloadSize per Link: %d\n",
+           cfg.numLinks(),cfg.payloadSizePerLink());
   }
-  void process(const DetInfo& di, PnccdFrameHeaderType* frh) {
-    printf("\tpnCCD frame: %x, %x, %x, %x\n", frh->specialWord, frh->frameNumber,
-                                              frh->TimeStampHi, frh->TimeStampLo);
-    unsigned* p = (unsigned*)(frh+1);
-    printf("\tpnCCD data begins %x %x %x %x %x %x %x\n", p[0], p[1], p[2], p[3], p[4], p[5], p[6]);
+//   void process(const DetInfo& di, PnccdFrameHeaderType* frh) {
+//     enum {numberOfLinks=4, payloadPerLink=(1<<19)+16};
+//     uint8_t* pb = reinterpret_cast<uint8_t*>(frh);
+//     PnccdFrameHeaderType* fp;
+//     for (uint32_t i=0; i<numberOfLinks; i++) {
+//       fp = reinterpret_cast<PnccdFrameHeaderType*>(pb);
+//       printf("\tpnCCD frame: %08X %08X %08X %08X\n", fp->specialWord, fp->frameNumber,
+//           fp->TimeStampHi, fp->TimeStampLo);
+//       unsigned* pu = (unsigned*)(fp+1);
+//       printf("\tdata begins: %08X %08X %08X %08X %08X\n", pu[0], pu[1], pu[2], pu[3], pu[4]);
+//       pb += payloadPerLink;
+//     }
+//   }
+  void process(const DetInfo& d, const PNCCD::FrameV1& f) {
+    for (unsigned i=0;i<cfg.numLinks();i++) {
+      printf("*** Processing pnCCD frame number %x segment %d\n",f.frameNumber(),i);
+      printf("\tpnCCD frameHeader: %08X, %08X, %08X, %08X\n", f.specialWord(), f.frameNumber(),
+          f.timeStampHi(), f.timeStampLo());
+      const uint16_t* data = f.data();
+      unsigned last  = f.sizeofData(cfg); 
+      printf("First data words: 0x%4.4x 0x%4.4x\n",data[0],data[1]);
+      printf("Last  data words: 0x%4.4x 0x%4.4x\n",data[last-2],data[last-1]);
+    }
   }
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
@@ -117,12 +130,18 @@ public:
     case (TypeId::Id_EvrConfig) :
       process(info, *(const EvrData::ConfigV1*)(xtc->payload()));
       break;
-    case (TypeId::Id_pnCCDconfig) :
-      process(info, (fileHeaderType*) xtc->payload());
-      break;
     case (TypeId::Id_pnCCDframe) :
-      process(info, (PnccdFrameHeaderType*) xtc->payload());
+      process(info, *(const PNCCD::FrameV1*)(xtc->payload()));
       break;
+    case (TypeId::Id_pnCCDconfig) :
+      process(info, *(const PNCCD::ConfigV1*)(xtc->payload()));
+      break;
+//     case (TypeId::Id_pnCCDconfig) :
+//       process(info, (fileHeaderType*) xtc->payload());
+//       break;
+//     case (TypeId::Id_pnCCDframe) :
+//       process(info, (PnccdFrameHeaderType*) xtc->payload());
+//       break;
     default :
       break;
     }
