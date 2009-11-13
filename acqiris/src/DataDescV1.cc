@@ -10,6 +10,8 @@ Pds::TypeId DataDescV1::typeId() {
   return Pds::TypeId(Pds::TypeId::Id_AcqConfig,Version);
 }
 
+double   TimestampV1::pos  () const { return _horPos; }
+
 uint64_t TimestampV1::value() const {
   uint64_t ts = _timeStampHi;
   ts = (ts<<32) + (unsigned long)(_timeStampLo);

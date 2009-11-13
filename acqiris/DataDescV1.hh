@@ -39,6 +39,7 @@ namespace Pds {
 
     class TimestampV1 {
     public:
+      double   pos  () const;
       uint64_t value() const;
       uint64_t operator-(const TimestampV1& ts) const;
     private:
