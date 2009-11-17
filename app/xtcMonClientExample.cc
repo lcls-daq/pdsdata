@@ -68,7 +68,7 @@ public:
   void process(const DetInfo& d, const PNCCD::FrameV1& f) {
     for (unsigned i=0;i<cfg.numLinks();i++) {
       printf("*** Processing pnCCD frame number %x segment %d\n",f.frameNumber(),i);
-      printf("\tpnCCD frameHeader: %08X, %08X, %08X, %08X\n", f.specialWord(), f.frameNumber(),
+      printf("  pnCCD frameHeader: %08X, %u, %u, %u\n", f.specialWord(), f.frameNumber(),
           f.timeStampHi(), f.timeStampLo());
       const uint16_t* data = f.data();
       unsigned last  = f.sizeofData(cfg); 
