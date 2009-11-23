@@ -1,3 +1,4 @@
+2009-Nov22      cpo                     Tag V01-07-00 for pnCCD objects for Andy.
 2009-Nov11	weaver			Tag V01-06-00.  Added BldEb to DetInfo.  Added bld BldDataEbeamV0,1.
 2009-Nov05      cpo                     Support for pnCCD data (Config and Frame objects).
 2009-Nov05	weaver			Added Damage bit ContainsIncomplete to indicate when an
