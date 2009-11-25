@@ -16,7 +16,11 @@
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/epics/EpicsPvData.hh"
 #include "pdsdata/epics/EpicsXtcSettings.hh"
+#include "pdsdata/pnCCD/ConfigV1.hh"
+#include "pdsdata/pnCCD/FrameV1.hh"
 #include "pdsdata/bld/bldData.hh"
+
+using namespace Pds;
 
 class myLevelIter : public XtcIterator {
 public:
@@ -49,7 +53,37 @@ public:
     printf("*** Processing Epics object\n");
     epicsPv.printPv();
     printf( "\n" );
-  }    
+  }
+  void process(const DetInfo& det, const PNCCD::ConfigV1& config) {
+    if ( det.detId() != 0 )
+    {
+      printf( "myLevelIter::process(...,PNCCD::ConfigV1&): pnCCD detector Id (%d) is not 0\n", det.detId() );
+      return;
+    }
+    if ( det.devId() < 0 || det.devId() > 1)
+    {
+      printf( "myLevelIter::process(...,PNCCD::ConfigV1&): pnCCD device Id (%d) is out of range (0..1)\n", det.devId() );
+      return;
+    }
+    
+    _pnCcdCfgList[det.devId()] = config;
+    printf("*** Processing pnCCD config.  Number of Links: %d, PayloadSize per Link: %d\n",
+           config.numLinks(),config.payloadSizePerLink());
+  }  
+  void process(const DetInfo& det, const PNCCD::FrameV1* f) {
+    if ( det.detId() != 0 )
+    {
+      printf( "myLevelIter::process(...,PNCCD::FrameV1*): pnCCD detector Id (%d) is not 0\n", det.detId() );
+      return;
+    }
+    if ( det.devId() < 0 || det.devId() > 1)
+    {
+      printf( "myLevelIter::process(...,PNCCD::FrameV1*): pnCCD device Id (%d) is out of range (0..1)\n", det.devId() );
+      return;
+    }
+    
+    printf("*** Processing pnCCD Frame\n");
+  }  
   void process(const DetInfo&, const BldDataFEEGasDetEnergy& bldData) {
     printf("*** Processing FEEGasDetEnergy object\n");
     bldData.print();
@@ -73,7 +107,7 @@ public:
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
-    printf("%s level contains: %s: ",Level::name(level), TypeId::name(xtc->contains.id()));
+    printf("%s level  payload size %d contains: %s: ",Level::name(level), xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
     const DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
       printf("%s,%d  %s,%d\n",
@@ -135,7 +169,20 @@ public:
       }
       process(info, *(const EpicsPvHeader*)(xtc->payload()));
       break;
-    }            
+    }
+    case (TypeId::Id_pnCCDconfig) :
+    {
+      process(info, *(const PNCCD::ConfigV1*)(xtc->payload()));
+      break;
+    }
+    case (TypeId::Id_pnCCDframe) :
+    {
+      process(info, (const PNCCD::FrameV1*)(xtc->payload()));
+      break;
+    }
+    /*
+     * BLD data
+     */
     case (TypeId::Id_FEEGasDetEnergy) :
     {
       process(info, *(const BldDataFEEGasDetEnergy*) xtc->payload() );
@@ -145,13 +192,13 @@ public:
     {
       switch(xtc->contains.version()) {
       case 0:
-	process(info, *(const BldDataEBeamV0*) xtc->payload() );
-	break; 
+        process(info, *(const BldDataEBeamV0*) xtc->payload() );
+        break; 
       case 1:
-	process(info, *(const BldDataEBeam*) xtc->payload() );
-	break; 
+        process(info, *(const BldDataEBeam*) xtc->payload() );
+        break; 
       default:
-	break;
+        break;
       }       
     }    
     case (TypeId::Id_PhaseCavity) :
@@ -167,7 +214,12 @@ public:
   }
 private:
   unsigned _depth;
+
+  /* static private data */
+  static PNCCD::ConfigV1 _pnCcdCfgList[2];  
 };
+
+PNCCD::ConfigV1 myLevelIter::_pnCcdCfgList[2] = { PNCCD::ConfigV1(0,0), PNCCD::ConfigV1(0,0) };
 
 void usage(char* progname) {
   fprintf(stderr,"Usage: %s -f <filename> [-h]\n", progname);
