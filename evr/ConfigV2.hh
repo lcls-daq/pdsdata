@@ -14,7 +14,7 @@ namespace Pds {
     class ConfigV2 {
     public:
       enum { Version=2 };
-      enum RateCode { r120Hz, r60Hz, r30Hz, r10Hz, r5Hz, r1Hz, r0_5Hz, NumberOfRates };
+      enum RateCode { r120Hz, r60Hz, r30Hz, r10Hz, r5Hz, r1Hz, r0_5Hz, Single, NumberOfRates };
       enum BeamCode { Off, On };
       ConfigV2 ();
       ConfigV2 (BeamCode bc,

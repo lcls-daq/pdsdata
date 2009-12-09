@@ -7,8 +7,9 @@
 using namespace Pds;
 using namespace EvrData;
 
-static const unsigned beamOn   = 100;
-static const unsigned baseRate = 40;
+static const unsigned beamOn     = 100;
+static const unsigned baseRate   = 40;
+static const unsigned singleShot = 150;
 
 ConfigV2::ConfigV2 () {}
 
@@ -33,16 +34,28 @@ ConfigV2::ConfigV2 (BeamCode bc,
 
 ConfigV2::BeamCode ConfigV2::beam() const { return (_opcode > beamOn) ? On : Off; }
 ConfigV2::RateCode ConfigV2::rate() const {
-  return (_opcode > beamOn) ? 
-    RateCode(_opcode-beamOn-baseRate) : 
-    RateCode(_opcode-baseRate); 
+  RateCode r;
+  if (_opcode < beamOn) 
+    r = RateCode(_opcode-baseRate);
+  else if (_opcode < singleShot)
+    r = RateCode(_opcode-beamOn-baseRate);
+  else
+    r = Single;
+  return r;
 }
+
 unsigned ConfigV2::opcode() const { return _opcode; }
 
 unsigned ConfigV2::opcode(BeamCode bc, RateCode rc) 
 {
-  unsigned v = baseRate+unsigned(rc);
-  if (bc==On) v += beamOn;
+  unsigned v;
+  if (rc==Single) {
+    v = singleShot;
+  }
+  else {
+    v = baseRate+unsigned(rc);
+    if (bc==On) v += beamOn;
+  }
   return v; 
 }
 
