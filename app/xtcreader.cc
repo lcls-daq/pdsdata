@@ -13,6 +13,9 @@
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
+#include "pdsdata/control/ConfigV1.hh"
+#include "pdsdata/control/PVControl.hh"
+#include "pdsdata/control/PVMonitor.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/epics/EpicsPvData.hh"
 #include "pdsdata/epics/EpicsXtcSettings.hh"
@@ -45,6 +48,29 @@ public:
   void process(const DetInfo&, const EvrData::ConfigV1&) {
     printf("*** Processing EVR config object\n");
   }
+  void process(const DetInfo&, const ControlData::ConfigV1& config) {
+    printf("*** Processing Control config object\n");    
+    
+    printf( "Control PV Number = %d, Monitor PV Number = %d\n", config.npvControls(), config.npvMonitors() );
+    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      if (pvControlCur.array())
+        printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
+      else
+        printf( "%s = ", pvControlCur.name() );
+      printf( "%lf\n", pvControlCur.value() );
+    }
+    
+    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      if (pvMonitorCur.array())
+        printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
+      else
+        printf( "%s  ", pvMonitorCur.name() );
+      printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
+    }
+          
+  }  
   void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
     printf("*** Processing 2DGauss object\n");
   }
@@ -158,6 +184,9 @@ public:
       break;
     case (TypeId::Id_EvrConfig) :
       process(info, *(const EvrData::ConfigV1*)(xtc->payload()));
+      break;
+    case (TypeId::Id_ControlConfig) :
+      process(info, *(const ControlData::ConfigV1*)(xtc->payload()));
       break;
     case (TypeId::Id_Epics) :      
     {
