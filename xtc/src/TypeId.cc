@@ -30,6 +30,8 @@ const char* TypeId::name(Type type)
     "RunControlConfig",
     "pnCCDframe",
     "pnCCDconfig",
+    "princetonFrame",
+    "princetonConfig",    
     "Epics",    
     "FEEGasDetEnergy",
     "EBeamBld",

@@ -13,7 +13,7 @@ namespace Pds {
 
     enum Detector {NoDetector,AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbes,AmoVmi,AmoBps,
                    Camp,EpicsArch,BldEb,NumDetector};
-    enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,NumDevice};
+    enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,Princeton,NumDevice};
 
     DetInfo() {}
     DetInfo(uint32_t processId,

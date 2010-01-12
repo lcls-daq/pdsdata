@@ -20,6 +20,8 @@ namespace Pds {
            Id_ControlConfig,
            Id_pnCCDframe,
            Id_pnCCDconfig,
+           Id_PrincetonFrame,
+           Id_PrincetonConfig,
            Id_Epics,        // Epics Data Type
            Id_FEEGasDetEnergy,
            Id_EBeam,
