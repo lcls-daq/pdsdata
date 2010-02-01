@@ -41,6 +41,10 @@ public:
   /* public static functions */  
   static void initStatic( ConfigV1& config );
   static int  size();
+
+  uint32_t  shotIdStart() { return _iShotIdStart; }
+  uint32_t  shotIdEnd()   { return _iShotIdEnd; }
+  float     readoutTime() { return _fReadoutTime; }  
   
 private:  
   uint32_t  _iShotIdStart;

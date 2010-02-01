@@ -17,8 +17,10 @@ public:
   static const int Version                        = 1;
   static const unsigned int uPI_MTE_1300_Width    = 1340;
   static const unsigned int uPI_MTE_1300_Height   = 1300;
-  static const unsigned int uPI_MTE_2048_Width    = 2048;
-  static const unsigned int uPI_MTE_2048_Height   = 2048;
+  //static const unsigned int uPI_MTE_2048_Width    = 2048;
+  //static const unsigned int uPI_MTE_2048_Height   = 2048;
+  static const unsigned int uPI_MTE_2048_Width    = 512; // !! for debug only
+  static const unsigned int uPI_MTE_2048_Height   = 512;
   
   enum EnumExposureMode // copied from pvcam.h
   { 
@@ -33,7 +35,7 @@ public:
   
   ConfigV1(uint32_t uWidth = uPI_MTE_2048_Width, uint32_t uHeight = uPI_MTE_2048_Height, 
    uint32_t uOrgX = 0, uint32_t uOrgY = 0, uint32_t uBinX = 1, uint32_t uBinY = 1,
-   int16_t  iCoolingTemp = -1000, EnumExposureMode iExposureMode = BULB_MODE, 
+   int16_t  iCoolingTemp = -1000, EnumExposureMode iExposureMode = STROBED_MODE, 
    float fExposureTime = 0.005 );
 
   uint32_t          width()         { return _uWidth; }

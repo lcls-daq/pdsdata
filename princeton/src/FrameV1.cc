@@ -30,7 +30,7 @@ int FrameV1::size()
   if ( _pConfig == NULL )
     throw( FrameV1Exception( "FrameV1::size(): initStatic() need to be called to initialize the ConfigV1 object\n" ) );
     
-  return sizeof(FrameV1) + _pConfig->width() * _pConfig->height() * 2;
+  return sizeof(FrameV1) + _pConfig->width() * _pConfig->height() * 2; // 2 -> 16 bit color depth
 }
 
 /*
