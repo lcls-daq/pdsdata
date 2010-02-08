@@ -36,25 +36,26 @@ public:
   ConfigV1(uint32_t uWidth = uPI_MTE_2048_Width, uint32_t uHeight = uPI_MTE_2048_Height, 
    uint32_t uOrgX = 0, uint32_t uOrgY = 0, uint32_t uBinX = 1, uint32_t uBinY = 1,
    int16_t  iCoolingTemp = -1000, EnumExposureMode iExposureMode = STROBED_MODE, 
-   float fExposureTime = 0.005 );
+   float f32ExposureTime = 0.005, uint8_t uMakeUpEventMode = 0 );
 
-  uint32_t          width()         { return _uWidth; }
-  uint32_t          height()        { return _uHeight; }
-  uint32_t          orgX()          { return _uOrgX; }
-  uint32_t          orgY()          { return _uOrgY; }    
-  uint32_t          binX()          { return _uBinX; }
-  uint32_t          binY()          { return _uBinY; }    
-  int16_t           coolingTemp()   { return _iCoolingTemp; }
-  EnumExposureMode  exposureMode()  { return (EnumExposureMode) _iExposureMode; }
-  float             exposureTime()  { return _fExposureTime; }
-  
+  uint32_t          width()           { return _uWidth; }
+  uint32_t          height()          { return _uHeight; }
+  uint32_t          orgX()            { return _uOrgX; }
+  uint32_t          orgY()            { return _uOrgY; }    
+  uint32_t          binX()            { return _uBinX; }
+  uint32_t          binY()            { return _uBinY; }    
+  int16_t           coolingTemp()     { return _i16CoolingTemp; }
+  EnumExposureMode  exposureMode()    { return (EnumExposureMode) _i16ExposureMode; }
+  float             exposureTime()    { return _f32ExposureTime; }
+  uint8_t           makeUpEventMode() { return _u8MakeUpEventMode; }  
 private:
   uint32_t          _uWidth, _uHeight;
   uint32_t          _uOrgX,  _uOrgY;
   uint32_t          _uBinX,  _uBinY;
-  int16_t           _iCoolingTemp;
-  int16_t           _iExposureMode;
-  float             _fExposureTime;  
+  int16_t           _i16CoolingTemp;
+  int16_t           _i16ExposureMode;
+  float             _f32ExposureTime;
+  uint8_t           _u8MakeUpEventMode;
 };
 
 } // namespace Princeton

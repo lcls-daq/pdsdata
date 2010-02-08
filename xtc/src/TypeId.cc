@@ -30,12 +30,12 @@ const char* TypeId::name(Type type)
     "RunControlConfig",
     "pnCCDframe",
     "pnCCDconfig",
-    "princetonFrame",
-    "princetonConfig",    
     "Epics",    
     "FEEGasDetEnergy",
     "EBeamBld",
     "PhaseCavity"
+    "princetonFrame",
+    "princetonConfig",    
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
