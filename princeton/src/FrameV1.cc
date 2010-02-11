@@ -32,6 +32,7 @@ int FrameV1::size()
     
   //return sizeof(FrameV1) + _pConfig->width() * _pConfig->height() * 2; // 2 -> 16 bit color depth
   return sizeof(FrameV1) + 4*1024*1024*2; // 2 -> 16 bit color depth // !! debug
+  //return sizeof(FrameV1) + 0; // 2 -> 16 bit color depth // !! debug
 }
 
 /*
