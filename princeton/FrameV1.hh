@@ -38,10 +38,6 @@ public:
   FrameV1( uint32_t  iShotIdStart, uint32_t  iShotIdEnd, float fReadoutTime );    
   const uint16_t* data() const;
   
-  /* public static functions */  
-  static void initStatic( ConfigV1& config );
-  static int  size();
-
   uint32_t  shotIdStart() { return _iShotIdStart; }
   uint32_t  shotIdEnd()   { return _iShotIdEnd; }
   float     readoutTime() { return _fReadoutTime; }  
@@ -50,17 +46,8 @@ private:
   uint32_t  _iShotIdStart;
   uint32_t  _iShotIdEnd;
   float     _fReadoutTime;
-    
-  static ConfigV1* _pConfig;
 };
 
-class FrameV1Exception : public std::runtime_error
-{
-public:
-  explicit FrameV1Exception( const std::string& sDescription ) :
-    std::runtime_error( sDescription )
-  {}  
-};
 
 } // namespace Princeton
 

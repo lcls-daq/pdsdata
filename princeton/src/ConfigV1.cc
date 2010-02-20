@@ -1,4 +1,5 @@
 #include "pdsdata/princeton/ConfigV1.hh"
+#include "pdsdata/princeton/FrameV1.hh"
 
 #include <string.h>
 
@@ -11,3 +12,10 @@ ConfigV1::ConfigV1(uint32_t uWidth, uint32_t uHeight, uint32_t uOrgX, uint32_t u
  _i16CoolingTemp(i16CoolingTemp), _i16ExposureMode((int16_t)enumExposureMode), _f32ExposureTime(f32ExposureTime),
  _u8MakeUpEventMode(u8MakeUpEventMode)
  {}
+
+int ConfigV1::frameSize()
+{
+  return sizeof(FrameV1) + _uWidth* _uHeight * 2; // 2 -> 16 bit color depth
+  //return sizeof(FrameV1) + 4*1024*1024*2; // 2 -> 16 bit color depth // !! debug
+  //return sizeof(FrameV1) + 0; // 2 -> 16 bit color depth // !! debug
+}

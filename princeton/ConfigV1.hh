@@ -47,7 +47,10 @@ public:
   int16_t           coolingTemp()     { return _i16CoolingTemp; }
   EnumExposureMode  exposureMode()    { return (EnumExposureMode) _i16ExposureMode; }
   float             exposureTime()    { return _f32ExposureTime; }
-  uint8_t           makeUpEventMode() { return _u8MakeUpEventMode; }  
+  uint8_t           makeUpEventMode() { return _u8MakeUpEventMode; }
+  
+  int               frameSize();
+  
 private:
   uint32_t          _uWidth, _uHeight;
   uint32_t          _uOrgX,  _uOrgY;
