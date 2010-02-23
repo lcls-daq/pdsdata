@@ -49,7 +49,7 @@ public:
   float             exposureTime()    { return _f32ExposureTime; }
   uint8_t           makeUpEventMode() { return _u8MakeUpEventMode; }
   
-  int               frameSize();
+  int               frameSize();  // calculate the frame size based on the current ROI and binning settings
   
 private:
   uint32_t          _uWidth, _uHeight;

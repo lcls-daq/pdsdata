@@ -15,7 +15,7 @@ ConfigV1::ConfigV1(uint32_t uWidth, uint32_t uHeight, uint32_t uOrgX, uint32_t u
 
 int ConfigV1::frameSize()
 {
-  return sizeof(FrameV1) + _uWidth* _uHeight * 2; // 2 -> 16 bit color depth
-  //return sizeof(FrameV1) + 4*1024*1024*2; // 2 -> 16 bit color depth // !! debug
+  //return sizeof(FrameV1) + _uWidth* _uHeight * 2; // 2 -> 16 bit color depth
+  return sizeof(FrameV1) + 4*1024*1024*2; // 2 -> 16 bit color depth // !! debug
   //return sizeof(FrameV1) + 0; // 2 -> 16 bit color depth // !! debug
 }
