@@ -4,8 +4,8 @@
 using namespace Pds;
 using namespace Princeton;
 
-FrameV1::FrameV1( uint32_t iShotIdStart, uint32_t iShotIdEnd, float fReadoutTime ) :
- _iShotIdStart(iShotIdStart), _iShotIdEnd(iShotIdEnd), _fReadoutTime(fReadoutTime)
+FrameV1::FrameV1( uint32_t iShotIdStart, float fReadoutTime ) :
+ _iShotIdStart(iShotIdStart), _fReadoutTime(fReadoutTime)
 {
 }
 

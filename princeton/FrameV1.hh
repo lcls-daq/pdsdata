@@ -35,16 +35,14 @@ class FrameV1
 public:
   static const int Version = 1;
 
-  FrameV1( uint32_t  iShotIdStart, uint32_t  iShotIdEnd, float fReadoutTime );    
+  FrameV1( uint32_t  iShotIdStart, float fReadoutTime );    
   const uint16_t* data() const;
   
   uint32_t  shotIdStart() { return _iShotIdStart; }
-  uint32_t  shotIdEnd()   { return _iShotIdEnd; }
   float     readoutTime() { return _fReadoutTime; }  
   
 private:  
   uint32_t  _iShotIdStart;
-  uint32_t  _iShotIdEnd;
   float     _fReadoutTime;
 };
 
