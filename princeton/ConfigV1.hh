@@ -57,10 +57,11 @@ public:
   EnumExposureMode  exposureMode()      { return (EnumExposureMode) _i16ExposureMode; }
   float             exposureTime()      { return _f32ExposureTime; }
   int16_t           readoutSpeedIndex() { return _i16ReadoutSpeedIndex; }
-  uint8_t           makeUpEventMode()   { return _u8DelayMode; }
+  uint8_t           delayMode()         { return _u8DelayMode; }
 
-  uint32_t          setWidth(uint32_t uWidth)     { return _uWidth = uWidth; }
-  uint32_t          setHeight(uint32_t uHeight)   { return _uHeight = uHeight; }
+  uint32_t          setWidth(uint32_t uWidth)         { return _uWidth = uWidth; }
+  uint32_t          setHeight(uint32_t uHeight)       { return _uHeight = uHeight; }
+  uint8_t           setDelayMode(uint8_t uDelayMode)  { return _u8DelayMode = uDelayMode; }
   
   int               frameSize();  // calculate the frame size based on the current ROI and binning settings
   
