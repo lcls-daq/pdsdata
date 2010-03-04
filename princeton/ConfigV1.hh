@@ -47,23 +47,23 @@ public:
    int16_t          i16ReadoutSpeedIndex  = iPI_MTE_2048_MaxSpeedIndex,
    uint8_t          uDelayMode            = 0 );
 
-  uint32_t          width()             { return _uWidth; }
-  uint32_t          height()            { return _uHeight; }
-  uint32_t          orgX()              { return _uOrgX; }
-  uint32_t          orgY()              { return _uOrgY; }    
-  uint32_t          binX()              { return _uBinX; }
-  uint32_t          binY()              { return _uBinY; }    
-  int16_t           coolingTemp()       { return _i16CoolingTemp; }
-  EnumExposureMode  exposureMode()      { return (EnumExposureMode) _i16ExposureMode; }
-  float             exposureTime()      { return _f32ExposureTime; }
-  int16_t           readoutSpeedIndex() { return _i16ReadoutSpeedIndex; }
-  uint8_t           delayMode()         { return _u8DelayMode; }
+  uint32_t          width()             const         { return _uWidth; }
+  uint32_t          height()            const         { return _uHeight; }
+  uint32_t          orgX()              const         { return _uOrgX; }
+  uint32_t          orgY()              const         { return _uOrgY; }    
+  uint32_t          binX()              const         { return _uBinX; }
+  uint32_t          binY()              const         { return _uBinY; }    
+  int16_t           coolingTemp()       const         { return _i16CoolingTemp; }
+  EnumExposureMode  exposureMode()      const         { return (EnumExposureMode) _i16ExposureMode; }
+  float             exposureTime()      const         { return _f32ExposureTime; }
+  int16_t           readoutSpeedIndex() const         { return _i16ReadoutSpeedIndex; }
+  uint8_t           delayMode()         const         { return _u8DelayMode; }
 
   uint32_t          setWidth(uint32_t uWidth)         { return _uWidth = uWidth; }
   uint32_t          setHeight(uint32_t uHeight)       { return _uHeight = uHeight; }
   uint8_t           setDelayMode(uint8_t uDelayMode)  { return _u8DelayMode = uDelayMode; }
   
-  int               frameSize();  // calculate the frame size based on the current ROI and binning settings
+  int               frameSize()         const; // calculate the frame size based on the current ROI and binning settings
   
 private:
   uint32_t          _uWidth, _uHeight;

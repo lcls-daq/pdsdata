@@ -1,0 +1,54 @@
+//
+//  Class for configuration of the Event Receiver
+//
+#ifndef Evr_DataV3_hh
+#define Evr_DataV3_hh
+
+#include "pdsdata/xtc/TypeId.hh"
+#include <stdint.h>
+
+namespace Pds
+{
+  namespace EvrData
+  {
+    class PulseConfig;
+    class OutputMap;
+    class DataV3
+    {
+    public:
+      enum
+      { Version = 3 };
+      enum RateCode
+      { r120Hz, r60Hz, r30Hz, r10Hz, r5Hz, r1Hz, r0_5Hz, Single, NumberOfRates };
+      enum BeamCode
+      { Off, On };
+        DataV3();
+        DataV3(BeamCode bc,
+     RateCode rc,
+     unsigned npulses,
+     const PulseConfig * pulses,
+     unsigned noutputs, const OutputMap * outputs);
+
+      BeamCode beam() const;
+      RateCode rate() const;
+      unsigned opcode() const;
+      static unsigned opcode(BeamCode, RateCode);
+
+      //  pulse configurations appended to this structure
+      unsigned npulses() const;
+      const PulseConfig & pulse(unsigned) const;
+
+      //  output configurations appended to this structure
+      unsigned noutputs() const;
+      const OutputMap & output_map(unsigned) const;
+
+      //  size including appended PulseConfig's and OutputMap's
+      unsigned size() const;
+    private:
+        uint32_t _opcode;
+      uint32_t _npulses;
+      uint32_t _noutputs;
+    };
+  };
+};
+#endif
