@@ -36,10 +36,11 @@ public:
   static const int Version = 1;
 
   FrameV1( uint32_t  iShotIdStart, float fReadoutTime );    
-  const uint16_t*   data()        const;
   
-  uint32_t          shotIdStart() const { return _iShotIdStart; }
-  float             readoutTime() const { return _fReadoutTime; }  
+  uint32_t          shotIdStart () const { return _iShotIdStart; }
+  float             readoutTime () const { return _fReadoutTime; }  
+
+  const uint16_t*   data        ()        const;
   
 private:  
   uint32_t  _iShotIdStart;

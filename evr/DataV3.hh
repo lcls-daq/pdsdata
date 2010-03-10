@@ -7,48 +7,56 @@
 #include "pdsdata/xtc/TypeId.hh"
 #include <stdint.h>
 
+#pragma pack(4)
+
 namespace Pds
 {
-  namespace EvrData
-  {
-    class PulseConfig;
-    class OutputMap;
-    class DataV3
-    {
-    public:
-      enum
-      { Version = 3 };
-      enum RateCode
-      { r120Hz, r60Hz, r30Hz, r10Hz, r5Hz, r1Hz, r0_5Hz, Single, NumberOfRates };
-      enum BeamCode
-      { Off, On };
-        DataV3();
-        DataV3(BeamCode bc,
-     RateCode rc,
-     unsigned npulses,
-     const PulseConfig * pulses,
-     unsigned noutputs, const OutputMap * outputs);
+namespace EvrData
+{
 
-      BeamCode beam() const;
-      RateCode rate() const;
-      unsigned opcode() const;
-      static unsigned opcode(BeamCode, RateCode);
+class FIFOEvent;
 
-      //  pulse configurations appended to this structure
-      unsigned npulses() const;
-      const PulseConfig & pulse(unsigned) const;
+class DataV3
+{
+public:
+  enum { Version = 3 };
+  
+  DataV3(uint32_t u32NumFifoEvents, const FIFOEvent* lFifoEvent);
+  DataV3(const DataV3& dataCopy);
+  
+    
+  uint32_t          numFifoEvents() const  { return _u32NumFifoEvents; }      
+  const FIFOEvent&  fifoEvent(unsigned int iEventIndex)  const;
 
-      //  output configurations appended to this structure
-      unsigned noutputs() const;
-      const OutputMap & output_map(unsigned) const;
+  unsigned int      size() const;
 
-      //  size including appended PulseConfig's and OutputMap's
-      unsigned size() const;
-    private:
-        uint32_t _opcode;
-      uint32_t _npulses;
-      uint32_t _noutputs;
-    };
-  };
+  void              printFifoEvents () const;
+  void              addFifoEvent    ( const FIFOEvent& fifoEvent ); // return the number of total fifo events, including the new one
+  void              clearFifoEvents ();
+  
+  /*
+   * public static function
+   */  
+  static unsigned int size(int iMaxNumFifoEvents);
+  
+private:
+  uint32_t _u32NumFifoEvents;
 };
+
+/*
+ * Copied from /reg/g/pcds/package/external/evgr_V00-00-02/evgr/evr/evr.hh
+ */
+class FIFOEvent 
+{
+public:
+  uint32_t TimestampHigh;
+  uint32_t TimestampLow;
+  uint32_t EventCode;
+};
+
+} // namespace EvrData
+} // namespace Pds
+
+#pragma pack()
+
 #endif

@@ -1,99 +1,66 @@
-#include "pdsdata/evr/DataV3.hh"
-#include "pdsdata/evr/PulseConfig.hh"
-#include "pdsdata/evr/OutputMap.hh"
+#include <stdio.h>
+#include <memory.h>
 
-#include <string.h>
+#include "pdsdata/evr/DataV3.hh"
 
 using namespace Pds;
 using namespace EvrData;
 
-static const unsigned beamOn = 100;
-static const unsigned baseRate = 40;
-static const unsigned singleShot = 150;
-
-DataV3::DataV3()
+DataV3::DataV3(uint32_t u32NumFifoEvents, const FIFOEvent* lFifoEvent) : _u32NumFifoEvents(u32NumFifoEvents)
 {
+  char *next = (char*) (this + 1);
+
+  memcpy(next, lFifoEvent, _u32NumFifoEvents * sizeof(FIFOEvent));  
 }
 
-DataV3::DataV3(BeamCode bc,
-       RateCode rc,
-       unsigned npulses,
-       const PulseConfig * pulses,
-       unsigned noutputs,
-       const OutputMap * outputs):_opcode(opcode(bc, rc)),
-_npulses(0), _noutputs(0)
+DataV3::DataV3(const DataV3& dataCopy)
 {
-  char *next = reinterpret_cast < char *>(this + 1);
-  memcpy(next, pulses, npulses * sizeof(PulseConfig));
-  _npulses = npulses;
-  next += npulses * sizeof(PulseConfig);
-  memcpy(next, outputs, noutputs * sizeof(OutputMap));
-  _noutputs = noutputs;
+  _u32NumFifoEvents = dataCopy.numFifoEvents();
+  
+  const char *src = (char*) (&dataCopy + 1);
+  char *      dst = (char*) (this + 1);
+  memcpy(dst, src, _u32NumFifoEvents * sizeof(FIFOEvent));  
 }
 
-
-DataV3::BeamCode DataV3::beam() const
+const FIFOEvent&  DataV3::fifoEvent(unsigned int iEventIndex)  const
 {
-  return (_opcode > beamOn) ? On : Off;
+  const FIFOEvent *lFifoEvent = reinterpret_cast < const FIFOEvent * >(this + 1);
+  return lFifoEvent[iEventIndex];
 }
 
-DataV3::RateCode DataV3::rate() const
+unsigned int DataV3::size() const
 {
-  RateCode r;
-  if (_opcode < beamOn)
-    r = RateCode(_opcode - baseRate);
-  else if (_opcode < singleShot)
-    r = RateCode(_opcode - beamOn - baseRate);
-  else
-    r = Single;
-  return r;
+  return ( sizeof(*this) + _u32NumFifoEvents * sizeof(FIFOEvent) );
 }
 
-unsigned DataV3::opcode() const
+void DataV3::printFifoEvents() const
 {
-  return _opcode;
-}
-
-unsigned DataV3::opcode(BeamCode bc, RateCode rc)
-{
-  unsigned v;
-  if (rc == Single)
+  printf( "# of Fifo Events: %u\n", _u32NumFifoEvents );
+  
+  for ( unsigned int iEventIndex=0; iEventIndex< _u32NumFifoEvents; iEventIndex++ )
   {
-    v = singleShot;
+    const FIFOEvent& event = fifoEvent(iEventIndex);
+    printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
+      iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
   }
-  else
-  {
-    v = baseRate + unsigned (rc);
-    if (bc == On)
-      v += beamOn;
-  }
-  return v;
 }
 
-unsigned DataV3::npulses() const
-{
-  return _npulses;
-}
-const PulseConfig & DataV3::pulse(unsigned pulse) const
-{
-  const PulseConfig *p = reinterpret_cast < const PulseConfig * >(this + 1);
-  return p[pulse];
+void DataV3::addFifoEvent( const FIFOEvent& fifoEvent )
+{  
+  FIFOEvent* pFifoEventNew = (FIFOEvent*) ((char*) this + size()); 
+  *pFifoEventNew            = fifoEvent;  
+  _u32NumFifoEvents++; 
 }
 
-unsigned DataV3::noutputs() const
+void DataV3::clearFifoEvents()
 {
-  return _noutputs;
-}
-const OutputMap & DataV3::output_map(unsigned output) const
-{
-  const OutputMap *m =
-    reinterpret_cast < const OutputMap * >(&pulse(_npulses));
-  return m[output];
+  _u32NumFifoEvents = 0;
 }
 
-
-unsigned DataV3::size() const
+/*
+ * static public function
+ */
+unsigned int DataV3::size(int iMaxNumFifoEvents)
 {
-  return (sizeof(*this) +
-    _npulses * sizeof(PulseConfig) + _noutputs * sizeof(OutputMap));
+  return ( sizeof(DataV3) + iMaxNumFifoEvents * sizeof(FIFOEvent) );
 }

@@ -10,16 +10,16 @@ namespace Pds {
     public:
       PulseConfig ();
       PulseConfig (unsigned pulse,                 // Pulse ID
-		   int      trigger,               // Pulse input control
-		   int      set,
-		   int      clear,
-		   bool     polarity,              // Pulse output control
-		   bool     map_set_enable,
-		   bool     map_reset_enable,
-		   bool     map_trigger_enable,
-		   unsigned prescale,              // Pulse parameters
-		   unsigned delay,
-		   unsigned width);
+       int      trigger,               // Pulse input control
+       int      set,
+       int      clear,
+       bool     polarity,              // Pulse output control
+       bool     map_set_enable,
+       bool     map_reset_enable,
+       bool     map_trigger_enable,
+       unsigned prescale,              // Pulse parameters
+       unsigned delay,
+       unsigned width);
     public:
       //  internal pulse generation channel
       unsigned pulse  () const;

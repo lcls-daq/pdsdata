@@ -1,5 +1,6 @@
 #include "pdsdata/evr/ConfigV3.hh"
-#include "pdsdata/evr/PulseConfig.hh"
+#include "pdsdata/evr/EventCodeV3.hh"
+#include "pdsdata/evr/PulseConfigV3.hh"
 #include "pdsdata/evr/OutputMap.hh"
 
 #include <string.h>
@@ -7,93 +8,93 @@
 using namespace Pds;
 using namespace EvrData;
 
-static const unsigned beamOn = 100;
-static const unsigned baseRate = 40;
-static const unsigned singleShot = 150;
-
-ConfigV3::ConfigV3()
+ConfigV3::ConfigV3(
+   uint32_t neventcodes,  const EventCodeV3*    eventcodes,
+   uint32_t npulses,      const PulseConfigV3*  pulses,
+   uint32_t noutputs,     const OutputMap*      outputs 
+   ) :   
+  _neventcodes(neventcodes),
+  _npulses    (npulses), 
+  _noutputs   (noutputs)
 {
+  char *next = (char*) (this + 1);
+
+  memcpy(next, eventcodes, _neventcodes * sizeof(EventCodeV3));
+  next += _neventcodes * sizeof(EventCodeV3);
+  
+  memcpy(next, pulses, _npulses * sizeof(PulseConfigV3));
+  next += _npulses * sizeof(PulseConfigV3);
+  
+  memcpy(next, outputs, _noutputs * sizeof(OutputMap));
 }
 
-ConfigV3::ConfigV3(BeamCode bc,
-       RateCode rc,
-       unsigned npulses,
-       const PulseConfig * pulses,
-       unsigned noutputs,
-       const OutputMap * outputs):_opcode(opcode(bc, rc)),
-_npulses(0), _noutputs(0)
+uint32_t ConfigV3::neventcodes() const
 {
-  char *next = reinterpret_cast < char *>(this + 1);
-  memcpy(next, pulses, npulses * sizeof(PulseConfig));
-  _npulses = npulses;
-  next += npulses * sizeof(PulseConfig);
-  memcpy(next, outputs, noutputs * sizeof(OutputMap));
-  _noutputs = noutputs;
+  return _neventcodes;
+}
+
+const EventCodeV3& ConfigV3::eventcode(unsigned eventcodeIndex) const
+{
+  const EventCodeV3 *eventcodes = (const EventCodeV3 *) (this + 1);
+  return eventcodes[eventcodeIndex];  
 }
 
 
-ConfigV3::BeamCode ConfigV3::beam() const
-{
-  return (_opcode > beamOn) ? On : Off;
-}
-
-ConfigV3::RateCode ConfigV3::rate() const
-{
-  RateCode r;
-  if (_opcode < beamOn)
-    r = RateCode(_opcode - baseRate);
-  else if (_opcode < singleShot)
-    r = RateCode(_opcode - beamOn - baseRate);
-  else
-    r = Single;
-  return r;
-}
-
-unsigned ConfigV3::opcode() const
-{
-  return _opcode;
-}
-
-unsigned ConfigV3::opcode(BeamCode bc, RateCode rc)
-{
-  unsigned v;
-  if (rc == Single)
-  {
-    v = singleShot;
-  }
-  else
-  {
-    v = baseRate + unsigned (rc);
-    if (bc == On)
-      v += beamOn;
-  }
-  return v;
-}
-
-unsigned ConfigV3::npulses() const
+uint32_t ConfigV3::npulses() const
 {
   return _npulses;
 }
-const PulseConfig & ConfigV3::pulse(unsigned pulse) const
+const PulseConfigV3& ConfigV3::pulse(unsigned pulse) const
 {
-  const PulseConfig *p = reinterpret_cast < const PulseConfig * >(this + 1);
-  return p[pulse];
+  const PulseConfigV3 *pulses = (const PulseConfigV3 *) (
+    (char *) (this + 1) + _neventcodes * sizeof(EventCodeV3) );
+    
+  return pulses[pulse];
 }
 
-unsigned ConfigV3::noutputs() const
+uint32_t ConfigV3::noutputs() const
 {
   return _noutputs;
 }
 const OutputMap & ConfigV3::output_map(unsigned output) const
 {
-  const OutputMap *m =
-    reinterpret_cast < const OutputMap * >(&pulse(_npulses));
+  const OutputMap *m = (const OutputMap *) (
+    (char *) (this + 1) + _neventcodes * sizeof(EventCodeV3) +
+    _npulses * sizeof(PulseConfigV3) );
+
   return m[output];
 }
 
 
 unsigned ConfigV3::size() const
 {
-  return (sizeof(*this) +
-    _npulses * sizeof(PulseConfig) + _noutputs * sizeof(OutputMap));
+  return (sizeof(*this) + 
+   _neventcodes * sizeof(EventCodeV3) +
+   _npulses     * sizeof(PulseConfigV3) + 
+   _noutputs    * sizeof(OutputMap));
+}
+
+unsigned ConfigV3::size(unsigned maxNumEventCodes, unsigned maxNumPulses, unsigned maxNumOutputMaps)
+{
+  return (sizeof(ConfigV3) + 
+    maxNumEventCodes * sizeof(EventCodeV3) +
+    maxNumPulses     * sizeof(PulseConfigV3) + 
+    maxNumOutputMaps    * sizeof(OutputMap));
+}
+  
+uint8_t ConfigV3::opcodeFromBeamRate(BeamCode bc, RateCode rc) 
+{
+  static const unsigned beamOn     = 100;
+  static const unsigned baseRate   = 40;
+  static const unsigned singleShot = 150;
+  
+  unsigned v;
+  if (rc==Single) {
+    v = singleShot;
+  }
+  else {
+    v = baseRate+unsigned(rc);
+    if (bc==On) v += beamOn;
+  }
+  return v; 
 }

@@ -19,8 +19,8 @@ public:
   static const unsigned int uPI_MTE_1300_Height         = 1300;
   //static const unsigned int uPI_MTE_2048_Width    = 2048;
   //static const unsigned int uPI_MTE_2048_Height   = 2048;
-  static const unsigned int uPI_MTE_2048_Width          = 512; // !! for debug only
-  static const unsigned int uPI_MTE_2048_Height         = 512;
+  static const unsigned int uPI_MTE_2048_Width          = 64; // !! for debug only
+  static const unsigned int uPI_MTE_2048_Height         = 64;
   static const int          iPI_MTE_2048_MaxSpeedIndex  = 5;
   
   enum EnumExposureMode // copied from pvcam.h
@@ -47,20 +47,20 @@ public:
    int16_t          i16ReadoutSpeedIndex  = iPI_MTE_2048_MaxSpeedIndex,
    uint8_t          uDelayMode            = 0 );
 
-  uint32_t          width()             const         { return _uWidth; }
+  uint32_t          width ()            const         { return _uWidth; }
   uint32_t          height()            const         { return _uHeight; }
-  uint32_t          orgX()              const         { return _uOrgX; }
-  uint32_t          orgY()              const         { return _uOrgY; }    
-  uint32_t          binX()              const         { return _uBinX; }
-  uint32_t          binY()              const         { return _uBinY; }    
-  int16_t           coolingTemp()       const         { return _i16CoolingTemp; }
+  uint32_t          orgX  ()            const         { return _uOrgX; }
+  uint32_t          orgY  ()            const         { return _uOrgY; }    
+  uint32_t          binX  ()            const         { return _uBinX; }
+  uint32_t          binY  ()            const         { return _uBinY; }    
+  int16_t           coolingTemp ()      const         { return _i16CoolingTemp; }
   EnumExposureMode  exposureMode()      const         { return (EnumExposureMode) _i16ExposureMode; }
   float             exposureTime()      const         { return _f32ExposureTime; }
   int16_t           readoutSpeedIndex() const         { return _i16ReadoutSpeedIndex; }
   uint8_t           delayMode()         const         { return _u8DelayMode; }
 
-  uint32_t          setWidth(uint32_t uWidth)         { return _uWidth = uWidth; }
-  uint32_t          setHeight(uint32_t uHeight)       { return _uHeight = uHeight; }
+  uint32_t          setWidth    (uint32_t uWidth)     { return _uWidth = uWidth; }
+  uint32_t          setHeight   (uint32_t uHeight)    { return _uHeight = uHeight; }
   uint8_t           setDelayMode(uint8_t uDelayMode)  { return _u8DelayMode = uDelayMode; }
   
   int               frameSize()         const; // calculate the frame size based on the current ROI and binning settings

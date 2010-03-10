@@ -30,6 +30,7 @@ namespace Pds {
            Id_PhaseCavity,
            Id_PrincetonFrame,
            Id_PrincetonConfig,
+           Id_EvrData,
            NumberOf};
 
     TypeId() {}
