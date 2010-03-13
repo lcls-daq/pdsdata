@@ -1,10 +1,11 @@
 #include "pdsdata/control/PVMonitor.hh"
 
 #include <string.h>
+#include <limits>
 
 using namespace Pds::ControlData;
 
-static const uint32_t NoArray=-1UL;
+static const uint32_t NoArray=std::numeric_limits<uint32_t>::max();
 
 PVMonitor::PVMonitor() {}
 
