@@ -1,4 +1,6 @@
-2010-Mar13      cpo                     Switch from -1 to the max() function in <limits> for "largest integer".
+2010-Mar13      cpo                     Switch from -1 to the max() function in <limits> for "largest 
+                                        integer".  Also add in Tomy's new event code sequencing
+                                        classes in evr.
 2009-Dec14      cpo                     Tag V01-08-00 for Matt's scan data.
 2009-Nov22      cpo                     Tag V01-07-00 for pnCCD objects for Andy.
 2009-Nov11	weaver			Tag V01-06-00.  Added BldEb to DetInfo.  Added bld BldDataEbeamV0,1.
