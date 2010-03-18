@@ -18,29 +18,32 @@ class FIFOEvent;
 
 class DataV3
 {
+  /*
+   * Data layout:
+   *
+   * ---------------
+   * Data members in this class
+   * --------------- 
+   * FIFO Events  (array of class FIFOEvent)
+   */  
 public:
   enum { Version = 3 };
   
+  /* public functions*/  
   DataV3(uint32_t u32NumFifoEvents, const FIFOEvent* lFifoEvent);
   DataV3(const DataV3& dataCopy);
-  
+      
+  uint32_t          numFifoEvents()                     const;
+  const FIFOEvent&  fifoEvent(unsigned int iEventIndex) const;
+
+  unsigned int      size()                              const;
     
-  uint32_t          numFifoEvents() const  { return _u32NumFifoEvents; }      
-  const FIFOEvent&  fifoEvent(unsigned int iEventIndex)  const;
-
-  unsigned int      size() const;
-
-  void              printFifoEvents () const;
-  void              addFifoEvent    ( const FIFOEvent& fifoEvent ); // return the number of total fifo events, including the new one
-  void              clearFifoEvents ();
-  
+protected:  
   /*
-   * public static function
+   * Data members are put in protected section (instead of private section), because 
+   * this class will be augmented with utility functions for pds programs.
    */  
-  static unsigned int size(int iMaxNumFifoEvents);
-  
-private:
-  uint32_t _u32NumFifoEvents;
+  uint32_t _u32NumFifoEvents;    
 };
 
 /*
