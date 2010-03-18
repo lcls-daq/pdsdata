@@ -182,7 +182,7 @@ int main(int argc, char* argv[]) {
     case 't':
       strcpy(partitionTag, optarg);
       // the run method will only return if it encounters an error
-      fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag));
+      fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag,0));
       break;
     default:
       usage(argv[0]);

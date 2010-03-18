@@ -92,8 +92,12 @@ int main(int argc, char* argv[]) {
   XtcFileIterator iter(file,0x900000);
   Dgram* dg;
   unsigned long long bytes=0;
+  unsigned events=0;
+  unsigned damaged=0;
   while ((dg = iter.next())) {
+    events++;
     if (dg->xtc.damage.value()&damage) {
+      damaged++;
       printf("%s transition: time %08x/%08x  stamp %08x/%08x, dmg %08x, payloadSize 0x%x  pos 0x%llx\n",
 	     TransitionId::name(dg->seq.service()),
 	     dg->seq.clock().seconds(),dg->seq.clock().nanoseconds(),
@@ -106,6 +110,8 @@ int main(int argc, char* argv[]) {
     }
     bytes += sizeof(*dg) + dg->xtc.sizeofPayload();
   }
+
+  printf("Found %d/%d events damaged in %lld bytes\n", damaged, events, bytes);
 
   fclose(file);
   return 0;
