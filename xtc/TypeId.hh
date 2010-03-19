@@ -31,6 +31,8 @@ namespace Pds {
            Id_PrincetonFrame,
            Id_PrincetonConfig,
            Id_EvrData,
+           Id_FrameFccdConfig,
+           Id_FccdConfig,
            NumberOf};
 
     TypeId() {}
