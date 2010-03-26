@@ -12,7 +12,7 @@ syslibdir := /usr/lib
 endif
 
 tgtsrcs_xtcreader := xtcreader.cc
-tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata
+tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata
 tgtslib_xtcreader := $(syslibdir)/rt
 
 tgtsrcs_dmgreader := dmgreader.cc

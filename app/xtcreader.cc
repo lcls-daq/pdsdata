@@ -13,6 +13,8 @@
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
+#include "pdsdata/evr/ConfigV2.hh"
+#include "pdsdata/evr/ConfigV3.hh"
 #include "pdsdata/control/ConfigV1.hh"
 #include "pdsdata/control/PVControl.hh"
 #include "pdsdata/control/PVMonitor.hh"
@@ -22,6 +24,7 @@
 #include "pdsdata/pnCCD/ConfigV1.hh"
 #include "pdsdata/pnCCD/FrameV1.hh"
 #include "pdsdata/bld/bldData.hh"
+#include "pdsdata/evr/DataV3.hh"
 
 using namespace Pds;
 
@@ -44,9 +47,6 @@ public:
   }
   void process(const DetInfo&, const Camera::FrameFexConfigV1&) {
     printf("*** Processing frame feature extraction config object\n");
-  }
-  void process(const DetInfo&, const EvrData::ConfigV1&) {
-    printf("*** Processing EVR config object\n");
   }
   void process(const DetInfo&, const ControlData::ConfigV1& config) {
     printf("*** Processing Control config object\n");    
@@ -130,6 +130,29 @@ public:
     bldData.print();
     printf( "\n" );    
   }  
+  void process(const DetInfo&, const EvrData::ConfigV1&) {
+    printf("*** Processing EVR config V1 object\n");
+  }
+  void process(const DetInfo&, const EvrData::ConfigV2&) {
+    printf("*** Processing EVR config V2 object\n");
+  }
+  void process(const DetInfo&, const EvrData::ConfigV3&) {
+    printf("*** Processing EVR config V3 object\n");
+  }
+  void process(const DetInfo&, const EvrData::DataV3& data) {
+    printf("*** Processing Evr Data object\n");
+    
+    printf( "# of Fifo Events: %u\n", data.numFifoEvents() );
+    
+    for ( unsigned int iEventIndex=0; iEventIndex< data.numFifoEvents(); iEventIndex++ )
+    {
+      const EvrData::FIFOEvent& event = data.fifoEvent(iEventIndex);
+      printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
+        iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
+    }
+    
+    printf( "\n" );    
+  }  
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
@@ -183,8 +206,24 @@ public:
       process(info, *(const Camera::FrameFexConfigV1*)(xtc->payload()));
       break;
     case (TypeId::Id_EvrConfig) :
-      process(info, *(const EvrData::ConfigV1*)(xtc->payload()));
-      break;
+    {      
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const EvrData::ConfigV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info, *(const EvrData::ConfigV2*)(xtc->payload()));
+        break;
+      case 3:
+        process(info, *(const EvrData::ConfigV3*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported evr configuration version %d\n",version);
+        break;
+      }
+      break;      
+    }
     case (TypeId::Id_ControlConfig) :
       process(info, *(const ControlData::ConfigV1*)(xtc->payload()));
       break;
@@ -233,6 +272,11 @@ public:
     case (TypeId::Id_PhaseCavity) :
     {
       process(info, *(const BldDataPhaseCavity*) xtc->payload() );
+      break;        
+    }
+    case (TypeId::Id_EvrData) :
+    {
+      process(info, *(const EvrData::DataV3*) xtc->payload() );
       break;        
     }
     default :

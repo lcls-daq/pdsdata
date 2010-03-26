@@ -21,7 +21,7 @@ public:
   //static const unsigned int uPI_MTE_2048_Height   = 2048;
   static const unsigned int uPI_MTE_2048_Width          = 64; // !! for debug only
   static const unsigned int uPI_MTE_2048_Height         = 64;
-  static const int          iPI_MTE_2048_MaxSpeedIndex  = 5;
+  static const unsigned int uPI_MTE_2048_MaxSpeedIndex  = 5;
   
   enum EnumExposureMode // copied from pvcam.h
   { 
@@ -35,17 +35,18 @@ public:
   };  
   
   ConfigV1(
-   uint32_t         uWidth                = uPI_MTE_2048_Width, 
-   uint32_t         uHeight               = uPI_MTE_2048_Height, 
-   uint32_t         uOrgX                 = 0, 
-   uint32_t         uOrgY                 = 0, 
-   uint32_t         uBinX                 = 1, 
-   uint32_t         uBinY                 = 1,
-   int16_t          iCoolingTemp          = -1000, 
-   EnumExposureMode iExposureMode         = STROBED_MODE, 
-   float            f32ExposureTime       = 0.005, 
-   int16_t          i16ReadoutSpeedIndex  = iPI_MTE_2048_MaxSpeedIndex,
-   uint8_t          uDelayMode            = 0 );
+    uint32_t          uWidth                = uPI_MTE_2048_Width, 
+    uint32_t          uHeight               = uPI_MTE_2048_Height, 
+    uint32_t          uOrgX                 = 0, 
+    uint32_t          uOrgY                 = 0, 
+    uint32_t          uBinX                 = 1, 
+    uint32_t          uBinY                 = 1,
+    float             f32ExposureTime       = 0.005, 
+    int16_t           iCoolingTemp          = -1000, 
+    EnumExposureMode  iExposureMode         = STROBED_MODE, 
+    uint8_t           u8ReadoutSpeedIndex   = uPI_MTE_2048_MaxSpeedIndex,
+    uint16_t          u16ReadoutEventCode   = 0,
+    uint16_t          uDelayMode            = 0 );
 
   uint32_t          width ()            const         { return _uWidth; }
   uint32_t          height()            const         { return _uHeight; }
@@ -53,15 +54,17 @@ public:
   uint32_t          orgY  ()            const         { return _uOrgY; }    
   uint32_t          binX  ()            const         { return _uBinX; }
   uint32_t          binY  ()            const         { return _uBinY; }    
-  int16_t           coolingTemp ()      const         { return _i16CoolingTemp; }
-  EnumExposureMode  exposureMode()      const         { return (EnumExposureMode) _i16ExposureMode; }
   float             exposureTime()      const         { return _f32ExposureTime; }
-  int16_t           readoutSpeedIndex() const         { return _i16ReadoutSpeedIndex; }
-  uint8_t           delayMode()         const         { return _u8DelayMode; }
+  int16_t           coolingTemp ()      const         { return _i16CoolingTemp; }
+  EnumExposureMode  exposureMode()      const         { return (EnumExposureMode) _u8ExposureMode; }
+  uint8_t           readoutSpeedIndex() const         { return _u8ReadoutSpeedIndex; }
+  
+  uint16_t          readoutEventCode()  const         { return _u16ReadoutEventCode; }
+  uint16_t          delayMode()         const         { return _u16DelayMode; }
 
   uint32_t          setWidth    (uint32_t uWidth)     { return _uWidth = uWidth; }
   uint32_t          setHeight   (uint32_t uHeight)    { return _uHeight = uHeight; }
-  uint8_t           setDelayMode(uint8_t uDelayMode)  { return _u8DelayMode = uDelayMode; }
+  uint16_t          setDelayMode(uint16_t uDelayMode) { return _u16DelayMode = uDelayMode; }
   
   int               frameSize()         const; // calculate the frame size based on the current ROI and binning settings
   
@@ -69,11 +72,12 @@ private:
   uint32_t          _uWidth, _uHeight;
   uint32_t          _uOrgX,  _uOrgY;
   uint32_t          _uBinX,  _uBinY;
-  int16_t           _i16CoolingTemp;
-  int16_t           _i16ExposureMode;
   float             _f32ExposureTime;
-  int16_t           _i16ReadoutSpeedIndex;
-  uint8_t           _u8DelayMode;
+  int16_t           _i16CoolingTemp;
+  uint8_t           _u8ExposureMode;
+  uint8_t           _u8ReadoutSpeedIndex;
+  uint16_t          _u16ReadoutEventCode;
+  uint16_t          _u16DelayMode;
 };
 
 } // namespace Princeton
