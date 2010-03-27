@@ -9,6 +9,8 @@
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/acqiris/ConfigV1.hh"
 #include "pdsdata/acqiris/DataDescV1.hh"
+#include "pdsdata/ipimb/ConfigV1.hh"
+#include "pdsdata/ipimb/DataV1.hh"
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
@@ -41,6 +43,12 @@ public:
   }
   void process(const DetInfo&, const Acqiris::ConfigV1&) {
     printf("*** Processing Acqiris config object\n");
+  }
+  void process(const DetInfo&, const Ipimb::DataV1&) {
+    printf("*** Processing ipimb data object\n");
+  }
+  void process(const DetInfo&, const Ipimb::ConfigV1&) {
+    printf("*** Processing Ipimb config object\n");
   }
   void process(const DetInfo&, const Opal1k::ConfigV1&) {
     printf("*** Processing Opal1000 config object\n");
@@ -192,6 +200,22 @@ public:
         break;
       default:
         printf("Unsupported acqiris configuration version %d\n",version);
+        break;
+      }
+      break;      
+    }
+    case (TypeId::Id_IpimbData) :
+      process(info, *(const Ipimb::DataV1*)(xtc->payload()));
+      break;
+    case (TypeId::Id_IpimbConfig) :
+    {      
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info,*(const Ipimb::ConfigV1*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported ipimb configuration version %d\n",version);
         break;
       }
       break;      

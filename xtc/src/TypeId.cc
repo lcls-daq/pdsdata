@@ -22,6 +22,8 @@ const char* TypeId::name(Type type)
     "Frame",
     "AcqWaveform",
     "AcqConfig",
+    "IpimbConfig",
+    "IpimbData",
     "TwoDGaussian",
     "Opal1kConfig",
     "FrameFexConfig",

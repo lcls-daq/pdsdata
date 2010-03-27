@@ -12,10 +12,12 @@ namespace Pds {
      *   the old values have already been recorded in the existing xtc files. 
      */
     enum Type {Any, 
-           Id_Xtc,          // generic hierarchical container
-           Id_Frame,        // raw image
-           Id_AcqWaveform,
+	   Id_Xtc,          // generic hierarchical container
+	   Id_Frame,        // raw image
+	   Id_AcqWaveform,
            Id_AcqConfig,
+	   Id_IpimbData,
+           Id_IpimbConfig,
            Id_TwoDGaussian, // 2-D Gaussian + covariances
            Id_Opal1kConfig,
            Id_FrameFexConfig,
