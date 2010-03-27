@@ -1,4 +1,3 @@
-
 #include "pdsdata/xtc/TypeId.hh"
 
 using namespace Pds;
@@ -35,12 +34,12 @@ const char* TypeId::name(Type type)
     "Epics",    
     "FEEGasDetEnergy",
     "EBeamBld",
-    "PhaseCavity"
+    "PhaseCavity",
     "PrincetonFrame",
     "PrincetonConfig",    
     "EvrData",
     "FrameFccdConfig",
-    "FccdConfig"    
+    "FccdConfig",  
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
