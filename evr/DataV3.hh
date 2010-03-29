@@ -14,8 +14,6 @@ namespace Pds
 namespace EvrData
 {
 
-class FIFOEvent;
-
 class DataV3
 {
   /*
@@ -28,6 +26,8 @@ class DataV3
    */  
 public:
   enum { Version = 3 };
+  
+  class FIFOEvent;  
   
   /* public functions*/  
   DataV3(uint32_t u32NumFifoEvents, const FIFOEvent* lFifoEvent);
@@ -49,7 +49,7 @@ protected:
 /*
  * Copied from /reg/g/pcds/package/external/evgr_V00-00-02/evgr/evr/evr.hh
  */
-class FIFOEvent 
+class DataV3::FIFOEvent 
 {
 public:
   uint32_t TimestampHigh;

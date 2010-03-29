@@ -27,7 +27,7 @@ uint32_t DataV3::numFifoEvents() const
   return _u32NumFifoEvents; 
 }
 
-const FIFOEvent& DataV3::fifoEvent(unsigned int iEventIndex)  const
+const DataV3::FIFOEvent& DataV3::fifoEvent(unsigned int iEventIndex)  const
 {
   const FIFOEvent *lFifoEvent = reinterpret_cast < const FIFOEvent * >(this + 1);
   return lFifoEvent[iEventIndex];

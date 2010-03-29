@@ -14,14 +14,7 @@ namespace Princeton
 class ConfigV1 
 {
 public:
-  static const int Version                              = 1;
-  static const unsigned int uPI_MTE_1300_Width          = 1340;
-  static const unsigned int uPI_MTE_1300_Height         = 1300;
-  //static const unsigned int uPI_MTE_2048_Width    = 2048;
-  //static const unsigned int uPI_MTE_2048_Height   = 2048;
-  static const unsigned int uPI_MTE_2048_Width          = 64; // !! for debug only
-  static const unsigned int uPI_MTE_2048_Height         = 64;
-  static const unsigned int uPI_MTE_2048_MaxSpeedIndex  = 5;
+  enum { Version = 1 };
 
   ConfigV1()  {}  
   ConfigV1(
