@@ -14,9 +14,8 @@ ConfigV1::ConfigV1(
  uint32_t         uBinX, 
  uint32_t         uBinY,
  float            f32ExposureTime, 
- int16_t          i16CoolingTemp, 
- EnumExposureMode enumExposureMode, 
- uint8_t          u8ReadoutSpeedIndex,
+ float            f32CoolingTemp, 
+ uint32_t         u32ReadoutSpeedIndex,
  uint16_t         u16ReadoutEventCode, 
  uint16_t         u16DelayMode) :
  _uWidth  (uWidth), 
@@ -26,11 +25,10 @@ ConfigV1::ConfigV1(
  _uBinX   (uBinX), 
  _uBinY   (uBinY),
  _f32ExposureTime       (f32ExposureTime),
- _i16CoolingTemp        (i16CoolingTemp), 
- _u8ExposureMode        ((uint8_t)enumExposureMode), 
- _u8ReadoutSpeedIndex   (u8ReadoutSpeedIndex), 
+ _f32CoolingTemp        (f32CoolingTemp), 
+ _u32ReadoutSpeedIndex  (u32ReadoutSpeedIndex), 
  _u16ReadoutEventCode   (u16ReadoutEventCode),
- _u16DelayMode           (u16DelayMode)
+ _u16DelayMode          (u16DelayMode)
  {}
 
 int ConfigV1::frameSize() const
