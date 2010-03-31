@@ -21,8 +21,6 @@ const char* TypeId::name(Type type)
     "Frame",
     "AcqWaveform",
     "AcqConfig",
-    "IpimbConfig",
-    "IpimbData",
     "TwoDGaussian",
     "Opal1kConfig",
     "FrameFexConfig",
@@ -40,6 +38,8 @@ const char* TypeId::name(Type type)
     "EvrData",
     "FrameFccdConfig",
     "FccdConfig",  
+    "IpimbData",
+    "IpimbConfig",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

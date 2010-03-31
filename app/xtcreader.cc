@@ -154,7 +154,7 @@ public:
     
     for ( unsigned int iEventIndex=0; iEventIndex< data.numFifoEvents(); iEventIndex++ )
     {
-      const EvrData::FIFOEvent& event = data.fifoEvent(iEventIndex);
+      const EvrData::DataV3::FIFOEvent& event = data.fifoEvent(iEventIndex);
       printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
         iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
     }
