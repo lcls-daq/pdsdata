@@ -34,8 +34,10 @@ const char* DetInfo::name(Detector det){
     "amoBPS",
     "Camp",
     "epicsArch",    
-    "BldEb"
-  };
+    "BldEb",
+    "SxrSpectrometer",
+    "SxrBeamline",
+    "SxrEndstation"};
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
 }
 
