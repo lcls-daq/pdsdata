@@ -18,6 +18,8 @@
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/pnCCD/FrameV1.hh"
 #include "pdsdata/pnCCD/ConfigV1.hh"
+#include "pdsdata/encoder/ConfigV1.hh"
+#include "pdsdata/encoder/DataV1.hh"
 
 #include "XtcMonitorClient.hh"
 
@@ -42,6 +44,12 @@ public:
   }
   void process(const DetInfo&, const Ipimb::ConfigV1&) {
     printf("*** Processing Ipimb config object\n");
+  }
+  void process(const DetInfo&, const Encoder::DataV1&) {
+    printf("*** Processing Encoder data object\n");
+  }
+  void process(const DetInfo&, const Encoder::ConfigV1&) {
+    printf("*** Processing Encoder config object\n");
   }
   void process(const DetInfo&, const Opal1k::ConfigV1&) {
     printf("*** Processing Opal1000 config object\n");
@@ -138,6 +146,22 @@ public:
           break;
         default:
           printf("Unsupported ipimb configuration version %d\n",version);
+          break;
+        }
+      }
+      break;
+    case (TypeId::Id_EncoderData) :
+      process(info, *(const Encoder::DataV1*)(xtc->payload()));
+      break;
+    case (TypeId::Id_EncoderConfig) :
+      {
+        unsigned version = xtc->contains.version();
+        switch (version) {
+        case 1:
+          process(info,*(const Encoder::ConfigV1*)(xtc->payload()));
+          break;
+        default:
+          printf("Unsupported Encoder configuration version %d\n",version);
           break;
         }
       }

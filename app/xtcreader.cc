@@ -11,6 +11,8 @@
 #include "pdsdata/acqiris/DataDescV1.hh"
 #include "pdsdata/ipimb/ConfigV1.hh"
 #include "pdsdata/ipimb/DataV1.hh"
+#include "pdsdata/encoder/ConfigV1.hh"
+#include "pdsdata/encoder/DataV1.hh"
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
@@ -49,6 +51,12 @@ public:
   }
   void process(const DetInfo&, const Ipimb::ConfigV1&) {
     printf("*** Processing Ipimb config object\n");
+  }
+  void process(const DetInfo&, const Encoder::DataV1&) {
+    printf("*** Processing encoder data object\n");
+  }
+  void process(const DetInfo&, const Encoder::ConfigV1&) {
+    printf("*** Processing Encoder config object\n");
   }
   void process(const DetInfo&, const Opal1k::ConfigV1&) {
     printf("*** Processing Opal1000 config object\n");
@@ -216,6 +224,22 @@ public:
         break;
       default:
         printf("Unsupported ipimb configuration version %d\n",version);
+        break;
+      }
+      break;      
+    }
+    case (TypeId::Id_EncoderData) :
+      process(info, *(const Encoder::DataV1*)(xtc->payload()));
+      break;
+    case (TypeId::Id_EncoderConfig) :
+    {      
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info,*(const Encoder::ConfigV1*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported encoder configuration version %d\n",version);
         break;
       }
       break;      
