@@ -36,6 +36,8 @@ namespace Pds {
       Id_FccdConfig,
       Id_IpimbData,
       Id_IpimbConfig,
+      Id_EncoderData,
+      Id_EncoderConfig,
       NumberOf};
 
     TypeId() {}
