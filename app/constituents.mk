@@ -39,7 +39,7 @@ tgtlibs_xtcmonclient := pdsdata/xtcdata pdsdata/acqdata
 tgtslib_xtcmonclient := $(syslibdir)/usr/lib/rt
 
 tgtsrcs_xtcmonclientexample := xtcMonClientExample.cc XtcMonitorClient.cc
-tgtlibs_xtcmonclientexample := pdsdata/pnccddata pdsdata/xtcdata pdsdata/acqdata
+tgtlibs_xtcmonclientexample := pdsdata/pnccddata pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/evrdata pdsdata/bld pdsdata/controldata 
 tgtslib_xtcmonclientexample := $(syslibdir)/usr/lib/rt
 
 tgtsrcs_agatfile := agatfile.cc

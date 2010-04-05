@@ -16,19 +16,21 @@
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
+#include "pdsdata/opal1k/ConfigV1.hh"
+#include "pdsdata/pnCCD/ConfigV1.hh"
+#include "pdsdata/pnCCD/FrameV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/evr/ConfigV2.hh"
 #include "pdsdata/evr/ConfigV3.hh"
+#include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/control/ConfigV1.hh"
 #include "pdsdata/control/PVControl.hh"
 #include "pdsdata/control/PVMonitor.hh"
-#include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/epics/EpicsPvData.hh"
 #include "pdsdata/epics/EpicsXtcSettings.hh"
-#include "pdsdata/pnCCD/ConfigV1.hh"
-#include "pdsdata/pnCCD/FrameV1.hh"
 #include "pdsdata/bld/bldData.hh"
-#include "pdsdata/evr/DataV3.hh"
+#include "pdsdata/princeton/ConfigV1.hh"
+#include "pdsdata/princeton/FrameV1.hh"
 
 using namespace Pds;
 
@@ -64,37 +66,8 @@ public:
   void process(const DetInfo&, const Camera::FrameFexConfigV1&) {
     printf("*** Processing frame feature extraction config object\n");
   }
-  void process(const DetInfo&, const ControlData::ConfigV1& config) {
-    printf("*** Processing Control config object\n");    
-    
-    printf( "Control PV Number = %d, Monitor PV Number = %d\n", config.npvControls(), config.npvMonitors() );
-    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
-      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
-      if (pvControlCur.array())
-        printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
-      else
-        printf( "%s = ", pvControlCur.name() );
-      printf( "%lf\n", pvControlCur.value() );
-    }
-    
-    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
-      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
-      if (pvMonitorCur.array())
-        printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
-      else
-        printf( "%s  ", pvMonitorCur.name() );
-      printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
-    }
-          
-  }  
   void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
     printf("*** Processing 2DGauss object\n");
-  }
-  void process(const DetInfo&, const EpicsPvHeader& epicsPv)
-  {    
-    printf("*** Processing Epics object\n");
-    epicsPv.printPv();
-    printf( "\n" );
   }
   void process(const DetInfo& det, const PNCCD::ConfigV1& config) {
     if ( det.detId() != 0 )
@@ -126,6 +99,35 @@ public:
     
     printf("*** Processing pnCCD Frame\n");
   }  
+  void process(const DetInfo&, const ControlData::ConfigV1& config) {
+    printf("*** Processing Control config object\n");    
+    
+    printf( "Control PV Number = %d, Monitor PV Number = %d\n", config.npvControls(), config.npvMonitors() );
+    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      if (pvControlCur.array())
+        printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
+      else
+        printf( "%s = ", pvControlCur.name() );
+      printf( "%lf\n", pvControlCur.value() );
+    }
+    
+    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      if (pvMonitorCur.array())
+        printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
+      else
+        printf( "%s  ", pvMonitorCur.name() );
+      printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
+    }
+          
+  }  
+  void process(const DetInfo&, const EpicsPvHeader& epicsPv)
+  {    
+    printf("*** Processing Epics object\n");
+    epicsPv.printPv();
+    printf( "\n" );
+  }
   void process(const DetInfo&, const BldDataFEEGasDetEnergy& bldData) {
     printf("*** Processing FEEGasDetEnergy object\n");
     bldData.print();
@@ -169,6 +171,12 @@ public:
     
     printf( "\n" );    
   }  
+  void process(const DetInfo&, const Princeton::ConfigV1&) {
+    printf("*** Processing Princeton ConfigV1 object\n");
+  }
+  void process(const DetInfo&, const Princeton::FrameV1&) {
+    printf("*** Processing Princeton FrameV1 object\n");
+  }
   int process(Xtc* xtc) {
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
@@ -253,6 +261,16 @@ public:
     case (TypeId::Id_FrameFexConfig) :
       process(info, *(const Camera::FrameFexConfigV1*)(xtc->payload()));
       break;
+    case (TypeId::Id_pnCCDconfig) :
+    {
+      process(info, *(const PNCCD::ConfigV1*)(xtc->payload()));
+      break;
+    }
+    case (TypeId::Id_pnCCDframe) :
+    {
+      process(info, (const PNCCD::FrameV1*)(xtc->payload()));
+      break;
+    }
     case (TypeId::Id_EvrConfig) :
     {      
       unsigned version = xtc->contains.version();
@@ -272,6 +290,11 @@ public:
       }
       break;      
     }
+    case (TypeId::Id_EvrData) :
+    {
+      process(info, *(const EvrData::DataV3*) xtc->payload() );
+      break;        
+    }
     case (TypeId::Id_ControlConfig) :
       process(info, *(const ControlData::ConfigV1*)(xtc->payload()));
       break;
@@ -284,16 +307,6 @@ public:
           break;
       }
       process(info, *(const EpicsPvHeader*)(xtc->payload()));
-      break;
-    }
-    case (TypeId::Id_pnCCDconfig) :
-    {
-      process(info, *(const PNCCD::ConfigV1*)(xtc->payload()));
-      break;
-    }
-    case (TypeId::Id_pnCCDframe) :
-    {
-      process(info, (const PNCCD::FrameV1*)(xtc->payload()));
       break;
     }
     /*
@@ -322,11 +335,16 @@ public:
       process(info, *(const BldDataPhaseCavity*) xtc->payload() );
       break;        
     }
-    case (TypeId::Id_EvrData) :
+    case (TypeId::Id_PrincetonConfig) :
     {
-      process(info, *(const EvrData::DataV3*) xtc->payload() );
-      break;        
+      process(info, *(const Princeton::ConfigV1*)(xtc->payload()));
+      break;
     }
+    case (TypeId::Id_PrincetonFrame) :
+    {
+      process(info, *(const Princeton::FrameV1*)(xtc->payload()));
+      break;
+    }    
     default :
       printf("Unsupported TypeId %d\n", (int) xtc->contains.id());
       break;
