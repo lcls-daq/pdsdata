@@ -44,4 +44,3 @@ uint16_t DataV1::channel3() const {
 uint16_t DataV1::checksum() const {
   return _checksum;
 }
-

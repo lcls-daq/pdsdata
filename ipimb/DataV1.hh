@@ -2,10 +2,9 @@
 #define IPIMBDATADESC_HH
 
 #include <stdint.h>
+
 #include "pdsdata/xtc/TypeId.hh"
 #include "ConfigV1.hh"
-
-#include <stdint.h>
 
 namespace Pds {
 
