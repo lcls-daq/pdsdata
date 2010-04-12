@@ -390,6 +390,7 @@ int main(int argc, char* argv[]) {
   int rate = 1;
   unsigned nclients = 1;
   bool loop = false;
+  bool verbose = false;
   int numberOfBuffers = 0;
   unsigned sizeOfBuffers = 0;
   struct timespec start, now, sleepTime;
@@ -421,6 +422,9 @@ int main(int argc, char* argv[]) {
     case 'l':
       loop = true;
       printf("Enabling infinite looping\n");
+      break;
+    case 'v':
+      verbose = true;
       break;
     default:
       fprintf(stderr, "I don't understand %c!\n", c);
@@ -470,7 +474,7 @@ int main(int argc, char* argv[]) {
 
       if ((dg = apps->next(fd))) {
 	apps->routine();
-	if (dg->seq.service() != TransitionId::L1Accept)
+	if (dg->seq.service() != TransitionId::L1Accept || verbose)
 	  printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x, spareTime %lld\n",
 		 TransitionId::name(dg->seq.service()),
 		 dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
