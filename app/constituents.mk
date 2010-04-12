@@ -5,46 +5,40 @@ tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReade
 
 #LXFLAGS += -L/reg/g/pcds/package/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic
 
-ifneq ($(findstring x86_64-linux,$(tgt_arch)),)
-syslibdir := /usr/lib64
-else
-syslibdir := /usr/lib
-endif
-
 tgtsrcs_xtcreader := xtcreader.cc
 tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata
-tgtslib_xtcreader := $(syslibdir)/rt
+tgtslib_xtcreader := $(USRLIBDIR)/rt
 
 tgtsrcs_dmgreader := dmgreader.cc
 tgtlibs_dmgreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/bld
-tgtslib_dmgreader := $(syslibdir)/rt
+tgtslib_dmgreader := $(USRLIBDIR)/rt
 
 tgtsrcs_bldreader := bldreader.cc
 tgtlibs_bldreader := pdsdata/xtcdata pdsdata/bld
-tgtslib_bldreader := $(syslibdir)/rt
+tgtslib_bldreader := $(USRLIBDIR)/rt
 
 tgtsrcs_agatfile := agatfile.cc
 tgtlibs_agatfile := pdsdata/xtcdata pdsdata/acqdata 
-tgtslib_agatfile := $(syslibdir)/rt
+tgtslib_agatfile := $(USRLIBDIR)/rt
 
 tgtsrcs_acqconfig := acqconfig.cc
 tgtlibs_acqconfig := pdsdata/xtcdata pdsdata/acqdata
 
 tgtsrcs_xtcmonserver := xtcmonserver.cc
 tgtlibs_xtcmonserver := pdsdata/xtcdata pdsdata/acqdata
-tgtslib_xtcmonserver := $(syslibdir)/usr/lib/rt
+tgtslib_xtcmonserver := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmonclient := xtcmonclient.cc XtcMonitorClient.cc
 tgtlibs_xtcmonclient := pdsdata/xtcdata pdsdata/acqdata
-tgtslib_xtcmonclient := $(syslibdir)/usr/lib/rt
+tgtslib_xtcmonclient := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmonclientexample := xtcMonClientExample.cc XtcMonitorClient.cc
 tgtlibs_xtcmonclientexample := pdsdata/pnccddata pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/evrdata pdsdata/bld pdsdata/controldata 
-tgtslib_xtcmonclientexample := $(syslibdir)/usr/lib/rt
+tgtslib_xtcmonclientexample := $(USRLIBDIR)/rt
 
 tgtsrcs_agatfile := agatfile.cc
 tgtlibs_agatfile := pdsdata/xtcdata pdsdata/acqdata
-tgtslib_agatfile := $(syslibdir)/rt
+tgtslib_agatfile := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcEpicsReaderTest := xtcEpicsReaderTest.cc XtcEpicsFileReader.cc XtcEpicsFileReader.hh XtcEpicsIterator.cc XtcEpicsIterator.hh
 tgtincs_xtcEpicsReaderTest := 
