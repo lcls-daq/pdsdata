@@ -304,13 +304,12 @@ private:
   }
 
 public:
-  Dgram* next(FILE* _file) {
+  Dgram* next(int fd) {
     Dgram& dg = *(Dgram*)dgramBuffer;
     unsigned header = sizeof(dg);
-    fread(&dg, header, 1, _file);
-    if (feof(_file)) {
+    if (::read(fd, dgramBuffer, header) == -1)
       return 0;
-    }
+
     unsigned payloadSize = dg.xtc.sizeofPayload();
     if ((payloadSize+header)>unsigned(_myMsg.sizeOfBuffers())) {
       printf("Dgram size 0x%x larger than maximum: 0x%x\n",
@@ -318,10 +317,10 @@ public:
 	     _myMsg.sizeOfBuffers()); 
       return 0;
     }
-    fread(dgramBuffer+header, payloadSize, 1, _file);
-    if (feof(_file)) {
+    
+    if (::read(fd, dgramBuffer+header, payloadSize) == -1)
       return 0;
-    }
+
     events(&dg);
     return &dg;
   }
@@ -390,7 +389,6 @@ int main(int argc, char* argv[]) {
   bool loop = false;
   int numberOfBuffers = 0;
   unsigned sizeOfBuffers = 0;
-  FILE* file;
   struct timespec start, now, sleepTime;
   (void) signal(SIGINT, sigfunc);
 
@@ -436,8 +434,8 @@ int main(int argc, char* argv[]) {
 
   dgramBuffer = new char[sizeOfBuffers];
 
-  file = fopen(xtcname,"r");
-  if (!file) {
+  int fd = ::open(xtcname,O_LARGEFILE,O_RDONLY);
+  if (fd == -1) {
     char s[120];
     sprintf(s, "Unable to open file %s ", xtcname);
     perror(s);
@@ -467,7 +465,7 @@ int main(int argc, char* argv[]) {
     do {
       clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
 
-      if ((dg = apps->next(file))) {
+      if ((dg = apps->next(fd))) {
 	apps->routine();
 	if (dg->seq.service() != TransitionId::L1Accept)
 	  printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x, spareTime %lld\n",
@@ -486,11 +484,14 @@ int main(int argc, char* argv[]) {
     apps->insert(TransitionId::Unconfigure);
     apps->insert(TransitionId::Unmap);
 
-    rewind(file);
+    if (::lseek(fd, 0, SEEK_SET) != 0) {
+      printf("Failed to rewind\n");
+      break;
+    }
 
   } while(loop);
 
-  fclose(file);
+  ::close(fd);
   sigfunc(0);
 
   delete[] dgramBuffer;
