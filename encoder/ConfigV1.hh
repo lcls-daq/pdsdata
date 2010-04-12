@@ -18,11 +18,12 @@ class Pds::Encoder::ConfigV1
    enum { Version = 1 };
 
    ConfigV1() {}
-   ConfigV1( uint8_t chan_num,
-             uint8_t count_mode,
-             uint8_t quadrature_mode,
-             uint8_t input_num,
-             uint8_t input_rising );
+   ConfigV1( uint8_t  chan_num,
+             uint8_t  count_mode,
+             uint8_t  quadrature_mode,
+             uint8_t  input_num,
+             uint8_t  input_rising,
+             uint32_t ticks_per_sec );
    ~ConfigV1() {}
 
    static Pds::TypeId typeId()
@@ -30,11 +31,12 @@ class Pds::Encoder::ConfigV1
 
    void dump() const;
 
-   uint8_t _chan_num;
-   uint8_t _count_mode;
-   uint8_t _quadrature_mode;
-   uint8_t _input_num;
-   uint8_t _input_rising;  
+   uint8_t  _chan_num;
+   uint8_t  _count_mode;
+   uint8_t  _quadrature_mode;
+   uint8_t  _input_num;
+   uint8_t  _input_rising;
+   uint32_t _ticks_per_sec;
 };
 
 #endif
