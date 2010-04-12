@@ -396,7 +396,7 @@ int main(int argc, char* argv[]) {
   struct timespec start, now, sleepTime;
   (void) signal(SIGINT, sigfunc);
 
-  while ((c = getopt(argc, argv, "hf:r:n:s:p:lc:")) != -1) {
+  while ((c = getopt(argc, argv, "hf:r:n:s:p:lvc:")) != -1) {
     switch (c) {
     case 'h':
       usage(argv[0]);
