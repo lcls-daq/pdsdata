@@ -23,29 +23,30 @@ static const char* quad_mode_to_name[] = {
    "QUAD_MODE_X4"
 };
 
-
 void Pds::Encoder::ConfigV1::dump() const
 {
-  printf( "------Encoder Config-------------\n" );
-  printf( "Channel #: %d\n", _chan_num );
-  printf( "Encoder counting mode: %d (%s)\n",
+  printf( ">>------ Encoder Config -----------\n" );
+  printf( "\tChannel #: %d\n", _chan_num );
+  printf( "\tEncoder counting mode: %d (%s)\n",
           _count_mode,
           count_mode_to_name[_count_mode] );
-  printf( "Encoder quadrature mode: %d (%s)\n",
+  printf( "\tEncoder quadrature mode: %d (%s)\n",
           _quadrature_mode,
           quad_mode_to_name[_quadrature_mode] );
-  printf( "External input for trigger: %d\n", _input_num );
-  printf( "Trigger on edge: %d (%s)\n",
+  printf( "\tExternal input for trigger: %d\n", _input_num );
+  printf( "\tTrigger on edge: %d (%s)\n",
           _input_rising,
           _input_rising ? "Rising" : "Falling" );
+  printf( "\tEncoder timebase ticks per second: %u\n", _ticks_per_sec );
+  printf( "<<------ End Encoder Config -----------\n" );
 }
 
-Pds::Encoder::ConfigV1::ConfigV1( uint8_t  chan_num,
-                                  uint8_t  count_mode,
-                                  uint8_t  quadrature_mode,
-                                  uint8_t  input_num,
-                                  uint8_t  input_rising,
-                                  uint32_t ticks_per_sec ) 
+Pds::Encoder::ConfigV1::ConfigV1( uint8_t      chan_num,
+                                  count_mode::type_t count_mode,
+                                  quad_mode::type_t  quadrature_mode,
+                                  uint8_t      input_num,
+                                  bool         input_rising,
+                                  uint32_t     ticks_per_sec ) 
    : _chan_num( chan_num ),
      _count_mode( count_mode ),
      _quadrature_mode( quadrature_mode ),
