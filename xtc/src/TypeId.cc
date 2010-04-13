@@ -15,7 +15,7 @@ TypeId::Type TypeId::id() const {return (TypeId::Type)(_value&0xffff);}
 
 const char* TypeId::name(Type type)
 { 
-  static const char* _names[] = {
+   static const char* _names[NumberOf] = {
     "Any",
     "Xtc",
     "Frame",
@@ -40,6 +40,8 @@ const char* TypeId::name(Type type)
     "FccdConfig",  
     "IpimbData",
     "IpimbConfig",
+    "EncoderData",
+    "EncoderConfig"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
