@@ -14,14 +14,16 @@
 namespace Pds {
 
   class Dgram;
+  class EventSequence;
 
   class XtcMonitorServer {
   public:
     enum { numberofTrBuffers=8 };
   public:
     XtcMonitorServer(unsigned sizeofBuffers, 
-		     int numberofEvBuffers, 
-		     unsigned numberofClients);
+		     unsigned numberofEvBuffers, 
+		     unsigned numberofClients,
+		     unsigned sequenceLength=1);
     virtual ~XtcMonitorServer();
   public:
     enum Result { Handled, Deferred };
@@ -50,7 +52,6 @@ namespace Pds {
     char*           _myShm; // the pointer to start of shared memory
     mqd_t           _myOutputEvQueue;
     mqd_t           _myInputEvQueue;
-    unsigned        _priority;
     unsigned        _pageSize;
     mq_attr         _mymq_attr;
     XtcMonitorMsg   _myMsg;
@@ -63,6 +64,7 @@ namespace Pds {
     mqd_t           _shuffleQueue;
     timespec        _tmo;
     pthread_t       _threadID;
+    EventSequence*  _sequence;
   };
 };
 

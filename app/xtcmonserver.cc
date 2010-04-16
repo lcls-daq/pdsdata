@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <queue>
 
 using namespace Pds;
 
@@ -25,12 +26,51 @@ static void printTransition(const Dgram* dg)
 	 dg->xtc.sizeofPayload());
 }
 
+class MyMonitorServer : public XtcMonitorServer {
+public:
+  MyMonitorServer(unsigned sizeofBuffers, 
+		  unsigned numberofEvBuffers, 
+		  unsigned numberofClients,
+		  unsigned sequenceLength) :
+    XtcMonitorServer(sizeofBuffers,
+		     numberofEvBuffers,
+		     numberofClients,
+		     sequenceLength) 
+  {
+    for(unsigned i=0; i<numberofEvBuffers+XtcMonitorServer::numberofTrBuffers; i++)
+      _pool.push(reinterpret_cast<Dgram*>(new char[sizeofBuffers]));
+  }
+  ~MyMonitorServer() 
+  {
+    while(!_pool.empty()) {
+      delete _pool.front();
+      _pool.pop();
+    }
+  }
+public:
+  XtcMonitorServer::Result events(Dgram* dg) {
+    if (XtcMonitorServer::events(dg) == XtcMonitorServer::Handled)
+      _deleteDatagram(dg);
+    return XtcMonitorServer::Deferred;
+  }
+  Dgram* newDatagram() { Dgram* dg = _pool.front(); _pool.pop(); return dg; }
+private:
+  void   _deleteDatagram(Dgram* dg) { _pool.push(dg); }
+private:
+  std::queue<Dgram*> _pool;
+};
+
+static MyMonitorServer* apps;
+
+
 static Dgram* next(int fd, int sizeOfBuffers) 
 {
-  Dgram& dg = *(Dgram*)dgramBuffer;
+  Dgram* ndg = apps->newDatagram();
+  char* b = reinterpret_cast<char*>(ndg);
+  Dgram& dg = *ndg;
   unsigned header = sizeof(dg);
   int sz;
-  if ((sz=::read(fd, dgramBuffer, header)) != int(header))
+  if ((sz=::read(fd, b, header)) != int(header))
     return 0;
 
   unsigned payloadSize = dg.xtc.sizeofPayload();
@@ -41,7 +81,7 @@ static Dgram* next(int fd, int sizeOfBuffers)
     return 0;
   }
     
-  if ((sz=::read(fd, dgramBuffer+header, payloadSize)) != int(payloadSize)) {
+  if ((sz=::read(fd, b+header, payloadSize)) != int(payloadSize)) {
     printf("Read payload found %d/%d bytes\n",sz,payloadSize);
     return 0;
   }
@@ -52,17 +92,15 @@ static Dgram* next(int fd, int sizeOfBuffers)
 //
 //  Insert a simulated transition
 //
-static Dgram* insert(TransitionId::Value tr) 
+static Dgram* insert(TransitionId::Value tr)
 {
-  Dgram* dg = (Dgram*)dgramBuffer;
+  Dgram* dg = apps->newDatagram();
   new((void*)&dg->seq) Sequence(Sequence::Event, tr, ClockTime(0,0), TimeStamp(0,0,0,0));
   new((char*)&dg->xtc) Xtc(TypeId(TypeId::Id_Xtc,0),ProcInfo(Level::Event,0,0));
   printTransition(dg);
   return dg;
 }
       
-static XtcMonitorServer* apps;
-
 long long int timeDiff(struct timespec* end, struct timespec* start) {
   long long int diff;
   diff =  (end->tv_sec - start->tv_sec) * 1000000000;
@@ -90,10 +128,11 @@ int main(int argc, char* argv[]) {
   bool verbose = false;
   int numberOfBuffers = 0;
   unsigned sizeOfBuffers = 0;
+  unsigned sequenceLength = 1;
   struct timespec start, now, sleepTime;
   (void) signal(SIGINT, sigfunc);
 
-  while ((c = getopt(argc, argv, "hf:r:n:s:p:lvc:")) != -1) {
+  while ((c = getopt(argc, argv, "hf:r:n:s:p:lvc:S:")) != -1) {
     switch (c) {
     case 'h':
       usage(argv[0]);
@@ -106,6 +145,9 @@ int main(int argc, char* argv[]) {
       break;
     case 'n':
       sscanf(optarg, "%d", &numberOfBuffers);
+      break;
+    case 'S':
+      sscanf(optarg, "%d", &sequenceLength);
       break;
     case 's':
       sizeOfBuffers = (unsigned) strtoul(optarg, NULL, 0);
@@ -136,8 +178,6 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  dgramBuffer = new char[sizeOfBuffers];
-
   int fd = ::open(xtcname,O_LARGEFILE,O_RDONLY);
   if (fd == -1) {
     char s[120];
@@ -152,9 +192,10 @@ int main(int argc, char* argv[]) {
 
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
 
-  apps = new XtcMonitorServer(sizeOfBuffers, 
-			      numberOfBuffers, 
-			      nclients);
+  apps = new MyMonitorServer(sizeOfBuffers, 
+			     numberOfBuffers, 
+			     nclients,
+			     sequenceLength);
   apps->init(partitionTag);
   
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
@@ -205,8 +246,6 @@ int main(int argc, char* argv[]) {
 
   ::close(fd);
   sigfunc(0);
-
-  delete[] dgramBuffer;
 
   return 0;
 }

@@ -20,13 +20,12 @@ using std::stack;
 #define PERMS (S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH)
 #define OFLAGS (O_CREAT|O_RDWR)
 
-using namespace Pds;
-
-class ShMsg {
+namespace Pds {
+  class ShMsg {
   public:
     ShMsg() {}
     ShMsg(const XtcMonitorMsg&  m,
-        Dgram* dg) : _m(m), _dg(dg) {}
+	  Dgram* dg) : _m(m), _dg(dg) {}
     ~ShMsg() {}
   public:
     const XtcMonitorMsg&  msg() const { return _m; }
@@ -34,19 +33,44 @@ class ShMsg {
   private:
     XtcMonitorMsg _m;
     Dgram*        _dg;
+  };
+
+  class EventSequence {
+  public:
+    EventSequence(unsigned n) :
+      _dgram  (new Dgram*[n]),
+      _current(0),
+      _depth  (n) {}
+    ~EventSequence() { delete[] _dgram; }
+  public:
+    bool     complete()           const { return _current==_depth; }
+    Dgram*   dgram   (unsigned i) const { return _dgram[i]; }
+    unsigned current ()           const { return _current; }
+    unsigned depth   ()           const { return _depth; }
+  public:
+    void insert(Dgram* dg) { _dgram[_current++] = dg; }
+    void clear () { _current = 0; }
+  private:
+    Dgram**  _dgram;
+    unsigned _current;
+    unsigned _depth;
+  };
 };
+
+using namespace Pds;
 
 static const int numberofTrBuffers = 8;
 
 
 XtcMonitorServer::XtcMonitorServer(unsigned sizeofBuffers, 
-    int numberofEvBuffers,
-    unsigned numberofClients) :
-    _sizeOfBuffers    (sizeofBuffers),
-    _numberOfEvBuffers(numberofEvBuffers),
-    _numberOfClients  (numberofClients),
-    _priority(0)
-    {
+				   unsigned numberofEvBuffers,
+				   unsigned numberofClients,
+				   unsigned sequenceLength) :
+  _sizeOfBuffers    (sizeofBuffers),
+  _numberOfEvBuffers(numberofEvBuffers),
+  _numberOfClients  (numberofClients),
+  _sequence(new EventSequence(sequenceLength))
+{
   _myMsg.numberOfBuffers(numberofEvBuffers+numberofTrBuffers);
   _myMsg.sizeOfBuffers  (sizeofBuffers);
 
@@ -54,10 +78,11 @@ XtcMonitorServer::XtcMonitorServer(unsigned sizeofBuffers,
   _tmo.tv_nsec = 0;
 
   sem_init(&_sem, 0, 1);
-    }
+}
 
 XtcMonitorServer::~XtcMonitorServer() 
 { 
+  delete _sequence;
   sem_destroy(&_sem);
   pthread_kill(_threadID, SIGTERM);
   printf("Not Unlinking Shared Memory... \n");
@@ -65,23 +90,38 @@ XtcMonitorServer::~XtcMonitorServer()
 
 XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg) 
 {
-  Result result = Handled;
   Dgram& dgrm = *dg;
-  if (dgrm.seq.service() == TransitionId::L1Accept) {
-    mq_getattr(_myInputEvQueue, &_mymq_attr);
-    if (_mymq_attr.mq_curmsgs) {
-      if (mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), &_priority) < 0) 
-        perror("mq_receive");
 
-      ShMsg m(_myMsg, dg);
-      if (mq_timedsend(_shuffleQueue, (const char*)&m, sizeof(m), 0, &_tmo)) {
-        printf("ShuffleQ timedout\n");
+  if (dgrm.seq.service() == TransitionId::L1Accept) {
+    if (!_sequence->complete()) {
+      _sequence->insert(dg);
+      return Deferred;
+    }
+    else {
+      mq_getattr(_myInputEvQueue, &_mymq_attr);
+      unsigned depth = _sequence->depth();
+      if (_mymq_attr.mq_curmsgs >= int(depth)) {
+	for(unsigned i=0; i<depth; i++) {
+	  if (mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL) < 0) 
+	    perror("mq_receive");
+
+	  ShMsg m(_myMsg, _sequence->dgram(i));
+	  if (mq_timedsend(_shuffleQueue, (const char*)&m, sizeof(m), 0, &_tmo)) {
+	    printf("ShuffleQ timedout\n");
+	    _deleteDatagram(_sequence->dgram(i));
+	  }
+	}
+	_sequence->clear();
+	_sequence->insert(dg);
+	return Deferred;
       }
-      else
-        result = Deferred;
     }
   }
   else {
+
+    for(unsigned i=0; i<_sequence->current(); i++)
+      _deleteDatagram(_sequence->dgram(i));
+    _sequence->clear();
 
     if (_freeTr.empty()) {
       printf("No buffers available for transition!\n");
@@ -111,7 +151,7 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
 
     _moveQueue(_myOutputEvQueue, _myInputEvQueue);
   }
-  return result;
+  return Handled;
 }
 
 void XtcMonitorServer::routine()
@@ -123,7 +163,7 @@ void XtcMonitorServer::routine()
 
       if (_pfd[1].revents & POLLIN) {
         ShMsg m;
-        if (mq_receive(_shuffleQueue, (char*)&m, sizeof(m), &_priority) < 0)
+        if (mq_receive(_shuffleQueue, (char*)&m, sizeof(m), NULL) < 0)
           perror("mq_receive");
 
         _copyDatagram(m.dg(),_myShm+_sizeOfBuffers*m.msg().bufferIndex());
@@ -229,7 +269,7 @@ void XtcMonitorServer::_initialize_client()
   sem_wait(&_sem);
 
   XtcMonitorMsg msg;
-  if (mq_receive(_discoveryQueue, (char*)&msg, sizeof(msg), &_priority) < 0) 
+  if (mq_receive(_discoveryQueue, (char*)&msg, sizeof(msg), NULL) < 0) 
     perror("mq_receive");
 
   unsigned iclient = msg.bufferIndex();
@@ -303,7 +343,7 @@ void XtcMonitorServer::_flushQueue(mqd_t q, char* m, unsigned sz)
   do {
     mq_getattr(q, &attr);
     if (attr.mq_curmsgs)
-      mq_receive(q, m, sz, &_priority);
+      mq_receive(q, m, sz, NULL);
   } while (attr.mq_curmsgs);
 }
 
@@ -314,7 +354,7 @@ void XtcMonitorServer::_moveQueue(mqd_t iq, mqd_t oq)
   do {
     mq_getattr(iq, &attr);
     if (attr.mq_curmsgs) {
-      if (mq_receive(iq, (char*)&m, sizeof(m), &_priority) == -1)
+      if (mq_receive(iq, (char*)&m, sizeof(m), NULL) == -1)
         perror("moveQueue: mq_receive");
       if (mq_send   (oq, (char*)&m, sizeof(m), 0) == -1) {
         printf("Failed to reclaim buffer %i : %s\n",
