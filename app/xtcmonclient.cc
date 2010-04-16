@@ -6,7 +6,7 @@
 #include "XtcMonitorClient.hh"
 
 void usage(char* progname) {
-  fprintf(stderr,"Usage: %s [-p <partitionTag>] [-h]\n", progname);
+  fprintf(stderr,"Usage: %s [-p <partitionTag>] [-i <index>] [-h]\n", progname);
 }
 
 

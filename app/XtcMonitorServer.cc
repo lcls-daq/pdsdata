@@ -23,38 +23,38 @@ using std::stack;
 using namespace Pds;
 
 class ShMsg {
-public:
-  ShMsg() {}
-  ShMsg(const XtcMonitorMsg&  m,
-	Dgram* dg) : _m(m), _dg(dg) {}
-  ~ShMsg() {}
-public:
-  const XtcMonitorMsg&  msg() const { return _m; }
-  Dgram* dg () const { return _dg; }
-private:
-  XtcMonitorMsg _m;
-  Dgram*        _dg;
+  public:
+    ShMsg() {}
+    ShMsg(const XtcMonitorMsg&  m,
+        Dgram* dg) : _m(m), _dg(dg) {}
+    ~ShMsg() {}
+  public:
+    const XtcMonitorMsg&  msg() const { return _m; }
+    Dgram* dg () const { return _dg; }
+  private:
+    XtcMonitorMsg _m;
+    Dgram*        _dg;
 };
 
 static const int numberofTrBuffers = 8;
 
 
 XtcMonitorServer::XtcMonitorServer(unsigned sizeofBuffers, 
-				   int numberofEvBuffers, 
-				   unsigned numberofClients) : 
-  _sizeOfBuffers    (sizeofBuffers),
-  _numberOfEvBuffers(numberofEvBuffers),
-  _numberOfClients  (numberofClients),
-  _priority(0)
-{
+    int numberofEvBuffers,
+    unsigned numberofClients) :
+    _sizeOfBuffers    (sizeofBuffers),
+    _numberOfEvBuffers(numberofEvBuffers),
+    _numberOfClients  (numberofClients),
+    _priority(0)
+    {
   _myMsg.numberOfBuffers(numberofEvBuffers+numberofTrBuffers);
   _myMsg.sizeOfBuffers  (sizeofBuffers);
-  
+
   _tmo.tv_sec  = 0;
   _tmo.tv_nsec = 0;
 
   sem_init(&_sem, 0, 1);
-}
+    }
 
 XtcMonitorServer::~XtcMonitorServer() 
 { 
@@ -71,14 +71,14 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
     mq_getattr(_myInputEvQueue, &_mymq_attr);
     if (_mymq_attr.mq_curmsgs) {
       if (mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), &_priority) < 0) 
-	perror("mq_receive");
-      
+        perror("mq_receive");
+
       ShMsg m(_myMsg, dg);
       if (mq_timedsend(_shuffleQueue, (const char*)&m, sizeof(m), 0, &_tmo)) {
-	printf("ShuffleQ timedout\n");
+        printf("ShuffleQ timedout\n");
       }
       else
-	result = Deferred;
+        result = Deferred;
     }
   }
   else {
@@ -101,12 +101,12 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
     }
     else 
       _push_transition(ibuffer);
-      
+
     sem_post(&_sem);
 
     for(unsigned i=0; i<_numberOfClients; i++) {
       if (mq_timedsend(_myOutputTrQueue[i], (const char*)&_myMsg, sizeof(_myMsg), 0, &_tmo))
-	;  // best effort
+        ;  // best effort
     }
 
     _moveQueue(_myOutputEvQueue, _myInputEvQueue);
@@ -119,30 +119,30 @@ void XtcMonitorServer::routine()
   while(1) {
     if (::poll(_pfd,2,-1) > 0) {
       if (_pfd[0].revents & POLLIN)
-	_initialize_client();
+        _initialize_client();
 
       if (_pfd[1].revents & POLLIN) {
-	ShMsg m;
-	if (mq_receive(_shuffleQueue, (char*)&m, sizeof(m), &_priority) < 0) 
-	  perror("mq_receive");
+        ShMsg m;
+        if (mq_receive(_shuffleQueue, (char*)&m, sizeof(m), &_priority) < 0)
+          perror("mq_receive");
 
-	_copyDatagram(m.dg(),_myShm+_sizeOfBuffers*m.msg().bufferIndex());
-	_deleteDatagram(m.dg());
+        _copyDatagram(m.dg(),_myShm+_sizeOfBuffers*m.msg().bufferIndex());
+        _deleteDatagram(m.dg());
 
-	if (mq_timedsend(_myOutputEvQueue, (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo)) {
-	  printf("outputEv timedout\n");
-	}
+        if (mq_timedsend(_myOutputEvQueue, (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo)) {
+          printf("outputEv timedout\n");
+        }
       }
     }
   }
 }
 
 static void* TaskRoutine(void* task)
-{
+    {
   XtcMonitorServer* srv = (XtcMonitorServer*)task;
   srv->routine();
   return srv;
-}
+    }
 
 int XtcMonitorServer::init(char *p) 
 { 
@@ -154,7 +154,7 @@ int XtcMonitorServer::init(char *p)
   sprintf(toQname  , "/PdsToMonitorEvQueue_%s",p);
   sprintf(fromQname, "/PdsFromMonitorEvQueue_%s",p);
   _pageSize = (unsigned)sysconf(_SC_PAGESIZE);
-  
+
   int ret = 0;
   _sizeOfShm = (_numberOfEvBuffers + numberofTrBuffers) * _sizeOfBuffers;
   unsigned remainder = _sizeOfShm%_pageSize;
@@ -182,7 +182,7 @@ int XtcMonitorServer::init(char *p)
   _pfd[0].fd      = _discoveryQueue  = _openQueue(fromQname);
   _pfd[0].events  = POLLIN;
   _pfd[0].revents = 0;
-    
+
   _myOutputTrQueue = new mqd_t[_numberOfClients];
   for(unsigned i=0; i<_numberOfClients; i++) {
     sprintf(toQname  , "/PdsToMonitorTrQueue_%s_%d",p,i);
@@ -200,14 +200,14 @@ int XtcMonitorServer::init(char *p)
   _pfd[1].fd = _shuffleQueue;
   _pfd[1].events  = POLLIN;
   _pfd[1].revents = 0;
-      
+
   // create the listening thread
   pthread_create(&_threadID,NULL,TaskRoutine,this);
 
   // prestuff the input queue which doubles as the free list
   for (int i=0; i<_numberOfEvBuffers; i++) {
     if (mq_send(_myInputEvQueue, (const char *)_myMsg.bufferIndex(i),
-		sizeof(XtcMonitorMsg), 0)) {
+        sizeof(XtcMonitorMsg), 0)) {
       perror("mq_send inQueueStuffing");
       delete this;
       exit(EXIT_FAILURE);
@@ -243,14 +243,14 @@ void XtcMonitorServer::_initialize_client()
   while(!tr.empty()) {
     int ibuffer = tr.top(); tr.pop();
     _myMsg.bufferIndex(ibuffer);
-      
-//     { Dgram& dgrm = *reinterpret_cast<Dgram*>(_myShm + _sizeOfBuffers * _myMsg.bufferIndex());
-//       printf("Sending tr %s to mq %d\nmsg %x/%x/%x\n",
-// 	     TransitionId::name(dgrm.seq.service()), 
-// 	     _myOutputTrQueue[iclient],
-// 	     _myMsg.bufferIndex(),
-// 	     _myMsg.numberOfBuffers(),
-// 	     _myMsg.sizeOfBuffers()); }
+
+    //     { Dgram& dgrm = *reinterpret_cast<Dgram*>(_myShm + _sizeOfBuffers * _myMsg.bufferIndex());
+    //       printf("Sending tr %s to mq %d\nmsg %x/%x/%x\n",
+    // 	     TransitionId::name(dgrm.seq.service()),
+    // 	     _myOutputTrQueue[iclient],
+    // 	     _myMsg.bufferIndex(),
+    // 	     _myMsg.numberOfBuffers(),
+    // 	     _myMsg.sizeOfBuffers()); }
 
     if (mq_send(_myOutputTrQueue[iclient], (const char*)&_myMsg, sizeof(_myMsg), 0)) 
       ;   // best effort only
@@ -279,7 +279,7 @@ mqd_t XtcMonitorServer::_openQueue(const char* name, mq_attr& attr)
   if (q == (mqd_t)-1) {
     perror("mq_open output");
     printf("mq_attr:\n\tmq_flags 0x%0lx\n\tmq_maxmsg 0x%0lx\n\tmq_msgsize 0x%0lx\n\t mq_curmsgs 0x%0lx\n",
-	   attr.mq_flags, attr.mq_maxmsg, attr.mq_msgsize, attr.mq_curmsgs );
+        attr.mq_flags, attr.mq_maxmsg, attr.mq_msgsize, attr.mq_curmsgs );
     fprintf(stderr, "Initializing XTC monitor server encountered an error!\n");
     delete this;
     exit(EXIT_FAILURE);
@@ -315,10 +315,10 @@ void XtcMonitorServer::_moveQueue(mqd_t iq, mqd_t oq)
     mq_getattr(iq, &attr);
     if (attr.mq_curmsgs) {
       if (mq_receive(iq, (char*)&m, sizeof(m), &_priority) == -1)
-	perror("moveQueue: mq_receive");
+        perror("moveQueue: mq_receive");
       if (mq_send   (oq, (char*)&m, sizeof(m), 0) == -1) {
-	printf("Failed to reclaim buffer %i : %s\n",
-	       m.bufferIndex(), strerror(errno));
+        printf("Failed to reclaim buffer %i : %s\n",
+            m.bufferIndex(), strerror(errno));
       }
     }
   } while (attr.mq_curmsgs);

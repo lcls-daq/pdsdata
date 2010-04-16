@@ -39,7 +39,7 @@ using namespace Pds;
 
 int XtcMonitorClient::processDgram(Dgram* dg) {
   printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
-       dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
+      dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
   return 0;
 }
 
@@ -71,15 +71,15 @@ static bool _handleDg(XtcMonitorClient& client, mqd_t iq, mqd_t oq, char*& myShm
     perror("mq_receive buffer");
     return false;
   } else {
-    
+
     int i = myMsg.bufferIndex();
     if ( (i>=0) && (i<myMsg.numberOfBuffers())) {
       Dgram* dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * i));
       if (client.processDgram(dg))
-	return false;
+        return false;
       if (oq != -1 && mq_send(oq, (const char *)&myMsg, sizeof(myMsg), priority)) {
-	perror("mq_send back buffer");
-	return false;
+        perror("mq_send back buffer");
+        return false;
       }
     }
     else {
@@ -97,9 +97,9 @@ static void _flushQueue(mqd_t q)
   unsigned priority;
   struct mq_attr mymq_attr;
   do {
-      mq_getattr(q, &mymq_attr);
-      if (mymq_attr.mq_curmsgs)
-	mq_receive(q, (char*)&m, sizeof(m), &priority);
+    mq_getattr(q, &mymq_attr);
+    if (mymq_attr.mq_curmsgs)
+      mq_receive(q, (char*)&m, sizeof(m), &priority);
   } while (mymq_attr.mq_curmsgs);
 }
 
@@ -174,29 +174,29 @@ int XtcMonitorClient::run(const char * tag, int index) {
       return ++error;
     } else {
       if (!init) {
-	init = true;
-	unsigned sizeOfShm = myMsg.numberOfBuffers() * myMsg.sizeOfBuffers();
-	unsigned pageSize  = (unsigned)sysconf(_SC_PAGESIZE);
-	unsigned remainder = sizeOfShm % pageSize;
-	if (remainder)
-	  sizeOfShm += pageSize - remainder;
+        init = true;
+        unsigned sizeOfShm = myMsg.numberOfBuffers() * myMsg.sizeOfBuffers();
+        unsigned pageSize  = (unsigned)sysconf(_SC_PAGESIZE);
+        unsigned remainder = sizeOfShm % pageSize;
+        if (remainder)
+          sizeOfShm += pageSize - remainder;
 
-	printf("Opening shared memory %s of size 0x%x (0x%x * 0x%x)\n",
-	       myShm,sizeOfShm,myMsg.numberOfBuffers(),myMsg.sizeOfBuffers());
+        printf("Opening shared memory %s of size 0x%x (0x%x * 0x%x)\n",
+            myShm,sizeOfShm,myMsg.numberOfBuffers(),myMsg.sizeOfBuffers());
 
-	int shm = shm_open(myShm, OFLAGS, PERMS_IN);
-	if (shm < 0) perror("shm_open");
-	myShm = (char*)mmap(NULL, sizeOfShm, PROT_READ, MAP_SHARED, shm, 0);
-	if (myShm == MAP_FAILED) perror("mmap");
-	else printf("Shared memory at %p\n", (void*)myShm);
+        int shm = shm_open(myShm, OFLAGS, PERMS_IN);
+        if (shm < 0) perror("shm_open");
+        myShm = (char*)mmap(NULL, sizeOfShm, PROT_READ, MAP_SHARED, shm, 0);
+        if (myShm == MAP_FAILED) perror("mmap");
+        else printf("Shared memory at %p\n", (void*)myShm);
       }
 
       int i = myMsg.bufferIndex();
       if ( (i>=0) && (i<myMsg.numberOfBuffers())) {
-	Dgram* dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * i));
-	if (dg->seq.service()==TransitionId::Map)
-	  if (!processDgram(dg))
-	    break;
+        Dgram* dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * i));
+        if (dg->seq.service()==TransitionId::Map)
+          if (!processDgram(dg))
+            break;
       }
     }
   } while(1);
@@ -212,14 +212,14 @@ int XtcMonitorClient::run(const char * tag, int index) {
   pfd[1].events  = POLLIN | POLLERR;
   pfd[1].revents = 0;
   int nfd = 2;
-    
+
   while (!error) {
     if (::poll(pfd, nfd, -1) > 0) {
       if (pfd[0].revents & POLLIN) { // Transition
-	if (!_handleDg(*this,myInputTrQueue,-1,myShm)) error++;
+        if (!_handleDg(*this,myInputTrQueue,-1,myShm)) error++;
       }
       else if (pfd[1].revents & POLLIN) { // Event
-	if (!_handleDg(*this,myInputEvQueue,myOutputEvQueue,myShm)) error++;
+        if (!_handleDg(*this,myInputEvQueue,myOutputEvQueue,myShm)) error++;
       }
     }
   }
