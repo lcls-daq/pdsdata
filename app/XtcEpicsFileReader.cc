@@ -1,4 +1,6 @@
 #include <string>
+#include <unistd.h>
+#include <fcntl.h>
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/xtc/Dgram.hh"
 #include "XtcEpicsFileReader.hh"
@@ -20,15 +22,15 @@ XtcEpicsFileReader::~XtcEpicsFileReader()
 
 int XtcEpicsFileReader::doFileRead()
 {
-    FILE* fileXtc = fopen(_sFnXtc.c_str(),"r");
+    int fd = open(_sFnXtc.c_str(),O_RDONLY | O_LARGEFILE);
     
-    if (!fileXtc) 
+    if (fd < 0) 
     {
         printf("XtcEpicsFileReader::doFileRead(): Unable to open file %s\n", _sFnXtc.c_str());
         return 1;
     }
 
-    XtcFileIterator xtcFileIter(fileXtc,XtcEpicsIterator::iMaxXtcSize);
+    XtcFileIterator xtcFileIter(fd,XtcEpicsIterator::iMaxXtcSize);
     
     while ( Dgram* dg = xtcFileIter.next() )
     {
@@ -38,7 +40,7 @@ int XtcEpicsFileReader::doFileRead()
         iter.iterate();
     }
 
-    fclose(fileXtc);
+    close(fd);
     return 0;
 }
   

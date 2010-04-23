@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
@@ -83,13 +84,13 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  FILE* file = fopen(xtcname,"r");
-  if (!file) {
+  int fd = open(xtcname,O_RDONLY | O_LARGEFILE);
+  if (fd < 0) {
     perror("Unable to open file %s\n");
     exit(2);
   }
 
-  XtcFileIterator iter(file,0x900000);
+  XtcFileIterator iter(fd,0x900000);
   Dgram* dg;
   unsigned long long bytes=0;
   unsigned events=0;
@@ -113,6 +114,6 @@ int main(int argc, char* argv[]) {
 
   printf("Found %d/%d events damaged in %lld bytes\n", damaged, events, bytes);
 
-  fclose(file);
+  close(fd);
   return 0;
 }

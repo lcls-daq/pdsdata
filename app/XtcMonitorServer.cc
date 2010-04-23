@@ -133,14 +133,27 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
     _myMsg.bufferIndex(ibuffer);
     _copyDatagram(dg, _myShm + _sizeOfBuffers*ibuffer);
 
+    //
+    //  Manage the cached transitions
+    //
     sem_wait(&_sem);
 
-    if (unsigned(dgrm.seq.service())%2) {
-      _pop_transition();
-      _freeTr.push(ibuffer);
+    TransitionId::Value trid = dgrm.seq.service();
+
+    if ( _cachedTr.empty() ) {
+      if (trid==TransitionId::Map) 
+	_push_transition(ibuffer);
     }
-    else 
-      _push_transition(ibuffer);
+    else {
+      const Dgram& odg = *reinterpret_cast<const Dgram*>(_myShm + _sizeOfBuffers*_cachedTr.top());
+      TransitionId::Value otrid = odg.seq.service();
+      if (trid == otrid+2)
+	_push_transition(ibuffer);
+      else if (trid == otrid+1) {
+	_pop_transition();
+	_freeTr.push(ibuffer);
+      }
+    }
 
     sem_post(&_sem);
 
@@ -260,6 +273,12 @@ int XtcMonitorServer::init(char *p)
   delete[] shmName;
   delete[] toQname;
   delete[] fromQname;
+
+  if (_sequence->depth() > _numberOfEvBuffers) {
+    printf("Requested sequence length (%d) > number of buffers (%d)\n",
+	   _sequence->depth(),_numberOfEvBuffers);
+    ret++;
+  }
 
   return ret;
 }

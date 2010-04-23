@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <time.h>
 
 #include "pdsdata/xtc/XtcIterator.hh"
@@ -199,14 +200,14 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  FILE* file = fopen(xtcname,"r");
-  if (!file) {
+  int fd = open(xtcname,O_RDONLY | O_LARGEFILE);
+  if (fd < 0) {
     perror("Unable to open file %s\n");
     exit(2);
   }
 
   bld.header();
-  XtcFileIterator iter(file,0x900000);
+  XtcFileIterator iter(fd,0x900000);
   Dgram* dg;
   unsigned long long bytes=0;
   while ((dg = iter.next())) {
@@ -228,6 +229,6 @@ int main(int argc, char* argv[]) {
     bld.dump();
   }
 
-  fclose(file);
+  close(fd);
   return 0;
 }

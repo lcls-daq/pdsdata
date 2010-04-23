@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <poll.h>
 
+#include "pdsdata/xtc/Dgram.hh"
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/ProcInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
-#include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/acqiris/ConfigV1.hh"
 #include "pdsdata/acqiris/DataDescV1.hh"
 #include "pdsdata/ipimb/ConfigV1.hh"
@@ -16,8 +17,6 @@
 #include "pdsdata/encoder/DataV1.hh"
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
-#include "pdsdata/camera/FrameFccdConfigV1.hh"
-#include "pdsdata/fccd/FccdConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/pnCCD/ConfigV1.hh"
@@ -36,6 +35,78 @@
 #include "pdsdata/princeton/FrameV1.hh"
 
 using namespace Pds;
+
+namespace Pds {
+  class LiveXtcFileIterator {
+  public:
+    LiveXtcFileIterator(const char* xtcname, size_t maxDgramSize) :
+      _maxDgramSize(maxDgramSize), 
+      _buf(new char[maxDgramSize])  
+    {
+      _fd = ::open(xtcname,O_RDONLY | O_LARGEFILE);
+      if (_fd < 0) {
+	perror("Unable to open file\n");
+	exit(2);
+      }
+      _pfd.fd     = _fd;
+      _pfd.events = POLLIN;
+    }
+    ~LiveXtcFileIterator() 
+    {
+      delete[] _buf; 
+      ::close(_fd);
+    }
+    Dgram* next() 
+    {
+      Dgram& dg = *(Dgram*)_buf;
+      _read(&dg, sizeof(dg));
+      size_t payloadSize = dg.xtc.sizeofPayload();
+      if ((payloadSize+sizeof(dg))>_maxDgramSize) {
+	printf("Datagram size %zu larger than maximum: %zu\n", payloadSize+sizeof(dg), _maxDgramSize);
+	return 0;
+      }
+      _read(dg.xtc.payload(), payloadSize);
+      return &dg;
+    }
+  private:
+    int _read(void* buf, ssize_t sz) 
+    {
+      char* p = (char*)buf;
+      nfds_t nfd = 1;
+
+      ssize_t rsz = ::read(_fd, p, sz);
+      p  += rsz;
+      sz -= rsz;
+
+      while(sz) {
+	//	printf("Waiting for %d bytes\n",sz);
+	timespec tp;
+	tp.tv_sec  = 0;
+	tp.tv_nsec = 1e8;
+	nanosleep(&tp,0);
+
+// 	clock_gettime(CLOCK_REALTIME, &tp);
+// 	printf(" wake at %d.%09d\n", tp.tv_sec, tp.tv_nsec); 
+
+// 	_pfd.revents = 0;
+// 	::poll(&_pfd, nfd, 100);
+
+	if ((rsz = ::read(_fd, p, sz))==-1) {
+	  perror("Error reading from file");
+	  exit(1);
+	}
+	p  += rsz;
+	sz -= rsz;
+      }
+      return p - (char*)buf;
+    }
+  private:
+    int _fd;
+    size_t   _maxDgramSize;
+    char*    _buf;
+    pollfd   _pfd;
+  };
+};
 
 class myLevelIter : public XtcIterator {
 public:
@@ -68,12 +139,6 @@ public:
   }
   void process(const DetInfo&, const Camera::FrameFexConfigV1&) {
     printf("*** Processing frame feature extraction config object\n");
-  }
-  void process(const DetInfo&, const Camera::FrameFccdConfigV1&) {
-    printf("*** Processing FCCD Frame ConfigV1 object\n");
-  }
-  void process(const DetInfo&, const FCCD::FccdConfigV1&) {
-    printf("*** Processing FCCD ConfigV1 object\n");
   }
   void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
     printf("*** Processing 2DGauss object\n");
@@ -396,21 +461,15 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  int fd = open(xtcname, O_RDONLY | O_LARGEFILE);
-  if (fd < 0) {
-    perror("Unable to open file %s\n");
-    exit(2);
-  }
-
-  XtcFileIterator iter(fd,0x900000);
+  LiveXtcFileIterator iter(xtcname,0x900000);
   Dgram* dg;
-  while ((dg = iter.next())) {
+  do {
+    dg = iter.next();
     printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
            dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
-    myLevelIter iter(&(dg->xtc),0);
-    iter.iterate();
-  }
+//     myLevelIter xiter(&(dg->xtc),0);
+//     xiter.iterate();
+  } while (dg->seq.service()!=TransitionId::EndRun);
 
-  ::close(fd);
   return 0;
 }
