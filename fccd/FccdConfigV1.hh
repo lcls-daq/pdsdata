@@ -23,12 +23,19 @@ namespace Pds {
       //   Full Image size is 576 x 500 with 16 bit pixels
       enum { Row_Pixels=500 };
       enum { Column_Pixels=576 };
+      //   After dropping dark pixels, size is 480 x 480
+      enum { Trimmed_Row_Pixels=480 };
+      enum { Trimmed_Column_Pixels=480 };
 
       FccdConfigV1();
       FccdConfigV1(
         uint16_t    u16OutputMode
       );
 
+      uint32_t          width ()            const     { return Column_Pixels; }
+      uint32_t          height()            const     { return Row_Pixels; }
+      uint32_t          trimmedWidth ()     const     { return Trimmed_Column_Pixels; }
+      uint32_t          trimmedHeight()     const     { return Trimmed_Row_Pixels; }
       uint16_t          outputMode()        const     { return _u16OutputMode; }
       unsigned          size()              const     { return (unsigned) sizeof(*this); }
 
