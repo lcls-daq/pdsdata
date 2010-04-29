@@ -23,8 +23,8 @@ Dgram* XtcFileIterator::next() {
   }
   int sz = ::read(_fd, dg.xtc.payload(), payloadSize);
   if (sz != payloadSize) {
-    printf("XtcFileIterator::next read incomplete payload %d/%d @ %lld\n",
-	   sz,payloadSize,lseek64(_fd,0,SEEK_CUR));
+    printf("XtcFileIterator::next read incomplete payload %d/%d\n",
+	   sz,payloadSize);
   }
 
   return sz!=payloadSize ? 0: &dg;
