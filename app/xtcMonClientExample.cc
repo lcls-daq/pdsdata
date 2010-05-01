@@ -375,24 +375,36 @@ void usage(char* progname) {
 
 int main(int argc, char* argv[]) {
   int c=0;
-  char partitionTag[128] = "";
-  MyXtcMonitorClient myClient;
+  unsigned client=0;
+  bool serialized=false;
+  const char* partitionTag = 0;
+  XtcMonitorClient myClient;
+  char* endPtr;
 
-  while ((c = getopt(argc, argv, "?ht:")) != -1) {
+  while ((c = getopt(argc, argv, "?ht:c:s")) != -1) {
     switch (c) {
     case '?':
     case 'h':
       usage(argv[0]);
       exit(0);
     case 't':
-      strcpy(partitionTag, optarg);
-      // the run method will only return if it encounters an error
-      fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag,0));
+      partitionTag = optarg;
+      break;
+    case 'c':
+      client = strtoul(optarg,&endPtr,0);
+      break;
+    case 's':
+      serialized = true;
       break;
     default:
       usage(argv[0]);
     }
   }
-  if (c<1) usage(argv[0]);
+  if (partitionTag==0)
+    usage(argv[0]);
+  else
+    fprintf(stderr, "myClient returned: %d\n", 
+	    myClient.run(partitionTag,client,serialized ? client : 0));
+
   return 1;
 }

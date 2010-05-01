@@ -21,7 +21,7 @@ Dgram* XtcFileIterator::next() {
     printf("Datagram size %zu larger than maximum: %zu\n", payloadSize+sizeof(dg), _maxDgramSize);
     return 0;
   }
-  int sz = ::read(_fd, dg.xtc.payload(), payloadSize);
+  ssize_t sz = ::read(_fd, dg.xtc.payload(), payloadSize);
   if (sz != payloadSize) {
     printf("XtcFileIterator::next read incomplete payload %d/%d\n",
 	   sz,payloadSize);

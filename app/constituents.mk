@@ -1,5 +1,5 @@
 libnames := appdata
-libsrcs_appdata := XtcMonitorServer.cc XtcMonitorClient.cc
+libsrcs_appdata := XtcMonitorServer.cc XtcMonitorClient.cc XtcMonitorMsg.cc
 
 #tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample acqconfig agatfile
 tgtnames = xtcreader livextcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest dmgreader bldreader
@@ -39,8 +39,8 @@ tgtsrcs_xtcmonclient := xtcmonclient.cc
 tgtlibs_xtcmonclient := pdsdata/xtcdata pdsdata/acqdata pdsdata/appdata
 tgtslib_xtcmonclient := $(USRLIBDIR)/rt
 
-tgtsrcs_xtcmonclientexample := xtcMonClientExample.cc XtcMonitorClient.cc
-tgtlibs_xtcmonclientexample := pdsdata/pnccddata pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/evrdata pdsdata/bld pdsdata/controldata 
+tgtsrcs_xtcmonclientexample := xtcMonClientExample.cc
+tgtlibs_xtcmonclientexample := pdsdata/pnccddata pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/evrdata pdsdata/bld pdsdata/controldata pdsdata/appdata
 tgtslib_xtcmonclientexample := $(USRLIBDIR)/rt
 
 tgtsrcs_agatfile := agatfile.cc

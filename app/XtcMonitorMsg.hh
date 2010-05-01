@@ -15,6 +15,12 @@ namespace Pds {
     XtcMonitorMsg* bufferIndex(int b) {_bufferIndex=b; return this;}
     void numberOfBuffers      (int n) {_numberOfBuffers = n;} 
     void sizeOfBuffers        (int s) {_sizeOfBuffers = s;} 
+  public:
+    static void sharedMemoryName     (const char* tag, char* buffer);
+    static void eventInputQueue      (const char* tag, unsigned client, char* buffer);
+    static void eventOutputQueue     (const char* tag, unsigned client, char* buffer);
+    static void transitionInputQueue (const char* tag, unsigned client, char* buffer);
+    static void discoveryQueue       (const char* tag, char* buffer);
   private:
     int _bufferIndex;
     int _numberOfBuffers;

@@ -29,7 +29,7 @@ void usage(char* progname) {
 
 int main(int argc, char* argv[]) {
   int c;
-  const char* partitionTag;
+  const char* partitionTag = 0;
   unsigned index = 0;
   int rate = 0;
 
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
   }
 
   MyMonitorClient myClient(rate);
-  fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag,index));
+  fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag,index,index));
   
   return 1;
 }

@@ -20,19 +20,22 @@ static char* dgramBuffer;
 
 static void printTransition(const Dgram* dg)
 {
-  printf("%18s transition: time %08x/%08x, payloadSize 0x%08x\n",
+  printf("%18s transition: time %08x/%08x, payloadSize 0x%08x dmg 0x%x\n",
 	 TransitionId::name(dg->seq.service()),
 	 dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
-	 dg->xtc.sizeofPayload());
+	 dg->xtc.sizeofPayload(),
+	 dg->xtc.damage.value());
 }
 
 class MyMonitorServer : public XtcMonitorServer {
 public:
-  MyMonitorServer(unsigned sizeofBuffers, 
+  MyMonitorServer(const char* tag,
+		  unsigned sizeofBuffers, 
 		  unsigned numberofEvBuffers, 
 		  unsigned numberofClients,
 		  unsigned sequenceLength) :
-    XtcMonitorServer(sizeofBuffers,
+    XtcMonitorServer(tag,
+		     sizeofBuffers,
 		     numberofEvBuffers,
 		     numberofClients,
 		     sequenceLength) 
@@ -126,13 +129,14 @@ int main(int argc, char* argv[]) {
   unsigned nclients = 1;
   bool loop = false;
   bool verbose = false;
+  bool veryverbose = false;
   int numberOfBuffers = 0;
   unsigned sizeOfBuffers = 0;
   unsigned sequenceLength = 1;
   struct timespec start, now, sleepTime;
   (void) signal(SIGINT, sigfunc);
 
-  while ((c = getopt(argc, argv, "hf:r:n:s:p:lvc:S:")) != -1) {
+  while ((c = getopt(argc, argv, "hf:r:n:s:p:lvVc:S:")) != -1) {
     switch (c) {
     case 'h':
       usage(argv[0]);
@@ -165,6 +169,10 @@ int main(int argc, char* argv[]) {
     case 'v':
       verbose = true;
       break;
+    case 'V':
+      verbose = true;
+      veryverbose = true;
+      break;
     default:
       fprintf(stderr, "I don't understand %c!\n", c);
       usage(argv[0]);
@@ -192,11 +200,11 @@ int main(int argc, char* argv[]) {
 
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
 
-  apps = new MyMonitorServer(sizeOfBuffers, 
+  apps = new MyMonitorServer(partitionTag,
+			     sizeOfBuffers, 
 			     numberOfBuffers, 
 			     nclients,
 			     sequenceLength);
-  apps->init(partitionTag);
   
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
   printf("Opening shared memory took %lld nanonseconds.\n", timeDiff(&now, &start));
@@ -217,10 +225,11 @@ int main(int argc, char* argv[]) {
       if (dg->seq.service() != TransitionId::L1Accept)
 	printTransition(dg);
       else if (verbose)
-	printf("\r%18s transition: time %08x/%08x, payloadSize 0x%08x, raw rate %8.3f Hz",
+	printf("%18s transition: time %08x/%08x, payloadSize 0x%08x, raw rate %8.3f Hz%c",
 	       TransitionId::name(dg->seq.service()),
 	       dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
-	       dg->xtc.sizeofPayload(), 1.e9/busyTime);
+	       dg->xtc.sizeofPayload(), 1.e9/busyTime,
+	       veryverbose ? '\n' : '\r');
       if (period > busyTime) {
 	sleepTime.tv_nsec = period - busyTime;
 	if (nanosleep(&sleepTime, &now)<0) perror("nanosleep");

@@ -1,3 +1,5 @@
+2010-Apr30	weaver  Tag V02-00-00.  Changed XtcMonitorServer and XtcMonitorClient to allow multiple clients to
+					receive events in parallel or serialized (daisy-chained).
 2010-Apr14	weaver			Created app/XtcMonitorServer for use by online and offline shared memory servers.
 2010-Apr5       jbt                     Removed SxrSpectrometer from DetInfo.hh - never used, never will be.
 2010-Apr2       jbt                     Added Encoder to DetInfo Detector enum.

@@ -62,10 +62,12 @@ using namespace Pds;
 static const int numberofTrBuffers = 8;
 
 
-XtcMonitorServer::XtcMonitorServer(unsigned sizeofBuffers, 
+XtcMonitorServer::XtcMonitorServer(const char* tag,
+				   unsigned sizeofBuffers, 
 				   unsigned numberofEvBuffers,
 				   unsigned numberofClients,
 				   unsigned sequenceLength) :
+  _tag              (tag),
   _sizeOfBuffers    (sizeofBuffers),
   _numberOfEvBuffers(numberofEvBuffers),
   _numberOfClients  (numberofClients),
@@ -78,6 +80,8 @@ XtcMonitorServer::XtcMonitorServer(unsigned sizeofBuffers,
   _tmo.tv_nsec = 0;
 
   sem_init(&_sem, 0, 1);
+
+  _init();
 }
 
 XtcMonitorServer::~XtcMonitorServer() 
@@ -86,6 +90,24 @@ XtcMonitorServer::~XtcMonitorServer()
   sem_destroy(&_sem);
   pthread_kill(_threadID, SIGTERM);
   printf("Not Unlinking Shared Memory... \n");
+
+  printf("Unlinking Message Queues... \n");
+  mq_close(_discoveryQueue);
+  mq_close(_myInputEvQueue);
+  for(unsigned i=0; i<_numberOfClients; i++) {
+    mq_close(_myOutputEvQueue[i]);
+    mq_close(_myOutputTrQueue[i]);
+  }
+  mq_close(_shuffleQueue);
+
+  char qname[128];
+  XtcMonitorMsg::discoveryQueue (_tag, qname);  mq_unlink(qname);
+  for(unsigned i=0; i<_numberOfClients; i++) {
+    XtcMonitorMsg::eventInputQueue     (_tag,i,qname); mq_unlink(qname);
+    XtcMonitorMsg::transitionInputQueue(_tag,i,qname); mq_unlink(qname);
+  }
+  XtcMonitorMsg::eventInputQueue     (_tag,_numberOfClients,qname); mq_unlink(qname);
+  sprintf(qname, "/PdsShuffleQueue_%s",_tag);  mq_unlink(qname);
 }
 
 XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg) 
@@ -98,9 +120,10 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
       return Deferred;
     }
     else {
-      mq_getattr(_myInputEvQueue, &_mymq_attr);
+      struct mq_attr attr;
+      mq_getattr(_myInputEvQueue, &attr);
       unsigned depth = _sequence->depth();
-      if (_mymq_attr.mq_curmsgs >= int(depth)) {
+      if (attr.mq_curmsgs >= int(depth)) {
 	for(unsigned i=0; i<depth; i++) {
 	  if (mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL) < 0) 
 	    perror("mq_receive");
@@ -134,7 +157,7 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
     _copyDatagram(dg, _myShm + _sizeOfBuffers*ibuffer);
 
     //
-    //  Manage the cached transitions
+    //  Cache the transition for any clients which may not be listening
     //
     sem_wait(&_sem);
 
@@ -157,12 +180,20 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
 
     sem_post(&_sem);
 
+    //
+    //  Steal all event buffers from the clients
+    //
+    for(unsigned i=0; i<_numberOfClients; i++)
+      _moveQueue(_myOutputEvQueue[i], _myInputEvQueue);
+
+    //
+    //  Broadcast the transition to all listening clients
+    //
     for(unsigned i=0; i<_numberOfClients; i++) {
       if (mq_timedsend(_myOutputTrQueue[i], (const char*)&_myMsg, sizeof(_myMsg), 0, &_tmo))
         ;  // best effort
     }
 
-    _moveQueue(_myOutputEvQueue, _myInputEvQueue);
   }
   return Handled;
 }
@@ -182,9 +213,14 @@ void XtcMonitorServer::routine()
         _copyDatagram(m.dg(),_myShm+_sizeOfBuffers*m.msg().bufferIndex());
         _deleteDatagram(m.dg());
 
-        if (mq_timedsend(_myOutputEvQueue, (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo)) {
-          printf("outputEv timedout\n");
-        }
+	//
+	//  Send this event to the first available client
+	//
+	for(unsigned i=0; i<_numberOfClients; i++)
+	  if (mq_timedsend(_myOutputEvQueue[i], (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo))
+	    ; //	    printf("outputEv timedout to client %d\n",i);
+	  else
+	    break;
       }
     }
   }
@@ -197,25 +233,20 @@ static void* TaskRoutine(void* task)
   return srv;
     }
 
-int XtcMonitorServer::init(char *p) 
+int XtcMonitorServer::_init() 
 { 
+  const char* p = _tag;
   char* shmName    = new char[128];
   char* toQname    = new char[128];
   char* fromQname  = new char[128];
 
   sprintf(shmName  , "/PdsMonitorSharedMemory_%s",p);
-  sprintf(toQname  , "/PdsToMonitorEvQueue_%s",p);
-  sprintf(fromQname, "/PdsFromMonitorEvQueue_%s",p);
   _pageSize = (unsigned)sysconf(_SC_PAGESIZE);
 
   int ret = 0;
   _sizeOfShm = (_numberOfEvBuffers + numberofTrBuffers) * _sizeOfBuffers;
   unsigned remainder = _sizeOfShm%_pageSize;
   if (remainder) _sizeOfShm += _pageSize - remainder;
-
-  _mymq_attr.mq_maxmsg  = _numberOfEvBuffers;
-  _mymq_attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
-  _mymq_attr.mq_flags   = O_NONBLOCK;
 
   umask(1);  // try to enable world members to open these devices.
 
@@ -227,27 +258,51 @@ int XtcMonitorServer::init(char *p)
   _myShm = (char*)mmap(NULL, _sizeOfShm, PROT_READ|PROT_WRITE, MAP_SHARED, shm, 0);
   if (_myShm == MAP_FAILED) {ret++; perror("mmap");}
 
-  _flushQueue(_myOutputEvQueue = _openQueue(toQname));
+  mq_attr q_attr;
+  q_attr.mq_maxmsg  = _numberOfEvBuffers;
+  q_attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
+  q_attr.mq_flags   = O_NONBLOCK;
 
-  _flushQueue(_myInputEvQueue  = _openQueue(fromQname));
+  XtcMonitorMsg::eventOutputQueue(p,_numberOfClients-1,toQname);
+  _flushQueue(_myInputEvQueue  = _openQueue(toQname,q_attr));
 
+  q_attr.mq_maxmsg  = _numberOfEvBuffers / _numberOfClients;
+  q_attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
+  q_attr.mq_flags   = O_NONBLOCK;
+
+  _myOutputEvQueue = new mqd_t[_numberOfClients];
+  for(unsigned i=0; i<_numberOfClients; i++) {
+    XtcMonitorMsg::eventInputQueue(p,i,toQname);
+    _flushQueue(_myOutputEvQueue[i] = _openQueue(toQname,q_attr));
+  }
+  
+  q_attr.mq_maxmsg  = _numberOfClients;
+  q_attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
+  q_attr.mq_flags   = O_NONBLOCK;
+
+  XtcMonitorMsg::discoveryQueue(p, fromQname);
   sprintf(fromQname, "/PdsFromMonitorDiscovery_%s",p);
-  _pfd[0].fd      = _discoveryQueue  = _openQueue(fromQname);
+  _pfd[0].fd      = _discoveryQueue  = _openQueue(fromQname,q_attr);
   _pfd[0].events  = POLLIN;
   _pfd[0].revents = 0;
 
+  
+  q_attr.mq_maxmsg  = numberofTrBuffers;
+  q_attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
+  q_attr.mq_flags   = O_NONBLOCK;
+
   _myOutputTrQueue = new mqd_t[_numberOfClients];
   for(unsigned i=0; i<_numberOfClients; i++) {
-    sprintf(toQname  , "/PdsToMonitorTrQueue_%s_%d",p,i);
-    _flushQueue(_myOutputTrQueue[i] = _openQueue(toQname));
+    XtcMonitorMsg::transitionInputQueue(p,i,toQname);
+    _flushQueue(_myOutputTrQueue[i] = _openQueue(toQname,q_attr));
   }
 
-  struct mq_attr shq_attr;
-  shq_attr.mq_maxmsg  = _numberOfEvBuffers;
-  shq_attr.mq_msgsize = (long int)sizeof(ShMsg);
-  shq_attr.mq_flags   = O_NONBLOCK;
+  q_attr.mq_maxmsg  = _numberOfEvBuffers;
+  q_attr.mq_msgsize = (long int)sizeof(ShMsg);
+  q_attr.mq_flags   = O_NONBLOCK;
+
   sprintf(toQname, "/PdsShuffleQueue_%s",p);
-  _shuffleQueue = _openQueue(toQname, shq_attr);
+  _shuffleQueue = _openQueue(toQname, q_attr);
   { ShMsg m; _flushQueue(_shuffleQueue,(char*)&m, sizeof(m)); }
 
   _pfd[1].fd = _shuffleQueue;
@@ -258,7 +313,7 @@ int XtcMonitorServer::init(char *p)
   pthread_create(&_threadID,NULL,TaskRoutine,this);
 
   // prestuff the input queue which doubles as the free list
-  for (int i=0; i<_numberOfEvBuffers; i++) {
+  for (unsigned i=0; i<_numberOfEvBuffers; i++) {
     if (mq_send(_myInputEvQueue, (const char *)_myMsg.bufferIndex(i),
         sizeof(XtcMonitorMsg), 0)) {
       perror("mq_send inQueueStuffing");
@@ -327,11 +382,6 @@ void XtcMonitorServer::_copyDatagram(Dgram* p, char* b)
 
 void XtcMonitorServer::_deleteDatagram(Dgram* p) {}
 
-mqd_t XtcMonitorServer::_openQueue(const char* name)
-{
-  return _openQueue(name, _mymq_attr);
-}
-
 mqd_t XtcMonitorServer::_openQueue(const char* name, mq_attr& attr) 
 {
   mqd_t q = mq_open(name,  O_CREAT|O_RDWR, PERMS, &attr);
@@ -343,9 +393,21 @@ mqd_t XtcMonitorServer::_openQueue(const char* name, mq_attr& attr)
     delete this;
     exit(EXIT_FAILURE);
   }
-  else {
+  else {  // Open twice to set all of the attributes
     printf("Opened queue %s (%d)\n",name,q);
   }
+
+  mq_attr r_attr;
+  mq_getattr(q,&r_attr);
+  if (r_attr.mq_maxmsg != attr.mq_maxmsg ||
+      r_attr.mq_msgsize!= attr.mq_msgsize) {
+
+    printf("Failed to set queue attributes\n");
+    printf("open attr  %x %x %x  read attr %x %x %x\n",
+	   attr.mq_flags, attr.mq_maxmsg, attr.mq_msgsize,
+	   r_attr.mq_flags, r_attr.mq_maxmsg, r_attr.mq_msgsize);
+  }
+
   return q;
 }
 

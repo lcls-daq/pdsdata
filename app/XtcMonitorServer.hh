@@ -20,7 +20,8 @@ namespace Pds {
   public:
     enum { numberofTrBuffers=8 };
   public:
-    XtcMonitorServer(unsigned sizeofBuffers, 
+    XtcMonitorServer(const char* tag,
+		     unsigned sizeofBuffers, 
 		     unsigned numberofEvBuffers, 
 		     unsigned numberofClients,
 		     unsigned sequenceLength=1);
@@ -29,10 +30,9 @@ namespace Pds {
     enum Result { Handled, Deferred };
     Result events   (Dgram* dg);
     void routine    ();
-    int init        (char *p);
   private:
+    int  _init             ();
     void _initialize_client();
-    mqd_t _openQueue       (const char* name);
     mqd_t _openQueue       (const char* name, mq_attr&);
     void _flushQueue       (mqd_t q);
     void _flushQueue       (mqd_t q, char* m, unsigned sz);
@@ -44,18 +44,18 @@ namespace Pds {
     virtual void _copyDatagram  (Dgram* dg, char*);
     virtual void _deleteDatagram(Dgram* dg);
   private:
+    const char*     _tag;
     unsigned        _sizeOfBuffers;
-    int             _numberOfEvBuffers;
+    unsigned        _numberOfEvBuffers;
     unsigned        _numberOfClients;
     unsigned        _sizeOfShm;
     char*           _bufferP;   //  pointer to the shared memory area being used
-    char*           _myShm; // the pointer to start of shared memory
-    mqd_t           _myOutputEvQueue;
-    mqd_t           _myInputEvQueue;
+    char*           _myShm;     // the pointer to start of shared memory
     unsigned        _pageSize;
-    mq_attr         _mymq_attr;
     XtcMonitorMsg   _myMsg;
-    mqd_t*          _myOutputTrQueue;
+    mqd_t           _myInputEvQueue;
+    mqd_t*          _myOutputEvQueue; // nclients
+    mqd_t*          _myOutputTrQueue; // nclients
     mqd_t           _discoveryQueue;
     std::stack<int> _cachedTr;
     std::queue<int> _freeTr;
