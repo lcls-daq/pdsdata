@@ -123,6 +123,9 @@ int XtcMonitorClient::processDgram(Dgram* dg) {
   return 0;
 }
 
+int XtcMonitorClient::run(const char * tag, int tr_index) 
+{ return run(tag, tr_index, tr_index); }
+
 int XtcMonitorClient::run(const char * tag, int tr_index, int ev_index) {
   int error = 0;
   char* qname             = new char[128];
