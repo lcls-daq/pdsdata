@@ -367,7 +367,7 @@ private:
   static PNCCD::ConfigV1 _pnCcdCfgList[2];  
 };
 
-PNCCD::ConfigV1 myLevelIter::_pnCcdCfgList[2] = { PNCCD::ConfigV1(0,0), PNCCD::ConfigV1(0,0) };
+PNCCD::ConfigV1 myLevelIter::_pnCcdCfgList[2] = { PNCCD::ConfigV1(), PNCCD::ConfigV1() };
 
 void usage(char* progname) {
   fprintf(stderr,"Usage: %s -f <filename> [-h]\n", progname);
