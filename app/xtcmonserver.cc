@@ -113,7 +113,7 @@ long long int timeDiff(struct timespec* end, struct timespec* start) {
 }
 
 void usage(char* progname) {
-  fprintf(stderr,"Usage: %s -f <filename> -n <numberOfBuffers> -s <sizeOfBuffers> [-r <ratePerSec>] [-p <partitionTag>] [-l] [-h]\n", progname);
+  fprintf(stderr,"Usage: %s -f <filename> -n <numberOfBuffers> -s <sizeOfBuffers> [-r <ratePerSec>] [-p <partitionTag>] [-c <# clients>] [-l] [-h]\n", progname);
 }
 
 void sigfunc(int sig_no) {
