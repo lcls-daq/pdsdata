@@ -21,6 +21,7 @@
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/pnCCD/ConfigV1.hh"
+#include "pdsdata/pnCCD/ConfigV2.hh"
 #include "pdsdata/pnCCD/FrameV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/evr/ConfigV2.hh"
@@ -90,10 +91,29 @@ public:
       return;
     }
     
-    _pnCcdCfgList[det.devId()] = config;
+    _pnCcdCfgListV1[det.devId()] = config;
     printf("*** Processing pnCCD config.  Number of Links: %d, PayloadSize per Link: %d\n",
            config.numLinks(),config.payloadSizePerLink());
   }  
+  void process(const DetInfo& det, const PNCCD::ConfigV2& config) {
+    if ( det.detId() != 0 )
+    {
+      printf( "myLevelIter::process(...,PNCCD::ConfigV2&): pnCCD detector Id (%d) is not 0\n", det.detId() );
+      return;
+    }
+    if ( det.devId() < 0 || det.devId() > 1)
+    {
+      printf( "myLevelIter::process(...,PNCCD::ConfigV2&): pnCCD device Id (%d) is out of range (0..1)\n", det.devId() );
+      return;
+    }
+
+    _pnCcdCfgListV2[det.devId()] = config;
+    printf("*** Processing pnCCD config.  Number of Links: %u, PayloadSize per Link: %u\n",
+           config.numLinks(),config.payloadSizePerLink());
+    printf("\tNumber of Channels %u, Number of Rows %u, Number of SubModule Channels %u\n\tNumber of SubModule Rows %u, Number of SubModules, %u\n",
+        config.numChannels(),config.numRows(), config.numSubmoduleChannels(),config.numSubmoduleRows(),config.numSubmodules());
+    printf("\tCamex Magic 0x%x, info %s, Timing File Name %s\n", config.camexMagic(),config.info(),config.timingFName());
+  }
   void process(const DetInfo& det, const PNCCD::FrameV1* f) {
     if ( det.detId() != 0 )
     {
@@ -271,12 +291,22 @@ public:
       process(info, *(const Camera::FrameFexConfigV1*)(xtc->payload()));
       break;
     case (TypeId::Id_pnCCDconfig) :
-    {
-      process(info, *(const PNCCD::ConfigV1*)(xtc->payload()));
+      {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+        case 1:
+          process(info, *(const PNCCD::ConfigV1*)(xtc->payload()));
+          break;
+        case 2:
+          process(info, *(const PNCCD::ConfigV2*)(xtc->payload()));
+          break;
+        default:
+          printf("Unsupported pnCCD configuration version %d\n",version);
+      }
       break;
-    }
+      }
     case (TypeId::Id_pnCCDframe) :
-    {
+      {
       process(info, (const PNCCD::FrameV1*)(xtc->payload()));
       break;
     }
@@ -364,10 +394,12 @@ private:
   unsigned _depth;
 
   /* static private data */
-  static PNCCD::ConfigV1 _pnCcdCfgList[2];  
+  static PNCCD::ConfigV1 _pnCcdCfgListV1[2];
+  static PNCCD::ConfigV2 _pnCcdCfgListV2[2];
 };
 
-PNCCD::ConfigV1 myLevelIter::_pnCcdCfgList[2] = { PNCCD::ConfigV1(), PNCCD::ConfigV1() };
+PNCCD::ConfigV1 myLevelIter::_pnCcdCfgListV1[2] = { PNCCD::ConfigV1(), PNCCD::ConfigV1() };
+PNCCD::ConfigV2 myLevelIter::_pnCcdCfgListV2[2] = { PNCCD::ConfigV2(), PNCCD::ConfigV2() };
 
 void usage(char* progname) {
   fprintf(stderr,"Usage: %s -f <filename> [-h]\n", progname);
