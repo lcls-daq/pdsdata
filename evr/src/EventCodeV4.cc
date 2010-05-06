@@ -1,11 +1,11 @@
-#include "pdsdata/evr/EventCodeV3.hh"
+#include "pdsdata/evr/EventCodeV4.hh"
 
 #include <string.h>
 
 using namespace Pds;
 using namespace EvrData;
 
-EventCodeV3::EventCodeV3(
+EventCodeV4::EventCodeV4(
   uint16_t u16Code,
   bool     bReadout,
   bool     bTerminator,

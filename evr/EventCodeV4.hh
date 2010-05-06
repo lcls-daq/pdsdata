@@ -1,5 +1,5 @@
-#ifndef Evr_EventCodeV3_hh
-#define Evr_EventCodeV3_hh
+#ifndef Evr_EventCodeV4_hh
+#define Evr_EventCodeV4_hh
 
 #include <stdint.h>
 
@@ -10,10 +10,10 @@ namespace Pds
 namespace EvrData
 {
 
-class EventCodeV3
+class EventCodeV4
 {
 public:
-  EventCodeV3(
+  EventCodeV4(
     uint16_t u16Code,
     bool     bReadout,
     bool     bTerminator,    
@@ -23,7 +23,7 @@ public:
     uint32_t u32MaskSet     = 0, 
     uint32_t u32MaskClear   = 0);
     
-  EventCodeV3() {} // For array initialization
+  EventCodeV4() {} // For array initialization
 
   uint16_t  code        () const { return _u16Code; }
   bool      isReadout   () const { return ( _u16MaskEventAttr & (1<<EventAttrBitReadout) )     != 0; }

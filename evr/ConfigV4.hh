@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #include "pdsdata/xtc/TypeId.hh"
-#include "pdsdata/evr/EventCodeV3.hh"
+#include "pdsdata/evr/EventCodeV4.hh"
 #include "pdsdata/evr/PulseConfigV3.hh"
 #include "pdsdata/evr/OutputMap.hh"
 
@@ -19,7 +19,7 @@ namespace Pds
 namespace EvrData
 {
 
-class ConfigV3
+class ConfigV4
 {
   /*
    * Data layout:
@@ -27,35 +27,35 @@ class ConfigV3
    * ---------------
    * Data members in this class
    * --------------- 
-   * Event Code configurations  (array of class EventCodeV3)
-   * Pulse configurations       (array of class PulseConfigV3)
+   * Event Code configurations  (array of class EventCodeType)
+   * Pulse configurations       (array of class PulseType)
    * Output Map configurations  (array of class OutputMap)
    */
 public:
-  enum { Version = 3 };
+  enum { Version = 4 };
   
-  typedef EventCodeV3   EventCodeType;  
+  typedef EventCodeV4   EventCodeType;  
   typedef PulseConfigV3 PulseType;  
   typedef OutputMap     OutputMapType;  
 
-  ConfigV3(
-    uint32_t neventcodes, const EventCodeV3*    eventcodes,
-    uint32_t npulses,     const PulseConfigV3*  pulses,
+  ConfigV4(
+    uint32_t neventcodes, const EventCodeType*    eventcodes,
+    uint32_t npulses,     const PulseType*  pulses,
     uint32_t noutputs,    const OutputMap*      outputs );    
 
   //  event codes appended to this structure   
-  uint32_t              neventcodes ()          const;
-  const  EventCodeV3&   eventcode   (unsigned)  const;
+  uint32_t                neventcodes ()          const;
+  const  EventCodeType&   eventcode   (unsigned)  const;
 
   //  pulse configurations appended to this structure
-  uint32_t              npulses     ()          const;
-  const PulseConfigV3&  pulse       (unsigned)  const;
+  uint32_t          npulses     ()          const;
+  const PulseType&  pulse       (unsigned)  const;
 
   //  output configurations appended to this structure
   uint32_t              noutputs    ()          const;
   const OutputMap&      output_map  (unsigned)  const;
 
-  //  size including appended EventCode's, PulseConfigV3's and OutputMap's
+  //  size including appended EventCode's, PulseType's and OutputMap's
   unsigned        size() const;
   
 private:
