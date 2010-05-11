@@ -9,7 +9,12 @@ namespace Pds
 namespace EpicsXtcSettings
 {
   const int            iXtcVersion = 1;    
-  const int            iMaxXtcSize = 2000000; // Space enough for 10000 PVs of type DBR_DOUBLE
+  const int            iMaxNumPv   = 10000; 
+  
+  /*
+   * 200 Bytes: For storing a DBR_CTRL_DOUBLE PV
+   */
+  const int            iMaxXtcSize = iMaxNumPv * 200;
   const TypeId::Type   typeXtc     = TypeId::Id_Epics;
   extern const DetInfo detInfo;
 }
