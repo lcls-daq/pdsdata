@@ -17,6 +17,7 @@
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/evr/ConfigV2.hh"
 #include "pdsdata/evr/ConfigV3.hh"
+#include "pdsdata/evr/ConfigV4.hh"
 #include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/pnCCD/FrameV1.hh"
@@ -158,6 +159,9 @@ public:
   void process(const DetInfo&, const EvrData::ConfigV3&) {
     printf("*** Processing EVR config V3 object\n");
   }
+  void process(const DetInfo&, const EvrData::ConfigV4&) {
+    printf("*** Processing EVR config V4 object\n");
+  }
   void process(const DetInfo&, const EvrData::DataV3& data) {
     printf("*** Processing Evr Data object\n");
     
@@ -279,6 +283,9 @@ public:
         break;
       case 3:
         process(info, *(const EvrData::ConfigV3*)(xtc->payload()));
+        break;
+      case 4:
+        process(info, *(const EvrData::ConfigV4*)(xtc->payload()));
         break;
       default:
         printf("Unsupported evr configuration version %d\n",version);
@@ -404,7 +411,7 @@ int main(int argc, char* argv[]) {
     usage(argv[0]);
   else
     fprintf(stderr, "myClient returned: %d\n", 
-	    myClient.run(partitionTag,client,serialized ? client : 0));
+      myClient.run(partitionTag,client,serialized ? client : 0));
 
   return 1;
 }
