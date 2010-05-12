@@ -26,31 +26,31 @@ static const char* quad_mode_to_name[] = {
 void Pds::Encoder::ConfigV1::dump() const
 {
   printf( ">>------ Encoder Config -----------\n" );
-  printf( "\tChannel #: %d\n", _chan_num );
-  printf( "\tEncoder counting mode: %d (%s)\n",
+  printf( "\tChannel #: %u\n", _chan_num );
+  printf( "\tEncoder counting mode: %u (%s)\n",
           _count_mode,
           count_mode_to_name[_count_mode] );
-  printf( "\tEncoder quadrature mode: %d (%s)\n",
+  printf( "\tEncoder quadrature mode: %u (%s)\n",
           _quadrature_mode,
           quad_mode_to_name[_quadrature_mode] );
-  printf( "\tExternal input for trigger: %d\n", _input_num );
-  printf( "\tTrigger on edge: %d (%s)\n",
+  printf( "\tExternal input for trigger: %u\n", _input_num );
+  printf( "\tTrigger on edge: %u (%s)\n",
           _input_rising,
           _input_rising ? "Rising" : "Falling" );
   printf( "\tEncoder timebase ticks per second: %u\n", _ticks_per_sec );
   printf( "<<------ End Encoder Config -----------\n" );
 }
 
-Pds::Encoder::ConfigV1::ConfigV1( uint8_t      chan_num,
-                                  count_mode::type_t count_mode,
-                                  quad_mode::type_t  quadrature_mode,
-                                  uint8_t      input_num,
-                                  bool         input_rising,
-                                  uint32_t     ticks_per_sec ) 
-   : _chan_num( chan_num ),
-     _count_mode( count_mode ),
+Pds::Encoder::ConfigV1::ConfigV1( uint32_t           chan_num,
+                                  uint32_t           count_mode,
+                                  uint32_t           quadrature_mode,
+                                  uint32_t           input_num,
+                                  uint32_t           input_rising,
+                                  uint32_t           ticks_per_sec ) 
+   : _chan_num(        chan_num ),
+     _count_mode(      count_mode ),
      _quadrature_mode( quadrature_mode ),
-     _input_num( input_num ),
-     _input_rising( input_rising ),
-     _ticks_per_sec( ticks_per_sec ) 
+     _input_num(       input_num ),
+     _input_rising(    input_rising ),
+     _ticks_per_sec(   ticks_per_sec ) 
 {}
