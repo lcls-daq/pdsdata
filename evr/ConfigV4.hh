@@ -1,8 +1,8 @@
 //
 //  Class for configuration of the Event Receiver
 //
-#ifndef Evr_ConfigV3_hh
-#define Evr_ConfigV3_hh
+#ifndef Evr_ConfigV4_hh
+#define Evr_ConfigV4_hh
 
 #include <stdint.h>
 
