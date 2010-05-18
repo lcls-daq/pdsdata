@@ -8,6 +8,8 @@
 #include "pdsdata/xtc/TypeId.hh"
 #include <stdint.h>
 
+#pragma pack(4)
+
 namespace Pds {
   namespace EvrData {
     class IOChannel;
@@ -31,4 +33,7 @@ namespace Pds {
     };
   };
 };
+
+#pragma pack()
+
 #endif

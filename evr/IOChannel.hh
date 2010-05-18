@@ -3,6 +3,8 @@
 
 #include "pdsdata/xtc/DetInfo.hh"
 
+#pragma pack(4)
+
 namespace Pds {
   namespace EvrData {
     class IOChannel {
@@ -25,5 +27,7 @@ namespace Pds {
     };
   };
 };
+
+#pragma pack()
 
 #endif
