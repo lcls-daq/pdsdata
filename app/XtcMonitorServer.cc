@@ -110,6 +110,11 @@ XtcMonitorServer::~XtcMonitorServer()
 XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg) 
 {
   Dgram& dgrm = *dg;
+  if (sizeof(dgrm)+dgrm.xtc.sizeofPayload() > _sizeOfBuffers) {
+    printf("XtcMonitorServer skipping %s with payload size %d - too large\n",
+	   TransitionId::name(dgrm.seq.service()), dgrm.xtc.sizeofPayload());
+    return Handled;
+  }
 
   if (dgrm.seq.service() == TransitionId::L1Accept) {
     if (!_sequence->complete()) {
@@ -139,16 +144,24 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
   }
   else {
 
+    printf("Transition %s : depths : freeTr %d  cachedTr %d\n",
+	   TransitionId::name(dgrm.seq.service()), _freeTr.size(), _cachedTr.size());
+	   
+
     for(unsigned i=0; i<_sequence->current(); i++)
       _deleteDatagram(_sequence->dgram(i));
     _sequence->clear();
 
     if (_freeTr.empty()) {
-      printf("No buffers available for transition!\n");
+      printf("No buffers available for transition !\n");
       abort();
     }
 
     int ibuffer = _freeTr.front(); _freeTr.pop();
+    if (ibuffer<0 || ibuffer>=int(_numberOfEvBuffers+numberofTrBuffers)) {
+      printf("XtcMonitorServer popped buffer %d\n",ibuffer);
+      abort();
+    }
 
     _myMsg.bufferIndex(ibuffer);
     _copyDatagram(dg, _myShm + _sizeOfBuffers*ibuffer);

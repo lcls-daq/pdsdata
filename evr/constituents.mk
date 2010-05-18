@@ -9,3 +9,5 @@ libsrcs_evrdata += src/DataV3.cc
 libsrcs_evrdata += src/EventCodeV3.cc
 libsrcs_evrdata += src/EventCodeV4.cc
 libsrcs_evrdata += src/PulseConfigV3.cc
+libsrcs_evrdata += src/IOChannel.cc
+libsrcs_evrdata += src/IOConfigV1.cc

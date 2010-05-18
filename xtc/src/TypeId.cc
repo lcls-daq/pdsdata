@@ -41,7 +41,8 @@ const char* TypeId::name(Type type)
     "IpimbData",
     "IpimbConfig",
     "EncoderData",
-    "EncoderConfig"
+    "EncoderConfig",
+    "EvrIOConfig"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

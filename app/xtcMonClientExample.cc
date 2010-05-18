@@ -14,6 +14,7 @@
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
+#include "pdsdata/evr/IOConfigV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/evr/ConfigV2.hh"
 #include "pdsdata/evr/ConfigV3.hh"
@@ -153,6 +154,9 @@ public:
   void process(const DetInfo&, const EvrData::ConfigV1&) {
     printf("*** Processing EVR config V1 object\n");
   }
+  void process(const DetInfo&, const EvrData::IOConfigV1&) {
+    printf("*** Processing EVR IOconfig V1 object\n");
+  }
   void process(const DetInfo&, const EvrData::ConfigV2&) {
     printf("*** Processing EVR config V2 object\n");
   }
@@ -270,6 +274,9 @@ public:
       break;
     case (TypeId::Id_pnCCDconfig) :
       process(info, *(const PNCCD::ConfigV1*)(xtc->payload()));
+      break;
+    case (TypeId::Id_EvrIOConfig) :
+      process(info, *(const EvrData::IOConfigV1*)(xtc->payload()));
       break;
     case (TypeId::Id_EvrConfig) :
     {      

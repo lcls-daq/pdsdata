@@ -23,6 +23,7 @@
 #include "pdsdata/pnCCD/ConfigV1.hh"
 #include "pdsdata/pnCCD/ConfigV2.hh"
 #include "pdsdata/pnCCD/FrameV1.hh"
+#include "pdsdata/evr/IOConfigV1.hh"
 #include "pdsdata/evr/ConfigV1.hh"
 #include "pdsdata/evr/ConfigV2.hh"
 #include "pdsdata/evr/ConfigV3.hh"
@@ -178,6 +179,9 @@ public:
     bldData.print();
     printf( "\n" );    
   }  
+  void process(const DetInfo&, const EvrData::IOConfigV1&) {
+    printf("*** Processing EVR IOconfig V1 object\n");
+  }
   void process(const DetInfo&, const EvrData::ConfigV1&) {
     printf("*** Processing EVR config V1 object\n");
   }
@@ -313,7 +317,12 @@ public:
       {
       process(info, (const PNCCD::FrameV1*)(xtc->payload()));
       break;
-    }
+      }
+    case (TypeId::Id_EvrIOConfig) :
+      {      
+      process(info, *(const EvrData::IOConfigV1*)(xtc->payload()));
+      break;
+      }
     case (TypeId::Id_EvrConfig) :
     {      
       unsigned version = xtc->contains.version();

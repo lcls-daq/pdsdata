@@ -38,6 +38,7 @@ namespace Pds {
       Id_IpimbConfig,
       Id_EncoderData,
       Id_EncoderConfig,
+      Id_EvrIOConfig,
       NumberOf};
 
     TypeId() {}
