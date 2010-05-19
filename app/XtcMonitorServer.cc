@@ -186,6 +186,9 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
 	_pop_transition();
 	_freeTr.push(ibuffer);
       }
+      else {
+	_freeTr.push(ibuffer);
+      }
     }
 
     sem_post(&_sem);
