@@ -96,12 +96,15 @@ int main(int argc, char* argv[]) {
 
   int fd = open(xtcname, O_RDONLY | O_LARGEFILE);
   if (fd < 0) {
-    perror("Unable to open file %s\n");
+    perror("Unable to open input file");
     exit(2);
   }
 
   FILE* writefd = fopen(outfilename, "w");
-  printf("*********opening file %p\n",writefd);
+  if (writefd == NULL) {
+    perror("Unable to open output file");
+    exit(2);
+  }
   
   XtcFileIterator iter(fd,0x900000);
   Dgram* dg;
