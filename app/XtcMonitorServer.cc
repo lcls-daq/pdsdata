@@ -144,9 +144,6 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
   }
   else {
 
-    printf("Transition %s : depths : freeTr %d  cachedTr %d\n",
-	   TransitionId::name(dgrm.seq.service()), _freeTr.size(), _cachedTr.size());
-	   
 
     for(unsigned i=0; i<_sequence->current(); i++)
       _deleteDatagram(_sequence->dgram(i));
