@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -16,10 +17,38 @@ using namespace Pds;
 class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};
-  myLevelIter(Xtc* xtc, unsigned depth) : XtcIterator(xtc), _depth(depth) {}
+  myLevelIter(Xtc* xtc, unsigned depth, int fd) : XtcIterator(xtc), _depth(depth), _fd(fd) {}
 
   void process(const DetInfo& d, const Camera::FrameV1& f) {
-    printf("*** Processing frame object\n");
+    static int frameV1Count = 0;
+    if (_fd >= 0) {
+      int width = (f.width() == 1152) ? 576 : f.width();  // FCCD workaround
+      int imageSize = width * f.height() * 2;
+      int readCount = 0;
+      int maxTries = 10;
+      while (readCount < imageSize) {
+        readCount = read(_fd, (void *)f.data(), imageSize);
+        if (-1 == readCount) {
+          perror("read");
+          break;
+        } else if (readCount < imageSize) {
+          // seek to beginning of file
+          if (lseek(_fd, 0, SEEK_SET) == (off_t)-1) {
+            perror("lseek");
+            break;
+          }
+        }
+        // avoid looping forever
+        if (maxTries-- < 1) {
+          break;
+        }
+      }
+      if (readCount != imageSize) {
+        printf(" >> %s Error: readCount=%d, imageSize=%d\n", __FUNCTION__, readCount, imageSize);
+      }
+    }
+    ++frameV1Count;
+    printf("*** Processing FrameV1 object #%d\n", frameV1Count);
   }
   void process(const DetInfo&, const FCCD::FccdConfigV1&) {
     printf("*** Processing FCCD config object\n");
@@ -44,7 +73,7 @@ public:
     }    
     switch (xtc->contains.id()) {
     case (TypeId::Id_Xtc) : {
-      myLevelIter iter(xtc,_depth+1);
+      myLevelIter iter(xtc,_depth+1,_fd);
       iter.iterate();
       break;
     }
@@ -61,19 +90,22 @@ public:
   }
 private:
   unsigned _depth;
+  int _fd;
 };
 
 void usage(char* progname) {
-  fprintf(stderr,"Usage: %s -f <filename> -o <outfilename> [-h]\n", progname);
+  fprintf(stderr,"Usage: %s -f <filename> -o <outfilename> [-i <imagefilename>] [-c count] [-h]\n", progname);
 }
 
 int main(int argc, char* argv[]) {
   int c;
   char* xtcname=0;
   char* outfilename=0;
+  char* imagefilename=0;
+  int copycount=0;
   int parseErr = 0;
 
-  while ((c = getopt(argc, argv, "hf:o:")) != -1) {
+  while ((c = getopt(argc, argv, "hf:o:i:c:")) != -1) {
     switch (c) {
     case 'h':
       usage(argv[0]);
@@ -83,6 +115,15 @@ int main(int argc, char* argv[]) {
       break;
     case 'o':
       outfilename = optarg;
+      break;
+    case 'i':
+      imagefilename = optarg;
+      break;
+    case 'c':
+      if (sscanf(optarg, "%d", &copycount) != 1) {
+        usage(argv[0]);
+        exit(2);
+      }
       break;
     default:
       parseErr++;
@@ -94,30 +135,56 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  int fd = open(xtcname, O_RDONLY | O_LARGEFILE);
-  if (fd < 0) {
+  int xtcinfd = open(xtcname, O_RDONLY | O_LARGEFILE);
+  if (xtcinfd < 0) {
     perror("Unable to open input file");
     exit(2);
   }
 
-  FILE* writefd = fopen(outfilename, "w");
-  if (writefd == NULL) {
+  int imagefd = -1;
+  if ((imagefilename) && ((imagefd = open(imagefilename, O_RDONLY)) < 0)) {
+    perror("Unable to open image file");
+    exit(2);
+  }
+
+  FILE* xtcoutfd = fopen(outfilename, "w");
+  if (xtcoutfd == NULL) {
     perror("Unable to open output file");
     exit(2);
   }
   
-  XtcFileIterator iter(fd,0x900000);
+  XtcFileIterator iter(xtcinfd,0x900000);
   Dgram* dg;
   
   while ((dg = iter.next())) {
     printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
            dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
-    myLevelIter iter(&(dg->xtc),0);
+    myLevelIter iter(&(dg->xtc),0,imagefd);
     iter.iterate();
-    ::fwrite(dg,sizeof(*dg)+dg->xtc.sizeofPayload(),1,writefd);
+    if (::fwrite(dg,sizeof(*dg)+dg->xtc.sizeofPayload(),1,xtcoutfd) != 1) {
+      perror("::fwrite");
+    }
+    if ((copycount > 0) && (dg->seq.service() == TransitionId::L1Accept)) {
+      int written;
+      for (written = 0; written < copycount;) {
+        myLevelIter iter(&(dg->xtc),0,imagefd);
+        iter.iterate();
+        if (::fwrite(dg,sizeof(*dg)+dg->xtc.sizeofPayload(),1,xtcoutfd) == 1) {
+          written++;
+        } else {
+          perror("::fwrite");
+          break;
+        }
+      }
+      printf(">>> wrote %d more copies of L1Accept datagram\n", written);
+      break;
+    }
   }
 
-  ::close(fd);
-  ::fclose(writefd);
+  ::close(xtcinfd);
+  if (imagefd >= 0) {
+    ::close(imagefd);
+  }
+  ::fclose(xtcoutfd);
   return 0;
 }
