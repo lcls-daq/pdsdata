@@ -11,6 +11,8 @@
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/fccd/FccdConfigV1.hh"
+#include "pdsdata/princeton/FrameV1.hh"
+#include "pdsdata/princeton/ConfigV1.hh"
 
 using namespace Pds;
 
@@ -19,6 +21,43 @@ public:
   enum {Stop, Continue};
   myLevelIter(Xtc* xtc, unsigned depth, int fd) : XtcIterator(xtc), _depth(depth), _fd(fd) {}
 
+  void process(DetInfo& info, Princeton::ConfigV1& config) {
+    info = DetInfo(info.processId(), DetInfo::SxrEndstation, info.detId(), info.device(), info.devId() );
+    printf("*** Processing Princeton ConfigV1 object\n");
+  }
+  void process(DetInfo& info, const Princeton::FrameV1& frame) {
+    info = DetInfo(info.processId(), DetInfo::SxrEndstation, info.detId(), info.device(), info.devId() );
+    static int frameV1Count = 0;
+    if (_fd >= 0) {
+      int imageSize = 512 * 512 * 2; // !! hard-coded image size
+      int readCount = 0;
+      int maxTries = 10;
+      while (readCount < imageSize) {
+        // seek to beginning of file
+        if (lseek(_fd, 0, SEEK_SET) == (off_t)-1) {
+          perror("lseek");
+          break;
+        }
+        
+        readCount = read(_fd, (void *)frame.data(), imageSize);
+        if (-1 == readCount) {
+          perror("read");
+          break;
+        } else if (readCount < imageSize)
+          continue;
+        // avoid looping forever
+        if (maxTries-- < 1) {
+          break;
+        }
+      }
+      if (readCount != imageSize) {
+        printf(" >> %s Error: readCount=%d, imageSize=%d\n", __FUNCTION__, readCount, imageSize);
+      }
+    }
+    ++frameV1Count;
+    printf("*** Processing Princeton FrameV1 object #%d\n", frameV1Count);    
+  }
+  
   void process(const DetInfo& d, const Camera::FrameV1& f) {
     static int frameV1Count = 0;
     if (_fd >= 0) {
@@ -57,7 +96,7 @@ public:
     unsigned i=_depth; while (i--) printf("  ");
     Level::Type level = xtc->src.level();
     printf("%s level  payload size %d contains: %s: ",Level::name(level), xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
-    const DetInfo& info = *(DetInfo*)(&xtc->src);
+    DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
       printf("%s,%d  %s,%d\n",
              DetInfo::name(info.detector()),info.detId(),
@@ -77,12 +116,22 @@ public:
       iter.iterate();
       break;
     }
-    case (TypeId::Id_Frame) :
-      process(info, *(const Camera::FrameV1*)(xtc->payload()));
+    //case (TypeId::Id_Frame) :
+    //  process(info, *(const Camera::FrameV1*)(xtc->payload()));
+    //  break;
+    //case (TypeId::Id_FccdConfig) :
+    //  process(info, *(const FCCD::FccdConfigV1*)(xtc->payload()));
+    //  break;
+    case (TypeId::Id_PrincetonConfig) :
+    {
+      process( (DetInfo&) info, *(Princeton::ConfigV1*)(xtc->payload()));
       break;
-    case (TypeId::Id_FccdConfig) :
-      process(info, *(const FCCD::FccdConfigV1*)(xtc->payload()));
+    }
+    case (TypeId::Id_PrincetonFrame) :
+    {
+      process( (DetInfo&) info, *(Princeton::FrameV1*)(xtc->payload()));
       break;
+    }        
     default :
       break;
     }

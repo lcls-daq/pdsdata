@@ -13,7 +13,7 @@ tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccd
 tgtslib_xtcreader := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmodify := xtcmodify.cc
-tgtlibs_xtcmodify := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata
+tgtlibs_xtcmodify := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata pdsdata/princetondata
 tgtslib_xtcmodify := $(USRLIBDIR)/rt
 
 tgtsrcs_livextcreader := livextcreader.cc

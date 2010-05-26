@@ -43,7 +43,7 @@ using namespace Pds;
 class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};
-  myLevelIter(Xtc* xtc, unsigned depth) : XtcIterator(xtc), _depth(depth) {}
+  myLevelIter(Xtc* xtc, unsigned depth, long long int lliOffset) : XtcIterator(xtc), _depth(depth), _lliOffset(lliOffset) {}
 
   void process(const DetInfo& d, const Camera::FrameV1& f) {
     printf("*** Processing frame object\n");
@@ -199,14 +199,13 @@ public:
     
     printf( "# of Fifo Events: %u\n", data.numFifoEvents() );
     
-    for ( unsigned int iEventIndex=0; iEventIndex< data.numFifoEvents(); iEventIndex++ )
-    {
-      const EvrData::DataV3::FIFOEvent& event = data.fifoEvent(iEventIndex);
-      printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
-        iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
-    }
-    
-    printf( "\n" );    
+    //for ( unsigned int iEventIndex=0; iEventIndex< data.numFifoEvents(); iEventIndex++ )
+    //{
+    //  const EvrData::DataV3::FIFOEvent& event = data.fifoEvent(iEventIndex);
+    //  printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
+    //    iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
+    //}    
+    //printf( "\n" );    
   }  
   void process(const DetInfo&, const Princeton::ConfigV1&) {
     printf("*** Processing Princeton ConfigV1 object\n");
@@ -215,9 +214,13 @@ public:
     printf("*** Processing Princeton FrameV1 object\n");
   }
   int process(Xtc* xtc) {
-    unsigned i=_depth; while (i--) printf("  ");
-    Level::Type level = xtc->src.level();
-    printf("%s level  payload size %d contains: %s: ",Level::name(level), xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
+    unsigned      i         =_depth; while (i--) printf("  ");
+    Level::Type   level     = xtc->src.level();
+    printf("%s level  offset %Ld (0x%Lx), payload size %d contains: %s: ",
+      Level::name(level), _lliOffset, _lliOffset, xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
+    long long lliOffsetPayload = _lliOffset + sizeof(Xtc);
+    _lliOffset += sizeof(Xtc) + xtc->sizeofPayload();
+     
     const DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
       printf("%s,%d  %s,%d\n",
@@ -234,7 +237,7 @@ public:
     }    
     switch (xtc->contains.id()) {
     case (TypeId::Id_Xtc) : {
-      myLevelIter iter(xtc,_depth+1);
+      myLevelIter iter(xtc,_depth+1, lliOffsetPayload);
       iter.iterate();
       break;
     }
@@ -407,7 +410,8 @@ public:
     return Continue;
   }
 private:
-  unsigned _depth;
+  unsigned       _depth;
+  long long int  _lliOffset;
 
   /* static private data */
   static PNCCD::ConfigV1 _pnCcdCfgListV1[2];
@@ -452,11 +456,13 @@ int main(int argc, char* argv[]) {
 
   XtcFileIterator iter(fd,0x900000);
   Dgram* dg;
+  long long int lliOffset = lseek64( fd, 0, SEEK_CUR );  
   while ((dg = iter.next())) {
-    printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
-           dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
-    myLevelIter iter(&(dg->xtc),0);
+    printf("%s transition: time 0x%x/0x%x, offset %Ld (0x%Lx), payloadSize %d\n",TransitionId::name(dg->seq.service()),
+           dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(), lliOffset, lliOffset, dg->xtc.sizeofPayload());
+    myLevelIter iter(&(dg->xtc),0, lliOffset + sizeof(Xtc) + sizeof(*dg) - sizeof(dg->xtc));
     iter.iterate();
+    lliOffset = lseek64( fd, 0, SEEK_CUR ); // get the file offset for the next iteration
   }
 
   ::close(fd);
