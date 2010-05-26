@@ -443,7 +443,7 @@ void XtcMonitorServer::_flushQueue(mqd_t q, char* m, unsigned sz)
   do {
     mq_getattr(q, &attr);
     if (attr.mq_curmsgs)
-      mq_receive(q, m, sz, NULL);
+      mq_timedreceive(q, m, sz, NULL, &_tmo);
   } while (attr.mq_curmsgs);
 }
 
@@ -454,11 +454,11 @@ void XtcMonitorServer::_moveQueue(mqd_t iq, mqd_t oq)
   do {
     mq_getattr(iq, &attr);
     if (attr.mq_curmsgs) {
-      if (mq_receive(iq, (char*)&m, sizeof(m), NULL) == -1)
-        perror("moveQueue: mq_receive");
-      if (mq_send   (oq, (char*)&m, sizeof(m), 0) == -1) {
+      if (mq_timedreceive(iq, (char*)&m, sizeof(m), NULL, &_tmo) == -1)
+        perror("moveQueue: mq_timedreceive");
+      else if (mq_send   (oq, (char*)&m, sizeof(m), 0) == -1) {
         printf("Failed to reclaim buffer %i : %s\n",
-            m.bufferIndex(), strerror(errno));
+	       m.bufferIndex(), strerror(errno));
       }
     }
   } while (attr.mq_curmsgs);
