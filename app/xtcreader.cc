@@ -20,6 +20,7 @@
 #include "pdsdata/fccd/FccdConfigV1.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
+#include "pdsdata/pulnix/TM6740ConfigV1.hh"
 #include "pdsdata/pnCCD/ConfigV1.hh"
 #include "pdsdata/pnCCD/ConfigV2.hh"
 #include "pdsdata/pnCCD/FrameV1.hh"
@@ -68,6 +69,9 @@ public:
   }
   void process(const DetInfo&, const Opal1k::ConfigV1&) {
     printf("*** Processing Opal1000 config object\n");
+  }
+  void process(const DetInfo&, const Pulnix::TM6740ConfigV1&) {
+    printf("*** Processing TM6740 config object\n");
   }
   void process(const DetInfo&, const Camera::FrameFexConfigV1&) {
     printf("*** Processing frame feature extraction config object\n");

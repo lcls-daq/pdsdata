@@ -36,7 +36,14 @@ const char* DetInfo::name(Detector det){
     "epicsArch",    
     "BldEb",
     "SxrBeamline",
-    "SxrEndstation"};
+    "SxrEndstation",
+    "XppSb1Ipm",
+    "XppSb1Pim",
+    "XppMonPim",
+    "XppSb2Ipm",
+    "XppSb3Ipm",
+    "XppSb3Pim",
+    "XppSb4Pim" };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
 }
 
@@ -46,7 +53,7 @@ const char* DetInfo::name(Device dev) {
     "Evr",
     "Acqiris",
     "Opal1000",
-    "TM6740",
+    "Tm6740",
     "pnCCD",
     "Princeton",
     "Fccd",
