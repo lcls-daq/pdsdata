@@ -1,4 +1,5 @@
-2010-Jun-06	weaver	Tav V02-02-00.  Added some XPP DetInfo entries.  Added TM6740 to xtcreader.
+2010-Jun-15	weaver  Tag V02-04-00.  Added value method to encoder/DataV1.  Added pulnix/TM6740ConfigV2, fccd/FccdConfigV2.
+2010-Jun-06	weaver	Tag V02-02-00.  Added some XPP DetInfo entries.  Added TM6740 to xtcreader.
 2010-May-18	weaver			Added evr/IOConfigV1 class for describing EVR IO cabling.
 2010-Apr30	weaver  Tag V02-00-00.  Changed XtcMonitorServer and XtcMonitorClient to allow multiple clients to
 					receive events in parallel or serialized (daisy-chained).
