@@ -8,6 +8,74 @@
 
 #pragma pack(4)
 
+#define FCCD_DAC1_V_START   0.0
+#define FCCD_DAC1_V_END     9.0
+#define FCCD_DAC1_LABEL     "V(1-3) pos (0.0->9.0)"
+
+#define FCCD_DAC2_V_START   0.0
+#define FCCD_DAC2_V_END     -9.0
+#define FCCD_DAC2_LABEL     "V(1-3) neg (-9.0->0.0)"
+
+#define FCCD_DAC3_V_START   0.0
+#define FCCD_DAC3_V_END     9.0
+#define FCCD_DAC3_LABEL     "TgClk pos (0.0->9.0)"
+
+#define FCCD_DAC4_V_START   0.0
+#define FCCD_DAC4_V_END     -9.0
+#define FCCD_DAC4_LABEL     "TgClk neg (-9.0->0.0)"
+
+#define FCCD_DAC5_V_START   0.0
+#define FCCD_DAC5_V_END     9.0
+#define FCCD_DAC5_LABEL     "H(1-3) pos (0.0->9.0)"
+
+#define FCCD_DAC6_V_START   0.0
+#define FCCD_DAC6_V_END     -9.0
+#define FCCD_DAC6_LABEL     "H(1-3) neg (-9.0->0.0)"
+
+#define FCCD_DAC7_V_START   0.0
+#define FCCD_DAC7_V_END     9.0
+#define FCCD_DAC7_LABEL     "SwtClk pos (0.0->9.0)"
+
+#define FCCD_DAC8_V_START   0.0
+#define FCCD_DAC8_V_END     -9.0
+#define FCCD_DAC8_LABEL     "SwtClk neg (-9.0->0.0)"
+
+#define FCCD_DAC9_V_START   0.0
+#define FCCD_DAC9_V_END     9.0
+#define FCCD_DAC9_LABEL     "RgClk pos (0.0->9.0)"
+
+#define FCCD_DAC10_V_START  0.0
+#define FCCD_DAC10_V_END    -9.0
+#define FCCD_DAC10_LABEL    "RgClk neg (-9.0->0.0)"
+
+#define FCCD_DAC11_V_START  0.0
+#define FCCD_DAC11_V_END    99.0
+#define FCCD_DAC11_LABEL    "HV (0.0->99.0)"
+
+#define FCCD_DAC12_V_START  0.0
+#define FCCD_DAC12_V_END    5.0
+#define FCCD_DAC12_LABEL    "OTG (0.0->5.0)"
+
+#define FCCD_DAC13_V_START  0.0
+#define FCCD_DAC13_V_END    -15.0
+#define FCCD_DAC13_LABEL    "VDDRST (0.0->-15.0)"
+
+#define FCCD_DAC14_V_START  0.0
+#define FCCD_DAC14_V_END    -25.0
+#define FCCD_DAC14_LABEL    "VDDOUT (0.0->-25.0)"
+
+#define FCCD_DAC15_V_START  -10.0
+#define FCCD_DAC15_V_END    10.0
+#define FCCD_DAC15_LABEL    "NGD (-10.0->10.0)"
+
+#define FCCD_DAC16_V_START  -10.0
+#define FCCD_DAC16_V_END    10.0
+#define FCCD_DAC16_LABEL    "NCON (-10.0->10.0)"
+
+#define FCCD_DAC17_V_START  -10.0
+#define FCCD_DAC17_V_END    10.0
+#define FCCD_DAC17_LABEL    "GAURD (-10.0->10.0)"
+
 namespace Pds {
   namespace Camera {
     class FrameCoord;
