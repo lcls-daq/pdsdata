@@ -16,8 +16,8 @@
 #include "pdsdata/encoder/DataV1.hh"
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
-#include "pdsdata/camera/FrameFccdConfigV1.hh"
 #include "pdsdata/fccd/FccdConfigV1.hh"
+#include "pdsdata/fccd/FccdConfigV2.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/pulnix/TM6740ConfigV1.hh"
@@ -76,11 +76,11 @@ public:
   void process(const DetInfo&, const Camera::FrameFexConfigV1&) {
     printf("*** Processing frame feature extraction config object\n");
   }
-  void process(const DetInfo&, const Camera::FrameFccdConfigV1&) {
-    printf("*** Processing FCCD Frame ConfigV1 object\n");
-  }
   void process(const DetInfo&, const FCCD::FccdConfigV1&) {
     printf("*** Processing FCCD ConfigV1 object\n");
+  }
+  void process(const DetInfo&, const FCCD::FccdConfigV2&) {
+    printf("*** Processing FCCD ConfigV2 object\n");
   }
   void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
     printf("*** Processing 2DGauss object\n");
