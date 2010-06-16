@@ -20,8 +20,6 @@ namespace Pds
 namespace Princeton 
 {
 
-class ConfigV1;
-
 class FrameV1 
 {
 public:

@@ -39,6 +39,7 @@ namespace Pds {
       Id_EncoderData,
       Id_EncoderConfig,
       Id_EvrIOConfig,
+      Id_PrincetonInfo,
       NumberOf};
 
     TypeId() {}

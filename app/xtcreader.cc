@@ -38,6 +38,7 @@
 #include "pdsdata/bld/bldData.hh"
 #include "pdsdata/princeton/ConfigV1.hh"
 #include "pdsdata/princeton/FrameV1.hh"
+#include "pdsdata/princeton/InfoV1.hh"
 
 using namespace Pds;
 
@@ -216,6 +217,9 @@ public:
   }
   void process(const DetInfo&, const Princeton::FrameV1&) {
     printf("*** Processing Princeton FrameV1 object\n");
+  }
+  void process(const DetInfo&, const Princeton::InfoV1&) {
+    printf("*** Processing Princeton InfoV1 object\n");
   }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
@@ -405,6 +409,11 @@ public:
     case (TypeId::Id_PrincetonFrame) :
     {
       process(info, *(const Princeton::FrameV1*)(xtc->payload()));
+      break;
+    }    
+    case (TypeId::Id_PrincetonInfo) :
+    {
+      process(info, *(const Princeton::InfoV1*)(xtc->payload()));
       break;
     }    
     default :
