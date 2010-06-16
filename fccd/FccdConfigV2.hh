@@ -61,8 +61,8 @@
 #define FCCD_DAC13_LABEL    "VDDRST (0.0->-15.0)"
 
 #define FCCD_DAC14_V_START  0.0
-#define FCCD_DAC14_V_END    -25.0
-#define FCCD_DAC14_LABEL    "VDDOUT (0.0->-25.0)"
+#define FCCD_DAC14_V_END    -24.0
+#define FCCD_DAC14_LABEL    "VDDOUT (0.0->-24.0)"
 
 #define FCCD_DAC15_V_START  -10.0
 #define FCCD_DAC15_V_END    10.0
