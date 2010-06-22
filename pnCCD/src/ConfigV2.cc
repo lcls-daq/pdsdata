@@ -18,7 +18,7 @@ ConfigV2::ConfigV2(uint32_t numLinks, uint32_t payloadSizePerLink, string sConfi
   size_t ret;
   if (fp) {
     printf("Reading pnCCD config file\n");
-    ret = fread(&_numChannels, sizeof(ConfigV2)-(2*sizeof(uint32_t)), 1, fp);
+    ret = fread(&_numLinks, sizeof(ConfigV2), 1, fp);
     if (ret != 1) printf("Error reading pnCCD config file\n");
   } else {
     printf("Could not open pnCCD file\n");
