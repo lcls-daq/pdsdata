@@ -19,7 +19,7 @@ namespace Pds {
 		   SxrBeamline,SxrEndstation,
 		   XppSb1Ipm             ,XppSb1Pim,XppMonPim,XppSb2Ipm,XppSb3Ipm,XppSb3Pim,XppSb4Pim,
 		   NumDetector};
-    enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,Princeton,Fccd,Ipimb,Encoder,NumDevice};
+    enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,Princeton,Fccd,Ipimb,Encoder,Cspad,NumDevice};
 
     DetInfo() {}
     DetInfo(uint32_t processId,

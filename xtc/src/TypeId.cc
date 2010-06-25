@@ -44,6 +44,8 @@ const char* TypeId::name(Type type)
     "EncoderConfig",
     "EvrIOConfig",
     "PrincetonInfo",    
+    "CspadElement",
+    "CspadConfig"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

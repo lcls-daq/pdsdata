@@ -40,6 +40,8 @@ namespace Pds {
       Id_EncoderConfig,
       Id_EvrIOConfig,
       Id_PrincetonInfo,
+      Id_CspadElement,
+      Id_CspadConfig,
       NumberOf};
 
     TypeId() {}
