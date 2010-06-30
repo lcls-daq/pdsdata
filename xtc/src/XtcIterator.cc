@@ -45,6 +45,7 @@ void XtcIterator::iterate(Xtc* root)
 
   while(remaining > 0)
     {
+    if(xtc->extent==0) break; // try to skip corrupt event
     if(!process(xtc)) break;
     remaining -= xtc->sizeofPayload() + sizeof(Xtc);
     xtc      = xtc->next();
