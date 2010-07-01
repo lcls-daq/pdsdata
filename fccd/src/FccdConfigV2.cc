@@ -6,8 +6,6 @@
 using namespace Pds;
 using namespace FCCD;
 
-FccdConfigV2::FccdConfigV2 () {}
-
 FccdConfigV2::FccdConfigV2 (
   uint16_t    outputMode,
   bool        ccdEnable,

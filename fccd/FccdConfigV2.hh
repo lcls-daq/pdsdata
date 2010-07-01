@@ -97,7 +97,7 @@ namespace Pds {
       enum { Trimmed_Row_Pixels=480 };
       enum { Trimmed_Column_Pixels=480 };
 
-      FccdConfigV2();
+      FccdConfigV2() {}
       FccdConfigV2(
         uint16_t    outputMode,
         bool        ccdEnable,
