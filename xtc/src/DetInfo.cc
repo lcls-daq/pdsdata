@@ -43,7 +43,8 @@ const char* DetInfo::name(Detector det){
     "XppSb2Ipm",
     "XppSb3Ipm",
     "XppSb3Pim",
-    "XppSb4Pim" };
+    "XppSb4Pim",
+    "XppGon" };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
 }
 
