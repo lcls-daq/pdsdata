@@ -21,7 +21,7 @@ namespace Pds {
     Damage(uint32_t v) : _damage(v) {}
     uint32_t  value() const             { return _damage; }
     void     increase(Damage::Value v)  { _damage |= ((1<<v) & NotUserBitsMask); }
-    void     increase(uint32_t v)       { _damage |= v; }
+    void     increase(uint32_t v)       { _damage |= v & NotUserBitsMask; }
     uint32_t bits() const               { return _damage & NotUserBitsMask;}
     uint32_t userBits() const           { return _damage >> UserBitsShift; }
     void     userBits(uint32_t v) {
