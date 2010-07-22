@@ -51,12 +51,19 @@ unsigned ElementV1::frame_type         () const
   return _frame_type&0xff; 
 }
 
-unsigned long long ElementV1::beam_code() const
+unsigned ElementV1::ticks() const
 {
-  unsigned long long v = _beam_code[1];
-  v <<= 32;
-  v += _beam_code[0];
-  return v;
+  return _ticks;
+}
+
+unsigned ElementV1::fiducials() const
+{
+  return _fiducials;
+}
+
+unsigned ElementV1::status() const
+{
+  return _status;
 }
 
 const uint16_t* ElementV1::data() const

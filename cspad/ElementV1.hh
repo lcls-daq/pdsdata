@@ -23,9 +23,11 @@ namespace Pds {
       unsigned op_code            () const;
       unsigned quad               () const;
       unsigned seq_count          () const;
-      unsigned long long beam_code() const;
+      unsigned ticks              () const;
+      unsigned fiducials          () const;
       unsigned sb_temp            (unsigned i) const;
       unsigned frame_type         () const;
+      unsigned status             () const;
 
       //  beginning of pixel data
       const uint16_t* data() const;
@@ -35,10 +37,12 @@ namespace Pds {
       uint32_t _word0;
       uint32_t _word1;
       uint32_t _seq_count;
-      uint32_t _beam_code[2];
+      uint32_t _ticks;
+      uint32_t _fiducials;
       uint16_t _sbtemp[4];
       uint32_t _frame_type;
       uint16_t _data[ASICS*Columns*Rows];
+      uint32_t _status;
     };
   };
 };
