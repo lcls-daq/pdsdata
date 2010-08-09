@@ -15,7 +15,6 @@ namespace Pds {
     class ElementV1 {
     public:
       enum {Version=1};
-      //      enum { ASICS=16, Columns=185, Rows=194 };
       ElementV1();
     public:
       unsigned virtual_channel    () const;
