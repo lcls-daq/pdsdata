@@ -8,12 +8,14 @@
 
 namespace Pds {
 
-  namespace Cspad {
+  namespace CsPad {
+
+    class ConfigV1;
 
     class ElementV1 {
     public:
       enum {Version=1};
-      enum { ASICS=16, Columns=185, Rows=194 };
+      //      enum { ASICS=16, Columns=185, Rows=194 };
       ElementV1();
     public:
       unsigned virtual_channel    () const;
@@ -27,12 +29,13 @@ namespace Pds {
       unsigned fiducials          () const;
       unsigned sb_temp            (unsigned i) const;
       unsigned frame_type         () const;
-      unsigned status             () const;
 
       //  beginning of pixel data
       const uint16_t* data() const;
       //  location of individual pixel datum
       const uint16_t* pixel(unsigned asic, unsigned column, unsigned row) const;
+      const ElementV1* next(const ConfigV1&) const;
+
     private:
       uint32_t _word0;
       uint32_t _word1;
@@ -41,8 +44,6 @@ namespace Pds {
       uint32_t _fiducials;
       uint16_t _sbtemp[4];
       uint32_t _frame_type;
-      uint16_t _data[ASICS*Columns*Rows];
-      uint32_t _status;
     };
   };
 };

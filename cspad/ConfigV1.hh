@@ -120,25 +120,25 @@ namespace Pds
         static const int Version               = 1;
         ConfigV1() : _testDataIndex(0), _quadMask(0xf) {};
         ConfigV1(uint32_t t, uint32_t m) : _testDataIndex(t), _quadMask(m) {};
-        Pds::CsPad::ConfigV1QuadReg*    quads()         { return _quads; }
-        uint32_t                        tdi()           { return _testDataIndex; }
-        uint32_t                        quadMask()      { return _quadMask; }
-        uint32_t                        runDelay()      { return _runDelay; }
-        uint32_t                        eventCode()     { return _eventCode; }
-        uint32_t                        activeRunMode() { return _activeRunMode; }
-        uint32_t                        payloadSize()   { return _payloadPerQuad; }
-        uint32_t                        asicMask()      { return _AsicMask; }
-        static const int                version()       { return Version; }
+        ConfigV1QuadReg*    quads        ()       { return _quads; }
+        uint32_t            tdi          () const { return _testDataIndex; }
+        uint32_t            quadMask     () const { return _quadMask; }
+        uint32_t            runDelay     () const { return _runDelay; }
+        uint32_t            eventCode    () const { return _eventCode; }
+        uint32_t            activeRunMode() const { return _activeRunMode; }
+        uint32_t            payloadSize  () const { return _payloadPerQuad; }
+        uint32_t            asicMask     () const { return _AsicMask; }
+        static const int    version      ()       { return Version; }
       private:
-        uint32_t                      _runDelay;
-        uint32_t                      _eventCode;
-        uint32_t                      _activeRunMode;
-        uint32_t                      _testDataIndex;
-        uint32_t                      _payloadPerQuad;
-        uint32_t                      _badAsicMask;
-        uint32_t                      _AsicMask;
-        uint32_t                      _quadMask;
-        Pds::CsPad::ConfigV1QuadReg   _quads[MaxQuadsPerSensor];
+        uint32_t          _runDelay;
+        uint32_t          _eventCode;
+        uint32_t          _activeRunMode;
+        uint32_t          _testDataIndex;
+        uint32_t          _payloadPerQuad;
+        uint32_t          _badAsicMask;
+        uint32_t          _AsicMask;
+        uint32_t          _quadMask;
+        ConfigV1QuadReg   _quads[MaxQuadsPerSensor];
     };
 
 
