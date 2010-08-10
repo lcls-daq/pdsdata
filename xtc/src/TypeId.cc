@@ -45,7 +45,12 @@ const char* TypeId::name(Type type)
     "EvrIOConfig",
     "PrincetonInfo",    
     "CspadElement",
-    "CspadConfig"
+    "CspadConfig",
+    "IpmFexConfig",
+    "IpmFex",
+    "DiodeFexConfig",
+    "DiodeFex",
+    "PimImageConfig",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

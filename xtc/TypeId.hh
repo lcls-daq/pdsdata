@@ -42,6 +42,11 @@ namespace Pds {
       Id_PrincetonInfo,
       Id_CspadElement,
       Id_CspadConfig,
+      Id_IpmFexConfig,  // LUSI Diagnostics
+      Id_IpmFex,
+      Id_DiodeFexConfig,
+      Id_DiodeFex,
+      Id_PimImageConfig,
       NumberOf};
 
     TypeId() {}
