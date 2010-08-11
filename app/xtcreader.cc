@@ -39,6 +39,12 @@
 #include "pdsdata/princeton/ConfigV1.hh"
 #include "pdsdata/princeton/FrameV1.hh"
 #include "pdsdata/princeton/InfoV1.hh"
+#include "pdsdata/cspad/ElementV1.hh"
+#include "pdsdata/cspad/ConfigV1.hh"
+#include "pdsdata/lusi/IpmFexConfigV1.hh"
+#include "pdsdata/lusi/IpmFexV1.hh"
+#include "pdsdata/lusi/DiodeFexConfigV1.hh"
+#include "pdsdata/lusi/DiodeFexV1.hh"
 
 using namespace Pds;
 
@@ -220,6 +226,24 @@ public:
   }
   void process(const DetInfo&, const Princeton::InfoV1&) {
     printf("*** Processing Princeton InfoV1 object\n");
+  }
+  void process(const DetInfo&, const CsPad::ElementV1&) {
+    printf("*** Processing CsPad ElementV1 object\n");
+  }
+  void process(const DetInfo&, const CsPad::ConfigV1&) {
+    printf("*** Processing CsPad ElementV1 object\n");
+  }
+  void process(const DetInfo&, const Lusi::IpmFexConfigV1&) {
+    printf("*** Processing LUSI IpmFexConfigV1 object\n");
+  }
+  void process(const DetInfo&, const Lusi::IpmFexV1&) {
+    printf("*** Processing LUSI IpmFexV1 object\n");
+  }
+  void process(const DetInfo&, const Lusi::DiodeFexConfigV1&) {
+    printf("*** Processing LUSI DiodeFexConfigV1 object\n");
+  }
+  void process(const DetInfo&, const Lusi::DiodeFexV1&) {
+    printf("*** Processing LUSI DiodeFexV1 object\n");
   }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
@@ -414,6 +438,36 @@ public:
     case (TypeId::Id_PrincetonInfo) :
     {
       process(info, *(const Princeton::InfoV1*)(xtc->payload()));
+      break;
+    }    
+    case (TypeId::Id_CspadElement) :
+    {
+      process(info, *(const CsPad::ElementV1*)(xtc->payload()));
+      break;
+    }    
+    case (TypeId::Id_CspadConfig) :
+    {
+      process(info, *(const CsPad::ConfigV1*)(xtc->payload()));
+      break;
+    }    
+    case (TypeId::Id_IpmFexConfig) :
+    {
+      process(info, *(const Lusi::IpmFexConfigV1*)(xtc->payload()));
+      break;
+    }    
+    case (TypeId::Id_IpmFex) :
+    {
+      process(info, *(const Lusi::IpmFexV1*)(xtc->payload()));
+      break;
+    }    
+    case (TypeId::Id_DiodeFexConfig) :
+    {
+      process(info, *(const Lusi::DiodeFexConfigV1*)(xtc->payload()));
+      break;
+    }    
+    case (TypeId::Id_DiodeFex) :
+    {
+      process(info, *(const Lusi::DiodeFexV1*)(xtc->payload()));
       break;
     }    
     default :
