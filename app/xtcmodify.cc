@@ -10,7 +10,7 @@
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/camera/FrameV1.hh"
-#include "pdsdata/fccd/FccdConfigV1.hh"
+#include "pdsdata/fccd/FccdConfigV2.hh"
 #include "pdsdata/princeton/FrameV1.hh"
 #include "pdsdata/princeton/ConfigV1.hh"
 
@@ -89,7 +89,7 @@ public:
     ++frameV1Count;
     printf("*** Processing FrameV1 object #%d\n", frameV1Count);
   }
-  void process(const DetInfo&, const FCCD::FccdConfigV1&) {
+  void process(const DetInfo& info, const FCCD::FccdConfigV2& config) {
     printf("*** Processing FCCD config object\n");
   }
   int process(Xtc* xtc) {
@@ -116,12 +116,12 @@ public:
       iter.iterate();
       break;
     }
-    //case (TypeId::Id_Frame) :
-    //  process(info, *(const Camera::FrameV1*)(xtc->payload()));
-    //  break;
-    //case (TypeId::Id_FccdConfig) :
-    //  process(info, *(const FCCD::FccdConfigV1*)(xtc->payload()));
-    //  break;
+    case (TypeId::Id_Frame) :
+      process(info, *(const Camera::FrameV1*)(xtc->payload()));
+      break;
+    case (TypeId::Id_FccdConfig) :
+      process(info, *(const FCCD::FccdConfigV2*)(xtc->payload()));
+      break;
     case (TypeId::Id_PrincetonConfig) :
     {
       process( (DetInfo&) info, *(Princeton::ConfigV1*)(xtc->payload()));
