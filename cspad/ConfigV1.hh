@@ -20,7 +20,7 @@ namespace Pds
     {
       public:
         CsPadDigitalPotsCfg() {int i = 0; while (i<PotsPerQuad) pots[i++] = 0;}
-        uint8_t         value(unsigned i) {return pots[i];}
+        uint8_t         value(unsigned i) const {return pots[i];}
       public:
         uint8_t         pots[PotsPerQuad];
     };
@@ -40,7 +40,8 @@ namespace Pds
       public:
         CsPadGainMapCfg() {};
         typedef uint16_t GainMap[ColumnsPerASIC][MaxRowsPerASIC];
-        GainMap*     map()    { return &_gainMap; }
+        GainMap*       map()       { return &_gainMap; }
+        const GainMap* map() const { return &_gainMap; }
       public:
         GainMap    _gainMap;
     };
@@ -78,22 +79,26 @@ namespace Pds
             _injTotal(injTotal),
             _rowColShiftPer(rowColShiftPer) {};
 
-        uint32_t           shiftSelect()                { return _shiftSelect;    }
-        uint32_t           edgeSelect()                 { return _edgeSelect;     }
-        uint32_t           readClkSet()                 { return _readClkSet;     }
-        uint32_t           readClkHold()                { return _readClkHold;    }
-        uint32_t           dataMode()                   { return _dataMode;       }
-        uint32_t           prstSel()                    { return _prstSel;        }
-        uint32_t           acqDelay()                   { return _acqDelay;       }
-        uint32_t           intTime()                    { return _intTime;        }
-        uint32_t           digDelay()                   { return _digDelay;       }
-        uint32_t           ampIdle()                    { return _ampIdle;        }
-        uint32_t           injTotal()                   { return _injTotal;       }
-        uint32_t           rowColShiftPer()             { return _rowColShiftPer; }
-        Pds::CsPad::CsPadReadOnlyCfg&     ro()          { return _readOnly;       }
-        Pds::CsPad::CsPadDigitalPotsCfg&  dp()          { return _digitalPots;    }
-        Pds::CsPad::CsPadGainMapCfg*      gm()          { return &_gainMap;        }
-        Pds::CsPad::CsPadReadOnlyCfg*     readOnly()    { return &_readOnly;      }
+        uint32_t           shiftSelect()        const   { return _shiftSelect;    }
+        uint32_t           edgeSelect()         const   { return _edgeSelect;     }
+        uint32_t           readClkSet()         const   { return _readClkSet;     }
+        uint32_t           readClkHold()        const   { return _readClkHold;    }
+        uint32_t           dataMode()           const   { return _dataMode;       }
+        uint32_t           prstSel()            const   { return _prstSel;        }
+        uint32_t           acqDelay()           const   { return _acqDelay;       }
+        uint32_t           intTime()            const   { return _intTime;        }
+        uint32_t           digDelay()           const   { return _digDelay;       }
+        uint32_t           ampIdle()            const   { return _ampIdle;        }
+        uint32_t           injTotal()           const   { return _injTotal;       }
+        uint32_t           rowColShiftPer()     const   { return _rowColShiftPer; }
+        Pds::CsPad::CsPadReadOnlyCfg&           ro      ()        { return _readOnly;       }
+        const Pds::CsPad::CsPadReadOnlyCfg&     ro      ()  const { return _readOnly;       }
+        Pds::CsPad::CsPadDigitalPotsCfg&        dp      ()        { return _digitalPots;    }
+        const Pds::CsPad::CsPadDigitalPotsCfg&  dp      ()  const { return _digitalPots;    }
+        Pds::CsPad::CsPadGainMapCfg*            gm      ()        { return &_gainMap;        }
+        const Pds::CsPad::CsPadGainMapCfg*      gm      ()  const { return &_gainMap;        }
+        Pds::CsPad::CsPadReadOnlyCfg*           readOnly()        { return &_readOnly;      }
+        const Pds::CsPad::CsPadReadOnlyCfg*     readOnly()  const { return &_readOnly;      }
 
       private:
         uint32_t                     _shiftSelect;
@@ -120,15 +125,18 @@ namespace Pds
         static const int Version               = 1;
         ConfigV1() : _testDataIndex(0), _quadMask(0xf) {};
         ConfigV1(uint32_t t, uint32_t m) : _testDataIndex(t), _quadMask(m) {};
-        ConfigV1QuadReg*    quads        ()       { return _quads; }
-        uint32_t            tdi          () const { return _testDataIndex; }
-        uint32_t            quadMask     () const { return _quadMask; }
-        uint32_t            runDelay     () const { return _runDelay; }
-        uint32_t            eventCode    () const { return _eventCode; }
-        uint32_t            activeRunMode() const { return _activeRunMode; }
-        uint32_t            payloadSize  () const { return _payloadPerQuad; }
-        uint32_t            asicMask     () const { return _AsicMask; }
-        static const int    version      ()       { return Version; }
+        ConfigV1QuadReg*       quads        ()       { return _quads; }
+        const ConfigV1QuadReg* quads        () const { return _quads; }
+        uint32_t               tdi          () const { return _testDataIndex; }
+        uint32_t               quadMask     () const { return _quadMask; }
+        uint32_t               runDelay     () const { return _runDelay; }
+        uint32_t               eventCode    () const { return _eventCode; }
+        uint32_t               activeRunMode() const { return _activeRunMode; }
+        uint32_t               payloadSize  () const { return _payloadPerQuad; }
+        uint32_t               badAsicMask  () const { return _badAsicMask; }
+        uint32_t               asicMask     () const { return _AsicMask; }
+        uint32_t               numAsicsRead () const { return (_AsicMask&0xf)==1 ? 4 : 16; }
+        static const int       version      ()       { return Version; }
       private:
         uint32_t          _runDelay;
         uint32_t          _eventCode;

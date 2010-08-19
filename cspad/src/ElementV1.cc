@@ -81,9 +81,7 @@ const uint16_t* ElementV1::pixel(unsigned asic,
 
 const ElementV1* ElementV1::next(const ConfigV1& c) const
 {
-  unsigned mask = c.asicMask();
   return reinterpret_cast<const ElementV1*>
     ( reinterpret_cast<const uint16_t*>(this+1)+ 
-      (((mask&0xf) == 1) ? 4*ColumnsPerASIC*MaxRowsPerASIC : 
-       ASICsPerQuad*ColumnsPerASIC*MaxRowsPerASIC) + 2 );
+      c.numAsicsRead()*ColumnsPerASIC*MaxRowsPerASIC + 2 );
 }
