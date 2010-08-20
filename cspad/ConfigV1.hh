@@ -13,7 +13,7 @@ namespace Pds
     enum {MaxQuadsPerSensor=4, ASICsPerQuad=16};
     enum {RowsPerBank=26, FullBanksPerASIC=7, BanksPerASIC=8, ColumnsPerASIC=185, MaxRowsPerASIC=194};
     enum {PotsPerQuad=80};
-    enum RunModes  {NoRunning=0, RunButDrop=1, RunAndSendToRCE=2, RunAndSendTriggeredByTTL=3, NumberOfRunModes=4 };
+    enum RunModes  {NoRunning, RunButDrop, RunAndSendToRCE, RunAndSendTriggeredByTTL, ExternalTriggerSendToRCE, ExternalTriggerDrop, NumberOfRunModes };
     enum DataModes {normal=0, shiftTest=1, testData=2, reserved=3};
 
     class CsPadDigitalPotsCfg
@@ -131,6 +131,7 @@ namespace Pds
         uint32_t               quadMask     () const { return _quadMask; }
         uint32_t               runDelay     () const { return _runDelay; }
         uint32_t               eventCode    () const { return _eventCode; }
+        uint32_t               inactiveRunMode()const{ return _inactiveRunMode; }
         uint32_t               activeRunMode() const { return _activeRunMode; }
         uint32_t               payloadSize  () const { return _payloadPerQuad; }
         uint32_t               badAsicMask  () const { return _badAsicMask; }
@@ -140,6 +141,7 @@ namespace Pds
       private:
         uint32_t          _runDelay;
         uint32_t          _eventCode;
+        uint32_t          _inactiveRunMode;
         uint32_t          _activeRunMode;
         uint32_t          _testDataIndex;
         uint32_t          _payloadPerQuad;
