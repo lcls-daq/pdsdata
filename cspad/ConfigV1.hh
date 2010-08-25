@@ -55,8 +55,8 @@ namespace Pds
       public:
         ConfigV1QuadReg() {};
         ConfigV1QuadReg(
-            uint32_t         shiftSelect,
-            uint32_t         edgeSelect,
+            uint32_t         shiftSelect[],
+            uint32_t         edgeSelect[],
             uint32_t         readClkSet,
             uint32_t         readClkHold,
             uint32_t         dataMode,
@@ -77,12 +77,18 @@ namespace Pds
             _ampIdle(ampIdle),
             _injTotal(injTotal),
             _rowColShiftPer(rowColShiftPer) {
-          _shiftSelect[0] = _shiftSelect[1] = _shiftSelect[2] = _shiftSelect[3] = shiftSelect;
-          _edgeSelect[0] = _edgeSelect[1] = _edgeSelect[3] = _edgeSelect[3] = edgeSelect;
+          _shiftSelect[0] = shiftSelect[0];
+          _shiftSelect[1] = shiftSelect[1];
+          _shiftSelect[2] = shiftSelect[2];
+          _shiftSelect[3] = shiftSelect[3];
+          _edgeSelect [0] = edgeSelect [0];
+          _edgeSelect [1] = edgeSelect [1];
+          _edgeSelect [2] = edgeSelect [2];
+          _edgeSelect [3] = edgeSelect [3];
         };
 
-        uint32_t           shiftSelect()        const   { return _shiftSelect[0]; }
-        uint32_t           edgeSelect()         const   { return _edgeSelect[0];  }
+        const uint32_t*    shiftSelect()        const   { return _shiftSelect; }
+        const uint32_t*    edgeSelect()         const   { return _edgeSelect;  }
         uint32_t           readClkSet()         const   { return _readClkSet;     }
         uint32_t           readClkHold()        const   { return _readClkHold;    }
         uint32_t           dataMode()           const   { return _dataMode;       }
