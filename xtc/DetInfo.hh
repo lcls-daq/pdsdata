@@ -17,7 +17,7 @@ namespace Pds {
     enum Detector {NoDetector,AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbes,AmoVmi,AmoBps,
                    Camp,EpicsArch,BldEb,
 		   SxrBeamline,SxrEndstation,
-		   XppSb1Ipm,XppSb1Pim,XppMonPim,XppSb2Ipm,XppSb3Ipm,XppSb3Pim,XppSb4Pim,XppGon, 
+		   XppSb1Ipm,XppSb1Pim,XppMonPim,XppSb2Ipm,XppSb3Ipm,XppSb3Pim,XppSb4Pim,XppGon,XppLas,XppUsr,
 		   NumDetector};
     enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,Princeton,Fccd,Ipimb,Encoder,Cspad,NumDevice};
 
