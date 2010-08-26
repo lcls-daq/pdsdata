@@ -147,7 +147,7 @@ namespace Pds
           _eventCode(eventCode),
           _inactiveRunMode(inactiveRunMode),
           _activeRunMode(activeRunMode),
-          _testDataIndex(),
+          _testDataIndex(testDataIndex),
           _payloadPerQuad(payloadPerQuad),
           _badAsicMask0(badAsicMask0),
           _badAsicMask1(badAsicMask1),
