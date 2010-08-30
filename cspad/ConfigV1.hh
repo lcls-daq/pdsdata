@@ -143,16 +143,17 @@ namespace Pds
             uint32_t badAsicMask1,
             uint32_t AsicMask,
             uint32_t quadMask) :
-          _runDelay(runDelay),
-          _eventCode(eventCode),
-          _inactiveRunMode(inactiveRunMode),
-          _activeRunMode(activeRunMode),
-          _testDataIndex(testDataIndex),
-          _payloadPerQuad(payloadPerQuad),
-          _badAsicMask0(badAsicMask0),
-          _badAsicMask1(badAsicMask1),
-          _AsicMask(AsicMask),
-          _quadMask(quadMask) {};
+              _concentratorVersion(0),
+              _runDelay(runDelay),
+              _eventCode(eventCode),
+              _inactiveRunMode(inactiveRunMode),
+              _activeRunMode(activeRunMode),
+              _testDataIndex(testDataIndex),
+              _payloadPerQuad(payloadPerQuad),
+              _badAsicMask0(badAsicMask0),
+              _badAsicMask1(badAsicMask1),
+              _AsicMask(AsicMask),
+              _quadMask(quadMask) {};
 
         ConfigV1QuadReg*       quads        ()       { return _quads; }
         const ConfigV1QuadReg* quads        () const { return _quads; }
@@ -167,8 +168,11 @@ namespace Pds
         uint32_t               badAsicMask1 () const { return _badAsicMask1; }
         uint32_t               asicMask     () const { return _AsicMask; }
         uint32_t               numAsicsRead () const { return (_AsicMask&0xf)==1 ? 4 : 16; }
+        uint32_t               concentratorVersion() const {return _concentratorVersion; }
+        uint32_t*              concentratorVersionAddr() {return &_concentratorVersion; }
         static const int       version      ()       { return Version; }
       private:
+        uint32_t          _concentratorVersion;
         uint32_t          _runDelay;
         uint32_t          _eventCode;
         uint32_t          _inactiveRunMode;
