@@ -14,10 +14,15 @@ namespace Pds {
      * Notice: New enum values should be appended to the end of the enum list, since
      *   the old values have already been recorded in the existing xtc files. 
      */
-    enum Detector {NoDetector,AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbes,AmoVmi,AmoBps,
-                   Camp,EpicsArch,BldEb,
+    enum Detector {NoDetector,
+           AmoIms,AmoGasdet,AmoETof,AmoITof,AmoMbes,AmoVmi,AmoBps,Camp,
+           EpicsArch,BldEb,
 		   SxrBeamline,SxrEndstation,
-		   XppSb1Ipm,XppSb1Pim,XppMonPim,XppSb2Ipm,XppSb3Ipm,XppSb3Pim,XppSb4Pim,XppGon,XppLas,XppUsr,
+		   XppSb1Ipm,XppSb1Pim,XppMonPim,XppSb2Ipm,XppSb3Ipm,XppSb3Pim,XppSb4Pim,XppGon,XppLas,XppEndstation,
+           AmoEndstation,
+           CxiEndstation,
+           XcsEndstation,
+           MecEndstation,
 		   NumDetector};
     enum Device   {NoDevice,Evr,Acqiris,Opal1000,TM6740,pnCCD,Princeton,Fccd,Ipimb,Encoder,Cspad,NumDevice};
 
