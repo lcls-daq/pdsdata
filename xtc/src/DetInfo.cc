@@ -1,4 +1,3 @@
-
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/Level.hh"
 #include <stdint.h>
