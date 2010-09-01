@@ -1,3 +1,4 @@
+2010-Sep-1	weaver	Tag V02-07-00.  Cspad definitions are stable now.
 2010-Aug-10	weaver  Tag V02-06-00.  Added LUSI diagnostic FEX data and config types.
 2010-Jun-24	weaver			Added Cspad preliminary definitions.
 2010-Jun-15	weaver  Tag V02-04-00.  Added value method to encoder/DataV1.  Added pulnix/TM6740ConfigV2, fccd/FccdConfigV2.

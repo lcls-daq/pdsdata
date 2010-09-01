@@ -53,8 +53,11 @@ public:
   void process(const DetInfo&, const Pulnix::TM6740ConfigV1&) {
     printf("*** Processing TM6740 config object\n");
   }
-  void process(const DetInfo&, const Camera::FrameFexConfigV1&) {
+  void process(const DetInfo&, const Camera::FrameFexConfigV1& c) {
     printf("*** Processing frame feature extraction config object\n");
+    printf("roiBegin (%d,%d)  roiEnd(%d,%d)\n",
+	   c.roiBegin().column, c.roiBegin().row,
+	   c.roiEnd().column, c.roiEnd().row);
   }
   void process(const DetInfo&, const Camera::FrameFccdConfigV1&) {
     printf("*** Processing FCCD Frame ConfigV1 object\n");
