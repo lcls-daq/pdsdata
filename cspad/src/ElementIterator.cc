@@ -22,36 +22,39 @@ ElementIterator::ElementIterator(const ConfigV2& c, const ElementV1& e) :
 }
 
 ElementIterator::ElementIterator(const ConfigV2& c, const ElementV2& e) :
-  _elem1(0), _elem2(&e) _qmask(c.quadMask()), _amask(c.asicMask())  
+  _elem1(0), _elem2(&e), _qmask(c.quadMask()), _amask(c.asicMask())  
 {
   for(int iq=0; iq<4; iq++)
     _smask[iq] = c.roiMask(iq);
 }
 
-const ElementIterator::ElementV1* next()
+bool ElementIterator::next(const ElementV1*& e)
 {
   _qmask &= ~(1<<_elem1->quad());
   if (_qmask==0)
-    return 0;
+    return false;
 
   const Section*  s = reinterpret_cast<const Section*>(_elem1+1);
   const uint16_t* u = reinterpret_cast<const uint16_t*>(s + (_amask==1 ? 2 : 8));
   _elem1      = reinterpret_cast<const ElementV1*>(u+2);
-  _smaskc     = _smask[iq];
+  _smaskc     = _smask[_elem1->quad()];
   _section    = reinterpret_cast<const Section*>(_elem1+1);
   _section_id = 0;
-  return _elem1;
+  e = _elem1;
+  return true;
 }
 
-const ElementIterator::ElementV2* next()
+bool ElementIterator::next(const ElementV2*& e)
 {
   unsigned iq = _elem2->quad();
   _qmask &= ~(1<<iq);
   if (_qmask==0)
-    return 0;
+    return false;
 
   const Section*  s = reinterpret_cast<const Section*>(_elem2+1);
-  const uint16_t* u = reinterpret_cast<const uint16_t*>(s + _scnt[iq]);
+  for(unsigned sm=_smask[iq]; sm; sm>>=1)
+    if (sm&1) s++;
+  const uint16_t* u = reinterpret_cast<const uint16_t*>(s);
   _elem2 = reinterpret_cast<const ElementV2*>(u+2);
 
   iq = _elem2->quad();
@@ -65,23 +68,24 @@ const ElementIterator::ElementV2* next()
   else
     _section = 0;
 
-  return _elem2;
+  e = _elem2;
+  return true;
 }
 
-const Section* ElementIterator::next(int sectionID& id)
+bool ElementIterator::next(const Section*& s, unsigned& id)
 {
   if (_section==0)
-    return 0;
-
-  const Section* s = _section;
+    return false;
+  
+  s = _section;
   id = _section_id;
 
   while (++_section_id<8)
     if (_smaskc&(1<<_section_id)) {
       _section++;
-      return s;
+      return true;
     }
 
   _section=0;
-  return s;
+  return true;
 }

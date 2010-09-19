@@ -1,5 +1,6 @@
 #include "pdsdata/cspad/ElementV1.hh"
 #include "pdsdata/cspad/ConfigV1.hh"
+#include "pdsdata/cspad/ConfigV2.hh"
 
 using namespace Pds::CsPad;
 

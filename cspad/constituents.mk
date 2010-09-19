@@ -1,3 +1,5 @@
 libnames := cspaddata
 libsrcs_cspaddata := src/ElementV1.cc \
-		     src/ConfigV2.cc
+		     src/ElementV2.cc \
+		     src/ConfigV2.cc \
+		     src/ElementIterator.cc 
