@@ -1,8 +1,8 @@
 //
 //  Class for rectangular frame data
 //
-#ifndef Pds_ElementV1_hh
-#define Pds_ElementV1_hh
+#ifndef Pds_ElementV2_hh
+#define Pds_ElementV2_hh
 
 #include <stdint.h>
 
@@ -10,13 +10,13 @@ namespace Pds {
 
   namespace CsPad {
 
-    class ConfigV1;
+    class ConfigV2;
     class ConfigV2;
 
-    class ElementV1 {
+    class ElementV2 {
     public:
-      enum {Version=1};
-      ElementV1();
+      enum {Version=2};
+      ElementV2();
     public:
       unsigned virtual_channel    () const;
       unsigned lane               () const;
@@ -29,17 +29,6 @@ namespace Pds {
       unsigned fiducials          () const;
       unsigned sb_temp            (unsigned i) const;
       unsigned frame_type         () const;
-
-      //  beginning of pixel data
-      const uint16_t* data() const;
-
-      //  location of individual pixel datum
-      const uint16_t* pixel(unsigned asic, unsigned column, unsigned row) const;
-      const ElementV1* next(const ConfigV1&) const;
-
-      const uint16_t* pixel(unsigned asic, unsigned column, unsigned row,
-			    const ConfigV2&) const;
-      const ElementV1* next(const ConfigV2&) const;
 
     private:
       uint32_t _word0;
