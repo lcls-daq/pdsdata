@@ -7,85 +7,83 @@
 
 using namespace Pds::CsPad;
 
-ElementIterator::ElementIterator(const ConfigV1& c, const ElementV1& e) :
-  _elem1(&e), _elem2(0), _qmask(c.quadMask()), _amask(c.asicMask())  
+ElementIterator::ElementIterator() :
+  _elem(0), _qmask(0)
 {
-  for(int iq=0; iq<4; iq++)
-    _smask[iq] = _amask==1 ? 0x3 : 0xff;
+}
+
+ElementIterator::ElementIterator(const ConfigV1& c, const ElementV1& e) :
+  _elem(&e), _qmask(c.quadMask())
+{
+  unsigned amask(c.asicMask());
+  for(int iq=0; iq<4; iq++) {
+    if (_qmask & (1<<iq))
+      _smask[iq] = amask==1 ? 0x3 : 0xff;
+    else
+      _smask[iq] = 0;
+  }
 }
 
 ElementIterator::ElementIterator(const ConfigV2& c, const ElementV1& e) :
-  _elem1(&e), _elem2(0), _qmask(c.quadMask()), _amask(c.asicMask())  
+  _elem(&e), _qmask(c.quadMask())
 {
-  for(int iq=0; iq<4; iq++)
-    _smask[iq] = c.roiMask(iq);
+  unsigned amask(c.asicMask());
+  for(int iq=0; iq<4; iq++) {
+    if (_qmask & (1<<iq))
+      _smask[iq] = amask==1 ? 0x3 : 0xff;
+    else
+      _smask[iq] = 0;
+  }
 }
 
 ElementIterator::ElementIterator(const ConfigV2& c, const ElementV2& e) :
-  _elem1(0), _elem2(&e), _qmask(c.quadMask()), _amask(c.asicMask())  
+  _elem(&e), _qmask(c.quadMask())
 {
   for(int iq=0; iq<4; iq++)
     _smask[iq] = c.roiMask(iq);
 }
 
-bool ElementIterator::next(const ElementV1*& e)
+const ElementHeader* ElementIterator::next()
 {
-  _qmask &= ~(1<<_elem1->quad());
-  if (_qmask==0)
-    return false;
+  if (_qmask==0) return 0;
 
-  const Section*  s = reinterpret_cast<const Section*>(_elem1+1);
-  const uint16_t* u = reinterpret_cast<const uint16_t*>(s + (_amask==1 ? 2 : 8));
-  _elem1      = reinterpret_cast<const ElementV1*>(u+2);
-  _smaskc     = _smask[_elem1->quad()];
-  _section    = reinterpret_cast<const Section*>(_elem1+1);
-  _section_id = 0;
-  e = _elem1;
-  return true;
-}
-
-bool ElementIterator::next(const ElementV2*& e)
-{
-  unsigned iq = _elem2->quad();
+  unsigned iq = _elem->quad();
   _qmask &= ~(1<<iq);
-  if (_qmask==0)
-    return false;
 
-  const Section*  s = reinterpret_cast<const Section*>(_elem2+1);
-  for(unsigned sm=_smask[iq]; sm; sm>>=1)
-    if (sm&1) s++;
-  const uint16_t* u = reinterpret_cast<const uint16_t*>(s);
-  _elem2 = reinterpret_cast<const ElementV2*>(u+2);
-
-  iq = _elem2->quad();
   _smaskc = _smask[iq];
-  if (_smaskc) {
-    _section    = reinterpret_cast<const Section*>(_elem2+1);
-    _section_id = 0; 
-    while ((_smaskc&(1<<_section_id))==0)
-      _section_id++;
-  }
-  else
-    _section = 0;
+  _section    = reinterpret_cast<const Section*>(_elem+1);
+  _section_id = 0; 
+  while ((_smaskc&(1<<_section_id))==0)
+    _section_id++;
 
-  e = _elem2;
-  return true;
+  //  advance _elem 
+  const ElementHeader* e = _elem;
+  if (_qmask) {
+    const Section*  s = reinterpret_cast<const Section*>(_elem+1);
+    for(unsigned sm=_smask[iq]; sm; sm>>=1)
+      if (sm&1) s++;
+    const uint16_t* u = reinterpret_cast<const uint16_t*>(s);
+    _elem = reinterpret_cast<const ElementHeader*>(u+2);
+  }
+
+  return e;
 }
 
-bool ElementIterator::next(const Section*& s, unsigned& id)
+const Section* ElementIterator::next(unsigned& id)
 {
-  if (_section==0)
-    return false;
-  
-  s = _section;
+  if (_smaskc==0) return 0;
+
+  _smaskc &= ~(1<<_section_id);
+
+  const Section* s = _section;
   id = _section_id;
 
-  while (++_section_id<8)
-    if (_smaskc&(1<<_section_id)) {
-      _section++;
-      return true;
-    }
+  // advance _section
+  if (_smaskc) {
+    _section++;
+    while ((_smaskc&(1<<++_section_id))==0) 
+      ;
+  }
 
-  _section=0;
-  return true;
+  return s;
 }

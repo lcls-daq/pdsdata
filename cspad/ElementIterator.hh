@@ -48,6 +48,7 @@ namespace Pds {
     class ConfigV2;
     class ElementV1;
     class ElementV2;
+    class ElementHeader;
 
     class Section {
     public:
@@ -56,24 +57,22 @@ namespace Pds {
 
     class ElementIterator {
     public:
+      ElementIterator();
       ElementIterator(const ConfigV1&, const ElementV1&);
       ElementIterator(const ConfigV2&, const ElementV1&);
       ElementIterator(const ConfigV2&, const ElementV2&);
     public:
       //  Iterate to the next Element/quadrant
-      bool next(const ElementV1*&);
-      bool next(const ElementV2*&);
+      const ElementHeader* next();
       //  Iterate to the next Section within the current quadrant
-      bool next(const Section*&,unsigned& sectionID);
+      const Section* next(unsigned& sectionID);
     private:
-      const ElementV1* _elem1;
-      const ElementV2* _elem2;
-      unsigned         _qmask;
-      unsigned         _amask;
-      unsigned         _smask[4];
-      unsigned         _smaskc;
-      const Section*   _section;
-      unsigned         _section_id;
+      const ElementHeader* _elem;
+      unsigned             _qmask;
+      unsigned             _smask[4];
+      unsigned             _smaskc;
+      const Section*       _section;
+      unsigned             _section_id;
     };
   };
 };
