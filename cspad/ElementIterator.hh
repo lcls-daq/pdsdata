@@ -62,9 +62,9 @@ namespace Pds {
       ElementIterator(const ConfigV1&, const Xtc&);
       ElementIterator(const ConfigV2&, const Xtc&);
     public:
-      //  Iterate to the next Element/quadrant
+      //  Iterate to the next Element/quadrant (0..3)
       const ElementHeader* next();
-      //  Iterate to the next Section within the current quadrant
+      //  Iterate to the next Section (0..7) within the current quadrant
       const Section* next(unsigned& sectionID);
     private:
       const ElementHeader* _elem;
