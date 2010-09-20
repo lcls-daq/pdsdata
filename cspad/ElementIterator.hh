@@ -42,14 +42,15 @@
 #include <stdint.h>
 
 namespace Pds {
+
+  class Xtc;
+
   namespace CsPad {
 
     class ConfigV1;
     class ConfigV2;
-    class ElementV1;
-    class ElementV2;
     class ElementHeader;
-
+    
     class Section {
     public:
       uint16_t pixel[ColumnsPerASIC][2*MaxRowsPerASIC];
@@ -58,9 +59,8 @@ namespace Pds {
     class ElementIterator {
     public:
       ElementIterator();
-      ElementIterator(const ConfigV1&, const ElementV1&);
-      ElementIterator(const ConfigV2&, const ElementV1&);
-      ElementIterator(const ConfigV2&, const ElementV2&);
+      ElementIterator(const ConfigV1&, const Xtc&);
+      ElementIterator(const ConfigV2&, const Xtc&);
     public:
       //  Iterate to the next Element/quadrant
       const ElementHeader* next();
