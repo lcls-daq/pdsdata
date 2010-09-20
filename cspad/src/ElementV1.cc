@@ -24,3 +24,9 @@ const uint16_t* ElementV1::pixel(unsigned asic,
   return d;
 }
 
+const ElementV1* ElementV1::next(const ConfigV1& c) const
+{
+  return reinterpret_cast<const ElementV1*>
+    ( reinterpret_cast<const uint16_t*>(this+1)+
+      c.numAsicsRead()*ColumnsPerASIC*MaxRowsPerASIC + 2 );
+}
