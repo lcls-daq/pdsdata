@@ -8,6 +8,7 @@
 #include "pdsdata/xtc/Xtc.hh"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 using namespace Pds::CsPad;
 
@@ -75,10 +76,20 @@ const ElementHeader* ElementIterator::next()
   _qmask &= ~(1<<iq);
 
   _smaskc = _smask[iq];
-  _section    = reinterpret_cast<const Section*>(_elem+1);
-  _section_id = 0; 
-  while ((_smaskc&(1<<_section_id))==0)
-    _section_id++;
+  if (_smaskc) {
+    _section    = reinterpret_cast<const Section*>(_elem+1);
+    _section_id = 0; 
+    while ((_smaskc&(1<<_section_id))==0)
+      _section_id++;
+  }
+  else {
+    printf("Quad %d without sectors: qmask %x\n", iq, _qmask);
+    const unsigned* d = reinterpret_cast<const unsigned*>(_elem);
+    for(int i=0; i<8; i++)
+      printf(" %08x",*d++);
+    printf("\n");
+    abort();
+  }
 
   //  advance _elem 
   const ElementHeader* e = _elem;
