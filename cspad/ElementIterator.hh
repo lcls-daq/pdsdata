@@ -31,7 +31,7 @@
 //  orientations (for quadrant 0):
 //    Sections 0,1: row index increases from bottom to top, column index increases from left to right
 //    Sections 2,3: row index increases from left to right, column index increases from top to bottom
-//    Sections 4,5: row index increases from top to bottom, column index increases from left to right
+//    Sections 4,5: row index increases from top to bottom, column index increases from right to left
 //    Sections 6,7: row index increases from left to right, column index increases from top to bottom
 //  Again, the orientations of the Sections for quadrant 1 are rotated 90 degrees clockwise 
 //  and so on for each successive quadrant.
