@@ -72,7 +72,7 @@ namespace Pds {
     int _read(void* buf, ssize_t sz) 
     {
       char* p = (char*)buf;
-      nfds_t nfd = 1;
+      //nfds_t nfd = 1;
 
       ssize_t rsz = ::read(_fd, p, sz);
       p  += rsz;
@@ -82,7 +82,7 @@ namespace Pds {
 	//	printf("Waiting for %d bytes\n",sz);
 	timespec tp;
 	tp.tv_sec  = 0;
-	tp.tv_nsec = 1e8;
+	tp.tv_nsec = (long int) 1.0e8;
 	nanosleep(&tp,0);
 
 	if ((rsz = ::read(_fd, p, sz))==-1) {
