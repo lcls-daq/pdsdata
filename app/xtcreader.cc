@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -14,6 +13,7 @@
 #include "pdsdata/ipimb/DataV1.hh"
 #include "pdsdata/encoder/ConfigV1.hh"
 #include "pdsdata/encoder/DataV1.hh"
+#include "pdsdata/encoder/DataV2.hh"
 #include "pdsdata/camera/FrameV1.hh"
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/fccd/FccdConfigV1.hh"
@@ -69,7 +69,10 @@ public:
     printf("*** Processing Ipimb config object\n");
   }
   void process(const DetInfo&, const Encoder::DataV1&) {
-    printf("*** Processing encoder data object\n");
+    printf("*** Processing encoder DataV1 object\n");
+  }
+  void process(const DetInfo&, const Encoder::DataV2&) {
+    printf("*** Processing encoder DataV2 object\n");
   }
   void process(const DetInfo&, const Encoder::ConfigV1&) {
     printf("*** Processing Encoder config object\n");
@@ -309,8 +312,21 @@ public:
       break;      
     }
     case (TypeId::Id_EncoderData) :
-      process(info, *(const Encoder::DataV1*)(xtc->payload()));
-      break;
+    {      
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info,*(const Encoder::DataV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info,*(const Encoder::DataV2*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported encoder data version %d\n",version);
+        break;
+      }
+      break;      
+    }
     case (TypeId::Id_EncoderConfig) :
     {      
       unsigned version = xtc->contains.version();
