@@ -51,6 +51,7 @@ const char* TypeId::name(Type type)
     "DiodeFexConfig",
     "DiodeFex",
     "PimImageConfig",
+    "BldIpimb",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

@@ -11,7 +11,7 @@ namespace Pds {
   class BldInfo : public Src {
   public:
 
-    enum Type { EBeam, PhaseCavity, FEEGasDetEnergy, NumberOf };
+    enum Type { EBeam, PhaseCavity, FEEGasDetEnergy, Ipimb,  NumberOf };
 
     BldInfo() {}
     BldInfo(uint32_t processId,

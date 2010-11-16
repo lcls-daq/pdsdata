@@ -45,3 +45,12 @@ int BldDataPhaseCavity::print() const
     
     return 0;
 }
+
+int BldDataIpimb::print() const
+{   printf("BLD IPIMB Data\n");    
+    //printf("BLD IPIMB Data = TC: %llu ch0 = %f ch1 = %f ch2 = %f ch3 = %f \n",
+    //       ipimbData.triggerCounter(), ipimbData.channel0Volts(), ipimbData.channel1Volts(),
+    //       ipimbData.channel2Volts(), ipimbData.channel3Volts());
+
+    return 0;
+}
