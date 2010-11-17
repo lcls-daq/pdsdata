@@ -2,9 +2,12 @@
 #define BLD_DATA_H
 
 #include <stdint.h>
-#include "pds/config/IpimbConfigType.hh"
-#include "pds/config/IpimbDataType.hh"
+#include "pdsdata/ipimb/ConfigV1.hh"
+#include "pdsdata/ipimb/DataV1.hh"
 #include "pdsdata/xtc/DetInfo.hh"
+
+typedef Pds::Ipimb::DataV1   BldIpimbData;
+typedef Pds::Ipimb::ConfigV1 BldIpimbConfig; 
 
 namespace Pds 
 {
@@ -75,12 +78,12 @@ public:
 class BldDataIpimb
 {
 public:
-  enum { version=0 };
-  IpimbDataType   ipimbData;   
-  IpimbConfigType ipimbConfig;
-  DetInfo         ipimbDetInfo;
+  enum { version=0 }; 
+    BldIpimbData   ipimbData;   
+    BldIpimbConfig ipimbConfig;
+    DetInfo        ipimbDetInfo;
     
-  int print() const;    
+    int print() const;    
 };
 
 #pragma pack()
