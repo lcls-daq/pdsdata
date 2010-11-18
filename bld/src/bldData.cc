@@ -5,9 +5,9 @@ using namespace Pds;
 
 int BldDataFEEGasDetEnergy::print() const
 {    
-    printf("GDET:FEE:11:ENRC ( in mJ ): %lf\n", f_11_ENRC );
+    printf("GDET:FEE:11:ENRC ( in mJ ): %lf\n", f_11_ENRC );    
     printf("GDET:FEE:12:ENRC ( in mJ ): %lf\n", f_12_ENRC );
-    printf("GDET:FEE:21:ENRC ( in mJ ): %lf\n", f_21_ENRC );
+    printf("GDET:FEE:21:ENRC ( in mJ ): %lf\n", f_21_ENRC ); 
     printf("GDET:FEE:22:ENRC ( in mJ ): %lf\n", f_22_ENRC );
     
     return 0;
@@ -46,11 +46,14 @@ int BldDataPhaseCavity::print() const
     return 0;
 }
 
-int BldDataIpimb::print() const
-{   printf("BLD IPIMB Data\n");    
-    //printf("BLD IPIMB Data = TC: %llu ch0 = %f ch1 = %f ch2 = %f ch3 = %f \n",
-    //       ipimbData.triggerCounter(), ipimbData.channel0Volts(), ipimbData.channel1Volts(),
-    //       ipimbData.channel2Volts(), ipimbData.channel3Volts());
-
+int BldDataIpimb::print() const 
+{   
+    printf("BLD IPIMB Data:\n");
+    printf("  Trig Count  : %llu \n",ipimbData.triggerCounter());
+    printf("  Channel-0   : %f   \n",ipimbData.channel0Volts());
+    printf("  Channel-1   : %f   \n",ipimbData.channel1Volts());    	
+    printf("  Channel-2   : %f   \n",ipimbData.channel2Volts());	
+    printf("  Channel-3   : %f   \n",ipimbData.channel3Volts());
+    
     return 0;
 }

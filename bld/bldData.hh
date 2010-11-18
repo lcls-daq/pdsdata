@@ -6,8 +6,8 @@
 #include "pdsdata/ipimb/DataV1.hh"
 #include "pdsdata/xtc/DetInfo.hh"
 
-typedef Pds::Ipimb::DataV1   BldIpimbData;
-typedef Pds::Ipimb::ConfigV1 BldIpimbConfig; 
+typedef Pds::Ipimb::DataV1   IpimbDataV1;
+typedef Pds::Ipimb::ConfigV1 IpimbConfigV1; 
 
 namespace Pds 
 {
@@ -79,8 +79,8 @@ class BldDataIpimb
 {
 public:
   enum { version=0 }; 
-    BldIpimbData   ipimbData;   
-    BldIpimbConfig ipimbConfig;
+    IpimbDataV1    ipimbData;   
+    IpimbConfigV1  ipimbConfig;
     DetInfo        ipimbDetInfo;
     
     int print() const;    
