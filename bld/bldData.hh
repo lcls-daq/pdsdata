@@ -4,10 +4,12 @@
 #include <stdint.h>
 #include "pdsdata/ipimb/ConfigV1.hh"
 #include "pdsdata/ipimb/DataV1.hh"
+#include "pdsdata/lusi/IpmFexV1.hh"
 #include "pdsdata/xtc/DetInfo.hh"
 
 typedef Pds::Ipimb::DataV1   IpimbDataV1;
 typedef Pds::Ipimb::ConfigV1 IpimbConfigV1; 
+typedef Pds::Lusi::IpmFexV1  IpmFexDataV1;
 
 namespace Pds 
 {
@@ -79,9 +81,9 @@ class BldDataIpimb
 {
 public:
   enum { version=0 }; 
-    IpimbDataV1    ipimbData;   
+    IpimbDataV1    ipimbData;
     IpimbConfigV1  ipimbConfig;
-    DetInfo        ipimbDetInfo;
+    IpmFexDataV1   ipmFexData;
     
     int print() const;    
 };

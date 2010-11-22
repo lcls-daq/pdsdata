@@ -19,7 +19,7 @@ const char* BldInfo::name(const BldInfo& src){
     "EBeam",
     "PhaseCavity",
     "FEEGasDetEnergy",
-    "Ipimb",
+    "NH2-SB1-IPM-01",
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }

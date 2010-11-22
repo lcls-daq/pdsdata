@@ -47,7 +47,7 @@ namespace Pds {
       Id_DiodeFexConfig,
       Id_DiodeFex,
       Id_PimImageConfig,
-      Id_Ipimb,
+      Id_SharedIpimb,
       NumberOf};
 
     TypeId() {}
