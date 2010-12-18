@@ -64,7 +64,8 @@ namespace Pds {
       Ipimb     = 8,
       Encoder   = 9,
       Cspad     = 10,
-      NumDevice = 11
+      AcqTDC    = 11,
+      NumDevice = 12
     };
 
     DetInfo() {}

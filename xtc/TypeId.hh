@@ -48,6 +48,8 @@ namespace Pds {
       Id_DiodeFex,
       Id_PimImageConfig,
       Id_SharedIpimb,
+      Id_AcqTdcConfig,
+      Id_AcqTdcData,
       NumberOf};
 
     TypeId() {}

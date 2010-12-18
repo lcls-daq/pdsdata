@@ -46,7 +46,8 @@ const char* DetInfo::name(Device dev) {
     "Fccd",
     "Ipimb",
     "Encoder",
-    "Cspad"
+    "Cspad",
+    "AcqTDC"
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
 }
