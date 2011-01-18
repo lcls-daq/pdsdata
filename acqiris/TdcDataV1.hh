@@ -15,7 +15,7 @@ namespace Pds {
     public:
       TdcDataV1() {}
     public:
-      enum Source { Common, Chan1, Chan2, Chan3, Chan4, Chan5, Chan6, AuxIO };
+      enum Source { Comm, Chan1, Chan2, Chan3, Chan4, Chan5, Chan6, AuxIO };
       Source   source  () const;
     protected:
       uint32_t _value;

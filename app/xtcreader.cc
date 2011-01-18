@@ -9,6 +9,8 @@
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/acqiris/ConfigV1.hh"
 #include "pdsdata/acqiris/DataDescV1.hh"
+#include "pdsdata/acqiris/TdcConfigV1.hh"
+#include "pdsdata/acqiris/TdcDataV1.hh"
 #include "pdsdata/ipimb/ConfigV1.hh"
 #include "pdsdata/ipimb/DataV1.hh"
 #include "pdsdata/encoder/ConfigV1.hh"
@@ -63,6 +65,45 @@ public:
   }
   void process(const DetInfo&, const Acqiris::ConfigV1&) {
     printf("*** Processing Acqiris config object\n");
+  }
+  void process(const DetInfo& i, const Acqiris::TdcDataV1& d) {
+    printf("*** Processing acqiris TDC data object for %s\n",
+	   DetInfo::name(i));
+    const Acqiris::TdcDataV1* p = &d;
+    //  Data is terminated with an AuxIOMarker (Memory bank switch)
+    while(!(p->source() == Acqiris::TdcDataV1::AuxIO &&
+	    static_cast<const Acqiris::TdcDataV1::Marker*>(p)->type() < 
+	    Acqiris::TdcDataV1::Marker::AuxIOMarker)) {
+      switch(p->source()) {
+      case Acqiris::TdcDataV1::Comm:
+	printf("common start %d\n",
+	       static_cast<const Acqiris::TdcDataV1::Common*>(p)->nhits());
+	break;
+      case Acqiris::TdcDataV1::AuxIO:
+	break;
+      default:
+	{ 
+	  const Acqiris::TdcDataV1::Channel& c = 
+	    *static_cast<const Acqiris::TdcDataV1::Channel*>(p);
+	  if (!c.overflow())
+	    printf("ch %d : 0x%x ticks, %g ns\n",
+		   p->source(), c.ticks(), c.ticks()*50e-12);
+	  break;
+	}
+      }
+      p++;
+    }
+  }
+  void process(const DetInfo& i, const Acqiris::TdcConfigV1& c) {
+    printf("*** Processing Acqiris TDC config object for %s\n",
+	   DetInfo::name(i));
+    for(unsigned j=0; j<Acqiris::TdcConfigV1::NChannels; j++) {
+      const Acqiris::TdcChannel& ch = c.channel(j);
+      printf("chan %d : %s, slope %c, level %gv\n",
+	     ch.mode ()==Acqiris::TdcChannel::Inactive?"inactive":"active",
+	     ch.slope()==Acqiris::TdcChannel::Positive?'+':'-',
+	     ch.level());
+    }
   }
   void process(const DetInfo&, const Ipimb::DataV1&) {
     printf("*** Processing ipimb data object\n");
@@ -303,6 +344,12 @@ public:
       }
       break;      
     }
+    case (TypeId::Id_AcqTdcConfig) :
+      process(info, *(const Acqiris::TdcConfigV1*)(xtc->payload()));
+      break;
+    case (TypeId::Id_AcqTdcData) :
+      process(info, *(const Acqiris::TdcDataV1*)(xtc->payload()));
+      break;
     case (TypeId::Id_IpimbData) :
       process(info, *(const Ipimb::DataV1*)(xtc->payload()));
       break;
