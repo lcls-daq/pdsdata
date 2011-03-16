@@ -31,6 +31,7 @@
 #include "pdsdata/evr/ConfigV2.hh"
 #include "pdsdata/evr/ConfigV3.hh"
 #include "pdsdata/evr/ConfigV4.hh"
+#include "pdsdata/evr/ConfigV5.hh"
 #include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/control/ConfigV1.hh"
 #include "pdsdata/control/PVControl.hh"
@@ -47,6 +48,9 @@
 #include "pdsdata/lusi/IpmFexV1.hh"
 #include "pdsdata/lusi/DiodeFexConfigV1.hh"
 #include "pdsdata/lusi/DiodeFexV1.hh"
+#include "pdsdata/lusi/PimImageConfigV1.hh"
+#include "pdsdata/pulnix/TM6740ConfigV1.hh"
+#include "pdsdata/pulnix/TM6740ConfigV2.hh"
 
 static unsigned eventCount = 0;
 
@@ -68,41 +72,41 @@ public:
   }
   void process(const DetInfo& i, const Acqiris::TdcDataV1& d) {
     printf("*** Processing acqiris TDC data object for %s\n",
-	   DetInfo::name(i));
+     DetInfo::name(i));
     const Acqiris::TdcDataV1* p = &d;
     //  Data is terminated with an AuxIOMarker (Memory bank switch)
     while(!(p->source() == Acqiris::TdcDataV1::AuxIO &&
-	    static_cast<const Acqiris::TdcDataV1::Marker*>(p)->type() < 
-	    Acqiris::TdcDataV1::Marker::AuxIOMarker)) {
+      static_cast<const Acqiris::TdcDataV1::Marker*>(p)->type() < 
+      Acqiris::TdcDataV1::Marker::AuxIOMarker)) {
       switch(p->source()) {
       case Acqiris::TdcDataV1::Comm:
-	printf("common start %d\n",
-	       static_cast<const Acqiris::TdcDataV1::Common*>(p)->nhits());
-	break;
+  printf("common start %d\n",
+         static_cast<const Acqiris::TdcDataV1::Common*>(p)->nhits());
+  break;
       case Acqiris::TdcDataV1::AuxIO:
-	break;
+  break;
       default:
-	{ 
-	  const Acqiris::TdcDataV1::Channel& c = 
-	    *static_cast<const Acqiris::TdcDataV1::Channel*>(p);
-	  if (!c.overflow())
-	    printf("ch %d : 0x%x ticks, %g ns\n",
-		   p->source(), c.ticks(), c.ticks()*50e-12);
-	  break;
-	}
+  { 
+    const Acqiris::TdcDataV1::Channel& c = 
+      *static_cast<const Acqiris::TdcDataV1::Channel*>(p);
+    if (!c.overflow())
+      printf("ch %d : 0x%x ticks, %g ns\n",
+       p->source(), c.ticks(), c.ticks()*50e-12);
+    break;
+  }
       }
       p++;
     }
   }
   void process(const DetInfo& i, const Acqiris::TdcConfigV1& c) {
     printf("*** Processing Acqiris TDC config object for %s\n",
-	   DetInfo::name(i));
+     DetInfo::name(i));
     for(unsigned j=0; j<Acqiris::TdcConfigV1::NChannels; j++) {
       const Acqiris::TdcChannel& ch = c.channel(j);
       printf("chan %d : %s, slope %c, level %gv\n",
-	     ch.mode ()==Acqiris::TdcChannel::Inactive?"inactive":"active",
-	     ch.slope()==Acqiris::TdcChannel::Positive?'+':'-',
-	     ch.level());
+       ch.mode ()==Acqiris::TdcChannel::Inactive?"inactive":"active",
+       ch.slope()==Acqiris::TdcChannel::Positive?'+':'-',
+       ch.level());
     }
   }
   void process(const DetInfo&, const Ipimb::DataV1&) {
@@ -122,9 +126,6 @@ public:
   }
   void process(const DetInfo&, const Opal1k::ConfigV1&) {
     printf("*** Processing Opal1000 config object\n");
-  }
-  void process(const DetInfo&, const Pulnix::TM6740ConfigV1&) {
-    printf("*** Processing TM6740 config object\n");
   }
   void process(const DetInfo&, const Camera::FrameFexConfigV1&) {
     printf("*** Processing frame feature extraction config object\n");
@@ -256,6 +257,9 @@ public:
   void process(const DetInfo&, const EvrData::ConfigV4&) {
     printf("*** Processing EVR config V4 object\n");
   }
+  void process(const DetInfo&, const EvrData::ConfigV5&) {
+    printf("*** Processing EVR config V5 object\n");
+  }
   void process(const DetInfo&, const EvrData::DataV3& data) {
     printf("*** Processing Evr Data object\n");
     eventCount++;    
@@ -263,8 +267,8 @@ public:
     printf( "# of Fifo Events: %u\n", data.numFifoEvents() );
     for ( unsigned int iEventIndex=0; iEventIndex< data.numFifoEvents(); iEventIndex++ ) {
       const EvrData::DataV3::FIFOEvent& event = data.fifoEvent(iEventIndex);
-      //printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
-      //  iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
+      printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
+        iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
       if (event.EventCode == 162)
         printf ("Blank shot eventcode 162 found at eventNo: %u \n",eventCount); 
     }    
@@ -297,6 +301,18 @@ public:
   void process(const DetInfo&, const Lusi::DiodeFexV1&) {
     printf("*** Processing LUSI DiodeFexV1 object\n");
   }
+  void process(const DetInfo &, const Lusi::PimImageConfigV1 &)
+  {
+    printf("*** Processing LUSI PimImageConfigV1 object\n");
+  }  
+  void process(const DetInfo &, const Pulnix::TM6740ConfigV1 &)
+  {
+    printf("*** Processing Pulnix TM6740ConfigV1 object\n");
+  }
+  void process(const DetInfo &, const Pulnix::TM6740ConfigV2 &)
+  {
+    printf("*** Processing Pulnix::TM6740ConfigV2 object\n");
+  }  
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
@@ -445,6 +461,9 @@ public:
       case 4:
         process(info, *(const EvrData::ConfigV4*)(xtc->payload()));
         break;
+      case 5:
+        process(info, *(const EvrData::ConfigV5*)(xtc->payload()));
+        break;
       default:
         printf("Unsupported evr configuration version %d\n",version);
         break;
@@ -490,6 +509,7 @@ public:
       default:
         break;
       }       
+      break;
     }    
     case (TypeId::Id_PhaseCavity) :
     {
@@ -500,7 +520,7 @@ public:
     {
       process(info, *(const BldDataIpimb*) xtc->payload() );
       break;        
-    }	
+    } 
     case (TypeId::Id_PrincetonConfig) :
     {
       process(info, *(const Princeton::ConfigV1*)(xtc->payload()));
@@ -546,8 +566,29 @@ public:
       process(info, *(const Lusi::DiodeFexV1*)(xtc->payload()));
       break;
     }    
+    case (TypeId::Id_TM6740Config):
+    {
+      switch (xtc->contains.version())
+      {
+      case 1:
+        process(info, *(const Pulnix::TM6740ConfigV1 *) xtc->payload());
+        break;
+      case 2:
+        process(info, *(const Pulnix::TM6740ConfigV2 *) xtc->payload());
+        break;
+      default:
+        printf("Unsupported TM6740Config version %d\n", xtc->contains.version());            
+        break;
+      }        
+      break;
+    }
+    case (TypeId::Id_PimImageConfig):
+    {
+      process(info, *(const Lusi::PimImageConfigV1 *) (xtc->payload()));
+      break;
+    }          
     default :
-      printf("Unsupported TypeId %d\n", (int) xtc->contains.id());
+      printf("Unsupported TypeId %s (value = %d)\n", TypeId::name(xtc->contains.id()), (int) xtc->contains.id());
       break;
     }
     return Continue;
