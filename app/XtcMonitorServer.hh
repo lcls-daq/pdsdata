@@ -66,6 +66,7 @@ namespace Pds {
     timespec        _tmo;
     pthread_t       _threadID;
     EventSequence*  _sequence;
+    timespec*       _postmarks;
   };
 };
 

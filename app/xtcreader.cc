@@ -104,9 +104,10 @@ public:
     for(unsigned j=0; j<Acqiris::TdcConfigV1::NChannels; j++) {
       const Acqiris::TdcChannel& ch = c.channel(j);
       printf("chan %d : %s, slope %c, level %gv\n",
-       ch.mode ()==Acqiris::TdcChannel::Inactive?"inactive":"active",
-       ch.slope()==Acqiris::TdcChannel::Positive?'+':'-',
-       ch.level());
+             ch.channel(),
+             ch.mode ()==Acqiris::TdcChannel::Inactive?"inactive":"active",
+             ch.slope()==Acqiris::TdcChannel::Positive?'+':'-',
+             ch.level());
     }
   }
   void process(const DetInfo&, const Ipimb::DataV1&) {

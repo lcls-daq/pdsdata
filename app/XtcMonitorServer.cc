@@ -2,6 +2,7 @@
 
 #include "pdsdata/xtc/Dgram.hh"
 
+#include <unistd.h>
 #ifdef _POSIX_MESSAGE_PASSING
 #include <mqueue.h>
 #endif
@@ -16,6 +17,11 @@
 
 using std::queue;
 using std::stack;
+
+//
+//  Recover any shared memory buffer older than 10 seconds
+//
+static const unsigned TMO_SEC = 10;
 
 #define PERMS (S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH)
 #define OFLAGS (O_CREAT|O_RDWR)
@@ -105,6 +111,8 @@ XtcMonitorServer::~XtcMonitorServer()
   }
   XtcMonitorMsg::eventInputQueue     (_tag,_numberOfClients,qname); mq_unlink(qname);
   sprintf(qname, "/PdsShuffleQueue_%s",_tag);  mq_unlink(qname);
+
+  delete[] _postmarks;
 }
 
 bool XtcMonitorServer::_send_sequence()
@@ -112,6 +120,43 @@ bool XtcMonitorServer::_send_sequence()
   struct mq_attr attr;
   mq_getattr(_myInputEvQueue, &attr);
   unsigned depth = _sequence->depth();
+
+  if (attr.mq_curmsgs <  int(depth)) {  // try to recover lost buffers
+    unsigned mask=0;
+
+    timespec tv;
+    clock_gettime(CLOCK_REALTIME,&tv);
+    timespec tmo = tv; tmo.tv_sec -= TMO_SEC;
+
+    unsigned curmsg = attr.mq_curmsgs;
+    for (unsigned i=0; i<curmsg; i++) {
+      if (mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL) < 0) 
+        perror("mq_receive");
+      
+      mask |= (1<<_myMsg.bufferIndex());
+    }
+      
+    for(unsigned i=0; i<_numberOfEvBuffers; i++) {
+      if ((mask &(1<<i))==0 && tmo.tv_sec > _postmarks[i].tv_sec) {
+        char buff[128];
+        time_t t = _postmarks[i].tv_sec;
+        strftime(buff,128,"%H:%M:%S",localtime(&t));
+        printf("recover shmem buffer %d : %s.%09u\n",
+               i, buff, _postmarks[i].tv_nsec);
+        mask |= (1<<i);
+      }
+    }
+
+    if (mask) {
+      for(unsigned i=0; i<_numberOfEvBuffers; i++) {
+        if (mask & (1<<i)) {
+          mq_send(_myInputEvQueue, (const char*)_myMsg.bufferIndex(i),
+                  sizeof(XtcMonitorMsg), 0);
+        }
+      }
+    }
+  }
+
   if (attr.mq_curmsgs >= int(depth)) {
     for(unsigned i=0; i<depth; i++) {
       if (mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL) < 0) 
@@ -235,8 +280,10 @@ void XtcMonitorServer::routine()
 	for(unsigned i=0; i<=_numberOfClients; i++)
 	  if (mq_timedsend(_myOutputEvQueue[i], (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo))
 	    ; //	    printf("outputEv timedout to client %d\n",i);
-	  else
+	  else {
+            clock_gettime(CLOCK_REALTIME,&_postmarks[m.msg().bufferIndex()]);
 	    break;
+          }
       }
     }
   }
@@ -329,7 +376,9 @@ int XtcMonitorServer::_init()
   pthread_create(&_threadID,NULL,TaskRoutine,this);
 
   // prestuff the input queue which doubles as the free list
+  _postmarks = new timespec[_numberOfEvBuffers];
   for (unsigned i=0; i<_numberOfEvBuffers; i++) {
+    clock_gettime(CLOCK_REALTIME,&_postmarks[i]);
     if (mq_send(_myInputEvQueue, (const char *)_myMsg.bufferIndex(i),
         sizeof(XtcMonitorMsg), 0)) {
       perror("mq_send inQueueStuffing");

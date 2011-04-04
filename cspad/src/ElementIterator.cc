@@ -72,6 +72,18 @@ ElementIterator::ElementIterator(const ConfigV2& c, const Xtc& xtc) :
   }
 }
 
+ElementIterator::ElementIterator(const ElementIterator& c) :
+  _elem      (c._elem      ),
+  _end       (c._end       ),
+  _qmask     (c._qmask     ),
+  _smaskc    (c._smaskc    ),
+  _section   (c._section   ),
+  _section_id(c._section_id)
+{
+  for(int i=0; i<4; i++)
+    _smask[i]=c._smask[i];
+}
+
 const ElementHeader* ElementIterator::next()
 {
   if (_qmask==0 || _elem>=_end) return 0;
