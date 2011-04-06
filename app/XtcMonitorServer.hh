@@ -67,6 +67,8 @@ namespace Pds {
     pthread_t       _threadID;
     EventSequence*  _sequence;
     timespec*       _postmarks;
+    unsigned        _freelist;
+    unsigned        _nfree;
   };
 };
 
