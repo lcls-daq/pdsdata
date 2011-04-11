@@ -50,6 +50,7 @@ namespace Pds {
       Id_SharedIpimb,
       Id_AcqTdcConfig,
       Id_AcqTdcData,
+      Id_Index,
       NumberOf};
 
     TypeId() {}

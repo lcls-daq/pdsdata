@@ -53,7 +53,8 @@ const char* TypeId::name(Type type)
     "PimImageConfig",
     "SharedIpimb",
     "AcqTDCConfig",
-    "AcqTDCData"
+    "AcqTDCData",
+    "Index",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
