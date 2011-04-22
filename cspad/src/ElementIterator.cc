@@ -2,6 +2,7 @@
 
 #include "pdsdata/cspad/ConfigV1.hh"
 #include "pdsdata/cspad/ConfigV2.hh"
+#include "pdsdata/cspad/ConfigV3.hh"
 #include "pdsdata/cspad/ElementV1.hh"
 #include "pdsdata/cspad/ElementV2.hh"
 
@@ -67,6 +68,38 @@ ElementIterator::ElementIterator(const ConfigV2& c, const Xtc& xtc) :
   else {
     printf("Pds::CsPad::ElementIterator wrong type %x/%x\n",
  	   xtc.contains.id(),xtc.contains.version());
+    _elem = 0;
+    _end  = 0;
+  }
+}
+
+ElementIterator::ElementIterator(const ConfigV3& c, const Xtc& xtc) :
+  _elem((const ElementHeader*)(xtc.payload())),
+  _end ((const ElementHeader*)(xtc.payload()+xtc.sizeofPayload())),
+  _qmask(c.quadMask())
+{
+  if (xtc.contains.id()!=Pds::TypeId::Id_CspadElement) {
+    printf("Pds::CsPad::ElementIterator wrong type %x/%x\n",
+       xtc.contains.id(),xtc.contains.version());
+    _elem = 0;
+    _end  = 0;
+  }
+  else if (xtc.contains.version()==1) {
+    unsigned amask(c.asicMask());
+    for(int iq=0; iq<4; iq++) {
+      if (_qmask & (1<<iq))
+    _smask[iq] = amask==1 ? 0x3 : 0xff;
+      else
+    _smask[iq] = 0;
+    }
+  }
+  else if (xtc.contains.version()==2) {
+    for(int iq=0; iq<4; iq++)
+      _smask[iq] = c.roiMask(iq);
+  }
+  else {
+    printf("Pds::CsPad::ElementIterator wrong type %x/%x\n",
+       xtc.contains.id(),xtc.contains.version());
     _elem = 0;
     _end  = 0;
   }
