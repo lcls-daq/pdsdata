@@ -21,103 +21,108 @@ namespace Index
  *  |  Header                                |
  *  |    Type: IndexFileHeaderV1             |
  *  +----------------------------------------+
- *  |  List of Segment Information           |
- *  |    (Size defined in header)            |
- *  |    Type: ProcInfo                      |
- *  +----------------------------------------+
  *  |  List of BeginCalibCycle Infomration   |
  *  |    (Size defined in header)            |
  *  |    Type: CalibNode                     |
  *  +----------------------------------------+
- *  |  List of L1Accept Basic Infomation     |
+ *  |  List of Evr Event Codes               |
+ *  |    (Size defined in header)            |
+ *  |    Type: uint8_t                       |
+ *  +----------------------------------------+
+ *  |  List of Segment Information           |
+ *  |    (Size defined in header)            |
+ *  |    Type: See below                     |
+ *  +----------------------------------------+
+ *  |  List of L1Accept Infomation           |
  *  |    (Size defined in header)            |
  *  |    Type: IndexFileL1NodeV1             |
- *  +----------------------------------------+
- *  |  List of L1Accept Extended Infomation  |
- *  |    (Size defined in header)            |
- *  |    Type: Defined later                 |
  *  +----------------------------------------+
  *
  *  Header
  *  ======
  *    Type: IndexFileHeaderV1
  *    Content:
- *      Xtc   xtcIndex;
- *      char  sXtcFilename[iMaxFilenameLen];     
- *      int   iNumIndex;
- *      int   iNumDetector;  
- *      int   iNumCalib; 
+ *      Xtc       xtcIndex;                       // Regular xtc struture
+ *      char      sXtcFilename[iMaxFilenameLen];  // Filename of the corresponding xtc file
+ *      int16_t   iHeaderSize;                    // Data size before the L1Accept information
+ *      int16_t   iNumCalib;                      // Number of BeginCalibCycles 
+ *      int8_t    iNumEvrEvents;                  // Number of different Evr event codes
+ *      int8_t    iNumDetector;                   // Number of detectors (segment level programs)
+ *      int32_t   iNumIndex;                      // Number of L1Accept events 
  *    Note:
  *      - xtcIndex is a regular xtc object, whose typeid == Id_Index,
  *        and extent == size of the index file
- *
- *  List of Segment Information
- *  ===========================
- *    Type: ProcInfo 
- *    Content:
- *      - see the definition of pdsdata/xtc/ProcInfo.hh
- *    Note:
- *      - The size of list is defined in header.iNumDetector
- *      - It is a list of all segment node's ProcInfo, sorted in IP/Pid numerical order
- *      - This list is used as the reference
- *        - Later the damage mask will use a bit to specify which segment has "Damage", 
- *            and the bit index is referred to the order in this list
- *        - Later the SegDmg object will also store a segment index that has "Damage",
- *            and the index is also referred to the order in this list
+ *      - iHeaderSize counts the size from "Header" to "List of Segment Information", and
+ *          padded to 4-bytes memory boundary, so the "List of L1Accept Information" is
+ *          guaranteed to align with 4-bytes boundaries
  *
  *  List of BeginCalibCycle Infomration
  *  ===================================
  *    Type: CalibNode
  *    Content: 
- *        int64_t lliOffset;  // offset in the xtc file for jumping to this BeginCalibCycle
- *        int32_t iL1Index;   // index number of the first L1Accept event in this Calib Cycle
+ *      int64_t lliOffset;  // offset in the xtc file for jumping to this BeginCalibCycle
+ *      int32_t iL1Index;   // index number of the first L1Accept event in this Calib Cycle
  *    Note:
  *      - The size of list is defined in header.iNumCalib
  *      - It is a list of all BeginCalibCycle addresses in the xtc file
  *
- *  List of L1Accept Basic Infomation
+ *  List of Evr Event Codes
+ *  ===========================
+ *    Type: uint8_t 
+ *    Content:
+ *      uint8_t uEventCode
+ *    Note:
+ *      - The size of list is defined in header.iNumEvrEvents
+ *      - It is a list of all Evr event codes that appear in the current xtc file,
+ *          and the order is used to define the bit index in the "uMaskEvrEvents" field of each L1Accept node
+ *
+ *  List of Segment Information
+ *  ===========================
+ *    Type: See below
+ *    Content: 
+ *      Each segment is made up of the following structure:
+ *
+ *  +----------------------------------------+
+ *  |  NodeId                                |
+ *  |    Type: ProcInfo                      |
+ *  +----------------------------------------+
+ *  |  Number of sources in this segment     |
+ *  |    Type: uint8_t                       |
+ *  +----------------------------------------+
+ *  |  List of sources                       |
+ *  |    Size: Defined above                 |
+ *  |    Type: Src                           |
+ *  +----------------------------------------+
+ *  |  List of types                         |
+ *  |    Size: Defined above                 |
+ *  |    Type: TypeId                        |
+ *  +----------------------------------------+
+ *
+ *    Note:
+ *      - The size of list is defined in header.iNumDetector
+ *      - It is a list of all segment node's information, including the ProcInfo (IP address/PID) and 
+ *          the sources/types provided by each segment
+ *      - This list is used as the reference
+ *        - Later the "uMaskDetDmgs" field will use a bit to specify which segment has "Damage", 
+ *            and the bit index is referred to the order in this list
+ *        - Later the "uMaskDetData" field will use a bit to specify which segment has "Non-empty data", 
+ *            and the bit index is referred to the order in this list
+ *
+ *  List of L1Accept Infomation
  *  =========================================
  *    Type: IndexFileL1NodeV1
  *    Content:
- *      uint32_t  uFiducial;    // fiducial of this L1Accept event
- *      int64_t   lliOffsetXtc; // offset in the xtc file for jumping to this event
- *      uint32_t  uOffsetExt;   // offset in this index file for jumping to the extended information
- *      Damage    damage;       // "overall" damage of this event, extracted from L1Accept event's Xtc object
- *      uint32_t  uDetDmgMask;  // bit mask for listing which segment node has "Damage"
- *      uint32_t  uAttribute;   // bit mask showing some logic information for this event. See below.
- *
- *      enum EAttribute         // bit definition for uAttribute
- *      {
- *        BIT_EPICS     = 0,    // If this L1Accept contains EPICS data (from epicsArch) or not
- *        BIT_PRINCETON = 1,    // If this L1Accept contains Princeton frame data or not
- *        BIT_LNK_NEXT  = 16,   // If the next L1Accept event has the same fiducial as this one  
- *        BIT_LNK_PREV  = 17    // If the previous L1Accept event has the same fiducial as this one  
- *      };
+ *      uint32_t  uSeconds;       // timestamp (seconds) from Evr 
+ *      uint32_t  uNanoseconds;   // timestamp (nanoseconds) from Evr 
+ *      uint32_t  uFiducial;      // fiducial of this L1Accept event
+ *      int64_t   lliOffsetXtc;   // offset in the xtc file for jumping to this event
+ *      Damage    damage;         // "overall" damage of this event, extracted from L1Accept event's Xtc object
+ *      uint32_t  uMaskDetDmgs;   // bit mask for listing which segment node has "Damage"
+ *      uint32_t  uMaskDetData;   // bit mask for listing non-empty detector data
+ *      uint32_t  uMaskEvrEvents; // bit mask for listing Evr event codes
  *    Note:
  *      - The size of list is defined in header.iNumIndex
- *      - It is a list of all L1Accept event's basic information
- *      - Each L1Accept event will have a corresponding extended information,
- *        and uOffsetExt is used to locate the extended information in this index file
- *
- *  List of L1Accept Extended Infomation
- *  ====================================
- *    Type: Defined as follows
- *    Content:
- *      uint8_t   uNumEventCodes;             // number of evr event codes in this L1Accept event
- *      uint8_t   lEventCode[uNumEventCodes]; // list of evr event codes
- *      uint8_t   uNumDamages;                // number of segment damages in this L1Accept event
- *      SegDmg    lSegDmg[uNumDamages];       // list of damages, defined as follows:
- *
- *        struct SegDmg
- *        {
- *          uint8_t index;                    // index of the damaged segment node. See "List of Segment Information"
- *          Damage  damage;                   
- *        }
- *    Note:
- *      - The size of list is defined in header.iNumIndex
- *      - It is a list of all L1Accept event's extended information, so each of them
- *          corresponds to an L1Accept basic information, defined above
- *
+ *      - It is a list of all L1Accept event's information
  */
 
 struct CalibNode
@@ -136,13 +141,15 @@ struct IndexFileHeaderV1
   static const int iXtcIndexVersion = 1;    
   static const int iMaxFilenameLen  = 32;  
   
-  Xtc   xtcIndex;
-  char  sXtcFilename[iMaxFilenameLen];     
-  int   iNumIndex;
-  int   iNumDetector;  
-  int   iNumCalib;
+  Xtc       xtcIndex;                       // Regular xtc struture
+  char      sXtcFilename[iMaxFilenameLen];  // Filename of the corresponding xtc file
+  int16_t   iHeaderSize;                    // Data size before the L1Accept information
+  int16_t   iNumCalib;                      // Number of BeginCalibCycles 
+  int8_t    iNumEvrEvents;                  // Number of different Evr event codes
+  int8_t    iNumDetector;                   // Number of detectors (segment level programs)
+  int32_t   iNumIndex;                      // Number of L1Accept events   
   
-  IndexFileHeaderV1();
+  IndexFileHeaderV1() {}
   IndexFileHeaderV1(const IndexList& list);
 };
 
@@ -150,37 +157,17 @@ class L1AcceptNode; //forward declaration
 
 struct IndexFileL1NodeV1
 {
-  uint32_t  uFiducial;    // fiducial of this L1Accept event
-  int64_t   lliOffsetXtc; // offset in the xtc file for jumping to this event
-  uint32_t  uOffsetExt;   // offset in this index file for jumping to the extended information
-  Damage    damage;       // "overall" damage of this event, extracted from L1Accept event's Xtc object
-  uint32_t  uDetDmgMask;  // bit mask for listing which segment node has "Damage"
-  uint32_t  uAttribute;   // bit mask showing some logic information for this event. See below.
-  
-  enum EAttribute         // bit definition for uAttribute
-  {
-    BIT_EPICS     = 0,    // If this L1Accept contains EPICS data (from epicsArch) or not
-    BIT_PRINCETON = 1,    // If this L1Accept contains Princeton frame data or not
-    BIT_LNK_NEXT  = 16,   // If the next L1Accept event has the same fiducial as this one  
-    BIT_LNK_PREV  = 17    // If the previous L1Accept event has the same fiducial as this one  
-  };
+  uint32_t  uSeconds;       // timestamp (seconds) from Evr 
+  uint32_t  uNanoseconds;   // timestamp (nanoseconds) from Evr 
+  uint32_t  uFiducial;      // fiducial of this L1Accept event
+  int64_t   lliOffsetXtc;   // offset in the xtc file for jumping to this event
+  Damage    damage;         // "overall" damage of this event, extracted from L1Accept event's Xtc object
+  uint32_t  uMaskDetDmgs;   // bit mask for listing which segment node has "Damage"
+  uint32_t  uMaskDetData;   // bit mask for listing non-empty detector data
+  uint32_t  uMaskEvrEvents; // bit mask for listing Evr event codes
     
-  IndexFileL1NodeV1();
-  IndexFileL1NodeV1(const L1AcceptNode& node);
-  
-  bool hasEpics    () const;
-  bool hasPrinceton() const;
-  bool linkToNext  () const;
-  bool linkToPrev  () const;  
-};
-
-struct SegDmg
-{
-  uint8_t index;
-  Damage  damage;
-  
-  SegDmg(uint8_t index1, Damage& damage1) :index(index1), damage(damage1) {}
-  SegDmg() : damage(0) {}
+  IndexFileL1NodeV1() : damage(0) {}
+  IndexFileL1NodeV1(const L1AcceptNode& node);  
 };
 
 typedef IndexFileHeaderV1 IndexFileHeaderType;

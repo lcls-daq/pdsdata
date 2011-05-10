@@ -10,6 +10,7 @@
 #include "pdsdata/xtc/BldInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
+#include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/index/IndexFileReader.hh"
 
 using std::string;
@@ -57,30 +58,36 @@ void usage(char *progname)
 {
   printf( 
     "Usage:  %s  [-f <xtc filename>] [-i <index>] [-b <begin L1 event#>] "
-    "[-n <output L1 event#>] [-c <begin calib cycle#>] [-h]\n"
+    "[-n <output L1 event#>] [-c <begin calib cycle#>] [-o <offset>] [-t <time>] [-h]\n"
     "  Options:\n"
     "    -h                       Show usage.\n"
     "    -f <xtc filename>        Set xtc filename\n"
     "    -i <index filename>      Set index filename\n"
     "    -b <begin L1 event#>     Set begin L1 event#\n"
     "    -n <output L1 event#>    Set L1 event# for ouput\n"
-    "    -c <begin calib cycle#>  Set begin calib cycle#\n",
+    "    -c <begin calib cycle#>  Set begin calib cycle#\n"
+    "    -o <offset>              Start analysis from offset\n"
+    "    -t <time>                Go to the event at <time>\n",    
     progname
   );
 }
 
-int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, int iBeginL1Event, int iNumL1Event, int iBeginCalib );
+int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, 
+  int iBeginL1Event, int iNumL1Event, int iBeginCalib, 
+  long long int lliStartOffset, char* sTime );
 
 int main(int argc, char *argv[])
 {
-  int c;
-  char* sXtcFilename    = NULL;
-  char* sIndexFilename  = NULL;
-  int   iBeginL1Event   = 0;
-  int   iNumL1Event     = 0;
-  int   iBeginCalib     = 0;
+  char*         sXtcFilename    = NULL;
+  char*         sIndexFilename  = NULL;
+  int           iBeginL1Event   = 0;
+  int           iNumL1Event     = 0;
+  int           iBeginCalib     = 0;
+  long long int lliStartOffset  = 0;
+  char*         sTime           = NULL;
 
-  while ((c = getopt(argc, argv, "hf:i:b:n:c:")) != -1)
+  int c;
+  while ((c = getopt(argc, argv, "hf:i:b:n:c:o:t:")) != -1)
   {
     switch (c)
     {
@@ -94,19 +101,25 @@ int main(int argc, char *argv[])
       sIndexFilename= optarg;
       break;
     case 'b':
-      iBeginL1Event   = strtol(optarg, NULL, 0);
+      iBeginL1Event = strtol(optarg, NULL, 0);
       break;
     case 'n':
-      iNumL1Event     = strtol(optarg, NULL, 0);
+      iNumL1Event   = strtol(optarg, NULL, 0);
       break;
     case 'c':
       iBeginCalib   = strtol(optarg, NULL, 0);
+      break;
+    case 'o':
+      lliStartOffset= strtoll(optarg, NULL, 0);
+      break;
+    case 't':
+      sTime         = optarg;
       break;
     default:
       printf( "Unknown option: -%c", c );
     }
   }
-
+  
   if (!sXtcFilename)
   {
     usage(argv[0]);
@@ -119,31 +132,60 @@ int main(int argc, char *argv[])
     return 0;
   }
     
-  return xtcAnalyze( sXtcFilename, sIndexFilename, iBeginL1Event, iNumL1Event, iBeginCalib );
+  return xtcAnalyze( sXtcFilename, sIndexFilename, iBeginL1Event, iNumL1Event, iBeginCalib, lliStartOffset, sTime );
 }
 
 int printIndexSummary(const Index::IndexFileReader& indexFileReader)
 {
-  int             iNumDetector;
-  const ProcInfo* lDetector;
-  indexFileReader.detectorList(iNumDetector, lDetector);
-  printf( "Num of Detector: %d\n", iNumDetector );  
-  for ( int iDetector = 0; iDetector < iNumDetector; iDetector++ )
-  {
-    const ProcInfo& info      = lDetector[iDetector];
-    printf( "Segment %d ip 0x%x pid 0x%x\n", 
-      iDetector, info.ipAddr(), info.processId());
-  }        
-  
   int                     iNumCalib;
   const Index::CalibNode* lCalib;
-  indexFileReader.calibCyleList(iNumCalib, lCalib);
+  indexFileReader.calibCycleList(iNumCalib, lCalib);
   printf( "Num of Calib Cycle: %d\n", iNumCalib );  
   for ( int iCalib = 0; iCalib < iNumCalib; iCalib++ )
   {
     const Index::CalibNode& calibNode = lCalib[iCalib];
     printf( "Calib %d Off 0x%Lx L1 %d\n", iCalib, calibNode.lliOffset, calibNode.iL1Index );
   }          
+  
+  int             iNumDetector;
+  const ProcInfo* lDetector;
+  indexFileReader.detectorList(iNumDetector, lDetector);
+  printf( "Num of Detector: %d\n", iNumDetector );  
+  for ( int iDetector = 0; iDetector < iNumDetector; iDetector++ )
+  {
+    const ProcInfo& info = lDetector[iDetector];
+    printf( "Segment %d ip 0x%x pid 0x%x\n", 
+      iDetector, info.ipAddr(), info.processId());
+      
+    int         iNumSrc = 0;
+    const Src*  lSrc    = NULL;
+    indexFileReader.srcList(iDetector, iNumSrc, lSrc);
+    
+    const TypeId* lType = NULL;
+    indexFileReader.typeList(iDetector, iNumSrc, lType);
+    
+    for (int iSrc=0; iSrc<iNumSrc; iSrc++)
+    {
+      const Src& src = (Src&) lSrc[iSrc];
+      if (src.level() == Level::Source)
+      {        
+        const DetInfo& info = (const DetInfo&) src;
+        printf("  src %s,%d %s,%d ",
+         DetInfo::name(info.detector()), info.detId(),
+         DetInfo::name(info.device()), info.devId());           
+      }
+      else if ( src.level() == Level::Reporter )
+      {
+        const BldInfo& info = (const BldInfo&) src;
+        printf("  bldType %s ", BldInfo::name(info));          
+      }
+        
+      const TypeId& typeId = lType[iSrc];
+      printf("contains %s V%d\n",
+       TypeId::name(typeId.id()), typeId.version()
+       );                
+    }
+  }        
   
   return 0;
 }
@@ -159,34 +201,35 @@ int printEvent(Index::IndexFileReader& indexFileReader, int iEvent)
     printf("printEvent(): Invalid event %d\n", iEvent);
     return 2;
   }
+
+  uint32_t uSeconds, uNanoSeconds;
+  indexFileReader.time(iEvent, uSeconds, uNanoSeconds);
   
   uint32_t  uFiducial;
-  bool      bLnkNext, bLnkPrev;  
-  indexFileReader.fiducial(iEvent, uFiducial, bLnkNext, bLnkPrev);
-    
-  bool bEpics;
-  indexFileReader.checkEpics(iEvent, bEpics);
-    
-  bool bPrinceton;
-  indexFileReader.checkPrinceton(iEvent, bPrinceton); 
-  
+  indexFileReader.fiducial(iEvent, uFiducial);
+      
   Damage damage(0);
-  indexFileReader.damageSummary(iEvent, damage);
+  indexFileReader.damage(iEvent, damage);
   
-  uint32_t uDetDmgMask = 0;
-  indexFileReader.detDmgMask(iEvent, uDetDmgMask);
+  uint32_t uMaskDetDmgs = 0;
+  indexFileReader.detDmgMask(iEvent, uMaskDetDmgs);
+
+  uint32_t uMaskDetData = 0;
+  indexFileReader.detDataMask(iEvent, uMaskDetData);
   
   unsigned int uNumEvent = 0;
   const uint8_t* lEvrEvent;
   indexFileReader.evrEventList(iEvent, uNumEvent, lEvrEvent);
   
-  unsigned int uNumDamage = 0;
-  const Index::SegDmg* lDamage;
-  indexFileReader.damageList(iEvent, uNumDamage, lDamage);
+  char sTimeBuff[128];
+  time_t t = uSeconds;
+  strftime(sTimeBuff,128,"%T",localtime(&t));  
+    
+  printf( "[%d] %s.%03u Fid 0x%05x Dmg 0x%x ", iEvent, 
+    sTimeBuff, (int)(uNanoSeconds/1e6), uFiducial, damage.value() );
+    
+  printf( "DetDmg 0x%x DetData 0x%x ", uMaskDetDmgs, uMaskDetData );
   
-  printf( "[%d] Fid 0x%05x Dmg 0x%x ", iEvent, uFiducial, damage.value() );
-  printf( "Epc %c Prn %c ", (bEpics?'Y':'n'),   (bPrinceton?'Y':'n') );
-
   /*
    * print events     
    */
@@ -194,68 +237,104 @@ int printEvent(Index::IndexFileReader& indexFileReader, int iEvent)
   if ( uNumEvent != 0 )
     for ( unsigned int uEvent = 0; uEvent < uNumEvent; uEvent++ )
       printf( "[%d] ", (int) lEvrEvent[uEvent] );
-  
-  /*
-   * print segment damages
-   */
-  printf( "Dmg%d ", uNumDamage );
-  if (uNumDamage != 0)
-    for ( unsigned int uDmg = 0; uDmg < uNumDamage; uDmg++ )
-      printf( "[%d]0x%x ", lDamage[uDmg].index, lDamage[uDmg].damage.value() );
-      
-  const char* sLink = ( bLnkPrev? (bLnkNext?"<->":"<-o") : (bLnkNext?"o->":"") );
-  if ( bLnkPrev||bLnkNext )
-    printf( "Lnk %s\n", sLink );
-  else
-    printf( "\n" );
+        
+  printf( "\n" );
   
   return 0;  
 }
 
-int gotoEvent(const char* sIndexFilename, int iBeginL1Event, int iBeginCalib, int fdXtc, int& iEventAfterSeek)
+int gotoEvent(const char* sIndexFilename, int iBeginL1Event, int iBeginCalib, char* sTime, int fdXtc, int& iGlobalEvent)
 {
-  iEventAfterSeek = -1;
+  iGlobalEvent = -1;
     
   Index::IndexFileReader indexFileReader;
   int iError = indexFileReader.open( sIndexFilename );
   if ( iError != 0 )
-    return 1;
+    return 1;  
   
-  int uNumL1Event = 0;
-  iError          = indexFileReader.numL1Event(uNumL1Event);
-  if ( iError != 0 ) return 2;
-    
-  printf("Using index file %s to jump to calib %d event %d (Total event %d)\n", 
-    sIndexFilename, iBeginCalib, iBeginL1Event, uNumL1Event );
-    
-  printIndexSummary(indexFileReader);
+  uint32_t uSeconds = 0, uNanoseconds = 0;
   
-  int iEventAfterCalib = 0;    
-  if (iBeginCalib != 0)
+  if ( sTime == NULL )
   {
-    iError = indexFileReader.gotoCalibCycle( iBeginCalib, fdXtc, iEventAfterCalib );
-    if ( iError != 0 )
-      return 3;   
+    int iNumEvent = -1;
+    indexFileReader.numL1EventInCalib(iBeginCalib, iNumEvent);
+    
+    printf("Using index file %s to jump to Calib# %d Event# %d (Max Event# in Calib: %d)\n", 
+      sIndexFilename, iBeginCalib, iBeginL1Event, iNumEvent-1 );
       
-    iBeginL1Event += iEventAfterCalib;
+    //int iGlobalEvent = -1, iCalib = -1, iEvent = -1;
+    //indexFileReader.eventLocalToGlobal(iBeginCalib, iBeginL1Event, iGlobalEvent);    
+    //indexFileReader.eventGlobalToLocal(iGlobalEvent, iCalib, iEvent);    
+    //printf( "Global event# %d -> Local Calib# %d Event# %d\n", iGlobalEvent, iCalib, iEvent );
   }
-
-  if (iBeginL1Event < 0 || iBeginL1Event >= (int) uNumL1Event)
+  else
   {
-    printf("gotoEvent(): Invalid event %d\n", iBeginL1Event);
-    return 4;
-  }
-  
-  printEvent(indexFileReader, iBeginL1Event);
+    struct tm tm;
     
-  if ( iBeginL1Event != iEventAfterCalib )
-  {
-    iError = indexFileReader.gotoEvent( iBeginL1Event, fdXtc );
-    if ( iError != 0 )
-      return 5;
-  } 
+    char* pDST = strstr(sTime, "DST");
+    if (pDST != NULL)
+        tm.tm_isdst = 1;
+    else
+        tm.tm_isdst = 0;    
+    
+    strptime(sTime, "%Y-%m-%d %H:%M:%S", &tm);
+    if (tm.tm_year < 0) tm.tm_year += 2000;
+    //printf( "time %d %d %d %d %d %d %d %d %d\n",
+    //  tm.tm_sec, tm.tm_min, tm.tm_hour, tm.tm_mday, tm.tm_mon, 
+    //  tm.tm_year, tm.tm_wday, tm.tm_yday, tm.tm_isdst );
+    
+    uSeconds = mktime(&tm);
+    
+    char* pDot = strchr(sTime, '.');
+    if ( pDot != NULL)
+    {
+      double fNanoseconds = strtod(pDot, NULL);
+      uNanoseconds = (uint32_t)(fNanoseconds * 1e9 + 0.5);
+    }
+    
+    char sTimeBuff[128];
+    strftime(sTimeBuff, 128, "%D %Z %T", &tm);
+    printf("Using index file %s to jump to time %s.%03us%s (seconds 0x%x nanosecs 0x%x)\n",
+      sIndexFilename, sTimeBuff, (int)(uNanoseconds/1e6), 
+      ( ( pDST != NULL ) ? " (adjusted by DST)" : "" ),
+      uSeconds, uNanoseconds);
+  }          
   
-  iEventAfterSeek = iBeginL1Event;
+  printIndexSummary(indexFileReader);
+
+  if ( sTime == NULL )
+  {
+    iError = 
+      indexFileReader.gotoEvent( iBeginCalib, iBeginL1Event, fdXtc, iGlobalEvent  );
+    if ( iError != 0 )
+    {
+      printf("Failed to jump to Calib# %d Event# %d\n", iBeginCalib, iBeginL1Event);
+      return 5;
+    }
+  }
+  else
+  {
+    bool bExactMatch = false;
+    bool bOvertime   = false;
+    iError = 
+      indexFileReader.gotoTime( uSeconds, uNanoseconds, fdXtc, iGlobalEvent, bExactMatch, bOvertime );
+    if ( iError != 0 )
+    {
+      if (bOvertime)
+        printf("Time %s is later than the last event\n", sTime);
+      else
+        printf("Failed to jump to time %s\n", sTime);
+      
+      return 6;
+    }    
+  }  
+
+  int iCalib = -1, iEvent = -1;
+  indexFileReader.eventGlobalToLocal(iGlobalEvent, iCalib, iEvent);    
+  printf( "Going to Calib# %d Event# %d (global event# %d)\n", iCalib, iEvent, iGlobalEvent );
+  
+  printEvent(indexFileReader, iGlobalEvent);  
+  
   return 0;
 }
 
@@ -282,8 +361,33 @@ int genIndexFromXtcFilename( const string& strXtcFilename, string& strIndexFilen
   return 0;  
 }
 
-int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, int iBeginL1Event, int iNumL1Event, int iBeginCalib )
-{      
+int updateEvr(const Xtc& xtc)
+{
+  // assume xtc.contains.id() == TypeId::Id_EvrData
+  
+  if ( xtc.contains.version() != 3 )
+  {
+    printf( "UnExtorted Evr Data Ver %d\n", xtc.contains.version() );
+    return 1;
+  }
+  
+  const EvrData::DataV3& evrData = * reinterpret_cast<const EvrData::DataV3*>(xtc.payload());
+  
+  for ( unsigned int uEvent = 0; uEvent < evrData.numFifoEvents(); uEvent++ )
+  {
+    const EvrData::DataV3::FIFOEvent& fifoEvent = 
+      evrData.fifoEvent(uEvent);
+      
+    printf( "[%u] ", fifoEvent.EventCode);      
+  }  
+  
+  return 0;
+}
+
+int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, 
+  int iBeginL1Event, int iNumL1Event, int iBeginCalib, 
+  long long int lliStartOffset, char* sTime )
+{    
   int fdXtc = open(sXtcFilename, O_RDONLY | O_LARGEFILE);
   if (fdXtc < 0)
   {
@@ -293,7 +397,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, int iBegin
 
   int iL1Event    = 0;  
   int iEndL1Event = -1;
-  if ( iBeginL1Event != 0 || iBeginCalib != 0 )
+  if ( iBeginL1Event != 0 || iBeginCalib != 0 || sTime != NULL )
   {
     string strIndexFilename;
     
@@ -308,16 +412,28 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, int iBegin
       sIndexFilename = strIndexFilename.c_str();
     }
           
-    int iEventAfterSeek = -1;
-    int iError = gotoEvent(sIndexFilename, iBeginL1Event, iBeginCalib, fdXtc, iEventAfterSeek);
+    int iGlobalEvent = -1;
+    int iError = gotoEvent(sIndexFilename, iBeginL1Event, iBeginCalib, sTime, fdXtc, iGlobalEvent);
     if ( iError == 0 )
-      iL1Event = iEventAfterSeek;
-  }
+      iL1Event = iGlobalEvent;      
+  }  
   
   if ( iNumL1Event > 0 )
-    iEndL1Event = iL1Event + iNumL1Event;
+    iEndL1Event = iL1Event + iNumL1Event;      
   
   XtcFileIterator   iterFile(fdXtc, 0x2000000); // largest L1 data: 32 MB
+  
+  if ( lliStartOffset != 0 )
+  {
+    long long int lliOffsetSeek = lseek64(fdXtc, lliStartOffset, SEEK_SET);
+    if ( lliOffsetSeek != lliStartOffset )
+    {
+      printf("Seek to offset 0x%Lx failed, result = 0x%Lx\n", 
+        lliStartOffset, lliOffsetSeek );
+    }
+    else
+      printf("Seek to offset 0x%Lx\n", lliStartOffset );      
+  }  
     
   Dgram *dg;
   long long int lliOffset = lseek64(fdXtc, 0, SEEK_CUR);
@@ -325,14 +441,20 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, int iBegin
   {             
     bool bEndLoop = false;
     
+    char sTimeBuff[128], sDateTimeBuff[128];
+    time_t t = dg->seq.clock().seconds();
+    strftime(sTimeBuff,128,"%T",localtime(&t));
+    strftime(sDateTimeBuff,128,"%a %F %Z %T",localtime(&t));
+    
     switch ( dg->seq.service() )
     {
     case TransitionId::Configure:
     {
-      printf( "\n# %s ctl 0x%x vec 0x%x fid 0x%x tick 0x%x "
+      printf( "\n# %s ctl 0x%x vec 0x%x fid 0x%x %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
-       TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
-       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), dg->seq.stamp().ticks(), 
+       TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),       
+       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
+       sDateTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
        lliOffset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);    
       
       // Go through the config data and create the cfgSegList object
@@ -343,10 +465,11 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, int iBegin
     }
     case TransitionId::L1Accept:
     {
-      printf( "\n# %s #%d ctl 0x%x vec 0x%x fid 0x%x tick 0x%x "
+      printf( "\n# %s #%d ctl 0x%x vec 0x%x fid 0x%x %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
        TransitionId::name(dg->seq.service()), iL1Event, dg->seq.stamp().control(),
-       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), dg->seq.stamp().ticks(), 
+       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
+       sTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
        lliOffset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);    
       
       XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, lliOffset + sizeof(*dg) );
@@ -358,10 +481,11 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, int iBegin
       break;        
     }
     default:
-      printf( "\n# %s ctl 0x%x vec 0x%x fid 0x%x tick 0x%x "
+      printf( "\n# %s ctl 0x%x vec 0x%x fid 0x%x %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
        TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
-       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), dg->seq.stamp().ticks(), 
+       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
+       sDateTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
        lliOffset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);           
        
       XtcIterWithOffset iterDefault(&(dg->xtc), 0, lliOffset + sizeof(*dg) );
@@ -599,6 +723,15 @@ int XtcIterL1Accept::process(Xtc * xtc)
   
     if ( _depth != 1 )
       printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d\n", _depth );
+            
+    if ( xtc->contains.id() == TypeId::Id_EvrData )
+    {
+      unsigned i = _depth;
+      while (i--) printf("  ");
+      printf("  Evr Events ");
+      updateEvr(*xtc);
+      printf("\n");
+    }
   }  
   else if (level == Level::Reporter)
   {

@@ -24,44 +24,55 @@ public:
   int   close         ();
   bool  isValid       () const; 
 
-  int numL1Event      (int& uNumL1Event) const;
-  int detectorList    (int& iNumDetector, const ProcInfo*& lDetector) const;
-  int calibCyleList   (int& iNumCalib, const CalibNode*& lCalib) const;
+  int numL1Event        (int& iNumL1Event) const;
+  int detectorList      (int& iNumDetector, const ProcInfo*& lDetector) const;
+  int srcList           (int iDetector, int& iNumSrc, const Src*& lSrc) const;
+  int typeList          (int iDetector, int& iNumType, const TypeId*& lType) const;
+  int calibCycleList    (int& iNumCalib   , const CalibNode*& lCalib) const;
+  int numL1EventInCalib (int iCalib       , int& iNumL1Event) const;
+  int eventLocalToGlobal(int iCalib, int iEvent, int& iGlobalEvent) const;
+  int eventGlobalToLocal(int iGlobalEvent, int& iCalib, int& iEvent) const;
+  int eventTimeToGlobal (uint32_t uSeconds, uint32_t uNanoseconds, int& iGlobalEvent, bool& bExactMatch, bool& bOvertime);
+  int eventTimeToLocal  (uint32_t uSeconds, uint32_t uNanoseconds, int& iCalib, int& iEvent, bool& bExactMatch, bool& bOvertime);
   
-  int gotoEvent       (int iEventL1Accept, int fdXtc);
-  int gotoCalibCycle  (int iCalib, int fdXtc, int& iEventAfterSeek);
+  int gotoEvent       (int iCalib, int iEvent, int fdXtc, int& iGlobalEvent);
+  int gotoTime        (uint32_t uSeconds, uint32_t uNanoseconds, int fdXtc, int& iGlobalEvent, bool& bExactMatch, bool& bOvertime);
   
-  int fiducial        (int iEventL1Accept, uint32_t& uFiducial, bool& bLnkNext, bool& bLnkPrev);
-  int checkEpics      (int iEventL1Accept, bool& bEpics);
-  int checkPrinceton  (int iEventL1Accept, bool& bPrinceton);
-  int damageSummary   (int iEventL1Accept, Damage& damage);
-  int detDmgMask      (int iEventL1Accept, uint32_t& uDamageMask);
-  int evrEventList    (int iEventL1Accept, unsigned int& uNumEvent, const uint8_t*& lEvrEvent);
-  int damageList      (int iEventL1Accept, unsigned int& uNumDamage, const SegDmg*& lDamage);
+  int time            (int iEvent, uint32_t& uSeconds, uint32_t& uNanoseconds);
+  int fiducial        (int iEvent, uint32_t& uFiducial);
+  int checkEpics      (int iEvent, bool& bEpics);
+  int checkPrinceton  (int iEvent, bool& bPrinceton);
+  int damage          (int iEvent, Damage& damage);
+  int detDmgMask      (int iEvent, uint32_t& uMaskDetDmgs);
+  int detDataMask     (int iEvent, uint32_t& uMaskDetData);
+  int evrEventList    (int iEvent, unsigned int& uNumEvent, const uint8_t*& lEvrEvent);
 
 private:
   int gotoL1Node      (int iL1Node);
-  int readNodeExtData();
+  
+  typedef std::vector<TypeId>     TTypeList;
+  typedef std::vector<Src>        TSrcList;
+  typedef std::vector<TTypeList>  TListOfTypeList;
+  typedef std::vector<TSrcList>   TListOfSrcList;
   
   FILE*               _fXtcIndex;
   IndexFileHeaderV1   _fileHeader;
   int                 _iHeaderSize;
-  std::vector<ProcInfo>
-                      _lDetector;
   std::vector<CalibNode>
                       _lCalib;
+  std::vector<uint8_t>
+                      _lEvrEvent;
+  std::vector<ProcInfo>
+                      _lDetector;
+  TListOfTypeList     _lTypeList;
+  TListOfSrcList      _lSrcList;
   
   int                 _iCurL1Node;
   IndexFileL1NodeV1   _curL1Node;  
     
-  bool                _bExtDataRead;
-  uint8_t             _iCurNumEvrEvent;
   std::vector<uint8_t>
                       _lCurEvrEvent;
                       
-  uint8_t             _iCurNumDamage;
-  std::vector<SegDmg>
-                      _lCurDamage;                      
 };
 
 #pragma pack()

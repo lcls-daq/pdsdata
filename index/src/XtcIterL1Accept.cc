@@ -13,6 +13,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
 {
   Level::Type     level             = xtc->src.level();
   long long       lliOffsetPayload  = _lliOffset + sizeof(Xtc);
+  bool            bStopUpdate       = false;
   
   if (level == Level::Segment)
   {
@@ -28,13 +29,16 @@ int XtcIterL1Accept::process(Xtc * xtc)
       printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d, level %s\n", 
         _depth, Level::name(level) );
      
-    _pIndexList->updateSource( *xtc );    
+    
+    _pIndexList->updateSource( *xtc, bStopUpdate );    
   }  
   else if (level == Level::Reporter)
   {
     if ( _depth != 1 )
       printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d, level %s\n", 
         _depth, Level::name(level) );
+    
+    _pIndexList->updateReporter( *xtc, bStopUpdate );    
   }
   else
   {         
@@ -45,7 +49,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     
   // depth > 0 : Will stop after current node
   
-  if ( _depth > 0 )
+  if ( bStopUpdate )
     return XtcIterL1Accept::Stop;
     
   // Remaining case: depth == 0 : Will process more segment nodes

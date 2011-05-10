@@ -2,16 +2,13 @@
 #include <libgen.h>
 
 #include "pdsdata/evr/DataV3.hh"
-
+#include "pdsdata/xtc/BldInfo.hh"
 #include "pdsdata/index/IndexList.hh"
 
 namespace Pds
 {  
 namespace Index
 {
-
-static int compareFiducial( uint32_t uFiducial1, uint32_t uFiducial2 );
-
 /*
  * class IndexList
  */ 
@@ -36,19 +33,15 @@ int IndexList::startNewNode(const Dgram& dg, int64_t lliOffset, bool& bInvalidDa
     return 2;
   }
     
-  L1AcceptNode  nodeNew(uFiducial, lliOffset);
+  L1AcceptNode  nodeNew(dg.seq.clock().seconds(), dg.seq.clock().nanoseconds(), uFiducial, lliOffset);
   L1AcceptNode& nodeCur = checkInNode(nodeNew);
   
   _pCurNode = &nodeCur;
   
   nodeCur.damage = dg.xtc.damage;
-  
-  if ( _iNumSegments < 0 )
-    _lSegDmgTmp.clear();
-  else
-    _lSegDmgTmp.assign( _iNumSegments, Damage(L1AcceptNode::uSegDmgNotPresent) );  
-  
-  _bNewNode = true;
+    
+  _bNewNode = true;  
+  _itCurSeg = _mapSegToId.end();
   
   return iError;
 }
@@ -60,21 +53,28 @@ int IndexList::updateSegment(const Xtc& xtc)
     printf( "IndexList::updateSegment():: *** new node hasn't been initialized\n" );
     return 1;
   }
-      
-  const ProcInfo & info = (const ProcInfo &) (xtc.src);
+
+  finishPrevSegmentId();
+  
+  const ProcInfo& info          = (const ProcInfo &) (xtc.src);  
+  int             iSegmentIndex = -1;  
   
   if ( _iNumSegments < 0 )
-  {
-    int iSegmentIndex = _lSegDmgTmp.size();
-    
-    if ( iSegmentIndex != (int) _mapSegToId.size() )
+  {    
+    iSegmentIndex = _mapSegToId.size();
+            
+    std::pair<TSegmentToIdMap::iterator,bool> 
+      rInsert = _mapSegToId.insert( 
+        TSegmentToIdMap::value_type( info, L1SegmentId(iSegmentIndex) ) );
+      
+    if ( !rInsert.second )
     {
-      printf( "IndexList::updateSegment():: *** segment index not updated correctly (vec %d map %d)\n", 
-      iSegmentIndex, _mapSegToId.size() );
+      printf( "IndexList::updateSegment():: Found duplicated segment for "
+        "ip 0x%x pid 0x%x\n", info.ipAddr(), info.processId() );
+      return 2;
     }
     
-    _lSegDmgTmp.push_back( xtc.damage );        
-    _mapSegToId[ info ] = iSegmentIndex;
+    _itCurSeg = rInsert.first;
   }
   else
   {
@@ -83,44 +83,98 @@ int IndexList::updateSegment(const Xtc& xtc)
       
     if ( itFind == _mapSegToId.end() )
     {
-      printf( "IndexList::updateSegment():: *** cannot find config node for "
+      printf( "IndexList::updateSegment():: *** cannot find segment node for "
         "ip 0x%x pid 0x%x\n", info.ipAddr(), info.processId() );
-      return 2;
+      return 3;
     }     
   
-    int iSegmentIndex = itFind->second;
+    iSegmentIndex = itFind->second.iIndex;
     if ( iSegmentIndex >= (int) _iNumSegments )
     {
       printf( "IndexList::updateSegment():: *** invalid segment index %d (max value %d)\n", 
         iSegmentIndex, _iNumSegments );
-      return 3;
+      return 4;
     }
-    _lSegDmgTmp[iSegmentIndex] = xtc.damage;
+    _itCurSeg                   = itFind;
   }
+
+  L1AcceptNode& node  =   *_pCurNode;  
+  if ( xtc.damage.value() != 0 )
+    node.uMaskDetDmgs   |=  (1 << iSegmentIndex);  
   
   if ( xtc.contains.id() != TypeId::Id_Xtc ) // not a normal segment level
-    return 4;   
+    return 5;
+
+  if ( xtc.sizeofPayload() == 0 )
+    node.uMaskDetData   |=  (1 << iSegmentIndex);
     
   return 0;
 }
 
-int IndexList::updateSource(const Xtc& xtc)
+int IndexList::updateSource(const Xtc& xtc, bool& bStopUpdate)
 {
+  bStopUpdate = false;
+  
   if ( ! _bNewNode )  
   {
     printf( "IndexList::updateSource():: *** new node hasn't been initialized\n" );
     return 1;
   }
   
-  L1AcceptNode& node = *_pCurNode;
+  if ( _itCurSeg == _mapSegToId.end() )
+  {
+    printf( "IndexList::updateSource():: Invalid segment\n" );
+    return 2;
+  }
+
+  L1SegmentId&  segId = _itCurSeg->second;
+  if (segId.bSrcUpdated)
+    bStopUpdate = true;
+  else
+  {
+    segId.srcList .push_back(xtc.src);
+    segId.typeList.push_back(xtc.contains);
+    
+    if (xtc.contains.id() == TypeId::Id_Epics)
+      bStopUpdate = true;
+  }
   
-  if ( xtc.contains.id() == TypeId::Id_Epics )
+  L1AcceptNode& node  = *_pCurNode;
+  if (xtc.contains.id() == TypeId::Id_Epics)
     node.bEpics     = true;  
   else if ( xtc.contains.id() == TypeId::Id_PrincetonFrame )
     node.bPrinceton = true;  
   else if ( xtc.contains.id() == TypeId::Id_EvrData )
     updateEvr( xtc );
 
+  return 0;
+}
+
+int IndexList::updateReporter(const Xtc& xtc, bool& bStopUpdate)
+{
+  bStopUpdate = false;
+  
+  if ( ! _bNewNode )  
+  {
+    printf( "IndexList::updateReporter():: *** new node hasn't been initialized\n" );
+    return 1;
+  }
+  
+  if ( _itCurSeg == _mapSegToId.end() )
+  {
+    printf( "IndexList::updateReporter():: Invalid segment\n" );
+    return 2;
+  }
+
+  L1SegmentId&  segId = _itCurSeg->second;
+  if (segId.bSrcUpdated)
+    bStopUpdate = true;
+  else
+  {
+    segId.srcList .push_back(xtc.src);
+    segId.typeList.push_back(xtc.contains);
+  }
+  
   return 0;
 }
 
@@ -140,7 +194,19 @@ int IndexList::updateEvr(const Xtc& xtc)
   {
     const EvrData::DataV3::FIFOEvent& fifoEvent = 
       evrData.fifoEvent(uEvent);
-    _pCurNode->lEventCode.push_back(fifoEvent.EventCode);
+      
+    TEvrEvtToIdMap::iterator itFind = 
+      _mapEvrToId.find(fifoEvent.EventCode);
+      
+    if ( itFind == _mapEvrToId.end() )
+    {
+      std::pair<TEvrEvtToIdMap::iterator,bool> 
+        rInsert = _mapEvrToId.insert( 
+          TEvrEvtToIdMap::value_type( fifoEvent.EventCode, _mapEvrToId.size() ) );
+      itFind = rInsert.first;
+    }
+            
+    _pCurNode->uMaskEvrEvents |= ( 1 << itFind->second );
   }  
   
   return 0;
@@ -154,42 +220,43 @@ int IndexList::finishNode(bool bPrint)
     return 1;
   }
 
+  finishPrevSegmentId();
+  
+  L1AcceptNode& node  =   *_pCurNode;  
   /*
-   * Copy damaged segments to node's segment-damage list (skip un-damaged nodes)
+   * Convert segment damage mask from un-ordered bits to ordered bits
    */
   if ( _iNumSegments < 0 )
   {
-    _iNumSegments = _lSegDmgTmp.size();
-
-    if ( _iNumSegments != (int) _mapSegToId.size() )
-    {
-      printf( "IndexList::finishNode():: *** segment map size not updated correctly (vec %d map %d)\n", 
-      _iNumSegments, _mapSegToId.size() );
-    }
-
-    int iMapIndex = 0;
+    _iNumSegments = _mapSegToId.size();
+    
+    uint32_t  uMaskBit        = 0x1;
+    uint32_t  uMaskDamageNew  = 0;
+    uint32_t  uMaskDetDataNew = 0;
+    
+    int       iMapIndex       = 0;
     for ( TSegmentToIdMap::iterator 
       iterMap =  _mapSegToId.begin();
       iterMap != _mapSegToId.end();
-      iterMap++, iMapIndex++ )
+      iterMap++, iMapIndex++, uMaskBit<<=1 )
     {
-      int iSegIndex = iterMap->second;
+      int iSegIndex = iterMap->second.iIndex;
       //const ProcInfo& info      = iterMap->first.procNode;
       //printf( "Segment %d [org %d] ip 0x%x pid 0x%x\n", 
       //  iMapIndex, iSegIndex, info.ipAddr(), info.processId()); // !! debug
       
-      if ( _lSegDmgTmp[iSegIndex].value() != 0 )
-        _pCurNode->lSegDmg.push_back( SegDmg(iMapIndex, _lSegDmgTmp[iSegIndex]) );      
+      if ( (node.uMaskDetDmgs & (1<<iSegIndex)) != 0 )
+        uMaskDamageNew |= uMaskBit;
+
+      if ( (node.uMaskDetData & (1<<iSegIndex)) != 0 )
+        uMaskDetDataNew |= uMaskBit;
         
-      iterMap->second = iMapIndex;
+      iterMap->second.iIndex = iMapIndex;
     }      
+    
+    node.uMaskDetDmgs = uMaskDamageNew;
+    node.uMaskDetData = uMaskDetDataNew;
   } // if ( _iNumSegments < 0 )
-  else
-  {
-    for ( int iIndex = 0; iIndex < _iNumSegments; iIndex++ )
-      if ( _lSegDmgTmp[iIndex].value() != 0 )
-        _pCurNode->lSegDmg.push_back( SegDmg(iIndex, _lSegDmgTmp[iIndex]) );
-  }
   
   if (bPrint)
     printNode(*_pCurNode, _iCurSerial);
@@ -200,38 +267,49 @@ int IndexList::finishNode(bool bPrint)
 }
 
 int IndexList::finishList()
-{  
-  unsigned int uOffsetCur = 
-    sizeof(IndexFileHeaderType)                       +
-    sizeof(ProcInfo)            * _mapSegToId .size() +
-    sizeof(CalibNode)           * _lCalib     .size() +
-    sizeof(IndexFileL1NodeType) * _lNode      .size() ;
-  
-  int iNode = 0;
-  for (TNodeList::iterator 
-    iterNode =  _lNode.begin();
-    iterNode != _lNode.end();
-    iterNode++, iNode++)
-  {
-    L1AcceptNode& node = *iterNode;
-    node.uOffsetExt = uOffsetCur;
-    
-    uint8_t uNumEventCodes = node.lEventCode.size();
-    uint8_t uNumDamages    = node.lSegDmg   .size();    
-    int iNodeExtSize = 
-      sizeof(uNumEventCodes)  +
-      sizeof(node.lEventCode[0]) * uNumEventCodes +
-      sizeof(uNumDamages)     +
-      sizeof(node.lSegDmg[0])    * uNumDamages;
+{    
+  if ( _mapSegToId.size() > 32 )
+    printf( "IndexList::finishList(): segment # %d > 32! It will make invalid index file\n",
+      _mapSegToId.size() );
       
-    uOffsetCur += iNodeExtSize;
-  }    
+  if ( _mapEvrToId.size() > 32 )
+    printf( "IndexList::finishList(): evr event # %d > 32! It will make invalid index file\n",
+      _mapEvrToId.size() );
   
-  // adjust the size so that the total xtc size is a multiple of 4
-  unsigned int uFilePadding = 0;
-  if (uOffsetCur % 4 != 0)
-    uFilePadding =  (4 - uOffsetCur % 4);
-  _uFileSize    = uOffsetCur + uFilePadding;  
+  /*
+   * Calculate file size
+   */
+  unsigned int uFileSizeOrg = 
+    sizeof(IndexFileHeaderType)                       +
+    sizeof(CalibNode)           * _lCalib     .size() +
+    sizeof(uint8_t)             * _mapEvrToId .size() ;  
+    
+  for ( TSegmentToIdMap::const_iterator 
+    itMap =  _mapSegToId.begin();
+    itMap != _mapSegToId.end();
+    itMap++ )
+  {
+    const L1SegmentId&  segId = itMap->second;
+    unsigned int        uSize = 
+      sizeof(ProcInfo) +
+      sizeof(uint8_t)  + 
+      segId.srcList.size()  * sizeof(segId.srcList[0]) +
+      segId.typeList.size() * sizeof(segId.typeList[0]);    
+    uFileSizeOrg += uSize;     
+  }
+  
+  // adjust the size so that the header size is a multiple of 4
+  unsigned int uHeaderPadding = 0;
+  if (uFileSizeOrg % 4 != 0)
+    uHeaderPadding =  (4 - uFileSizeOrg % 4);
+    
+  uFileSizeOrg += uHeaderPadding; 
+  _iHeaderSize =  uFileSizeOrg;    
+  
+  // Add main content size
+  uFileSizeOrg += sizeof(IndexFileL1NodeType) * _lNode.size() ;
+      
+  _uFileSize   = uFileSizeOrg;  
   
   return 0;
 }
@@ -244,22 +322,16 @@ int IndexList::addCalibCycle(int64_t lliOffset)
 
 void IndexList::printList(int iVerbose) const
 { 
-  printf( "XtcFn %s List index# 0x%x (%u)  Segment# %u File size 0x%x (%u)\n",
-    _sXtcFilename, _lNode.size(), _lNode.size(), _mapSegToId.size(),
-    _uFileSize, _uFileSize );
+  printf( "XtcFn %s List index# 0x%x (%u) Calib# %d EvrEvt# %d Segment# %u HSize 0x%x File size 0x%x (%u)\n",
+    _sXtcFilename, _lNode.size(), _lNode.size(), 
+    _lCalib.size(), _mapEvrToId.size(), _mapSegToId.size(), 
+    _iHeaderSize, _uFileSize, _uFileSize );
   
   if ( iVerbose > 0 )
   {
-    for ( TSegmentToIdMap::const_iterator 
-      iterMap =  _mapSegToId.begin();
-      iterMap != _mapSegToId.end();
-      iterMap++ )
-    {
-      const ProcInfo& info = iterMap->first.procNode;
-      printf( "Segment %d ip 0x%x pid 0x%x\n", 
-        iterMap->second, info.ipAddr(), info.processId());
-    }      
-    
+    /*
+     * Print BeginCalibCycle list
+     */    
     int iCalib = 0;
     for ( TCalibList::const_iterator
       iterCalib =  _lCalib.begin();
@@ -269,7 +341,58 @@ void IndexList::printList(int iVerbose) const
       const CalibNode& calibNode = *iterCalib;
       printf( "Calib %d Off 0x%Lx L1 %d\n", iCalib, calibNode.lliOffset, calibNode.iL1Index );
     }
-  }
+    
+    /*
+     * Print Event Code list
+     */    
+    for ( TEvrEvtToIdMap::const_iterator 
+      iterMap =  _mapEvrToId.begin();
+      iterMap != _mapEvrToId.end();
+      iterMap++ )
+    {
+      printf( "Evr Event %d Code %d\n", 
+        iterMap->second, iterMap->first );
+    }
+    
+    /*
+     * Print segment list
+     */    
+    for ( TSegmentToIdMap::const_iterator 
+      iterMap =  _mapSegToId.begin();
+      iterMap != _mapSegToId.end();
+      iterMap++ )
+    {
+      const ProcInfo& info    = iterMap->first.procNode;
+      printf( "Segment %d ip 0x%x pid 0x%x\n", 
+        iterMap->second.iIndex, info.ipAddr(), info.processId());
+        
+      /*
+       * Print typeId and src list for each segment
+       */        
+      const L1SegmentId& segId = iterMap->second;
+      for ( int iSource = 0; iSource < (int) segId.srcList.size(); iSource++ )
+      {         
+        const Src& src = (Src&) segId.srcList[iSource];
+        if (src.level() == Level::Source)
+        {        
+          const DetInfo& info = (const DetInfo&) src;
+          printf("  src %s,%d %s,%d ",
+           DetInfo::name(info.detector()), info.detId(),
+           DetInfo::name(info.device()), info.devId());           
+        }
+        else if ( src.level() == Level::Reporter )
+        {
+          const BldInfo& info = (const BldInfo&) src;
+          printf("  bldType %s ", BldInfo::name(info));          
+        }
+          
+        const TypeId& typeId = segId.typeList[iSource];
+        printf("contains %s V%d\n",
+         TypeId::name(typeId.id()), typeId.version()
+         );          
+      }
+    }
+  } // if ( iVerbose > 0 )
   
   if ( iVerbose > 1 )
   {
@@ -286,70 +409,60 @@ void IndexList::printList(int iVerbose) const
 
 void IndexList::printNode(const L1AcceptNode& node, int iSerial) const
 {
-  printf( "[%d] Fid 0x%05x OffXtc 0x%Lx OffExt 0x%x Dmg 0x%x ", 
-    iSerial, node.uFiducial, node.lliOffsetXtc, node.uOffsetExt, node.damage.value() );
-  printf( "Epc %c Prn %c ", (node.bEpics?'Y':'n'),   (node.bPrinceton?'Y':'n') );
+  char sTimeBuff[128];
+  time_t t = node.uSeconds;
+  strftime(sTimeBuff,128,"%T",localtime(&t));  
+  
+  printf( "[%d] %s.%03u Fid 0x%05x Off 0x%Lx Dmg 0x%x ", 
+    iSerial, sTimeBuff, (int)(node.uNanoseconds/1e6), 
+    node.uFiducial, node.lliOffsetXtc, node.damage.value() );
 
+  printf( "DetDmg 0x%x DetData 0x%x ", node.uMaskDetDmgs, node.uMaskDetData );
+  
   /*
    * print events     
    */
-  printf( "Evn%d ", node.lEventCode.size() );
-  if ( node.lEventCode.size() != 0 )
-    for ( unsigned int uEvent = 0; uEvent < node.lEventCode.size(); uEvent++ )
-      printf( "[%d] ", node.lEventCode[uEvent] );
+  if ( node.uMaskEvrEvents != 0 )
+  {
+    printf("Evn ");
+    uint32_t uEventBit = 0x1;
+    for ( int iBit = 0; iBit < (int) sizeof(node.uMaskEvrEvents)*8; iBit++, uEventBit <<= 1 )
+      if ( (node.uMaskEvrEvents & uEventBit) != 0 )
+        for ( TEvrEvtToIdMap::const_iterator 
+          iterMap =  _mapEvrToId.begin();
+          iterMap != _mapEvrToId.end();
+          iterMap++ )
+        {
+          if ( iterMap->second == iBit )
+            printf( "[%d] ", iterMap->first );
+        }    
+  }
   
-  /*
-   * print segment damages
-   */
-  printf( "Dmg%d ", node.lSegDmg.size() );
-  if (node.lSegDmg.size() != 0)
-    for (L1AcceptNode::TSegmentDamageList::const_iterator
-      iterSegDmg =  node.lSegDmg.begin();
-      iterSegDmg != node.lSegDmg.end();
-      iterSegDmg++ )
-      printf( "[%d]0x%x ", (int) iterSegDmg->index, iterSegDmg->damage.value() );
-      
-  const char* sLink = ( node.bLnkPrev? (node.bLnkNext?"<->":"<-o") : (node.bLnkNext?"o->":"") );
-  if ( node.bLnkPrev||node.bLnkNext )
-    printf( "Lnk %s\n", sLink );
-  else
-    printf( "\n" );
+  printf("\n");
 }
 
 int IndexList::writeToFile(int fdFile) const
 {  
   int iError1 = writeFileInfoHeader (fdFile);
   int iError2 = writeFileMainContent(fdFile);
-  int iError3 = writeFileExtended   (fdFile);
-
-  int iError4 = 0;
-  
-  int64_t lliOffset    = lseek64(fdFile, 0, SEEK_CUR);
-  int     iFilePadding = _uFileSize - lliOffset;
-  if ( iFilePadding > 0 )
-  {
-    printf( "Padding %d bytes\n", iFilePadding );
-    uint8_t lcPadding[iFilePadding];
-    memset( lcPadding, 0, iFilePadding );
-    int iError = ::write(fdFile, &lcPadding, iFilePadding );
-    if ( iError == -1 )
-    {
-      printf( "IndexList::writeToFile(): write file padding failed (%s)\n", strerror(errno) );     
-      iError4 = 1;
-    }
-  }
-  else if ( iFilePadding < 0 )
-  {
-    printf( "IndexList::writeToFile(): file size calculation incorrect\n" );     
-    iError4 = 2;
-  }
   
   int iError = 
     (iError1 != 0 ? 1 : 0) |
-    (iError2 != 0 ? 2 : 0) |
-    (iError3 != 0 ? 4 : 0) |
-    (iError4 != 0 ? 8 : 0) ;
+    (iError2 != 0 ? 2 : 0) ;
   return iError;
+}
+
+int IndexList::finishPrevSegmentId()
+{
+  if ( _itCurSeg == _mapSegToId.end() )
+    return 0;
+
+  L1SegmentId&  segId = _itCurSeg->second;
+  
+  if (segId.srcList.size() != 0 )
+    segId.bSrcUpdated   = true;
+  
+  return 0;
 }
 
 int IndexList::readFromFile(int fdFile)
@@ -359,15 +472,9 @@ int IndexList::readFromFile(int fdFile)
   if ( iError1 != 0 )
     return 1;    
   
-  int iError2 = readFileMainContent (fdFile, iNumIndex);
-  int iError3 = readFileExtended    (fdFile);
+  int iError = readFileMainContent (fdFile, iNumIndex);
   
-  int iError = 
-    (iError2 != 0 ? 2 : 0) |
-    (iError3 != 0 ? 4 : 0);
   return iError;
-  
-  return 0;
 }
 
 IndexList::IndexList()
@@ -393,8 +500,8 @@ int IndexList::reset()
 
   _lCalib     .clear();
   _lNode      .clear();
-  _lSegDmgTmp .clear();
-  _mapSegToId .clear();
+  _mapSegToId .clear();  
+  _mapEvrToId .clear();
   
   return 0;
 }
@@ -445,11 +552,10 @@ L1AcceptNode& IndexList::checkInNode( L1AcceptNode& nodeNew )
   }
     
   L1AcceptNode& nodeLast = _lNode.back();
-  int           iCmp     = compareFiducial( nodeNew.uFiducial, nodeLast.uFiducial );
     
-  if ( iCmp >= 0 )
+  if ( nodeNew.laterThan(nodeLast) )
   {
-    if ( iCmp == 0 )
+    if ( nodeNew.uFiducial ==  nodeLast.uFiducial )
     {
       printf( "IndexList::checkInNode(): *** event 0x%x has the same fiducial as the last one\n", 
         nodeNew.uFiducial ); // !! debug
@@ -469,11 +575,9 @@ L1AcceptNode& IndexList::checkInNode( L1AcceptNode& nodeNew )
     itNodeIns >= _lNode.begin();
     itNodeIns--, iSerial-- )
   {
-    int iCmp = compareFiducial( nodeNew.uFiducial, itNodeIns->uFiducial );
-
-    if ( iCmp >= 0 )
+    if ( nodeNew.laterThan(*itNodeIns) )
     {
-      if ( iCmp == 0 )
+      if ( nodeNew.uFiducial == itNodeIns->uFiducial  )
       {
         printf( "IndexList::checkInNode(): *** event 0x%x has the same fiducial as the previous (%d older)\n", 
           nodeNew.uFiducial, _lNode.end() - itNodeIns ); // !! debug
@@ -506,26 +610,86 @@ int IndexList::writeFileInfoHeader(int fdFile) const
 {  
   int iError = -1;
     
+  /*
+   * Write main header
+   */
   IndexFileHeaderType fileHeader(*this);
   iError = ::write(fdFile, &fileHeader, sizeof(fileHeader) );
   if ( iError == -1 )
     printf( "IndexList::writeFileInfoHeader(): write file info header failed (%s)\n", strerror(errno) );
-  
-  int iInfo = 0;
+    
+  /*
+   * Write BeginCalibCycle
+   */
+  iError = ::write(fdFile, &_lCalib[0], _lCalib.size() * sizeof(_lCalib[0]) );  
+  if ( iError == -1 )
+    printf( "IndexList::writeFileInfoHeader(): write calib node failed (%s)\n", strerror(errno) );    
+    
+  /*
+   * Write event codes
+   */
+  uint8_t lEventCodes[_mapEvrToId.size()];  
+  memset(lEventCodes, 0, sizeof(lEventCodes));
+  for ( TEvrEvtToIdMap::const_iterator 
+    itMap =  _mapEvrToId.begin();
+    itMap != _mapEvrToId.end();
+    itMap++ )
+  {    
+    if ( itMap->second >= (int) _mapEvrToId.size() )
+      printf("IndexList::writeFileInfoHeader(): Found invalid evr index %d for code %d\n",
+        itMap->second, itMap->first);
+    else
+      lEventCodes[itMap->second] = itMap->first;
+  }
+    
+  iError = ::write(fdFile, &lEventCodes, sizeof(lEventCodes) );
+  if ( iError == -1 )
+    printf( "IndexList::writeFileInfoHeader(): write event code failed (%s)\n", strerror(errno) );    
+
+  /*
+   * Write segments
+   */    
   for ( TSegmentToIdMap::const_iterator 
     itMap =  _mapSegToId.begin();
     itMap != _mapSegToId.end();
-    itMap++, iInfo++ )
+    itMap++ )
   {
     const ProcInfo& info  = (itMap->first).procNode;
     iError = ::write(fdFile, &info, sizeof(info) );
     if ( iError == -1 )
       printf( "IndexList::writeFileInfoHeader(): write proc info failed (%s)\n", strerror(errno) );    
-  }
 
-  iError = ::write(fdFile, &_lCalib[0], _lCalib.size() * sizeof(_lCalib[0]) );  
-  if ( iError == -1 )
-    printf( "IndexList::writeFileInfoHeader(): write calib node failed (%s)\n", strerror(errno) );    
+    /*
+     * Write source and typeId list for each segment
+     */    
+    const L1SegmentId& segId = itMap->second;
+    uint8_t uNumSrc = segId.srcList.size();
+    iError = ::write(fdFile, &uNumSrc, sizeof(uNumSrc) );
+    if ( iError == -1 )
+      printf( "IndexList::writeFileInfoHeader(): write NumSrc failed (%s)\n", strerror(errno) );    
+      
+    iError = ::write(fdFile, &segId.srcList[0], segId.srcList.size() * sizeof(segId.srcList[0]) );  
+    if ( iError == -1 )
+      printf( "IndexList::writeFileInfoHeader(): write src list failed (%s)\n", strerror(errno) );    
+
+    iError = ::write(fdFile, &segId.typeList[0], segId.typeList.size() * sizeof(segId.typeList[0]) );  
+    if ( iError == -1 )
+      printf( "IndexList::writeFileInfoHeader(): write type list failed (%s)\n", strerror(errno) );               
+  }    
+  
+  int64_t lliOffset = lseek64(fdFile, 0, SEEK_CUR);
+  unsigned int uHeaderPadding = 0;
+  if (lliOffset % 4 != 0)
+    uHeaderPadding =  (4 - lliOffset % 4);    
+  printf( "Write Header Padding %d bytes\n", uHeaderPadding );
+  if ( uHeaderPadding > 0 )
+  {    
+    uint8_t lcPadding[uHeaderPadding];
+    memset( lcPadding, 0, sizeof(lcPadding) );
+    int iError = ::write(fdFile, &lcPadding, sizeof(lcPadding) );
+    if ( iError == -1 )
+      printf( "IndexList::writeFileInfoHeader(): write header padding failed (%s)\n", strerror(errno) );     
+  }  
   
   return 0;
 }
@@ -545,39 +709,13 @@ int IndexList::writeFileMainContent(int fdFile) const
     if ( iError == -1 )
       printf( "IndexList::writeFileMainContent(): write node %d failed (%s)\n", iNode, strerror(errno) );              
   }
-  
-  return 0;
-}
 
-int IndexList::writeFileExtended(int fdFile) const
-{
-  int iError = -1;
-  int iNode  = 0;
-  
-  for (TNodeList::const_iterator 
-    iterNode =  _lNode.begin();
-    iterNode != _lNode.end();
-    iterNode++, iNode++)
+  int64_t lliOffset    = lseek64(fdFile, 0, SEEK_CUR);  
+  if ( lliOffset != _uFileSize )
   {
-    const L1AcceptNode& node = *iterNode;
-    
-    uint8_t uNumEventCodes = node.lEventCode.size();    
-    iError = ::write(fdFile, &uNumEventCodes, sizeof(uNumEventCodes) );
-    if ( iError == -1 )
-      printf( "IndexList::writeFileExtended(): write node %d event code number failed (%s)\n", iNode, strerror(errno) );
-    
-    iError = ::write(fdFile, (char*) &(node.lEventCode[0]), sizeof(node.lEventCode[0]) * uNumEventCodes );
-    if ( iError == -1 )
-      printf( "IndexList::writeFileMainContent(): write node %d event codes failed (%s)\n", iNode, strerror(errno) );            
-
-    uint8_t uNumDamages = node.lSegDmg.size();    
-    iError = ::write(fdFile, &uNumDamages, sizeof(uNumDamages) );
-    if ( iError == -1 )
-      printf( "IndexList::writeFileExtended(): write node %d damage number failed (%s)\n", iNode, strerror(errno) );
-    
-    iError = ::write(fdFile, (char*) &(node.lSegDmg[0]), sizeof(node.lSegDmg[0]) * uNumDamages );
-    if ( iError == -1 )
-      printf( "IndexList::writeFileMainContent(): write node %d damages failed (%s)\n", iNode, strerror(errno) );      
+    printf( "IndexList::writeFileMainContent(): file size calculation incorrect, expected 0x%x, actual 0x%Lx\n",
+      _uFileSize, lliOffset);
+    return 1;     
   }
   
   return 0;
@@ -585,9 +723,12 @@ int IndexList::writeFileExtended(int fdFile) const
 
 int IndexList::readFileInfoHeader(int fdFile, int& iNumIndex)
 {
-  IndexFileHeaderType fileHeader;
-  
   int iError;
+
+  /*
+   * Read main header
+   */
+  IndexFileHeaderType fileHeader;  
   iError = ::read(fdFile, &fileHeader, sizeof(fileHeader) );
   if ( iError == -1 )
   {
@@ -605,21 +746,14 @@ int IndexList::readFileInfoHeader(int fdFile, int& iNumIndex)
   }
   
   _uFileSize    = fileHeader.xtcIndex.extent;  
+  _iHeaderSize  = fileHeader.iHeaderSize;
   iNumIndex     = fileHeader.iNumIndex;
   strncpy( _sXtcFilename, fileHeader.sXtcFilename, iMaxFilenameLen-1);    
   _sXtcFilename[iMaxFilenameLen-1] = 0;
   
-  _iNumSegments = fileHeader.iNumDetector;  
-  _mapSegToId.clear();
-  for ( int iSeg = 0; iSeg < _iNumSegments; iSeg++ )
-  {
-    ProcInfo info(Level::Segment,0,0);
-    iError = ::read(fdFile, &info, sizeof(info) );
-    if ( iError == -1 )
-      printf( "IndexList::readFileInfoHeader(): read proc info failed (%s)\n", strerror(errno) );
-    _mapSegToId[info] = iSeg;
-  }    
-
+  /*
+   * Read BeginCalibCycle
+   */
   int iNumCalib = fileHeader.iNumCalib;  
   _lCalib.resize(iNumCalib);
   if (iNumCalib > 0)
@@ -628,10 +762,96 @@ int IndexList::readFileInfoHeader(int fdFile, int& iNumIndex)
     if ( iError == -1 )
     {
       printf( "IndexList::readFileInfoHeader(): read calib failed (%s)\n", strerror(errno) );
-      return 1;
+      return 4;
     }
   }
+
+  /*
+   * Read event codes
+   */
+  int iNumEvrEvents = fileHeader.iNumEvrEvents;
+  if ( iNumEvrEvents < 0 )
+  {
+    printf("IndexList::readFileInfoHeader(): Invalid Evr event # %d\n", iNumEvrEvents);
+    iNumEvrEvents = 0;
+  }
+  else if ( iNumEvrEvents > 0 )
+  {
+    uint8_t lEventCodes[iNumEvrEvents];  
+    iError = ::read(fdFile, lEventCodes, sizeof(lEventCodes) );
+    if ( iError == -1 )
+    {
+      printf( "IndexList::readFileInfoHeader(): read Evr events failed (%s)\n", strerror(errno) );
+      return 5;
+    }
+        
+    for (int iEvrEvent = 0; iEvrEvent < iNumEvrEvents; ++iEvrEvent )
+      _mapEvrToId.insert( 
+        TEvrEvtToIdMap::value_type( (int) lEventCodes[iEvrEvent], iEvrEvent ) );
+  }
   
+  /*
+   * Read segments
+   */    
+  _iNumSegments = fileHeader.iNumDetector;  
+  _mapSegToId.clear();
+  for ( int iSeg = 0; iSeg < _iNumSegments; iSeg++ )
+  {
+    ProcInfo info(Level::Segment,0,0);
+    iError = ::read(fdFile, &info, sizeof(info) );
+    if ( iError == -1 )
+      printf( "IndexList::readFileInfoHeader(): read proc info failed (%s)\n", strerror(errno) );
+    
+    std::pair<TSegmentToIdMap::iterator,bool> 
+      rInsert = _mapSegToId.insert( 
+        TSegmentToIdMap::value_type( info, L1SegmentId(iSeg) ) );
+      
+    if ( !rInsert.second )
+    {
+      printf( "IndexList::readFileInfoHeader(): read duplicated segment for "
+        "ip 0x%x pid 0x%x\n", info.ipAddr(), info.processId() );
+    }
+    
+    uint8_t uNumSrc;
+    iError = ::read(fdFile, &uNumSrc, sizeof(uNumSrc) );
+    if ( iError == -1 )
+      printf( "IndexList::readFileInfoHeader(): read NumSrc failed (%s)\n", strerror(errno) );        
+    
+    L1SegmentId& segId = rInsert.first->second;
+    segId.srcList .resize(uNumSrc);
+    segId.typeList.resize(uNumSrc);
+    if (uNumSrc > 0)
+    {
+      iError = ::read(fdFile, &segId.srcList[0], segId.srcList.size() * sizeof(segId.srcList[0]) );
+      if ( iError == -1 )
+      {
+        printf( "IndexList::readFileInfoHeader(): read src list failed (%s)\n", strerror(errno) );
+        return 5;
+      }
+      
+      iError = ::read(fdFile, &segId.typeList[0], segId.typeList.size() * sizeof(segId.typeList[0]) );
+      if ( iError == -1 )
+      {
+        printf( "IndexList::readFileInfoHeader(): read type list failed (%s)\n", strerror(errno) );
+        return 6;
+      }
+    }        
+    segId.bSrcUpdated = true;
+  }    
+  
+  int64_t lliOffset = lseek64(fdFile, 0, SEEK_CUR);
+  unsigned int uHeaderPadding = 0;
+  if (lliOffset % 4 != 0)
+    uHeaderPadding =  (4 - lliOffset % 4);    
+  printf( "Read Header Padding %d bytes\n", uHeaderPadding );
+  if ( uHeaderPadding > 0 )
+  {    
+    uint8_t lcPadding[uHeaderPadding];    
+    int iError = ::read(fdFile, &lcPadding, sizeof(lcPadding) );
+    if ( iError == -1 )
+      printf( "IndexList::readFileInfoHeader(): read header padding failed (%s)\n", strerror(errno) );           
+  }    
+
   return 0;
 }
 
@@ -653,42 +873,6 @@ int IndexList::readFileMainContent(int fdFile, int iNumIndex)
   return 0;  
 }
 
-int IndexList::readFileExtended(int fdFile)
-{
-  int iNode;
-  for ( TNodeList::iterator
-    iterNode =  _lNode.begin();
-    iterNode != _lNode.end();
-    iterNode++, iNode++
-    )
-  {
-    L1AcceptNode& node = *iterNode;
-    
-    int iError;
-    uint8_t uNumEventCodes;    
-    iError = ::read(fdFile, &uNumEventCodes, sizeof(uNumEventCodes) );
-    if ( iError == -1 )
-      printf( "IndexList::readFileExtended(): read node %d event code number failed (%s)\n", iNode, strerror(errno) );
-    
-    node.lEventCode.resize(uNumEventCodes);
-    iError = ::read(fdFile, (char*) &(node.lEventCode[0]), sizeof(node.lEventCode[0]) * uNumEventCodes );
-    if ( iError == -1 )
-      printf( "IndexList::readFileExtended(): read node %d event codes failed (%s)\n", iNode, strerror(errno) );            
-
-    uint8_t uNumDamages = node.lSegDmg.size();    
-    iError = ::read(fdFile, &uNumDamages, sizeof(uNumDamages) );
-    if ( iError == -1 )
-      printf( "IndexList::readFileExtended(): read node %d damage number failed (%s)\n", iNode, strerror(errno) );
-    
-    node.lSegDmg.resize(uNumDamages);
-    iError = ::read(fdFile, (char*) &(node.lSegDmg[0]), sizeof(node.lSegDmg[0]) * uNumDamages );
-    if ( iError == -1 )
-      printf( "IndexList::readFileExtended(): read node %d damages failed (%s)\n", iNode, strerror(errno) );      
-  }  
-  
-  return 0;  
-}
-
 /*
  * class L1SegmentIndex
  */ 
@@ -706,37 +890,43 @@ bool L1SegmentIndex::operator<(const L1SegmentIndex& right) const
 }
 
 /*
+ * class L1SegmentId
+ */ 
+L1SegmentId::L1SegmentId(int iIndex1) : 
+  iIndex(iIndex1), bSrcUpdated(false)
+{
+}
+ 
+/*
  * class L1AcceptNode
  */ 
-L1AcceptNode::L1AcceptNode(uint32_t uFiducial1, int64_t lliOffset1) :
-  uFiducial(uFiducial1), lliOffsetXtc(lliOffset1), uOffsetExt(0), damage(0),
-  bEpics(false), bPrinceton(false), bLnkNext(false), bLnkPrev(false)
+L1AcceptNode::L1AcceptNode(uint32_t uSeconds1, uint32_t uNanoseconds1, uint32_t uFiducial1, int64_t lliOffset1) :
+  uSeconds(uSeconds1), uNanoseconds(uNanoseconds1), uFiducial(uFiducial1), lliOffsetXtc(lliOffset1), 
+  damage(0), uMaskDetDmgs(0), uMaskDetData(0), uMaskEvrEvents(0)
 {
 }
 
 L1AcceptNode::L1AcceptNode(IndexFileL1NodeType& fileNode) :
+  uSeconds      (fileNode.uSeconds),
+  uNanoseconds  (fileNode.uNanoseconds),
   uFiducial     (fileNode.uFiducial), 
   lliOffsetXtc  (fileNode.lliOffsetXtc), 
-  uOffsetExt    (fileNode.uOffsetExt),
   damage        (fileNode.damage),
-  bEpics        ((fileNode.uAttribute & (1<<IndexFileL1NodeType::BIT_EPICS)) != 0),
-  bPrinceton    ((fileNode.uAttribute & (1<<IndexFileL1NodeType::BIT_PRINCETON)) != 0),
-  bLnkNext      ((fileNode.uAttribute & (1<<IndexFileL1NodeType::BIT_LNK_NEXT)) != 0),
-  bLnkPrev      ((fileNode.uAttribute & (1<<IndexFileL1NodeType::BIT_LNK_PREV)) != 0)
+  uMaskDetDmgs  (fileNode.uMaskDetDmgs),
+  uMaskDetData  (fileNode.uMaskDetData),
+  uMaskEvrEvents(fileNode.uMaskEvrEvents)
 {
 }
 
-static int compareFiducial( uint32_t uFiducial1, uint32_t uFiducial2 )
+bool L1AcceptNode::laterThan(const L1AcceptNode& node)
 {
-  if ( uFiducial1 == uFiducial2 ) return 0;  
+  if ( uSeconds > node.uSeconds )           return true;
+  if ( uSeconds < node.uSeconds )           return false;
+  if ( uNanoseconds > node.uNanoseconds )   return true;
+  if ( uNanoseconds < node.uNanoseconds )   return false;
+  if ( lliOffsetXtc >= node.lliOffsetXtc )  return true;
   
-  const int iFiducialWrapAroundDiffMin = 65536; 
-  if ( uFiducial1 < uFiducial2 && 
-    uFiducial2 < uFiducial1 + iFiducialWrapAroundDiffMin // not a fiducial wrap-around
-    )
-    return -1;
-  
-  return 1;
+  return false;
 }
 
 } // namespace Index
