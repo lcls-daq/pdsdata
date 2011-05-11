@@ -50,7 +50,8 @@ namespace Pds {
       CxiDs2        = 33,
       CxiDsu        = 34,
       CxiSc1        = 35,
-      NumDetector   = 36
+      CxiDsd        = 36,
+      NumDetector   = 37
     };
 
     enum Device {
