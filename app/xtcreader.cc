@@ -13,6 +13,8 @@
 #include "pdsdata/acqiris/TdcDataV1.hh"
 #include "pdsdata/ipimb/ConfigV1.hh"
 #include "pdsdata/ipimb/DataV1.hh"
+#include "pdsdata/ipimb/ConfigV2.hh"
+#include "pdsdata/ipimb/DataV2.hh"
 #include "pdsdata/encoder/ConfigV1.hh"
 #include "pdsdata/encoder/DataV1.hh"
 #include "pdsdata/encoder/DataV2.hh"
@@ -114,6 +116,12 @@ public:
     printf("*** Processing ipimb data object\n");
   }
   void process(const DetInfo&, const Ipimb::ConfigV1&) {
+    printf("*** Processing Ipimb config object\n");
+  }
+  void process(const DetInfo&, const Ipimb::DataV2&) {
+    printf("*** Processing ipimb data object\n");
+  }
+  void process(const DetInfo&, const Ipimb::ConfigV2&) {
     printf("*** Processing Ipimb config object\n");
   }
   void process(const DetInfo&, const Encoder::DataV1&) {
@@ -368,7 +376,20 @@ public:
       process(info, *(const Acqiris::TdcDataV1*)(xtc->payload()));
       break;
     case (TypeId::Id_IpimbData) :
-      process(info, *(const Ipimb::DataV1*)(xtc->payload()));
+      {
+	unsigned version = xtc->contains.version();
+	switch (version) {
+	case 1:
+	  process(info, *(const Ipimb::DataV1*)(xtc->payload()));
+	  break;
+	case 2:
+	  process(info, *(const Ipimb::DataV2*)(xtc->payload()));
+	  break;
+	default:
+	  printf("Unsupported ipimb configuration version %d\n",version);
+	  break;
+	}
+      }
       break;
     case (TypeId::Id_IpimbConfig) :
     {      
@@ -376,6 +397,9 @@ public:
       switch (version) {
       case 1:
         process(info,*(const Ipimb::ConfigV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info,*(const Ipimb::ConfigV2*)(xtc->payload()));
         break;
       default:
         printf("Unsupported ipimb configuration version %d\n",version);
