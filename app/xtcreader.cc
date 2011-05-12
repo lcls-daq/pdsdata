@@ -47,8 +47,10 @@
 #include "pdsdata/cspad/ElementV1.hh"
 #include "pdsdata/cspad/ConfigV1.hh"
 #include "pdsdata/lusi/IpmFexConfigV1.hh"
+#include "pdsdata/lusi/IpmFexConfigV2.hh"
 #include "pdsdata/lusi/IpmFexV1.hh"
 #include "pdsdata/lusi/DiodeFexConfigV1.hh"
+#include "pdsdata/lusi/DiodeFexConfigV2.hh"
 #include "pdsdata/lusi/DiodeFexV1.hh"
 #include "pdsdata/lusi/PimImageConfigV1.hh"
 #include "pdsdata/pulnix/TM6740ConfigV1.hh"
@@ -301,11 +303,17 @@ public:
   void process(const DetInfo&, const Lusi::IpmFexConfigV1&) {
     printf("*** Processing LUSI IpmFexConfigV1 object\n");
   }
+  void process(const DetInfo&, const Lusi::IpmFexConfigV2&) {
+    printf("*** Processing LUSI IpmFexConfigV2 object\n");
+  }
   void process(const DetInfo&, const Lusi::IpmFexV1&) {
     printf("*** Processing LUSI IpmFexV1 object\n");
   }
   void process(const DetInfo&, const Lusi::DiodeFexConfigV1&) {
     printf("*** Processing LUSI DiodeFexConfigV1 object\n");
+  }
+  void process(const DetInfo&, const Lusi::DiodeFexConfigV2&) {
+    printf("*** Processing LUSI DiodeFexConfigV2 object\n");
   }
   void process(const DetInfo&, const Lusi::DiodeFexV1&) {
     printf("*** Processing LUSI DiodeFexV1 object\n");
@@ -573,8 +581,17 @@ public:
     }    
     case (TypeId::Id_IpmFexConfig) :
     {
-      process(info, *(const Lusi::IpmFexConfigV1*)(xtc->payload()));
-      break;
+      switch(xtc->contains.version()) {
+      case 1:
+        process(info, *(const Lusi::IpmFexConfigV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info, *(const Lusi::IpmFexConfigV2*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported IpmFexConfig version %d\n",xtc->contains.version());
+        break;
+      }
     }    
     case (TypeId::Id_IpmFex) :
     {
@@ -583,8 +600,17 @@ public:
     }    
     case (TypeId::Id_DiodeFexConfig) :
     {
-      process(info, *(const Lusi::DiodeFexConfigV1*)(xtc->payload()));
-      break;
+      switch(xtc->contains.version()) {
+      case 1:
+        process(info, *(const Lusi::DiodeFexConfigV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info, *(const Lusi::DiodeFexConfigV2*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported DiodeFexConfig version %d\n",xtc->contains.version());
+        break;
+      }
     }    
     case (TypeId::Id_DiodeFex) :
     {

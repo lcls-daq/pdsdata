@@ -1,3 +1,4 @@
+2011-May-12	weaver			Added Lusi Config V2s to match Ipimb upgrade.
 2011-Apr-04	weaver			Added postmarks to mq_send calls from XtcMonitorServer to allow
 					recovery of shared memory buffers lost to non-responsive clients.
 2010-Dec-17	weaver	Tag V02-10-02	Added new acqiris/Tdc data types.
