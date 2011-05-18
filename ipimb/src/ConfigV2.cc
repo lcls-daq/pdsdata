@@ -6,7 +6,7 @@ using namespace Pds;
 using namespace Ipimb;
 
 static const unsigned Version=2;
-const char* ConfigV2::cap_range[] = { "1 pF", "4.7 pF", "24pF", "120pF", "620 pF", "3.3nF","10 nF", NULL };
+const char* ConfigV2::cap_range[] = { "1 pF", "4.7 pF", "24pF", "120pF", "620 pF", "3.3nF","10 nF", "expert", NULL };
 
 Pds::TypeId ConfigV2::typeId() {
   return Pds::TypeId(Pds::TypeId::Id_IpimbConfig,Version);
