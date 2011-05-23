@@ -20,7 +20,7 @@ void ConfigV2::dump() const {
   printf("------Ipimb Config-------------\n");
   printf("Trigger counter 0x%llx\n", triggerCounter());
   printf("Serial ID 0x%llx\n", serialID());
-  printf("Charge range %d\n", chargeAmpRange());
+  printf("Charge amp settings 0x%x\n", chargeAmpRange());
   printf("Reset length %ld ns\n", (unsigned long)resetLength());
   printf("Reset delay %d ns\n", resetDelay());
   printf("Reference voltage %f V\n", chargeAmpRefVoltage());
