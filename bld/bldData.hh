@@ -45,7 +45,7 @@ public:
 };
 
 
-class BldDataEBeam
+class BldDataEBeamV1
 {
 public:
   enum { version=1 };
@@ -61,6 +61,25 @@ public:
     int print() const;    
 };
 
+
+class BldDataEBeamV2
+{
+public:
+  enum { version=2 };
+    uint32_t    uDamageMask;
+    double      fEbeamCharge;    /* in nC */ 
+    double      fEbeamL3Energy;  /* in MeV */ 
+    double      fEbeamLTUPosX;   /* in mm */ 
+    double      fEbeamLTUPosY;   /* in mm */ 
+    double      fEbeamLTUAngX;   /* in mrad */ 
+    double      fEbeamLTUAngY;   /* in mrad */  
+    double      fEbeamPkCurrBC2; /* in Amps */  
+    double      fEbeamEnergyBC2; /* in MeV */  
+    
+    int print() const;    
+};
+
+typedef BldDataEBeamV1 BldDataEBeam;
 
 class BldDataPhaseCavity
 {
