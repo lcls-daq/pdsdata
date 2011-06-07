@@ -115,6 +115,28 @@ XtcMonitorServer::~XtcMonitorServer()
   delete[] _postmarks;
 }
 
+void XtcMonitorServer::_claim(unsigned index)
+{
+  unsigned ibit =  (1<<index);
+  if (!(_freelist & ibit)) {
+    _freelist |= ibit;
+    _nfree++;
+  }
+}
+
+bool XtcMonitorServer::_claimOutputQueues(unsigned depth)
+{
+  for(unsigned j=0; j<_numberOfClients; j++) {
+    while (mq_timedreceive(_myOutputEvQueue[_numberOfClients-1-j], 
+                           (char*)&_myMsg, sizeof(_myMsg), NULL, &_tmo) != -1) {
+      _claim(_myMsg.bufferIndex());
+      if (_nfree >= depth)
+        return true;
+    }
+  }
+  return false;
+}
+
 bool XtcMonitorServer::_send_sequence()
 {
   unsigned depth = _sequence->depth();
@@ -128,35 +150,34 @@ bool XtcMonitorServer::_send_sequence()
     for (unsigned i=0; i<curmsg; i++) {
       if (mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL) < 0) 
         perror("mq_receive");
-      
-      _freelist |= (1<<_myMsg.bufferIndex());
-      _nfree++;
+      _claim(_myMsg.bufferIndex());
     }
     
-    if (_nfree <  depth) {  // try to recover lost buffers
-      unsigned mask=0;
+    timespec tv;
+    clock_gettime(CLOCK_REALTIME,&tv);
+    timespec tmo = tv; tmo.tv_sec -= TMO_SEC;
 
-      timespec tv;
-      clock_gettime(CLOCK_REALTIME,&tv);
-      timespec tmo = tv; tmo.tv_sec -= TMO_SEC;
-
-      for(unsigned i=0; i<_numberOfEvBuffers; i++) {
-        if ((_freelist &(1<<i))==0 && tmo.tv_sec > _postmarks[i].tv_sec) {
-          char buff[128];
-          time_t t = _postmarks[i].tv_sec;
-          strftime(buff,128,"%H:%M:%S",localtime(&t));
-          printf("recover shmem buffer %d : %s.%09u\n",
-               i, buff, _postmarks[i].tv_nsec);
-          _freelist |= (1<<i);
-          _nfree++;
+    if (_nfree < depth) {
+      if (tmo.tv_sec > _postmarks[_lastSent].tv_sec) {
+        if (!_claimOutputQueues(depth)) {
+          for(unsigned i=0; i<_numberOfEvBuffers; i++) {
+            if ((_freelist &(1<<i))==0 && tmo.tv_sec > _postmarks[i].tv_sec) {
+              char buff[128];
+              time_t t = _postmarks[i].tv_sec;
+              strftime(buff,128,"%H:%M:%S",localtime(&t));
+              printf("recover shmem buffer %d : %s.%09u\n",
+                     i, buff, _postmarks[i].tv_nsec);
+              _claim(i);
+            }
+          }
         }
       }
-      
-      if (_nfree < depth)
-        return false;
     }
   }
 
+  if (_nfree < depth)
+    return false;
+  
   for(unsigned i=0; i<depth; i++) {
 
     unsigned j=0;
@@ -285,6 +306,7 @@ void XtcMonitorServer::routine()
 	    ; //	    printf("outputEv timedout to client %d\n",i);
 	  else {
             clock_gettime(CLOCK_REALTIME,&_postmarks[m.msg().bufferIndex()]);
+            _lastSent = m.msg().bufferIndex();
 	    break;
           }
       }
@@ -382,6 +404,7 @@ int XtcMonitorServer::_init()
   _postmarks = new timespec[_numberOfEvBuffers];
   _freelist  = (1<<_numberOfEvBuffers)-1;
   _nfree     = _numberOfEvBuffers;
+  _lastSent  = 0;
 
   for(int i=0; i<numberofTrBuffers; i++)
     _freeTr.push(i+_numberOfEvBuffers);
