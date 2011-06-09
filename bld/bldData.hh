@@ -2,11 +2,15 @@
 #define BLD_DATA_H
 
 #include <stdint.h>
+#include "pdsdata/ipimb/ConfigV1.hh"
+#include "pdsdata/ipimb/DataV1.hh"
 #include "pdsdata/ipimb/ConfigV2.hh"
 #include "pdsdata/ipimb/DataV2.hh"
 #include "pdsdata/lusi/IpmFexV1.hh"
 #include "pdsdata/xtc/DetInfo.hh"
 
+typedef Pds::Ipimb::DataV1   IpimbDataV1;
+typedef Pds::Ipimb::ConfigV1 IpimbConfigV1; 
 typedef Pds::Ipimb::DataV2   IpimbDataV2;
 typedef Pds::Ipimb::ConfigV2 IpimbConfigV2; 
 typedef Pds::Lusi::IpmFexV1  IpmFexDataV1;
@@ -96,16 +100,30 @@ public:
 };
 
 
-class BldDataIpimb
+class BldDataIpimbV0
 {
 public:
   enum { version=0 }; 
+    IpimbDataV1    ipimbData;
+    IpimbConfigV1  ipimbConfig;
+    IpmFexDataV1   ipmFexData;
+    
+    int print() const;    
+};
+
+
+class BldDataIpimbV1
+{
+public:
+  enum { version=1 }; 
     IpimbDataV2    ipimbData;
     IpimbConfigV2  ipimbConfig;
     IpmFexDataV1   ipmFexData;
     
     int print() const;    
 };
+
+typedef BldDataIpimbV1 BldDataIpimb;
 
 #pragma pack()
 }
