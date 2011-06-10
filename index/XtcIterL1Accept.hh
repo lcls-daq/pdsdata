@@ -15,9 +15,9 @@ public:
   enum
   { Stop, Continue };
   
-  XtcIterL1Accept(Xtc * xtc, unsigned depth, long long int lliOffset, 
+  XtcIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset, 
     IndexList& indexList ) :
-    XtcIterator(xtc), _depth(depth), _lliOffset(lliOffset), 
+    XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), 
     _pIndexList(&indexList)
   {
   }
@@ -26,7 +26,7 @@ public:
   
 private:
   unsigned            _depth;
-  long long int       _lliOffset;
+  int64_t             _i64Offset;
   IndexList*          _pIndexList;
 };
 

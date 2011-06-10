@@ -1,8 +1,10 @@
+#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
-
+#include <errno.h>
+#include <vector>
 #include <string>
 
 #include "pdsdata/xtc/DetInfo.hh"
@@ -12,9 +14,13 @@
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/index/IndexFileReader.hh"
+#include "pdsdata/index/IndexChunkReader.hh"
+#include "pdsdata/ana/XtcRun.hh"
 
+using std::vector;
 using std::string;
 using namespace Pds;
+using namespace Ana;
 
 class XtcIterWithOffset: public XtcIterator
 {
@@ -22,23 +28,23 @@ public:
   enum
   { Stop, Continue };
   
-  XtcIterWithOffset(Xtc * xtc, unsigned depth, long long int lliOffset) :
-    XtcIterator(xtc), _depth(depth), _lliOffset(lliOffset), _iNumXtc(0)
+  XtcIterWithOffset(Xtc * xtc, unsigned depth, int64_t i64Offset) :
+    XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), _iNumXtc(0)
   {}
 
   int  process(Xtc * xtc);
   
 protected:
   unsigned            _depth;
-  long long int       _lliOffset;
+  int64_t             _i64Offset;
   int                 _iNumXtc;
 };
 
 class XtcIterConfig: public XtcIterWithOffset
 {
 public:  
-  XtcIterConfig(Xtc * xtc, unsigned depth, long long int lliOffset) :
-    XtcIterWithOffset(xtc, depth, lliOffset)
+  XtcIterConfig(Xtc * xtc, unsigned depth, int64_t i64Offset) :
+    XtcIterWithOffset(xtc, depth, i64Offset)
   {}
 
   int  process(Xtc * xtc);  
@@ -47,8 +53,8 @@ public:
 class XtcIterL1Accept: public XtcIterWithOffset
 {
 public:
-  XtcIterL1Accept(Xtc * xtc, unsigned depth, long long int lliOffset):
-    XtcIterWithOffset(xtc, depth, lliOffset)
+  XtcIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset):
+    XtcIterWithOffset(xtc, depth, i64Offset)
   {}
 
   int  process(Xtc * xtc);
@@ -72,9 +78,13 @@ void usage(char *progname)
   );
 }
 
+//forward function declarations
+int openXtcRun(const char* sXtcFilename, XtcRun& run);
+int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename);
+
 int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, 
   int iBeginL1Event, int iNumL1Event, int iBeginCalib, 
-  long long int lliStartOffset, char* sTime );
+  int64_t i64OffsetStart, char* sTime );
 
 int main(int argc, char *argv[])
 {
@@ -83,7 +93,7 @@ int main(int argc, char *argv[])
   int           iBeginL1Event   = 0;
   int           iNumL1Event     = 0;
   int           iBeginCalib     = 0;
-  long long int lliStartOffset  = 0;
+  int64_t       i64OffsetStart  = 0;
   char*         sTime           = NULL;
 
   int c;
@@ -110,7 +120,7 @@ int main(int argc, char *argv[])
       iBeginCalib   = strtol(optarg, NULL, 0);
       break;
     case 'o':
-      lliStartOffset= strtoll(optarg, NULL, 0);
+      i64OffsetStart= strtoll(optarg, NULL, 0);
       break;
     case 't':
       sTime         = optarg;
@@ -125,26 +135,35 @@ int main(int argc, char *argv[])
     usage(argv[0]);
     exit(2);
   }
-
+  
   if ( iNumL1Event < 0 )
   {
     printf( "main(): Output L1 Event # %d < 0\n", iNumL1Event );
     return 0;
   }
     
-  return xtcAnalyze( sXtcFilename, sIndexFilename, iBeginL1Event, iNumL1Event, iBeginCalib, lliStartOffset, sTime );
+  return xtcAnalyze( sXtcFilename, sIndexFilename, iBeginL1Event, iNumL1Event, iBeginCalib, i64OffsetStart, sTime );
 }
 
 int printIndexSummary(const Index::IndexFileReader& indexFileReader)
 {
-  int                     iNumCalib;
+  int iNumCalib;
+  indexFileReader.numCalibCycle(iNumCalib);
+  
   const Index::CalibNode* lCalib;
-  indexFileReader.calibCycleList(iNumCalib, lCalib);
+  indexFileReader.calibCycleList(lCalib);
+  
   printf( "Num of Calib Cycle: %d\n", iNumCalib );  
   for ( int iCalib = 0; iCalib < iNumCalib; iCalib++ )
   {
     const Index::CalibNode& calibNode = lCalib[iCalib];
-    printf( "Calib %d Off 0x%Lx L1 %d\n", iCalib, calibNode.lliOffset, calibNode.iL1Index );
+    
+    char sTimeBuff[128];
+    time_t t = calibNode.uSeconds;
+    strftime(sTimeBuff,128,"%Z %a %F %T",localtime(&t));  
+        
+    printf( "Calib %d Off 0x%Lx L1 %d %s.%03u\n", iCalib, calibNode.i64Offset, calibNode.iL1Index,
+      sTimeBuff, (int)(calibNode.uNanoseconds/1e6));
   }          
   
   int             iNumDetector;
@@ -243,124 +262,6 @@ int printEvent(Index::IndexFileReader& indexFileReader, int iEvent)
   return 0;  
 }
 
-int gotoEvent(const char* sIndexFilename, int iBeginL1Event, int iBeginCalib, char* sTime, int fdXtc, int& iGlobalEvent)
-{
-  iGlobalEvent = -1;
-    
-  Index::IndexFileReader indexFileReader;
-  int iError = indexFileReader.open( sIndexFilename );
-  if ( iError != 0 )
-    return 1;  
-  
-  uint32_t uSeconds = 0, uNanoseconds = 0;
-  
-  if ( sTime == NULL )
-  {
-    int iNumEvent = -1;
-    indexFileReader.numL1EventInCalib(iBeginCalib, iNumEvent);
-    
-    printf("Using index file %s to jump to Calib# %d Event# %d (Max Event# in Calib: %d)\n", 
-      sIndexFilename, iBeginCalib, iBeginL1Event, iNumEvent-1 );
-      
-    //int iGlobalEvent = -1, iCalib = -1, iEvent = -1;
-    //indexFileReader.eventLocalToGlobal(iBeginCalib, iBeginL1Event, iGlobalEvent);    
-    //indexFileReader.eventGlobalToLocal(iGlobalEvent, iCalib, iEvent);    
-    //printf( "Global event# %d -> Local Calib# %d Event# %d\n", iGlobalEvent, iCalib, iEvent );
-  }
-  else
-  {
-    struct tm tm;
-    
-    char* pDST = strstr(sTime, "DST");
-    if (pDST != NULL)
-        tm.tm_isdst = 1;
-    else
-        tm.tm_isdst = 0;    
-    
-    strptime(sTime, "%Y-%m-%d %H:%M:%S", &tm);
-    if (tm.tm_year < 0) tm.tm_year += 2000;
-    //printf( "time %d %d %d %d %d %d %d %d %d\n",
-    //  tm.tm_sec, tm.tm_min, tm.tm_hour, tm.tm_mday, tm.tm_mon, 
-    //  tm.tm_year, tm.tm_wday, tm.tm_yday, tm.tm_isdst );
-    
-    uSeconds = mktime(&tm);
-    
-    char* pDot = strchr(sTime, '.');
-    if ( pDot != NULL)
-    {
-      double fNanoseconds = strtod(pDot, NULL);
-      uNanoseconds = (uint32_t)(fNanoseconds * 1e9 + 0.5);
-    }
-    
-    char sTimeBuff[128];
-    strftime(sTimeBuff, 128, "%D %Z %T", &tm);
-    printf("Using index file %s to jump to time %s.%03us%s (seconds 0x%x nanosecs 0x%x)\n",
-      sIndexFilename, sTimeBuff, (int)(uNanoseconds/1e6), 
-      ( ( pDST != NULL ) ? " (adjusted by DST)" : "" ),
-      uSeconds, uNanoseconds);
-  }          
-  
-  printIndexSummary(indexFileReader);
-
-  if ( sTime == NULL )
-  {
-    iError = 
-      indexFileReader.gotoEvent( iBeginCalib, iBeginL1Event, fdXtc, iGlobalEvent  );
-    if ( iError != 0 )
-    {
-      printf("Failed to jump to Calib# %d Event# %d\n", iBeginCalib, iBeginL1Event);
-      return 5;
-    }
-  }
-  else
-  {
-    bool bExactMatch = false;
-    bool bOvertime   = false;
-    iError = 
-      indexFileReader.gotoTime( uSeconds, uNanoseconds, fdXtc, iGlobalEvent, bExactMatch, bOvertime );
-    if ( iError != 0 )
-    {
-      if (bOvertime)
-        printf("Time %s is later than the last event\n", sTime);
-      else
-        printf("Failed to jump to time %s\n", sTime);
-      
-      return 6;
-    }    
-  }  
-
-  int iCalib = -1, iEvent = -1;
-  indexFileReader.eventGlobalToLocal(iGlobalEvent, iCalib, iEvent);    
-  printf( "Going to Calib# %d Event# %d (global event# %d)\n", iCalib, iEvent, iGlobalEvent );
-  
-  printEvent(indexFileReader, iGlobalEvent);  
-  
-  return 0;
-}
-
-int genIndexFromXtcFilename( const string& strXtcFilename, string& strIndexFilename )
-{  
-  unsigned int iFindPos = strXtcFilename.rfind(".xtc");
-  
-  if (iFindPos == string::npos )
-    return 1;
-    
-  strIndexFilename = strXtcFilename.substr(0, iFindPos) + ".idx";  
-  
-  struct ::stat statFile;
-  int iError = ::stat( strIndexFilename.c_str(), &statFile );
-  if ( iError != 0 )
-  {
-    strIndexFilename.clear();
-    return 2;
-  }
-  
-  printf( "Using %s as the index file for analyzing %s\n", 
-    strIndexFilename.c_str(), strXtcFilename.c_str() );
-  
-  return 0;  
-}
-
 int updateEvr(const Xtc& xtc)
 {
   // assume xtc.contains.id() == TypeId::Id_EvrData
@@ -386,126 +287,226 @@ int updateEvr(const Xtc& xtc)
 
 int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename, 
   int iBeginL1Event, int iNumL1Event, int iBeginCalib, 
-  long long int lliStartOffset, char* sTime )
-{    
-  int fdXtc = open(sXtcFilename, O_RDONLY | O_LARGEFILE);
-  if (fdXtc < 0)
-  {
-    printf("Unable to open xtc file %s\n", sXtcFilename);
+  int64_t i64OffsetStart, char* sTime )
+{      
+  XtcRun run;  
+  int iError = openXtcRun(sXtcFilename, run);
+  if (iError != 0)
     return 1;
-  }
 
-  int iL1Event    = 0;  
-  int iEndL1Event = -1;
-  if ( iBeginL1Event != 0 || iBeginCalib != 0 || sTime != NULL )
+  run.init();
+  
+  //TEventNoList lEventNo;
+  //convertEventRangeToNo(run, lEventRange, lEventNo);
+  //unsigned  uNextEventNo    = 0;
+  //bool      bLoadNextEvent  = ( lEventNo.size() != 0 );
+
+  if (sTime != NULL)
   {
-    string strIndexFilename;
+    int   iCalib = -1, iEvent = -1;
+    bool  bExactMatch = false;
+    bool  bOvertime   = false;
+    int   iError      = run.findTime(sTime, iCalib, iEvent, bExactMatch, bOvertime);
     
-    if ( sIndexFilename == NULL )
-    {            
-      genIndexFromXtcFilename( sXtcFilename, strIndexFilename );
-      if ( strIndexFilename.size() == 0 )
-      {
-        printf( "xtcAnalyze(): Cannot do fast seeking without using index file" );      
-        return 1;
-      }
-      sIndexFilename = strIndexFilename.c_str();
-    }
-          
-    int iGlobalEvent = -1;
-    int iError = gotoEvent(sIndexFilename, iBeginL1Event, iBeginCalib, sTime, fdXtc, iGlobalEvent);
-    if ( iError == 0 )
-      iL1Event = iGlobalEvent;      
-  }  
-  
-  if ( iNumL1Event > 0 )
-    iEndL1Event = iL1Event + iNumL1Event;      
-  
-  XtcFileIterator   iterFile(fdXtc, 0x2000000); // largest L1 data: 32 MB
-  
-  if ( lliStartOffset != 0 )
-  {
-    long long int lliOffsetSeek = lseek64(fdXtc, lliStartOffset, SEEK_SET);
-    if ( lliOffsetSeek != lliStartOffset )
+    if (iError != 0)
     {
-      printf("Seek to offset 0x%Lx failed, result = 0x%Lx\n", 
-        lliStartOffset, lliOffsetSeek );
+      if (bOvertime)
+        printf("Time %s is later than the last event\n", sTime);
+      else
+        printf("Cannot find event with the specified time %s\n", sTime);
     }
     else
-      printf("Seek to offset 0x%Lx\n", lliStartOffset );      
-  }  
-    
-  Dgram *dg;
-  long long int lliOffset = lseek64(fdXtc, 0, SEEK_CUR);
-  while ((dg = iterFile.next()))
-  {             
-    bool bEndLoop = false;
-    
-    char sTimeBuff[128], sDateTimeBuff[128];
-    time_t t = dg->seq.clock().seconds();
-    strftime(sTimeBuff,128,"%T",localtime(&t));
-    strftime(sDateTimeBuff,128,"%a %F %Z %T",localtime(&t));
-    
-    switch ( dg->seq.service() )
-    {
-    case TransitionId::Configure:
-    {
-      printf( "\n# %s ctl 0x%x vec 0x%x fid 0x%x %s.%03u "
-       "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
-       TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),       
-       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
-       sDateTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
-       lliOffset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);    
-      
-      // Go through the config data and create the cfgSegList object
-      XtcIterConfig iterConfig(&(dg->xtc), 0, lliOffset + sizeof(*dg) );
-      iterConfig.iterate();
-      
-      break;        
+    {      
+      iBeginCalib   = iCalib;
+      iBeginL1Event = iEvent;
+      printf("Going to event with time %s%s Calib# %d Event# %d\n",
+        sTime, (bExactMatch? " [exact]":""),
+        iBeginCalib, iBeginL1Event );
     }
-    case TransitionId::L1Accept:
+  }
+  
+  //if ( iBeginCalib < 1 && iBeginL1Event < 1 && bLoadNextEvent )
+  //{
+  //  iBeginCalib   = lEventNo[uNextEventNo].calib;
+  //  iBeginL1Event = lEventNo[uNextEventNo].event;
+  //  
+  //  ++uNextEventNo;
+  //}
+  
+  Result        r               = OK;
+  unsigned      uCurEvent       = 1;
+  unsigned int  uCurCalib       = 0;
+  unsigned int  uEventCalibBase = 0;
+  unsigned      uNumDamage      = 0;
+  bool          bJumpedToEvent  = false; 
+  unsigned int  uNumProcessed   = 0;
+  bool          bEndLoop        = false;
+  uint32_t      damagemask      = 0;
+  
+  do 
+  {  
+    Dgram*  dg        = NULL;
+    int     iSlice    = -1;
+    int64_t i64Offset = -1;
+    r = run.next(dg, &iSlice, &i64Offset);
+    if (r == Error)
+      break;      
+
+    uint32_t damage = dg->xtc.damage.value();
+    if (damage)
     {
-      printf( "\n# %s #%d ctl 0x%x vec 0x%x fid 0x%x %s.%03u "
-       "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
-       TransitionId::name(dg->seq.service()), iL1Event, dg->seq.stamp().control(),
+        uNumDamage++;
+        damagemask |= damage;
+    }
+
+    if (dg->seq.service() == TransitionId::L1Accept)
+    {      
+      char sTimeBuff[128];
+      time_t t = dg->seq.clock().seconds();
+      strftime(sTimeBuff,128,"%H:%M:%S",localtime(&t));   
+      
+      printf( "\n<%d> %s #%d ctl 0x%x vec %d fid 0x%x %s.%03u "
+       "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x calib %d event %d\n",
+       iSlice, TransitionId::name(dg->seq.service()), uCurEvent, dg->seq.stamp().control(),
        dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
        sTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
-       lliOffset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);    
+       i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent,
+       uCurCalib, uCurEvent - uEventCalibBase + 1);    
       
-      XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, lliOffset + sizeof(*dg) );
-      iterL1Accept.iterate();    
-      iL1Event++;
+      XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, i64Offset + sizeof(*dg) );
+      iterL1Accept.iterate();          
       
-      if ( iEndL1Event >= 0 && iL1Event >= iEndL1Event )
+      ++uCurEvent;      
+      ++uNumProcessed;
+      
+      if ( iNumL1Event > 0 && (int) uNumProcessed >= iNumL1Event )
         bEndLoop = true;
-      break;        
+      
+  
+      //if ( bLoadNextEvent )
+      //{
+      //  if (uNextEventNo >= lEventNo.size())
+      //    break;
+      //  
+      //  //printf( "Loading next event %u from list. prev c %u j %u ",
+      //  //  uNextEventNo, iBeginCalib, iBeginL1Event ); // !! debug
+      //    
+      //  iBeginCalib   = lEventNo[uNextEventNo].calib;
+      //  iBeginL1Event = lEventNo[uNextEventNo].event;
+
+      //  //printf( "next c %u j %u calibCur %u\n", iBeginCalib, iBeginL1Event, uCurCalib ); //!! debug
+      //  
+      //  if ( iBeginCalib != uCurCalib )
+      //  {
+      //    int iEventNumAfterJump;
+      //    int iError = run.jump(iBeginCalib, 0, iEventNumAfterJump);
+      //    if ( iError == 0 )
+      //    {
+      //      uCurEvent       = iEventNumAfterJump;
+      //      uCurCalib       = iBeginCalib - 1;
+      //      uEventCalibBase = uCurEvent;
+      //      bJumpedToEvent  = false;
+      //    }              
+      //  }
+      //  else
+      //  {
+      //    int iEventNumAfterJump;
+      //    int iError = run.jump(iBeginCalib, iBeginL1Event, iEventNumAfterJump);
+      //    if ( iError == 0 )
+      //      uCurEvent = iEventNumAfterJump;
+      //  }
+      //  
+      //  ++uNextEventNo;
+      //}         
     }
-    default:
-      printf( "\n# %s ctl 0x%x vec 0x%x fid 0x%x %s.%03u "
+    else if (dg->seq.service() == TransitionId::Configure)
+    {      
+      char sDateTimeBuff[128];
+      time_t t = dg->seq.clock().seconds();
+      strftime(sDateTimeBuff,128,"%Z %a %F %T",localtime(&t));
+      
+      printf( "\n<%d> %s ctl 0x%x vec %d fid 0x%x %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
-       TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
+       iSlice, TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),       
        dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
        sDateTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
-       lliOffset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);           
-       
-      XtcIterWithOffset iterDefault(&(dg->xtc), 0, lliOffset + sizeof(*dg) );
-      iterDefault.iterate();                   
-      break;
-    } // switch ( dg->seq.service() )
-    
-    if ( bEndLoop ) break;
+       i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);    
       
-    lliOffset = lseek64(fdXtc, 0, SEEK_CUR); // get the file offset for the next iteration
-  }
-
-  ::close(fdXtc);
+      // Go through the config data and create the cfgSegList object
+      XtcIterConfig iterConfig(&(dg->xtc), 0, i64Offset + sizeof(*dg) );
+      iterConfig.iterate();      
+    }
+    else // if (dg->seq.service() == TransitionId::Configure)
+    {
+      char sDateTimeBuff[128];
+      time_t t = dg->seq.clock().seconds();
+      strftime(sDateTimeBuff,128,"%Z %a %F %T",localtime(&t));
+      
+      printf( "\n<%d> %s ctl 0x%x vec %d fid 0x%x %s.%03u "
+       "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
+       iSlice, TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
+       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
+       sDateTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
+       i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);           
+       
+      XtcIterWithOffset iterDefault(&(dg->xtc), 0, i64Offset + sizeof(*dg) );
+      iterDefault.iterate();                   
+      
+      if (dg->seq.service() == TransitionId::BeginRun)
+      {
+        int iRunnumber = dg->env.value();
+        if (iRunnumber==0) 
+          iRunnumber = run.run_number();
+          
+        bJumpedToEvent = false;
+        
+        if ( iBeginCalib > 1 )
+        {
+          int iEventNumAfterJump;
+          int iError = run.jump(iBeginCalib, 0, iEventNumAfterJump);
+          if ( iError == 0 )
+          {
+            uCurEvent       = iEventNumAfterJump;
+            uCurCalib       = iBeginCalib - 1;
+            uEventCalibBase = uCurEvent;
+          }
+        }
+        else if ( iBeginCalib == 0 )
+          iBeginCalib = 1;
+      }    
+      else if (dg->seq.service() == TransitionId::BeginCalibCycle)
+      {
+        ++uCurCalib;
+        uEventCalibBase = uCurEvent;
+      }
+      else if (dg->seq.service() == TransitionId::Enable)
+      {
+        if ( iBeginL1Event > 1 && !bJumpedToEvent )
+        {            
+          printf("xtcAnalyze(): Jumping to calib %d event %d\n", 
+            iBeginCalib, iBeginL1Event);
+          int iEventNumAfterJump;
+          int iError = run.jump(iBeginCalib, iBeginL1Event, iEventNumAfterJump);
+          if ( iError == 0 )
+            uCurEvent = iEventNumAfterJump;
+            
+          bJumpedToEvent = true;
+        }       
+      } // if (dg->seq.service() == TransitionId::Enable)
+    } // else // if (dg->seq.service() == TransitionId::Configure)
+    
+  } while(r == OK && !bEndLoop);
+  
+  printf("Processed %d events, %d damaged, with damage mask 0x%x.\n", 
+    uNumProcessed, uNumDamage, damagemask);
+    
   return 0;
 }
 
 int XtcIterWithOffset::process(Xtc * xtc)
 {
   Level::Type     level             = xtc->src.level();
-  long long       lliOffsetPayload  = _lliOffset + sizeof(Xtc);
+  int64_t         i64OffsetPayload  = _i64Offset + sizeof(Xtc);
   const DetInfo&  info              = (const DetInfo &) (xtc->src);  
   
   if (level == Level::Segment)
@@ -513,7 +514,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -528,7 +529,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -544,7 +545,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );     
@@ -559,18 +560,18 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
   }  
 
-  _lliOffset += xtc->extent;
+  _i64Offset += xtc->extent;
   ++_iNumXtc;  
   
   if (xtc->contains.id() == TypeId::Id_Xtc)
   {
-    XtcIterWithOffset iter(xtc, _depth + 1, lliOffsetPayload);
+    XtcIterWithOffset iter(xtc, _depth + 1, i64OffsetPayload);
     iter.iterate();    
     
     if ( iter._iNumXtc > 5 )
@@ -587,7 +588,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
 int XtcIterConfig::process(Xtc * xtc)
 {
   Level::Type     level             = xtc->src.level();
-  long long       lliOffsetPayload  = _lliOffset + sizeof(Xtc);
+  int64_t         i64OffsetPayload  = _i64Offset + sizeof(Xtc);
   const DetInfo&  info              = (const DetInfo &) (xtc->src);  
   
   if (level == Level::Segment)
@@ -595,7 +596,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -612,7 +613,7 @@ int XtcIterConfig::process(Xtc * xtc)
       unsigned i = _depth;
       while (i--) printf("  ");
       printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-       Level::name(level), _lliOffset, 
+       Level::name(level), _i64Offset, 
        xtc->damage.value(), xtc->extent,
        TypeId::name(xtc->contains.id()), xtc->contains.version()
        );
@@ -629,7 +630,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -642,7 +643,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );     
@@ -657,7 +658,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -665,12 +666,12 @@ int XtcIterConfig::process(Xtc * xtc)
     printf( "XtcIterConfig::process(): *** Error level %s depth = %d\n", Level::name(level), _depth );     
   }
 
-  _lliOffset += xtc->extent;
+  _i64Offset += xtc->extent;
         
   ++_iNumXtc;  
   if (xtc->contains.id() == TypeId::Id_Xtc)
   {
-    XtcIterConfig iter(xtc, _depth + 1, lliOffsetPayload);
+    XtcIterConfig iter(xtc, _depth + 1, i64OffsetPayload);
     iter.iterate();
     
     if ( iter._iNumXtc > 5 )
@@ -687,7 +688,7 @@ int XtcIterConfig::process(Xtc * xtc)
 int XtcIterL1Accept::process(Xtc * xtc)
 {
   Level::Type     level             = xtc->src.level();
-  long long       lliOffsetPayload  = _lliOffset + sizeof(Xtc);
+  int64_t         i64OffsetPayload  = _i64Offset + sizeof(Xtc);
   const DetInfo&  info              = (const DetInfo &) (xtc->src);
   
   if (level == Level::Segment)
@@ -695,7 +696,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -712,7 +713,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
       unsigned i = _depth;
       while (i--) printf("  ");
       printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-       Level::name(level), _lliOffset, 
+       Level::name(level), _i64Offset, 
        xtc->damage.value(), xtc->extent,
        TypeId::name(xtc->contains.id()), xtc->contains.version()
        );
@@ -738,7 +739,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );     
@@ -753,7 +754,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _lliOffset, 
+     Level::name(level), _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -761,12 +762,12 @@ int XtcIterL1Accept::process(Xtc * xtc)
     printf( "XtcIterL1Accept::process(): *** Error level %s depth = %d\n", Level::name(level), _depth );
   }  
 
-  _lliOffset += xtc->extent;
+  _i64Offset += xtc->extent;
       
   ++_iNumXtc;
   if (xtc->contains.id() == TypeId::Id_Xtc)
   {
-    XtcIterL1Accept iter(xtc, _depth + 1, lliOffsetPayload);
+    XtcIterL1Accept iter(xtc, _depth + 1, i64OffsetPayload);
     iter.iterate();        
     
     if ( iter._iNumXtc > 5 )
@@ -780,6 +781,101 @@ int XtcIterL1Accept::process(Xtc * xtc)
   return XtcIterL1Accept::Continue;     
 }
 
+int openXtcRun(const char* sXtcFilename, XtcRun& run)
+{
+  vector<string> lRunFilename;
+  int iError = genListFromBasename(sXtcFilename, lRunFilename);
+  if (iError != 0)
+    return 1;
+    
+  if (lRunFilename.size() == 0)
+  {
+    printf("openXtcRun(): No xtc file found. Input filename = %s\n", sXtcFilename);
+    return 2;
+  }
+    
+  ////!!debug
+  //for (int iFile = 0; iFile < (int) lRunFilename.size(); ++iFile)
+  //{
+  //  printf("openXtcRun(): File[%d]: %s\n", iFile, lRunFilename[iFile].c_str());
+  //}
+  if (lRunFilename.size() > 1)
+    printf("Found %d files in this run. First: %s Last: %s\n", 
+      lRunFilename.size(), lRunFilename.front().c_str(), lRunFilename.back().c_str());
+  else
+    printf("Only 1 files in this run: %s\n", 
+      lRunFilename.front().c_str());
+   
+  run.reset(lRunFilename[0]);
+  for (int iFile = 1; iFile < (int) lRunFilename.size(); ++iFile)
+  {
+    if (!run.add_file(lRunFilename[iFile])) 
+    {
+      printf("openXtcRun(): File[%d] %s doesn't match base filename %s\n",
+        iFile, lRunFilename[iFile].c_str(), sXtcFilename);
+      return 3;
+    }
+  }  
+  
+  return 0;
+}
+
+int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
+{
+  lRunFilename.clear();
+  
+  /*
+   * Get base filename
+   */
+  string strFnXtc(sXtcFilename);
+  
+  unsigned int uPos = strFnXtc.find("-s");
+  if (uPos == string::npos)
+  {
+    struct ::stat64 statFile;
+    int iError = ::stat64(sXtcFilename, &statFile);
+    if ( iError != 0 )
+    {
+      printf("genListFromBasename(): Input filename %s doesn't exists\n", sXtcFilename);
+      return 0;
+    }
+    
+    lRunFilename.push_back(strFnXtc);    
+    return 0;
+  }
+    
+  string strFnBase = strFnXtc.substr(0, uPos+2);
+    
+  /*
+   * Read index files
+   */
+  for (int iSlice = 0;; ++iSlice)
+  {
+    bool bChunkFound = false;
+    for (int iChunk = 0;; ++iChunk)
+    {
+      char sFnBuf[64];
+      sprintf(sFnBuf, "%s%02d-c%02d.xtc", strFnBase.c_str(), iSlice, iChunk);
+      
+      struct ::stat64 statFile;
+      int iError = ::stat64(sFnBuf, &statFile);
+      if ( iError != 0 )
+      {
+        //printf("genListFromBasename::Failed S%d C%d %s error %s\n", iSlice, iChunk, sFnBuf, strerror(errno));//!!debug
+        break;    
+      }            
+
+      lRunFilename.push_back(sFnBuf);
+      bChunkFound = true;
+    }
+    
+    if (!bChunkFound)
+      break;
+  }  
+  
+  return 0;
+}
+
 //int gotoEvent2(char* sIndexFilename, int iEvent, int fdXtc)
 //{
 //  Index::IndexList indexList;
@@ -788,11 +884,11 @@ int XtcIterL1Accept::process(Xtc * xtc)
 //  Index::L1AcceptNode* pNode = NULL;
 //  indexList.getNode( iEvent, pNode );
 //    
-//  long long int lliOffsetSeek = lseek64(fdXtc, pNode->lliOffsetXtc, SEEK_SET);
-//  if ( lliOffsetSeek != pNode->lliOffsetXtc )
+//  int64_t i64OffsetSeek = lseek64(fdXtc, pNode->i64OffsetXtc, SEEK_SET);
+//  if ( i64OffsetSeek != pNode->i64OffsetXtc )
 //  {
 //    printf( "gotoEvent(): Failed to jump to %d event at offset 0x%Lx (actual offset 0x%Lx)\n",
-//      iEvent, pNode->lliOffsetXtc, lliOffsetSeek );
+//      iEvent, pNode->i64OffsetXtc, i64OffsetSeek );
 //    lseek64(fdXtc, 0, SEEK_SET);
 //    
 //    return 1;

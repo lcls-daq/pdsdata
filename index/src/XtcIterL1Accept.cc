@@ -12,7 +12,7 @@ namespace Index
 int XtcIterL1Accept::process(Xtc * xtc)
 {
   Level::Type     level             = xtc->src.level();
-  long long       lliOffsetPayload  = _lliOffset + sizeof(Xtc);
+  int64_t         i64OffsetPayload  = _i64Offset + sizeof(Xtc);
   bool            bStopUpdate       = false;
   
   if (level == Level::Segment)
@@ -45,7 +45,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     printf( "XtcIterL1Accept::process(): *** Error level %s depth = %d", Level::name(level), _depth );     
   }  
 
-  _lliOffset += sizeof(Xtc) + xtc->sizeofPayload();
+  _i64Offset += sizeof(Xtc) + xtc->sizeofPayload();
     
   // depth > 0 : Will stop after current node
   
@@ -56,7 +56,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
   
   if (xtc->contains.id() == TypeId::Id_Xtc)
   {
-    XtcIterL1Accept iter(xtc, _depth + 1, lliOffsetPayload, *_pIndexList);
+    XtcIterL1Accept iter(xtc, _depth + 1, i64OffsetPayload, *_pIndexList);
     iter.iterate();
   }
     

@@ -85,18 +85,18 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex)
   XtcFileIterator   iterFile  (fd, 0x2000000); // largest L1 data: 32 MB
     
   Dgram *dg;
-  long long int lliOffset = lseek64(fd, 0, SEEK_CUR);
+  int64_t i64Offset = lseek64(fd, 0, SEEK_CUR);
   while ((dg = iterFile.next()))
   {             
     if (dg->seq.service() == TransitionId::L1Accept)
     {
       bool bInvalidNodeData = false;
-      indexList.startNewNode(*dg, lliOffset, bInvalidNodeData);
+      indexList.startNewNode(*dg, i64Offset, bInvalidNodeData);
       
       if ( bInvalidNodeData )
         continue;     
       
-      XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, lliOffset + sizeof(*dg), indexList);           
+      XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, i64Offset + sizeof(*dg), indexList);           
       iterL1Accept.iterate();
             
       bool bPrintNode = true;
@@ -104,10 +104,10 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex)
     }
     else if (dg->seq.service() == TransitionId::BeginCalibCycle)
     {
-      indexList.addCalibCycle(lliOffset);
+      indexList.addCalibCycle(i64Offset, dg->seq.clock().seconds(), dg->seq.clock().nanoseconds());
     }
       
-    lliOffset = lseek64(fd, 0, SEEK_CUR); // get the file offset for the next iteration
+    i64Offset = lseek64(fd, 0, SEEK_CUR); // get the file offset for the next iteration
   }
 
   indexList.finishList();  

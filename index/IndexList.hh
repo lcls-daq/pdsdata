@@ -25,7 +25,7 @@ struct L1AcceptNode
   uint32_t            uSeconds;
   uint32_t            uNanoseconds;
   uint32_t            uFiducial;
-  int64_t             lliOffsetXtc;
+  int64_t             i64OffsetXtc;
   Damage              damage;
   uint32_t            uMaskDetDmgs;
   uint32_t            uMaskDetData;
@@ -38,7 +38,7 @@ struct L1AcceptNode
   bool                bLnkNext;
   bool                bLnkPrev;
     
-        L1AcceptNode(uint32_t uSeconds1, uint32_t uNanoseconds1, uint32_t uFiducial1, int64_t lliOffset1);
+        L1AcceptNode(uint32_t uSeconds1, uint32_t uNanoseconds1, uint32_t uFiducial1, int64_t i64Offset1);
         L1AcceptNode(IndexFileL1NodeType& fileNode);
   bool  laterThan(const L1AcceptNode& node);
     
@@ -76,7 +76,7 @@ public:
   /*
    * L1Accept node operations
    */
-  int   startNewNode  (const Dgram& dg, int64_t lliOffset, bool& bInvalidData);
+  int   startNewNode  (const Dgram& dg, int64_t i64Offset, bool& bInvalidData);
   int   updateSegment (const Xtc& xtc);
   int   updateSource  (const Xtc& xtc, bool& bStopUpdate);
   int   updateReporter(const Xtc& xtc, bool& bStopUpdate);
@@ -89,7 +89,7 @@ public:
   /*
    * BeginCalibCycle operation
    */
-  int   addCalibCycle (int64_t lliOffset);
+  int   addCalibCycle (int64_t i64Offset, uint32_t uSeconds, uint32_t uNanoseconds);
 
   int   reset         ();    
   int   setXtcFilename(const char* sXtcFilename);
@@ -106,8 +106,7 @@ private:
   typedef   std::vector<Damage>           TSegmentDamageMapList;
   typedef   std::map<L1SegmentIndex,L1SegmentId>  
                                           TSegmentToIdMap;
-  typedef   std::map<uint32_t,int>  
-                                          TEvrEvtToIdMap;
+  typedef   std::map<uint32_t,int>        TEvrEvtToIdMap;
 
   char                      _sXtcFilename[iMaxFilenameLen];  
   int                       _iNumSegments;
@@ -123,19 +122,19 @@ private:
   TSegmentDamageMapList     _lSegDmgTmp;
   
   int                       _iCurSerial;
-  uint32_t                  _uFileSize;
-  int                       _iHeaderSize;
   
   int           finishPrevSegmentId();
   L1AcceptNode& checkInNode( L1AcceptNode& nodeNew );  
   
   void          printNode(const L1AcceptNode& node, int iSerial) const;
   
-  int           writeFileInfoHeader (int fdFile) const;
-  int           writeFileMainContent(int fdFile) const;
+  int           writeFileHeader       (int fdFile) const;
+  int           writeFileL1AcceptList (int fdFile) const;
+  int           writeFileSupplement   (int fdFile) const;
 
-  int           readFileInfoHeader  (int fdFile, int& iNumIndex);
-  int           readFileMainContent (int fdFile, int iNumIndex);
+  int           readFileHeader        (int fdFile, IndexFileHeaderType& fileHeader);
+  int           readFileL1AcceptList  (int fdFile, int iNumIndex);
+  int           readFileSupplement    (int fdFile, const IndexFileHeaderType& fileHeader);
   
   friend class IndexFileHeaderV1;
 }; // class IndexList

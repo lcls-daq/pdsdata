@@ -21,6 +21,11 @@ namespace Index
  *  |  Header                                |
  *  |    Type: IndexFileHeaderV1             |
  *  +----------------------------------------+
+ *  |   (Largest part of the file)           |
+ *  |  List of L1Accept Infomation           |
+ *  |    (Size defined in header)            |
+ *  |    Type: IndexFileL1NodeV1             |
+ *  +----------------------------------------+
  *  |  List of BeginCalibCycle Infomration   |
  *  |    (Size defined in header)            |
  *  |    Type: CalibNode                     |
@@ -33,10 +38,6 @@ namespace Index
  *  |    (Size defined in header)            |
  *  |    Type: See below                     |
  *  +----------------------------------------+
- *  |  List of L1Accept Infomation           |
- *  |    (Size defined in header)            |
- *  |    Type: IndexFileL1NodeV1             |
- *  +----------------------------------------+
  *
  *  Header
  *  ======
@@ -44,7 +45,6 @@ namespace Index
  *    Content:
  *      Xtc       xtcIndex;                       // Regular xtc struture
  *      char      sXtcFilename[iMaxFilenameLen];  // Filename of the corresponding xtc file
- *      int16_t   iHeaderSize;                    // Data size before the L1Accept information
  *      int16_t   iNumCalib;                      // Number of BeginCalibCycles 
  *      int8_t    iNumEvrEvents;                  // Number of different Evr event codes
  *      int8_t    iNumDetector;                   // Number of detectors (segment level programs)
@@ -60,8 +60,10 @@ namespace Index
  *  ===================================
  *    Type: CalibNode
  *    Content: 
- *      int64_t lliOffset;  // offset in the xtc file for jumping to this BeginCalibCycle
- *      int32_t iL1Index;   // index number of the first L1Accept event in this Calib Cycle
+ *      int64_t   i64Offset;      // offset in the xtc file for jumping to this BeginCalibCycle
+ *      int32_t   iL1Index;       // index number of the first L1Accept event in this Calib Cycle
+ *      uint32_t  uSeconds;       // timestamp (seconds) from Evr 
+ *      uint32_t  uNanoseconds;   // timestamp (nanoseconds) from Evr 
  *    Note:
  *      - The size of list is defined in header.iNumCalib
  *      - It is a list of all BeginCalibCycle addresses in the xtc file
@@ -115,7 +117,7 @@ namespace Index
  *      uint32_t  uSeconds;       // timestamp (seconds) from Evr 
  *      uint32_t  uNanoseconds;   // timestamp (nanoseconds) from Evr 
  *      uint32_t  uFiducial;      // fiducial of this L1Accept event
- *      int64_t   lliOffsetXtc;   // offset in the xtc file for jumping to this event
+ *      int64_t   i64OffsetXtc;   // offset in the xtc file for jumping to this event
  *      Damage    damage;         // "overall" damage of this event, extracted from L1Accept event's Xtc object
  *      uint32_t  uMaskDetDmgs;   // bit mask for listing which segment node has "Damage"
  *      uint32_t  uMaskDetData;   // bit mask for listing non-empty detector data
@@ -125,15 +127,6 @@ namespace Index
  *      - It is a list of all L1Accept event's information
  */
 
-struct CalibNode
-{
-  int64_t lliOffset;  // offset in the xtc file for jumping to this BeginCalibCycle
-  int32_t iL1Index;   // index number of the first L1Accept event in this Calib Cycle
-  
-  CalibNode() {}
-  CalibNode(int64_t lliOffset1, int32_t iL1Index1) : lliOffset(lliOffset1), iL1Index(iL1Index1) {}
-};
-
 class IndexList; // forward declaration
 
 struct IndexFileHeaderV1
@@ -141,9 +134,8 @@ struct IndexFileHeaderV1
   static const int iXtcIndexVersion = 1;    
   static const int iMaxFilenameLen  = 32;  
   
-  Xtc       xtcIndex;                       // Regular xtc struture
+  TypeId    typeId;                         // Type Id. Format: (TypeId::Id_Index, iXtcIndexVersion) 
   char      sXtcFilename[iMaxFilenameLen];  // Filename of the corresponding xtc file
-  int16_t   iHeaderSize;                    // Data size before the L1Accept information
   int16_t   iNumCalib;                      // Number of BeginCalibCycles 
   int8_t    iNumEvrEvents;                  // Number of different Evr event codes
   int8_t    iNumDetector;                   // Number of detectors (segment level programs)
@@ -160,7 +152,7 @@ struct IndexFileL1NodeV1
   uint32_t  uSeconds;       // timestamp (seconds) from Evr 
   uint32_t  uNanoseconds;   // timestamp (nanoseconds) from Evr 
   uint32_t  uFiducial;      // fiducial of this L1Accept event
-  int64_t   lliOffsetXtc;   // offset in the xtc file for jumping to this event
+  int64_t   i64OffsetXtc;   // offset in the xtc file for jumping to this event
   Damage    damage;         // "overall" damage of this event, extracted from L1Accept event's Xtc object
   uint32_t  uMaskDetDmgs;   // bit mask for listing which segment node has "Damage"
   uint32_t  uMaskDetData;   // bit mask for listing non-empty detector data
@@ -170,8 +162,22 @@ struct IndexFileL1NodeV1
   IndexFileL1NodeV1(const L1AcceptNode& node);  
 };
 
+struct CalibNode
+{
+  int64_t   i64Offset;      // offset in the xtc file for jumping to this BeginCalibCycle
+  int32_t   iL1Index;       // index number of the first L1Accept event in this Calib Cycle
+  uint32_t  uSeconds;       // timestamp (seconds) from Evr 
+  uint32_t  uNanoseconds;   // timestamp (nanoseconds) from Evr 
+  
+  CalibNode() {}
+  CalibNode(int64_t i64Offset1, int32_t iL1Index1, uint32_t uSeconds1, uint32_t uNanoseconds1) : 
+    i64Offset(i64Offset1), iL1Index(iL1Index1), uSeconds(uSeconds1), uNanoseconds(uNanoseconds1) {}
+};
+
 typedef IndexFileHeaderV1 IndexFileHeaderType;
 typedef IndexFileL1NodeV1 IndexFileL1NodeType;
+
+int convertTimeStringToSeconds(const char* sTime, uint32_t& uSeconds, uint32_t& uNanoseconds);
 
 #pragma pack()
 

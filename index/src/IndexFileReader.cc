@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <fcntl.h>
 
 #include "pdsdata/index/IndexFileReader.hh"
 
@@ -6,10 +7,8 @@ namespace Pds
 {  
 namespace Index
 {
-// forward declaration
-static int compareTime(uint32_t& uSeconds1, uint32_t& uNanoseconds1, uint32_t& uSeconds2, uint32_t& uNanoseconds2);
   
-IndexFileReader::IndexFileReader() : _fXtcIndex(NULL), _iHeaderSize(0), _iCurL1Node(-1)
+IndexFileReader::IndexFileReader() : _fdXtcIndex(-1), _iCurL1Node(-1)
 {
 }
 
@@ -22,31 +21,43 @@ int IndexFileReader::open(const char* sXtcIndex)
 {
   close();
     
-  _fXtcIndex = fopen( sXtcIndex, "rb" );
-  
-  if ( _fXtcIndex == NULL )
+  _fdXtcIndex = ::open(sXtcIndex, O_RDONLY | O_LARGEFILE);  
+  if ( _fdXtcIndex == -1 )
   {
-    printf( "IndexFileReader::open(): open index file %s failed, error = %s\n",
+    printf( "IndexFileReader::open(): Open index file %s failed, error = %s\n",
       sXtcIndex, strerror(errno) );
     return 1;
   }
-  
-  int iItemsRead = fread(&_fileHeader, sizeof(_fileHeader), 1, _fXtcIndex);
-  if ( iItemsRead != 1 )
+    
+  int iRead = ::read(_fdXtcIndex, &_fileHeader, sizeof(_fileHeader));
+  if ( iRead != sizeof(_fileHeader) )
   {
-    printf( "IndexFileReader::open(): read header failed, error = %s\n",
-      strerror(errno) );
+    printf( "IndexFileReader::open(): Read header failed. Read %d bytes (expected %d), error = %s\n",
+      iRead, sizeof(_fileHeader), strerror(errno) );
     return 2;
+  }
+  
+  /*
+   * Calculate the file offset to CalibCycle
+   */
+  int64_t i64OffsetCalib = sizeof(_fileHeader) + sizeof(_curL1Node)* (int64_t) _fileHeader.iNumIndex;
+  
+  int64_t i64OffsetSeek = ::lseek64(_fdXtcIndex, i64OffsetCalib, SEEK_SET);
+  if ( i64OffsetSeek != i64OffsetCalib )
+  {
+    printf("IndexFileReader::open(): Seek to CalibCycle offset 0x%Lx failed, result = 0x%Lx\n", 
+      i64OffsetCalib, i64OffsetSeek );
   }
 
   if (_fileHeader.iNumCalib > 0)
   {
     _lCalib.resize(_fileHeader.iNumCalib);
-    iItemsRead = fread( (void*) &_lCalib[0], _lCalib.size() * sizeof(_lCalib[0]), 1, _fXtcIndex);
-    if ( iItemsRead != 1 )
+    const int iReadSize = _lCalib.size() * sizeof(_lCalib[0]);
+    iRead = ::read(_fdXtcIndex, (void*) &_lCalib[0], iReadSize);
+    if (iRead != iReadSize)
     {
-      printf( "IndexFileReader::open(): read calib cycle (%d) failed, error = %s\n",
-        _fileHeader.iNumCalib, strerror(errno) );
+      printf( "IndexFileReader::open(): Read calib cycle (%d) failed. Read %d bytes (expected %d), error = %s\n",
+        _fileHeader.iNumCalib, iRead, iReadSize, strerror(errno) );
       return 3;
     }  
   }
@@ -54,11 +65,12 @@ int IndexFileReader::open(const char* sXtcIndex)
   if (_fileHeader.iNumEvrEvents > 0)
   {
     _lEvrEvent.resize(_fileHeader.iNumEvrEvents);
-    iItemsRead = fread( (void*) &_lEvrEvent[0], _lEvrEvent.size() * sizeof(_lEvrEvent[0]), 1, _fXtcIndex);
-    if ( iItemsRead != 1 )
+    const int iReadSize = _lEvrEvent.size() * sizeof(_lEvrEvent[0]);
+    iRead = ::read(_fdXtcIndex, (void*) &_lEvrEvent[0], iReadSize);
+    if (iRead != iReadSize)
     {
-      printf( "IndexFileReader::open(): read evr events (%d) failed, error = %s\n",
-        _fileHeader.iNumEvrEvents, strerror(errno) );
+      printf( "IndexFileReader::open(): Read evr events (%d) failed. Read %d bytes (expected %d), error = %s\n",
+        _fileHeader.iNumEvrEvents, iRead, iReadSize, strerror(errno) );
       return 4;
     }  
   }  
@@ -71,66 +83,67 @@ int IndexFileReader::open(const char* sXtcIndex)
     
     for ( int iDetector = 0; iDetector < _fileHeader.iNumDetector; ++iDetector )
     {
-      iItemsRead = fread( (void*) &_lDetector[iDetector], sizeof(_lDetector[iDetector]), 1, _fXtcIndex);
-      if ( iItemsRead != 1 )
+      int iReadSize = sizeof(_lDetector[iDetector]);
+      iRead = ::read(_fdXtcIndex, (void*) &_lDetector[iDetector], iReadSize);
+      if (iRead != iReadSize)
       {
-        printf( "IndexFileReader::open(): read detector %d procInfo failed, error = %s\n",
-          iDetector, strerror(errno) );
+        printf( "IndexFileReader::open(): Read detector %d procInfo failed. Read %d bytes (expected %d), error = %s\n",
+          iDetector, iRead, iReadSize, strerror(errno) );
         return 5;
       }
       
       uint8_t uNumSrc;
-      iItemsRead = fread( (void*)&uNumSrc, sizeof(uNumSrc), 1, _fXtcIndex);
-      if ( iItemsRead != 1 )
+      iReadSize = sizeof(uNumSrc);
+      iRead = ::read(_fdXtcIndex, (void*)&uNumSrc, iReadSize);
+      if (iRead != iReadSize)
       {
-        printf( "IndexFileReader::open(): read detector src# for detector %d failed, error = %s\n",
-          iDetector, strerror(errno) );
+        printf( "IndexFileReader::open(): Read detector src# for detector %d failed. Read %d bytes (expected %d), error = %s\n",
+          iDetector, iRead, iReadSize, strerror(errno) );
         return 6;
       }  
 
       TSrcList&  lSrc  = _lSrcList [iDetector];
       lSrc.resize(uNumSrc);
-      iItemsRead = fread( (void*) &lSrc[0], lSrc.size() * sizeof(lSrc[0]), 1, _fXtcIndex);
-      if ( iItemsRead != 1 )
+      iReadSize = lSrc.size() * sizeof(lSrc[0]);
+      iRead = ::read(_fdXtcIndex, (void*) &lSrc[0], iReadSize);
+      if ( iRead != iReadSize)
       {
-        printf( "IndexFileReader::open(): read src list for detector %d failed, error = %s\n",
-          iDetector, strerror(errno) );
-        return 8;
+        printf( "IndexFileReader::open(): Read src list for detector %d failed. Read %d bytes (expected %d), error = %s\n",
+          iDetector, iRead, iReadSize, strerror(errno) );
+        return 7;
       }              
       
       TTypeList& lType = _lTypeList[iDetector];
       lType.resize(uNumSrc);
-      iItemsRead = fread( (void*) &lType[0], lType.size() * sizeof(lType[0]), 1, _fXtcIndex);
-      if ( iItemsRead != 1 )
+      iReadSize = lType.size() * sizeof(lType[0]);
+      iRead = ::read(_fdXtcIndex, (void*) &lType[0], iReadSize);
+      if ( iRead != iReadSize)
       {
-        printf( "IndexFileReader::open(): read type list for detector %d failed, error = %s\n",
-          iDetector, strerror(errno) );
-        return 7;
+        printf( "IndexFileReader::open(): Read type list for detector %d failed. Read %d bytes (expected %d), error = %s\n",
+          iDetector, iRead, iReadSize, strerror(errno) );
+        return 8;
       }              
     } // for ( int iDetector = 0; iDetector < _fileHeader.iNumDetector; ++iDetector )
-  } // if (_fileHeader.iNumDetector > 0)
-  
-  _iHeaderSize = _fileHeader.iHeaderSize;
+  } // if (_fileHeader.iNumDetector > 0)     
   
   return 0;
 }
 
 int IndexFileReader::close()
 {
-  if ( _fXtcIndex == NULL )
+  if ( _fdXtcIndex == -1 )
     return 0;
     
-  int iError = fclose(_fXtcIndex);  
+  int iError = ::close(_fdXtcIndex);  
   if ( iError != 0 )
   {
-    printf( "IndexFileReader::close(): close index file failed, error = %s\n",
+    printf( "IndexFileReader::close(): Close index file failed, error = %s\n",
       strerror(errno) );
     return 1;
   }      
   
-  _fXtcIndex        = NULL;
-  _iHeaderSize      = 0;
-  _iCurL1Node       = -1;
+  _fdXtcIndex = -1;
+  _iCurL1Node = -1;
   _lCalib   .clear();
   _lEvrEvent.clear();
   _lDetector.clear();
@@ -142,13 +155,13 @@ int IndexFileReader::close()
 
 bool IndexFileReader::isValid() const
 {
-  return (_fXtcIndex != NULL);
+  return (_fdXtcIndex != -1);
 }
 
 int IndexFileReader::numL1Event(int& iNumL1Event) const
 {
   iNumL1Event = -1;
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;       
 
   iNumL1Event = _fileHeader.iNumIndex;
@@ -158,77 +171,101 @@ int IndexFileReader::numL1Event(int& iNumL1Event) const
 int IndexFileReader::numL1EventInCalib(int iCalib, int& iNumL1Event) const
 {
   iNumL1Event = -1;
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
-    
-  if ( iCalib < 0 || iCalib >= (int) _lCalib.size() )
+  
+  if ( iCalib < -1 || iCalib >= (int) _lCalib.size() )
   {
     printf( "IndexFileReader::numL1EventInCalib(): Invalid Calib Cyle #%d (Max # = %d)\n",
       iCalib, _lCalib.size()-1 );
     return 2;
   }    
-    
+
+  /*
+   * special case: iCalib == -1:
+   *   1) _lCalib.size() == 0 
+   *      iNumL1Event = _fileHeader.iNumIndex
+   *   2) _lCalib.size() != 0 
+   *      iNumL1Event = _lCalib[0].iL1Index
+   */
+  
+  int iStartIndex = (iCalib >= 0 ? _lCalib[iCalib].iL1Index : 0);
+  
   if ( iCalib == (int) _lCalib.size() - 1 )
-    iNumL1Event = _fileHeader.iNumIndex       - _lCalib[iCalib].iL1Index;
+    iNumL1Event = _fileHeader.iNumIndex       - iStartIndex;
   else
-    iNumL1Event = _lCalib[iCalib+1].iL1Index  - _lCalib[iCalib].iL1Index;
+    iNumL1Event = _lCalib[iCalib+1].iL1Index  - iStartIndex;
     
   return 0;
 }
 
-int IndexFileReader::eventLocalToGlobal(int iCalib, int iEvent, int& iGlobalEvent) const
+int IndexFileReader::eventCalibToGlobal(int iCalib, int iEvent, int& iGlobalEvent) const
 {
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
-  
-  if ( iCalib < 0 || iCalib >= (int) _lCalib.size() )
+    
+  if ( iCalib < -1 || iCalib >= (int) _lCalib.size() )
   {
-    printf( "IndexFileReader::eventLocalToGlobal(): Invalid Calib Cyle #%d (Max # = %d)\n",
+    printf( "IndexFileReader::eventCalibToGlobal(): Invalid Calib# %d (Max # = %d)\n",
       iCalib, _lCalib.size()-1 );
     return 2;
   }   
-  
+    
   int iMaxEventNum; 
   numL1EventInCalib( iCalib, iMaxEventNum );
-
+  
   if ( iEvent < 0 || iEvent >= (int) iMaxEventNum )
   {
-    printf( "IndexFileReader::eventLocalToGlobal(): Invalid Event #%d in Calib Cycle #%d (Max # = %d)\n",
-      iEvent, iCalib, iMaxEventNum );
+    printf( "IndexFileReader::eventCalibToGlobal(): Invalid Event# %d in Calib# %d (Max # = %d)\n",
+      iEvent, iCalib, iMaxEventNum-1);
     return 3;
   }   
+
+  /*
+   * special case: iCalib == -1:
+   *   iGlobalEvent = iEvent;      
+   */
   
-  iGlobalEvent = _lCalib[iCalib].iL1Index + iEvent;      
+  int iStartIndex = (iCalib >= 0 ? _lCalib[iCalib].iL1Index : 0);
+  
+  iGlobalEvent = iStartIndex + iEvent;      
   return 0;
 }
 
-int IndexFileReader::eventGlobalToLocal(int iGlobalEvent, int& iCalib, int& iEvent) const
+int IndexFileReader::eventGlobalToCalib(int iGlobalEvent, int& iCalib, int& iEvent) const
 {
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
 
   if ( iGlobalEvent < 0 || iGlobalEvent >= _fileHeader.iNumIndex )
   {
-    printf( "IndexFileReader::eventGlobalToLocal(): Invalid global Event #%d (Max # = %d)\n",
-      iGlobalEvent, _fileHeader.iNumIndex );
+    printf( "IndexFileReader::eventGlobalToCalib(): Invalid global Event# %d (Max # = %d)\n",
+      iGlobalEvent, _fileHeader.iNumIndex-1);
     return 2;
   }   
-  
+
+  if (_lCalib.size() == 0 || iGlobalEvent < _lCalib[0].iL1Index)
+  {
+    iCalib = -1;
+    iEvent = iGlobalEvent;
+    return 0;
+  }    
+      
   for (iCalib = 0; iCalib < (int) _lCalib.size(); iCalib++)
   {
-    int iRemainingEvent = iGlobalEvent - _lCalib[iCalib].iL1Index;
+    int iEventRemain = iGlobalEvent - _lCalib[iCalib].iL1Index;
     
     int iMaxEventNum; 
     numL1EventInCalib( iCalib, iMaxEventNum );    
-    if ( iRemainingEvent < iMaxEventNum )
+    if ( iEventRemain < iMaxEventNum )
     {
-      iEvent = iRemainingEvent;
+      iEvent = iEventRemain;
       return 0;
     }
   }
   
-  printf( "IndexFileReader::eventGlobalToLocal(): Cannot find correct Calib Cycle for global Event #%d (Max # = %d)\n",
-    iGlobalEvent, _fileHeader.iNumIndex );
+  printf( "IndexFileReader::eventGlobalToCalib(): Cannot find correct Calib Cycle for global Event# %d (Max # = %d)n",
+    iGlobalEvent, _fileHeader.iNumIndex-1);
   return 3;
 }
 
@@ -237,7 +274,7 @@ int IndexFileReader::eventTimeToGlobal(uint32_t uSeconds, uint32_t uNanoseconds,
   iGlobalEvent  = -1;
   bExactMatch   = false;
   bOvertime     = false;
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;  
   
   if ( _fileHeader.iNumIndex == 0 )
@@ -326,7 +363,7 @@ int IndexFileReader::eventTimeToGlobal(uint32_t uSeconds, uint32_t uNanoseconds,
   return 0;
 }
 
-int IndexFileReader::eventTimeToLocal(uint32_t uSeconds, uint32_t uNanoseconds, int& iCalib, int& iEvent, bool& bExactMatch, bool& bOvertime)
+int IndexFileReader::eventTimeToCalib(uint32_t uSeconds, uint32_t uNanoseconds, int& iCalib, int& iEvent, bool& bExactMatch, bool& bOvertime)
 {
   iCalib      = -1;
   iEvent      = -1;
@@ -338,7 +375,7 @@ int IndexFileReader::eventTimeToLocal(uint32_t uSeconds, uint32_t uNanoseconds, 
   if (iError != 0)
     return 1;
     
-  iError = eventGlobalToLocal( iGlobalEvent, iCalib, iEvent );
+  iError = eventGlobalToCalib( iGlobalEvent, iCalib, iEvent );
   if (iError != 0)
     return 2;
   
@@ -348,7 +385,7 @@ int IndexFileReader::eventTimeToLocal(uint32_t uSeconds, uint32_t uNanoseconds, 
 int IndexFileReader::detectorList(int& iNumDetector, const ProcInfo*& lDetector) const
 {
   iNumDetector = -1;
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
     
   iNumDetector = _fileHeader.iNumDetector;
@@ -359,7 +396,7 @@ int IndexFileReader::detectorList(int& iNumDetector, const ProcInfo*& lDetector)
 
 int IndexFileReader::srcList(int iDetector, int& iNumSrc, const Src*& lSrc) const
 {
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
     
   if (iDetector < 0 || iDetector >= _fileHeader.iNumDetector )
@@ -377,7 +414,7 @@ int IndexFileReader::srcList(int iDetector, int& iNumSrc, const Src*& lSrc) cons
 
 int IndexFileReader::typeList(int iDetector, int& iNumType, const TypeId*& lType) const
 {
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
 
   if (iDetector < 0 || iDetector >= _fileHeader.iNumDetector )
@@ -393,84 +430,100 @@ int IndexFileReader::typeList(int iDetector, int& iNumType, const TypeId*& lType
   return 0;
 }
 
-int IndexFileReader::calibCycleList(int& iNumCalib, const CalibNode*& lCalib) const
+int IndexFileReader::numCalibCycle(int& iNumCalib) const
 {
   iNumCalib = -1;
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
     
   iNumCalib = _fileHeader.iNumCalib;
-  lCalib    = &_lCalib[0];
-
   return 0;
 }
 
-int IndexFileReader::gotoEvent(int iCalib, int iEvent, int fdXtc, int& iGlobalEvent)
-{  
-  if (_fXtcIndex == NULL)
+int IndexFileReader::calibCycleList(const CalibNode*& lCalib) const
+{
+  if (_fdXtcIndex == -1)
     return 1;
     
+  lCalib    = &_lCalib[0];
+  return 0;
+}
+
+int IndexFileReader::gotoEvent(int iCalib, int iEvent, int64_t& i64offset, int& iGlobalEvent)
+{  
+  if (_fdXtcIndex == -1)
+    return 1;
+      
   iGlobalEvent = -1;
-  if ( iCalib < 0 || iCalib >= (int) _lCalib.size() )
+  if (iCalib < -1 || iCalib >= (int) _lCalib.size())
   {
-    printf( "Invalid Calib Cycle %d\n", iCalib );
+    printf( "Invalid Calib# %d\n", iCalib );
     return 2;
   }
      
   if ( iEvent < 0 )
   {
-    const CalibNode& calibNode = _lCalib[iCalib];
-    long long int lliOffsetSeek = lseek64(fdXtc, calibNode.lliOffset, SEEK_SET);
-    if (lliOffsetSeek != calibNode.lliOffset)
+    if (iCalib == -1)
     {
-      printf( "IndexFileReader::gotoEvent(): seek xtc failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
-        calibNode.lliOffset, lliOffsetSeek, strerror(errno) );
+      printf("IndexFileReader::gotoEvent(): cannot goto the beginning of Calib# %d\n",
+        iCalib);
       return 3;
-    }   
+    }
+
+    const CalibNode& calibNode = _lCalib[iCalib];
     int iError = gotoL1Node(calibNode.iL1Index);
     if ( iError != 0 )
     {
-      printf("IndexFileReader::gotoEvent(): cannot move index to L1 event 0x%x (%d)\n",
-        calibNode.iL1Index, calibNode.iL1Index);
+      printf("IndexFileReader::gotoEvent(): cannot move index to L1 Event# %d\n",
+        calibNode.iL1Index);
       return 4;
     }  
-    
-    iGlobalEvent = calibNode.iL1Index;    
+
+    i64offset     = calibNode.i64Offset;
+    iGlobalEvent  = calibNode.iL1Index;    
     return 0;
   } 
   
-  int iEventNumMax;
-  numL1EventInCalib(iCalib, iEventNumMax);
-
-  if ( iEvent >= iEventNumMax )
+  int iError = eventCalibToGlobal(iCalib, iEvent, iGlobalEvent);
+  if (iError != 0)
   {
-    printf("IndexFileReader::gotoEvent(): L1 event %d (0x%x) is not in current calib cycle. max event# = %d (0x%x)\n",
-      iEvent, iEvent, iEventNumMax-1, iEventNumMax-1);
+    printf("IndexFileReader::gotoEvent(): Error converting Calib# %d Event# %d\n",
+      iCalib, iEvent);
     return 5;
-  }
-      
-  int iEventFinal = _lCalib[iCalib].iL1Index + iEvent;    
-  int iError = gotoL1Node(iEventFinal);
+  }  
+    
+  iError = gotoL1Node(iGlobalEvent);
   if ( iError != 0 )
   {
-    printf("IndexFileReader::gotoEvent(): cannot move index to L1 event 0x%x (%d)\n",
-      iEventFinal, iEventFinal);
-    return 6;
+    printf("IndexFileReader::gotoEvent(): cannot move index to L1 Event# %d\n",
+      iGlobalEvent);
+    return 5;
   }        
   
-  long long int lliOffsetSeek = lseek64(fdXtc, _curL1Node.lliOffsetXtc, SEEK_SET);
-  if (lliOffsetSeek != _curL1Node.lliOffsetXtc)
-  {
-    printf( "IndexFileReader::gotoEvent(): seek xtc failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
-      _curL1Node.lliOffsetXtc, lliOffsetSeek, strerror(errno) );
-    return 7;
-  }    
-  
-  iGlobalEvent = iEventFinal; 
+  i64offset = _curL1Node.i64OffsetXtc;
   return 0;
 }
 
-int IndexFileReader::gotoTime(uint32_t uSeconds, uint32_t uNanoseconds, int fdXtc, int& iGlobalEvent, bool& bExactMatch, bool& bOvertime)
+int IndexFileReader::gotoEventInXtc(int iCalib, int iEvent, int fdXtc, int& iGlobalEvent)
+{         
+  int64_t i64Offset = 0;
+  int iError = gotoEvent(iCalib, iEvent, i64Offset, iGlobalEvent);
+  if (iError != 0)
+    return iError;
+          
+  int64_t i64OffsetSeek = lseek64(fdXtc, i64Offset, SEEK_SET);
+  if (i64OffsetSeek != i64Offset)
+  {
+    printf( "IndexFileReader::gotoEventAndSeek(): seek xtc failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
+      i64Offset, i64OffsetSeek, strerror(errno) );
+    return 6;
+  }    
+  
+  return 0;    
+}
+
+
+int IndexFileReader::gotoTimeInXtc(uint32_t uSeconds, uint32_t uNanoseconds, int fdXtc, int& iGlobalEvent, bool& bExactMatch, bool& bOvertime)
 {  
   iGlobalEvent = -1;
 
@@ -486,34 +539,34 @@ int IndexFileReader::gotoTime(uint32_t uSeconds, uint32_t uNanoseconds, int fdXt
     return 2;
   }        
   
-  long long int lliOffsetSeek = lseek64(fdXtc, _curL1Node.lliOffsetXtc, SEEK_SET);
-  if (lliOffsetSeek != _curL1Node.lliOffsetXtc)
+  int64_t i64OffsetSeek = lseek64(fdXtc, _curL1Node.i64OffsetXtc, SEEK_SET);
+  if (i64OffsetSeek != _curL1Node.i64OffsetXtc)
   {
     printf( "IndexFileReader::gotoEvent(): seek xtc failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
-      _curL1Node.lliOffsetXtc, lliOffsetSeek, strerror(errno) );
+      _curL1Node.i64OffsetXtc, i64OffsetSeek, strerror(errno) );
     return 3;
   }    
   
   return 0;
 }
 
-int IndexFileReader::time(int iEvent, uint32_t& uSeconds, uint32_t& uNanoseconds)
+int IndexFileReader::time(int iGlobalEvent, uint32_t& uSeconds, uint32_t& uNanoseconds)
 {
   uSeconds      = 0;
   uNanoseconds  = 0;
-  int iError = gotoL1Node(iEvent);
+  int iError = gotoL1Node(iGlobalEvent);
   if ( iError != 0 )
     return 1;
     
-   uSeconds     = _curL1Node.uSeconds;  
-   uNanoseconds = _curL1Node.uNanoseconds;
-   return 0;
+  uSeconds     = _curL1Node.uSeconds;  
+  uNanoseconds = _curL1Node.uNanoseconds;
+  return 0;
 }
 
-int IndexFileReader::fiducial(int iEvent, uint32_t& uFiducial)
+int IndexFileReader::fiducial(int iGlobalEvent, uint32_t& uFiducial)
 {
   uFiducial = 0x1ffff;
-  int iError = gotoL1Node(iEvent);
+  int iError = gotoL1Node(iGlobalEvent);
   if ( iError != 0 )
     return 1;
     
@@ -521,9 +574,19 @@ int IndexFileReader::fiducial(int iEvent, uint32_t& uFiducial)
   return 0;
 }
 
-int IndexFileReader::damage(int iEvent, Damage& damage)
+int IndexFileReader::offset(int iGlobalEvent, int64_t&  i64Offset)
 {
-  int iError = gotoL1Node(iEvent);
+  int iError = gotoL1Node(iGlobalEvent);
+  if ( iError != 0 )
+    return 1;
+    
+  i64Offset = _curL1Node.i64OffsetXtc;
+  return 0;  
+}
+
+int IndexFileReader::damage(int iGlobalEvent, Damage& damage)
+{
+  int iError = gotoL1Node(iGlobalEvent);
   if ( iError != 0 )
     return 1;
     
@@ -531,9 +594,9 @@ int IndexFileReader::damage(int iEvent, Damage& damage)
   return 0;
 }
 
-int IndexFileReader::detDmgMask(int iEvent, uint32_t& uMaskDetDmgs)
+int IndexFileReader::detDmgMask(int iGlobalEvent, uint32_t& uMaskDetDmgs)
 {
-  int iError = gotoL1Node(iEvent);
+  int iError = gotoL1Node(iGlobalEvent);
   if ( iError != 0 )
     return 1;
     
@@ -541,9 +604,9 @@ int IndexFileReader::detDmgMask(int iEvent, uint32_t& uMaskDetDmgs)
   return 0;
 }
 
-int IndexFileReader::detDataMask(int iEvent, uint32_t& uMaskDetData)
+int IndexFileReader::detDataMask(int iGlobalEvent, uint32_t& uMaskDetData)
 {
-  int iError = gotoL1Node(iEvent);
+  int iError = gotoL1Node(iGlobalEvent);
   if ( iError != 0 )
     return 1;
     
@@ -551,9 +614,9 @@ int IndexFileReader::detDataMask(int iEvent, uint32_t& uMaskDetData)
   return 0;
 }
 
-int IndexFileReader::evrEventList(int iEvent, unsigned int& uNumEvent, const uint8_t*& lEvrEvent)
+int IndexFileReader::evrEventList(int iGlobalEvent, unsigned int& uNumEvent, const uint8_t*& lEvrEvent)
 {
-  int iError = gotoL1Node(iEvent);
+  int iError = gotoL1Node(iGlobalEvent);
   if ( iError != 0 )
     return 1;
           
@@ -567,33 +630,33 @@ int IndexFileReader::gotoL1Node(int iL1Node)
   if ( iL1Node == _iCurL1Node )
     return 0;
         
-  if (_fXtcIndex == NULL)
+  if (_fdXtcIndex == -1)
     return 1;
     
   if ( iL1Node < 0 || iL1Node >= _fileHeader.iNumIndex )
   {
-    printf( "IndexFileReader::gotoL1Node(): Invalid L1 event %d\n",
+    printf( "IndexFileReader::gotoL1Node(): Invalid L1 Event# %d\n",
       iL1Node );
     return 2;
   }
       
-  int iError = fseek(_fXtcIndex, _iHeaderSize + sizeof(_curL1Node)* iL1Node, SEEK_SET);
-  if ( iError != 0 )
+  int64_t i64OffsetTo   = sizeof(_fileHeader) + sizeof(_curL1Node)* iL1Node;
+  int64_t i64OffsetSeek = ::lseek64(_fdXtcIndex, i64OffsetTo, SEEK_SET);
+  if ( i64OffsetSeek != i64OffsetTo )
   {
-    printf( "IndexFileReader::gotoL1Node(): seek to main data failed, error = %s\n",
-      strerror(errno) );
-    return 3;
-  }  
-  
+    printf("IndexFileReader::gotoL1Node(): Seek to CalibCycle offset 0x%Lx failed, result = 0x%Lx\n", 
+      i64OffsetTo, i64OffsetSeek );
+  }
+    
   _iCurL1Node = -1;  
   _lCurEvrEvent.clear();
-  
-  int iItemsRead = fread( (void*)&_curL1Node, sizeof(_curL1Node), 1, _fXtcIndex);
-  if ( iItemsRead != 1 )
+     
+  int iRead = ::read(_fdXtcIndex, (void*)&_curL1Node, sizeof(_curL1Node));
+  if ( iRead != sizeof(_curL1Node) )
   {
-    printf( "IndexFileReader::gotoL1Node(): read L1 Node failed, error = %s\n",
-      strerror(errno) );
-    return 4;
+    printf( "IndexFileReader::gotoL1Node(): Read L1 Node [%d] failed. Read %d bytes (expected %d), error = %s\n",
+      iL1Node, iRead, sizeof(_curL1Node), strerror(errno) );
+    return 3;
   }
   
   /*
@@ -609,17 +672,6 @@ int IndexFileReader::gotoL1Node(int iL1Node)
         
   _iCurL1Node = iL1Node;  
   
-  return 0;  
-}
-
-static int compareTime(uint32_t& uSeconds1, uint32_t& uNanoseconds1, uint32_t& uSeconds2, uint32_t& uNanoseconds2)
-{
-  if (uSeconds1 > uSeconds2) return 1;
-  if (uSeconds1 < uSeconds2) return -1;  
-  
-  // remaining case: (uSeconds1 == uSeconds2)
-  if (uNanoseconds1 > uNanoseconds2) return 1;
-  if (uNanoseconds1 < uNanoseconds2) return -1;  
   return 0;  
 }
 
