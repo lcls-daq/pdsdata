@@ -78,9 +78,9 @@ uint32_t            ChannelV1::defaultValue(ChannelBitFields e) {
 
 char*      ChannelV1::name     (ChannelBitFields e) {
   static char* _chNames[ChannelV1::NumberOfChannelBitFields + 1] = {
-      "TrimBits-------------",              //    TrimBits,
-      "EnableTest-----------",            //    EnableTest,
-      "ChannelMask----------",           //    ChannelMask,
+      "TrimBits             ",              //    TrimBits,
+      "EnableTest           ",            //    EnableTest,
+      "ChannelMask          ",           //    ChannelMask,
       "ChannelSelectorEnable", //    ChannelSelectorEnable
       "------INVALID--------"            //    NumberOfChannelBitFields
   };
