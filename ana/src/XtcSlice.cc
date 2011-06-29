@@ -18,7 +18,7 @@ XtcSlice::XtcSlice(std::string fname) :
   _lastdg(0),
   _nextdg(0),
   _fd  (-1),
-  _pool(new XtcPool(4,0x1000000)),
+  _pool(new XtcPool(4,0x4000000)),
   _bclose(false),
   _i64OffsetNext(0)
 {
@@ -118,7 +118,7 @@ void XtcSlice::_close(bool bForceWait)
     delete _nextdg; _nextdg = NULL;
     
     delete _pool;
-    _pool = new XtcPool(4,0x1000000);
+    _pool = new XtcPool(4,0x4000000);
     _bclose =false;
   }
   if (_fd != -1)
@@ -147,6 +147,18 @@ Result XtcSlice::_openChunk(int iChunk, uint64_t i64Offset)
     return ( _open(i64Offset) ? OK : Error );
   }      
     
+  /*
+   * Special case: The xtc filename doesn't follow the "eXX-rXXXX-sXX-cXX.xtc" format, 
+       such as "1.xtc", "test1.xtc", etc. In this case we only have ONE xtc file
+       in this slice.
+   */
+  if (iChunk == 0 && _chunks.size() == 1)
+  {
+    _close(true);      
+    _current = _chunks.begin();
+    return ( _open(i64Offset) ? OK : Error );    
+  }
+  
   printf("XtcSlice::_openChunk(): Cannot find chunk %d\n", iChunk);
   return Error;
 }
@@ -228,10 +240,9 @@ Result XtcSlice::_loadIndex()
   if ( iError != 0 )
     return Error;
   
-  _index.open(strIndexFilename.c_str());
-  
+  _index.open(strIndexFilename.c_str());  
   if ( _index.isValid() )
-    return OK;
+    return OK;  
     
   printf( "XtcSlice::_loadIndex(): Error loading index file %s for %s\n", strIndexFilename.c_str(), _current->c_str() );    
   return Error;
@@ -454,8 +465,13 @@ static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::stri
   int iError = ::stat( strIndexFilename.c_str(), &statFile );
   if ( iError != 0 )
   {
-    strIndexFilename.clear();
-    return 2;
+    std::string strIndexFilenameSubDir = "index/" + strIndexFilename;
+    iError = ::stat( strIndexFilenameSubDir.c_str(), &statFile );    
+    if ( iError != 0 )
+    {
+      strIndexFilename.clear();
+      return 2;
+    }
   }
   
   //printf( "Using %s as the index file for analyzing %s\n", 

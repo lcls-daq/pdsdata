@@ -24,9 +24,9 @@ IndexChunkReader::~IndexChunkReader()
   close();
 }
 
-int IndexChunkReader::open(const char* sFnXtc)
+int IndexChunkReader::open(const char* sFnIndex)
 {
-  if (sFnXtc == NULL)
+  if (sFnIndex == NULL)
   {
     printf("IndexChunkReader::open(): Invalid argument: No filename specified\n");
     return 1;
@@ -35,50 +35,85 @@ int IndexChunkReader::open(const char* sFnXtc)
   /*
    * Get base filename
    */
-  string strFnXtc(sFnXtc);
-  
-  unsigned int uPos = strFnXtc.find("-c");
+  string  strFnIndex(sFnIndex);  
+  bool    bSingleIndex = false;  
+  unsigned int uPos = strFnIndex.find("-c");
   if (uPos == string::npos)
-  {
-    printf("IndexChunkReader::open(): Invalid filename %s\n", sFnXtc);
-    return 2;
-  }
+    bSingleIndex = true;
   
   close();
-  
-  _strFnBase = strFnXtc.substr(0, uPos+2);
-  //printf("IndexChunkReader::open(): Base %s\n", _strFnBase.c_str());//!!debug
-  
-  
-  /*
-   * Read index files
-   */
-  for (int iFileSerial = 0;;++iFileSerial)
+
+  if (bSingleIndex)
   {
-    char sFnBuf[64];
-    sprintf(sFnBuf, "%s%02d.idx", _strFnBase.c_str(), iFileSerial);
+    _strFnBase = strFnIndex;
     
     struct ::stat64 statFile;
-    int iError = ::stat64(sFnBuf, &statFile);
+    int iError = ::stat64(_strFnBase.c_str(), &statFile);
     if ( iError != 0 )
-      break;    
-
-    //printf("IndexChunkReader::Reading %s\n", sFnBuf);//!!debug
-      
+    {
+      // test if the file is under the "index" sub-dir
+      _strFnBase = "index/" + _strFnBase;
+      iError = ::stat64(_strFnBase.c_str(), &statFile);
+      if ( iError != 0 )
+      {     
+        printf("IndexChunkReader::open(): No index file exists: %s\n", _strFnBase.c_str());
+        return 2;
+      }
+    }
+    
+    //printf("IndexChunkReader::Reading %s\n", sFnBuf);//!!debug        
     IndexFileReader* pIndex = new IndexFileReader();
     _lIndex.push_back(pIndex);
     
-    pIndex->open(sFnBuf);
+    pIndex->open(_strFnBase.c_str());
     if (!pIndex->isValid())
     {
-      printf("IndexChunkReader::open(): Error loading index file %s\n", sFnBuf);
-      break;
+      printf("IndexChunkReader::open(): Error loading index file %s\n", _strFnBase.c_str());
+      return 3;
+    }    
+  }
+  else // if (bSingleIndex)
+  {    
+    _strFnBase = strFnIndex.substr(0, uPos+2);
+    //printf("IndexChunkReader::open(): Base %s\n", _strFnBase.c_str());//!!debug  
+    
+    /*
+     * Read index files
+     */
+    for (int iFileSerial = 0;;++iFileSerial)
+    {
+      char sFnBuf[64];
+      sprintf(sFnBuf, "%s%02d.idx", _strFnBase.c_str(), iFileSerial);
+      
+      struct ::stat64 statFile;
+      int iError = ::stat64(sFnBuf, &statFile);
+      if ( iError != 0 )
+      {
+        // test if the file is under the "index" sub-dir
+        sprintf(sFnBuf, "index/%s%02d.idx", _strFnBase.c_str(), iFileSerial);
+        iError = ::stat64(sFnBuf, &statFile);
+        if ( iError != 0 )
+          break;            
+      }
+
+      //printf("IndexChunkReader::Reading %s\n", sFnBuf);//!!debug
+        
+      IndexFileReader* pIndex = new IndexFileReader();
+      _lIndex.push_back(pIndex);
+      
+      pIndex->open(sFnBuf);
+      if (!pIndex->isValid())
+      {
+        printf("IndexChunkReader::open(): Error loading index file %s\n", sFnBuf);
+        break;
+      }
     }
+  
   }
 
   int iError = _buildInfo();
   if (iError != 0)
-    return 3;
+    return 4;
 
   _bValid = true;
   return 0;

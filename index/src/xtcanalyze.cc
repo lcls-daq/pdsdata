@@ -803,7 +803,7 @@ int openXtcRun(const char* sXtcFilename, XtcRun& run)
     printf("Found %d files in this run. First: %s Last: %s\n", 
       lRunFilename.size(), lRunFilename.front().c_str(), lRunFilename.back().c_str());
   else
-    printf("Only 1 files in this run: %s\n", 
+    printf("Only 1 file in this run: %s\n", 
       lRunFilename.front().c_str());
    
   run.reset(lRunFilename[0]);
@@ -843,6 +843,8 @@ int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
     lRunFilename.push_back(strFnXtc);    
     return 0;
   }
+  
+  string strFnExt = strFnXtc.substr(uPos+9); // Move from "-s00-c00.xtc..." to "xtc..."
     
   string strFnBase = strFnXtc.substr(0, uPos+2);
     
@@ -855,7 +857,7 @@ int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
     for (int iChunk = 0;; ++iChunk)
     {
       char sFnBuf[64];
-      sprintf(sFnBuf, "%s%02d-c%02d.xtc", strFnBase.c_str(), iSlice, iChunk);
+      sprintf(sFnBuf, "%s%02d-c%02d.%s", strFnBase.c_str(), iSlice, iChunk, strFnExt.c_str());
       
       struct ::stat64 statFile;
       int iError = ::stat64(sFnBuf, &statFile);
@@ -871,7 +873,7 @@ int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
     
     if (!bChunkFound)
       break;
-  }  
+  }
   
   return 0;
 }
