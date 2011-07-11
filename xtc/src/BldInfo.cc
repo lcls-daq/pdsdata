@@ -20,6 +20,14 @@ const char* BldInfo::name(const BldInfo& src){
     "PhaseCavity",
     "FEEGasDetEnergy",
     "NH2-SB1-IPM-01",
+    "HXX-UM6-IMB-01",
+    "HXX-UM6-IMB-02",
+    "HFX-DG2-IMB-01",
+    "HFX-DG2-IMB-02",
+    "XCS-DG3-IMB-03",
+    "XCS-DG3-IMB-04",
+    "HFX-DG3-IMB-01",
+    "HFX-DG3-IMB-02"
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }
