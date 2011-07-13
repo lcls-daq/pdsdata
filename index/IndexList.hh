@@ -30,14 +30,7 @@ struct L1AcceptNode
   uint32_t            uMaskDetDmgs;
   uint32_t            uMaskDetData;
   uint32_t            uMaskEvrEvents;
-  
-  bool                bEpics;
-  bool                bPrinceton;
-  
-  // Previous/Next node has the same fiducial as this node
-  bool                bLnkNext;
-  bool                bLnkPrev;
-    
+      
         L1AcceptNode(uint32_t uSeconds1, uint32_t uNanoseconds1, uint32_t uFiducial1, int64_t i64Offset1);
         L1AcceptNode(IndexFileL1NodeType& fileNode);
   bool  laterThan(const L1AcceptNode& node);

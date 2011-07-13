@@ -138,13 +138,8 @@ int IndexList::updateSource(const Xtc& xtc, bool& bStopUpdate)
     if (xtc.contains.id() == TypeId::Id_Epics)
       bStopUpdate = true;
   }
-  
-  L1AcceptNode& node  = *_pCurNode;
-  if (xtc.contains.id() == TypeId::Id_Epics)
-    node.bEpics     = true;  
-  else if ( xtc.contains.id() == TypeId::Id_PrincetonFrame )
-    node.bPrinceton = true;  
-  else if ( xtc.contains.id() == TypeId::Id_EvrData )
+    
+  if ( xtc.contains.id() == TypeId::Id_EvrData )
     updateEvr( xtc );
 
   return 0;
@@ -537,15 +532,6 @@ L1AcceptNode& IndexList::checkInNode( L1AcceptNode& nodeNew )
     
   if ( nodeNew.laterThan(nodeLast) )
   {
-    if ( nodeNew.uFiducial ==  nodeLast.uFiducial )
-    {
-      printf( "IndexList::checkInNode(): *** event 0x%x has the same fiducial as the last one\n", 
-        nodeNew.uFiducial ); // !! debug
-          
-      nodeLast.bLnkNext = true;
-      nodeNew. bLnkPrev = true;
-    }
-    
     _lNode.push_back( nodeNew );
     _iCurSerial = _lNode.size() - 1;
     return _lNode.back();
@@ -558,18 +544,7 @@ L1AcceptNode& IndexList::checkInNode( L1AcceptNode& nodeNew )
     itNodeIns--, iSerial-- )
   {
     if ( nodeNew.laterThan(*itNodeIns) )
-    {
-      if ( nodeNew.uFiducial == itNodeIns->uFiducial  )
-      {
-        printf( "IndexList::checkInNode(): *** event 0x%x has the same fiducial as the previous (%d older)\n", 
-          nodeNew.uFiducial, _lNode.end() - itNodeIns ); // !! debug
-        itNodeIns->bLnkNext = true;
-        nodeNew.   bLnkPrev = true;          
-      }
-      else        
-        printf( "IndexList::checkInNode(): *** event 0x%x need to be inserted in older position (%d older, fid 0x%x)\n", 
-          nodeNew.uFiducial, _lNode.end() - itNodeIns - 1, itNodeIns->uFiducial); // !! debug
-      
+    {      
       TNodeList::iterator iterNew = _lNode.insert( itNodeIns+1, nodeNew );
       _iCurSerial = iSerial+1;
       return *iterNew;
