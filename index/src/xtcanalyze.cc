@@ -851,10 +851,12 @@ int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
   /*
    * Read index files
    */
-  for (int iSlice = 0;; ++iSlice)
+  const int MAX_SLICES = 6;
+  int iChunk = 0;
+  while (true)
   {
-    bool bChunkFound = false;
-    for (int iChunk = 0;; ++iChunk)
+    bool bSliceFound = false;
+    for (int iSlice = 0; iSlice < MAX_SLICES; ++iSlice)
     {
       char sFnBuf[64];
       sprintf(sFnBuf, "%s%02d-c%02d.%s", strFnBase.c_str(), iSlice, iChunk, strFnExt.c_str());
@@ -862,18 +864,31 @@ int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
       struct ::stat64 statFile;
       int iError = ::stat64(sFnBuf, &statFile);
       if ( iError != 0 )
-      {
-        //printf("genListFromBasename::Failed S%d C%d %s error %s\n", iSlice, iChunk, sFnBuf, strerror(errno));//!!debug
-        break;    
-      }            
+        continue;
 
       lRunFilename.push_back(sFnBuf);
-      bChunkFound = true;
+      bSliceFound = true;
     }
     
-    if (!bChunkFound)
+    if (!bSliceFound)
       break;
+      
+    ++iChunk;
   }
+  
+  if (iChunk == 0)
+  {
+    struct ::stat64 statFile;
+    int iError = ::stat64(sXtcFilename, &statFile);
+    if ( iError != 0 )
+    {
+      printf("genListFromBasename(): Input filename %s doesn't exists\n", sXtcFilename);
+      return 0;
+    }
+    
+    lRunFilename.push_back(strFnXtc);    
+    return 0;
+  }   
   
   return 0;
 }
