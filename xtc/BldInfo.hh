@@ -16,11 +16,14 @@ namespace Pds {
                 HfxDg2Imb01, HfxDg2Imb02,
                 XcsDg3Imb03, XcsDg3Imb04,
                 HfxDg3Imb01, HfxDg3Imb02,
+                HxxDg1Cam,   HfxDg2Cam,
+                HfxDg3Cam,   XcsDg3Cam,
+                HfxMonCam,
                 NumberOf };
 
     BldInfo() {}
     BldInfo(uint32_t processId,
-        Type     type);
+            Type     type);
 
     uint32_t processId() const;
     Type     type()  const;

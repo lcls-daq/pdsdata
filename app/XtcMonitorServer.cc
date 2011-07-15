@@ -166,7 +166,7 @@ bool XtcMonitorServer::_send_sequence()
               time_t t = _postmarks[i].tv_sec;
               strftime(buff,128,"%H:%M:%S",localtime(&t));
               printf("recover shmem buffer %d : %s.%09u\n",
-                     i, buff, _postmarks[i].tv_nsec);
+                     i, buff, (unsigned)_postmarks[i].tv_nsec);
               _claim(i);
             }
           }
@@ -204,7 +204,8 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
   if (sizeof(dgrm)+dgrm.xtc.sizeofPayload() > _sizeOfBuffers) {
     printf("XtcMonitorServer skipping %s with payload size %d - too large\n",
 	   TransitionId::name(dgrm.seq.service()), dgrm.xtc.sizeofPayload());
-    return Handled;
+    //    return Handled;
+    exit(1);
   }
 
   if (dgrm.seq.service() == TransitionId::L1Accept) {
