@@ -28,11 +28,11 @@ const char* BldInfo::name(const BldInfo& src){
     "XCS-DG3-IMB-04",
     "HFX-DG3-IMB-01",
     "HFX-DG3-IMB-02",
-    "HXX-DG1-CAM",
-    "HFX-DG2-CAM",
-    "HFX-DG3-CAM",
-    "XCS-DG3-CAM",
-    "HFX-MON-CAM"
+    "XCS-YAG-1",
+    "XCS-YAG-2",
+    "XCS-YAG-3m",
+    "XCS-YAG-3",
+    "XCS-YAG-mono"
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }
