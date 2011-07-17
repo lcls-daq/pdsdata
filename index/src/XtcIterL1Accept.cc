@@ -25,10 +25,9 @@ int XtcIterL1Accept::process(Xtc * xtc)
   }  
   else if (level == Level::Source)
   {
-    if ( _depth != 1 )
-      printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d, level %s\n", 
-        _depth, Level::name(level) );
-     
+    //if ( _depth != 1 )
+    //  printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d, level %s\n", 
+    //    _depth, Level::name(level) );
     
     _pIndexList->updateSource( *xtc, bStopUpdate );    
   }  
