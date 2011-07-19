@@ -604,8 +604,8 @@ int XtcIterWithOffset::process(Xtc * xtc)
      DetInfo::name(info.detector()), info.detId(),
      DetInfo::name(info.device()), info.devId());
      
-    if ( _depth != 1 )
-      printf( "XtcIterWithOffset::process(): *** Error depth: Expect 1, but get %d\n", _depth );
+    if ( _depth != 1 && _depth != 2 )
+      printf( "XtcIterWithOffset::process(): *** Error depth: Expect 1 or 2, but get %d\n", _depth );
   }  
   else if (level == Level::Reporter)
   {
@@ -689,8 +689,8 @@ int XtcIterConfig::process(Xtc * xtc)
        DetInfo::name(info.device()), info.devId());   
     }
     
-    if ( _depth != 1 )
-      printf( "XtcIterConfig::process(): *** Error depth: Expect 1, but get %d\n", _depth );
+    if ( _depth != 1 && _depth != 2 )
+      printf( "XtcIterConfig::process(): *** Error depth: Expect 1 or 2, but get %d\n", _depth );
   }
   else if (level == Level::Control)
   {
@@ -789,8 +789,8 @@ int XtcIterL1Accept::process(Xtc * xtc)
        DetInfo::name(info.device()), info.devId());
     }
   
-    if ( _depth != 1 )
-      printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d\n", _depth );
+    if ( _depth != 1 && _depth != 2 )
+      printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1 or 2, but get %d\n", _depth );
             
     if ( xtc->contains.id() == TypeId::Id_EvrData )
     {
