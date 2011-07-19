@@ -19,6 +19,7 @@ namespace Pds {
                 HxxDg1Cam,   HfxDg2Cam,
                 HfxDg3Cam,   XcsDg3Cam,
                 HfxMonCam,
+                HfxMonImb01, HfxMonImb02,
                 NumberOf };
 
     BldInfo() {}
