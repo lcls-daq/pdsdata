@@ -56,7 +56,8 @@ const char* TypeId::name(Type type)
     "AcqTDCData",
     "Index",
     "XampsConfig",
-    "XampsElement"
+    "XampsElement",
+    "Cspad2x2Element"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
