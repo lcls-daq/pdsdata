@@ -41,11 +41,9 @@ namespace Pds {
       uint16_t pixel(unsigned asic, unsigned column, unsigned row) const;
     public:
       struct { 
-        uint16_t s0_a;
-        uint16_t s0_b;
-        uint16_t s1_a;
-        uint16_t s1_b;
-      } pair[ColumnsPerASIC][MaxRowsPerASIC];
+        uint16_t s0;
+        uint16_t s1;
+      } pair[ColumnsPerASIC][MaxRowsPerASIC*2];
     };
   };
 };

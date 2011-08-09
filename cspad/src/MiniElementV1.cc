@@ -10,15 +10,6 @@ uint16_t MiniElementV1::pixel(unsigned asic,
                               unsigned col,
                               unsigned row) const
 {
-  unsigned r = ((asic&1)*MaxRowsPerASIC+row)>>1;
-  if ((asic&2)==0) {
-    if ((row&1)==0)
-      return pair[col][r].s0_a;
-    else
-      return pair[col][r].s0_b;
-  }
-  else if ((row&1)==0)
-    return pair[col][r].s1_a;
-  else
-    return pair[col][r].s1_b;
+  unsigned r = (asic&1)*MaxRowsPerASIC+row;
+  return (asic&2) ? pair[col][r].s1 : pair[col][r].s0;
 }
