@@ -53,7 +53,7 @@ namespace Pds {
       Id_Index,
       Id_XampsConfig,
       Id_XampsElement,
-      ID_Cspad2x2Element,
+      Id_Cspad2x2Element,
       NumberOf};
 
     TypeId() {}
