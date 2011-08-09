@@ -49,7 +49,7 @@ const char* DetInfo::name(Device dev) {
     "Encoder",
     "Cspad",
     "AcqTDC",
-    "Xamps"
+    "Xamps",
     "Cspad2x2",
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
