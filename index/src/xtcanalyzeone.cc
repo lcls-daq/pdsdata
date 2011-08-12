@@ -403,7 +403,7 @@ int genIndexFromXtcFilename( const string& strXtcFilename, string& strIndexFilen
   if (iFindPos == string::npos )
     return 1;
     
-  strIndexFilename = strXtcFilename.substr(0, iFindPos) + ".idx";  
+  strIndexFilename = strXtcFilename.substr(0, iFindPos) + ".xtc.idx";  
   
   struct ::stat statFile;
   int iError = ::stat( strIndexFilename.c_str(), &statFile );

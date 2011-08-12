@@ -459,7 +459,7 @@ static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::stri
   if (iFindPos == std::string::npos )
     return 1;
     
-  strIndexFilename = strXtcFilename.substr(0, iFindPos) + ".idx";  
+  strIndexFilename = strXtcFilename.substr(0, iFindPos) + ".xtc.idx";  
   
   struct ::stat statFile;
   int iError = ::stat( strIndexFilename.c_str(), &statFile );

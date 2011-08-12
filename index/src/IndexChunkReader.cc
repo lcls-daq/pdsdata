@@ -83,14 +83,14 @@ int IndexChunkReader::open(const char* sFnIndex)
     for (int iFileSerial = 0;;++iFileSerial)
     {
       char sFnBuf[64];
-      sprintf(sFnBuf, "%s%02d.idx", _strFnBase.c_str(), iFileSerial);
+      sprintf(sFnBuf, "%s%02d.xtc.idx", _strFnBase.c_str(), iFileSerial);
       
       struct ::stat64 statFile;
       int iError = ::stat64(sFnBuf, &statFile);
       if ( iError != 0 )
       {
         // test if the file is under the "index" sub-dir
-        sprintf(sFnBuf, "index/%s%02d.idx", _strFnBase.c_str(), iFileSerial);
+        sprintf(sFnBuf, "index/%s%02d.xtc.idx", _strFnBase.c_str(), iFileSerial);
         iError = ::stat64(sFnBuf, &statFile);
         if ( iError != 0 )
           break;            
