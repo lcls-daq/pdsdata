@@ -139,11 +139,16 @@ int XtcMonitorClient::run(const char * tag, int tr_index, int ev_index) {
   XtcMonitorMsg::eventOutputQueue(tag,ev_index,qname);
   do {  // make a few tries to open the first queue
     myOutputEvQueues[ev_index] = _openQueue(qname, O_WRONLY, PERMS_OUT);
-    if (myOutputEvQueues[ev_index] == (mqd_t)-1) 
+    if (myOutputEvQueues[ev_index] == (mqd_t)-1) {
       error++;
+      timespec tv;
+      tv.tv_sec = 1;
+      tv.tv_nsec = 0;
+      nanosleep(&tv,0);
+    }
     else
       error = 0;
-  } while (error && (error < 4));
+  } while (error);
 
   XtcMonitorMsg::eventInputQueue(tag,ev_index,qname);
   mqd_t myInputEvQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
