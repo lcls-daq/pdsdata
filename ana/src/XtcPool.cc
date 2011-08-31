@@ -27,11 +27,11 @@ XtcPool::~XtcPool()
   sem_destroy(&_free_sem);
   while(!_pend.empty()) {
     char* b = _pend.front();
-    if (b) delete b;
+    if (b) delete[] b;
     _pend.pop();
   }
   while(!_free.empty()) {
-    delete _free.front();
+    delete[] _free.front();
     _free.pop();
   }
 }

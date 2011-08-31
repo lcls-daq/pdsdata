@@ -30,6 +30,8 @@ XtcSlice::~XtcSlice()
   _close();
   
   _index.close();      
+
+  delete _pool;
 }
 
 bool XtcSlice::add_file(std::string fname) 
@@ -114,7 +116,7 @@ void XtcSlice::_close(bool bForceWait)
     
     pthread_join(_threadID,NULL);
     
-    delete _lastdg; _lastdg = NULL;    
+    delete[] _lastdg; _lastdg = NULL;    
     delete _nextdg; _nextdg = NULL;
     
     delete _pool;
