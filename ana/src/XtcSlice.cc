@@ -187,8 +187,12 @@ Result XtcSlice::_next()
           std::string fname = _current->substr(0,chunkPosition) + std::string(chunkBuff) +
             _current->substr(chunkPosition+2);
 
-          struct stat _stat;
-          if (stat(fname.c_str(),&_stat)==0) {
+          //  Can't use stat here since it fails on files > 2GB
+          //struct stat _stat;
+          //if (stat(fname.c_str(),&_stat)==0) {
+          int fd = ::open(fname.c_str(),O_LARGEFILE,O_RDONLY);
+          if (fd != -1) {
+            ::close(fd);
             _chunks.push_back(fname);
             _current = _chunks.begin();
             while( *_current != fname )

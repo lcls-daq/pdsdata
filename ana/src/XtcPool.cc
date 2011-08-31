@@ -7,6 +7,8 @@ namespace Pds
 {  
 namespace Ana
 {
+
+static void _waitAndFill(int fd, char* p, unsigned sz);
   
 XtcPool::XtcPool(unsigned nevents, unsigned eventsize) :
   _eventsize(eventsize), _bStop(false)
@@ -52,7 +54,12 @@ bool XtcPool::push(int fd)
   
   unsigned sz = sizeof(Pds::Dgram);
   ssize_t rsz = ::read(fd, b, sz);
-  
+
+  if (rsz != ssize_t(sz) && _live && rsz > 0) {
+    _waitAndFill(fd, b+rsz, sz-rsz);
+    rsz = ssize_t(sz);
+  }
+
   if (rsz == ssize_t(sz)) {
     Pds::Dgram* dg = reinterpret_cast<Pds::Dgram*>(b);
     sz = dg->xtc.sizeofPayload();
@@ -94,6 +101,13 @@ bool XtcPool::push(int fd)
         _pend.push(b);
         sem_post(&_pend_sem);
         return true;
+      }
+      else if (_live) {
+        if (rsz==-1) {
+          perror("Error reading file");
+          exit(1);
+        }
+        _waitAndFill(fd, dg->xtc.payload()+rsz, sz-rsz);
       }
     }
   }
@@ -162,6 +176,17 @@ void XtcPool::unblock()
   sem_post(&_pend_sem);    
 }  
 
+void _waitAndFill(int fd, char* p, unsigned sz)
+{
+  do {
+    printf("\rLive read waits... (%07d)",sz);
+    fflush(stdout);
+    sleep(1);
+    ssize_t rsz = ::read(fd, p, sz);
+    p  += rsz;
+    sz -= rsz;
+  } while (sz);
+}
   
 } // namespace Ana
 } // namespace Pds
