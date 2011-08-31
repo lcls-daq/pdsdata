@@ -15,10 +15,10 @@
 //
 //  Each "Section" is composed of 2*194 rows by 185 columns.  The data order
 //  (represented by "Element" definition below") is (sector, column, row):
-//  s0_c0_r0, s0_c0_r1, s1_c0_r0, s1_c0_r1, s0_c0_r2, s0_c0_r3, s1_c0_r2, s1_c0_r3, ... // first column from both sections
-//  s0_c1_r0, s0_c1_r1, s1_c1_r0, s1_c1_r1, s0_c1_r2, s0_c1_r3, s1_c1_r2, s1_c1_r3, ... // second column from both sections
-//  ...                                                                                 // and so on until
-//  s0_cN_r0, s0_cN_r1, s1_cN_r0, s1_cN_r1, s0_cN_r2, s0_cN_r3, s1_cN_r2, s1_cN_r3.     // last column from both sections
+//  s0_c0_r0, s1_c0_r0, s0_c0_r1, s1_c0_r1, s0_c0_r2, s1_c0_r2, ... // first column from both sections
+//  s0_c1_r0, s1_c1_r0, s0_c1_r1, s1_c1_r1, s0_c1_r2, s1_c1_r2, ... // second column from both sections
+//  ...                                                             // and so on until
+//  s0_cN_r0, s1_cN_r0, s0_cN_r1, s1_cN_r1, s0_cN_r2, s1_cN_r2 ....     // last column from both sections
 //
 //
 //  
