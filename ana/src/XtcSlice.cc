@@ -466,18 +466,23 @@ static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::stri
     return 1;
     
   strIndexFilename = strXtcFilename.substr(0, iFindPos) + ".xtc.idx";  
-  
+    
   struct ::stat statFile;
   int iError = ::stat( strIndexFilename.c_str(), &statFile );
   if ( iError != 0 )
   {
-    std::string strIndexFilenameSubDir = "index/" + strIndexFilename;
-    iError = ::stat( strIndexFilenameSubDir.c_str(), &statFile );    
+    unsigned int iFindDir = strXtcFilename.rfind("/");
+    if (iFindDir == std::string::npos )
+      strIndexFilename = "index/" + strIndexFilename + ".idx";
+    else
+      strIndexFilename = strXtcFilename.substr(0, iFindDir+1) + "index/" + strXtcFilename.substr(iFindDir+1) + ".idx";    
+    
+    iError = ::stat( strIndexFilename.c_str(), &statFile );    
     if ( iError != 0 )
     {
       strIndexFilename.clear();
       return 2;
-    }
+    }    
   }
   
   //printf( "Using %s as the index file for analyzing %s\n", 
