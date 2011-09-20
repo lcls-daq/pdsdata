@@ -473,7 +473,7 @@ static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::stri
   {
     unsigned int iFindDir = strXtcFilename.rfind("/");
     if (iFindDir == std::string::npos )
-      strIndexFilename = "index/" + strIndexFilename + ".idx";
+      strIndexFilename = "index/" + strXtcFilename + ".idx";
     else
       strIndexFilename = strXtcFilename.substr(0, iFindDir+1) + "index/" + strXtcFilename.substr(iFindDir+1) + ".idx";    
     
