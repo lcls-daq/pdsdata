@@ -55,6 +55,7 @@ namespace Pds {
       Id_XampsElement,
       Id_Cspad2x2Element,
       Id_SharedPim,
+      Id_Cspad2x2Config,
       NumberOf};
 
     TypeId() {}
