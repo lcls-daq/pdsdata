@@ -59,7 +59,9 @@ const char* TypeId::name(Type type)
     "XampsElement",
     "Cspad2x2Element",
     "SharedPIM",
-    "Cspad2x2Config"
+    "Cspad2x2Config",
+    "FexampConfig",
+    "FexampElement"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
