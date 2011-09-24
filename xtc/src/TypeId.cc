@@ -61,7 +61,9 @@ const char* TypeId::name(Type type)
     "SharedPIM",
     "Cspad2x2Config",
     "FexampConfig",
-    "FexampElement"
+    "FexampElement",
+    "Gsc16aiConfig",
+    "Gsc16aiData"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

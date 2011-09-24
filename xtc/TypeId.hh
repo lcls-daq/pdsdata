@@ -58,6 +58,8 @@ namespace Pds {
       Id_Cspad2x2Config,
       Id_FexampConfig,
       Id_FexampElement,
+      Id_Gsc16aiConfig,
+      Id_Gsc16aiData,
       NumberOf};
 
     TypeId() {}
