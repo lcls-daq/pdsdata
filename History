@@ -1,3 +1,4 @@
+2011-Sep-26	jackp			Added Fexamp detector
 2011-Sep-07	weaver  Tag V02-13-09   XtcMonitorClient retries all message queue opens - removed race with XtcMonitorServer.
 					Added Cspad2x2.
 2011-Aug-09	weaver			Added BldDataPimV1.
