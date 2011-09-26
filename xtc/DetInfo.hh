@@ -70,7 +70,8 @@ namespace Pds {
       AcqTDC    = 11,
       Xamps     = 12,
       Cspad2x2  = 13,
-      NumDevice = 14
+      Fexamp    = 14,
+      NumDevice = 15
     };
 
     DetInfo() {}
