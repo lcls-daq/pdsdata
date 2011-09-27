@@ -71,7 +71,8 @@ namespace Pds {
       Xamps     = 12,
       Cspad2x2  = 13,
       Fexamp    = 14,
-      NumDevice = 15
+      Gsc16ai   = 15,
+      NumDevice = 16
     };
 
     DetInfo() {}
