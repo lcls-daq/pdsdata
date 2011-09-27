@@ -17,7 +17,7 @@ namespace Pds {
     class ElementV1 : public ElementHeader {
     public:
       enum {Version=1};
-      enum dimensions {RowsPerImage=1024, ColumnsPerElement=16};
+      enum dimensions {RowsPerImage=1024, ColumnsPerElement=1};
       ElementV1() {};
       ~ElementV1() {};
 

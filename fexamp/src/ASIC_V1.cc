@@ -31,7 +31,7 @@ static uint32_t _ASICfoo[][4] = {
     { 1,    8,    0x7,    0},    // FilterTimeToFlatTop
     { 1,   12,      1,    0},    // EnableDacMonitor
     { 1,   16,    0x7,    0},    // ResetTweakOP
-    { 1,   24,      1,    0},    // ResetCompensation
+    { 1,   20,      1,    0},    // ResetCompensation
     { 2,    0,      1,    0},    // TestPulsePolarity
     { 2,    4,      1,    0},    // DisableOutputs
     { 2,    8,      1,    0},    // AutoTestMode
