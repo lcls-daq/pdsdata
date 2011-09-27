@@ -158,7 +158,18 @@ private:
 };
 
 void usage(char* progname) {
-  fprintf(stderr,"Usage: %s -f <filename> -o <outfilename> [-i <imagefilename>] [-c count] [-s selectpayloadname] [-h]\n", progname);
+  fprintf(stderr,"Usage: %s -f <filename> -o <outfilename> [-i <imagefilename>] [-c count] [-s <selectpayloadname>] [-h]\n", progname);
+}
+
+void help(void) {
+  fprintf(stderr,"\nSupported <selectpayloadname> values:\n");
+  for (int ii = (int)TypeId::Id_Frame; ii < (int)TypeId::NumberOf; ii++) {
+    fprintf(stderr,"  %-18s", TypeId::name((TypeId::Type)ii));
+    if ((ii > 1) && !((ii - 1) % 4))  {
+      fprintf(stderr,"\n");
+    }
+  }
+  fprintf(stderr,"\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -174,6 +185,7 @@ int main(int argc, char* argv[]) {
     switch (c) {
     case 'h':
       usage(argv[0]);
+      help();
       exit(0);
     case 'f':
       xtcname = optarg;
