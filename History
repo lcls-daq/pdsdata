@@ -1,3 +1,5 @@
+2011-Oct-03	caf     Added Gsc16ai detector.
+2011-Sep-27	caf     New xtcmodify feature: "-s <selectpayloadname>" requests one payoad name to be written to output file.
 2011-Sep-26	jackp			Added Fexamp detector
 2011-Sep-07	weaver  Tag V02-13-09   XtcMonitorClient retries all message queue opens - removed race with XtcMonitorServer.
 					Added Cspad2x2.
