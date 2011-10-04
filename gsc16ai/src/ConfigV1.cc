@@ -10,11 +10,11 @@ ConfigV1::ConfigV1 (
   uint16_t    voltageRange,
   uint16_t    firstChan,
   uint16_t    lastChan,
+  bool        autocalibEnable,
   uint16_t    inputMode,
   uint16_t    triggerMode,
   uint16_t    dataFormat,
   uint16_t    fps,
-  bool        autocalibEnable,
   bool        timeTagEnable
   ) :
   _voltageRange (voltageRange),

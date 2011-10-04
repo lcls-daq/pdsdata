@@ -27,11 +27,11 @@ namespace Pds {
       uint16_t    voltageRange,
       uint16_t    firstChan,
       uint16_t    lastChan,
+      bool        autocalibEnable = true,
       uint16_t    inputMode = InputMode_Differential,
       uint16_t    triggerMode = TriggerMode_ExtPos,
       uint16_t    dataFormat = DataFormat_TwosComplement,
       uint16_t    fps = 0,
-      bool        autocalibEnable = true,
       bool        timeTagEnable = false
       );
 
