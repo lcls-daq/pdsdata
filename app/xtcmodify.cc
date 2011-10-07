@@ -189,12 +189,15 @@ int main(int argc, char* argv[]) {
       exit(0);
     case 'f':
       xtcname = optarg;
+      printf("xtcmodify file(%s)\n", xtcname);
       break;
     case 's':
       selectname = optarg;
+      printf("xtcmodify select(%s)\n", selectname);
       break;
     case 'o':
       outfilename = optarg;
+      printf("xtcmodify outfile(%s)\n", outfilename);
       break;
     case 'i':
       imagefilename = optarg;
