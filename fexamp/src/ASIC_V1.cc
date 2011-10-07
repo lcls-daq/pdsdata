@@ -24,24 +24,24 @@ class ASIC_RegistersV1 {
 static uint32_t _ASICfoo[][4] = {
   //addr shift  mask    default
     { 0,    0,  0x3ff,    0},    // ManualPulseDAC
-    { 0,   16,  0x3ff,    0},    // ThresholdDAC
+    { 0,   16,  0x3ff,    1023}, // ThresholdDAC
     { 0,   28,    0x3,    0},    // BaselineAdjust
-    { 1,    0,    0x3,    0},    // ResetTime
+    { 1,    0,    0x3,    3},    // ResetTime
     { 1,    4,    0xf,    0},    // PumpLength
-    { 1,    8,    0x7,    0},    // FilterTimeToFlatTop
+    { 1,    8,    0x7,    7},    // FilterTimeToFlatTop
     { 1,   12,      1,    0},    // EnableDacMonitor
-    { 1,   16,    0x7,    0},    // ResetTweakOP
-    { 1,   20,      1,    0},    // ResetCompensation
+    { 1,   16,    0x7,    7},    // ResetTweakOP
+    { 1,   20,      1,    1},    // ResetCompensation
     { 2,    0,      1,    0},    // TestPulsePolarity
     { 2,    4,      1,    0},    // DisableOutputs
     { 2,    8,      1,    0},    // AutoTestMode
     { 2,   12,      1,    0},    // EnableAPSMon
-    { 2,   16,      1,    0},    // Gain
+    { 2,   16,      1,    1},    // Gain
     { 2,   20,      1,    0},    // HighResTestMode
     { 2,   24,      1,    0},    // CalibrationRange
-    { 2,   28,      1,    0},    // OutputBuffersEnable
+    { 2,   28,      1,    1},    // OutputBuffersEnable
     { 3,    0,      1,    0},    // TestPulserEnable
-    { 3,    4,      1,    0},    // EnableAuxiliaryOutput
+    { 3,    4,      1,    1},    // EnableAuxiliaryOutput
     { 3,    8,      1,    0},    // DisableMultipleFirings
     { 3,   12,      1,    0},    // DisableFilterPump
     { 3,   16,      1,    0},    // DACMonitorSelect
@@ -136,11 +136,32 @@ char* ASIC_V1::name(ASIC_V1::ASIC_Entries e, bool init) {
      {"---------INVALID--------"}        //    NumberOfASIC_Entries
   };
   static char range[60];
-
   if (init && (e < ASIC_V1::NumberOfASIC_Entries)) {
     sprintf(range, "  (%u..%u)    ", 0, _Aregs[e].mask);
     strncat(_regNames[e], range, 40);
   }
-
   return e < ASIC_V1::NumberOfASIC_Entries ? _regNames[e] : _regNames[ASIC_V1::NumberOfASIC_Entries];
+}
+
+void ASIC_V1::operator=(ASIC_V1& foo) {
+  unsigned i=0;
+  while (i<NumberOfASIC_Entries) {
+    ASIC_Entries c = (ASIC_Entries)i++;
+    set(c,foo.get(c));
+  }
+  i=0;
+  while (i<NumberOfChannels) {
+    _channels[i] = foo.channels()[i];
+  }
+}
+
+bool ASIC_V1::operator==(ASIC_V1& foo) {
+  unsigned i=0;
+  bool ret = true;
+  while (i<NumberOfASIC_Entries) {
+    ASIC_Entries c = (ASIC_Entries)i++;
+    ret |= (get(c) == foo.get(c));
+    if (!ret) printf("\tASIC_V1 %u != %u at %s\n", get(c), foo.get(c), ASIC_V1::name(c));
+  }
+  return ret;
 }

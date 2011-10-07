@@ -36,7 +36,7 @@ static bool           namesAreInitialized = false;
 ChannelV1::ChannelV1() {
   if (!namesAreInitialized){
     int e;
-    for (e=0; e< (int)ChannelV1::NumberOfChannelBitFields; e++) {
+    for (e=0; e< (int)NumberOfChannelBitFields; e++) {
       name((ChannelV1::ChannelBitFields)e, true);
     }
     namesAreInitialized = true;
@@ -44,7 +44,7 @@ ChannelV1::ChannelV1() {
 }
 
 uint32_t        ChannelV1::get      (ChannelBitFields e) {
-  if (e >= ChannelV1::NumberOfChannelBitFields) {
+  if (e >= NumberOfChannelBitFields) {
     printf("ChannelV1:: parameter out of range!! %u\n", e);
     return 0;
   }
@@ -52,7 +52,7 @@ uint32_t        ChannelV1::get      (ChannelBitFields e) {
 }
 
 const uint32_t  ChannelV1::get      (ChannelBitFields e) const {
-  if (e >= ChannelV1::NumberOfChannelBitFields) {
+  if (e >= NumberOfChannelBitFields) {
     printf("ChannelV1:: parameter out of range!! %u\n", e);
     return 0;
   }
@@ -60,7 +60,7 @@ const uint32_t  ChannelV1::get      (ChannelBitFields e) const {
 }
 
 uint32_t        ChannelV1::set      (ChannelBitFields e, uint32_t v) {
-  if (e >= ChannelV1::NumberOfChannelBitFields) {
+  if (e >= NumberOfChannelBitFields) {
     printf("ChannelV1:: parameter out of range!! %u\n", e);
     return 0;
   }
@@ -70,7 +70,7 @@ uint32_t        ChannelV1::set      (ChannelBitFields e, uint32_t v) {
 }
 
 uint32_t        ChannelV1::rangeHigh(ChannelBitFields e) {
-  if (e >= ChannelV1::NumberOfChannelBitFields) {
+  if (e >= NumberOfChannelBitFields) {
     printf("ChannelV1:: parameter out of range!! %u\n", e);
     return 0;
   }
@@ -82,7 +82,7 @@ uint32_t        ChannelV1::rangeLow (ChannelBitFields e) {
 }
 
 uint32_t            ChannelV1::defaultValue(ChannelBitFields e) {
-  if (e >= ChannelV1::NumberOfChannelBitFields) {
+  if (e >= NumberOfChannelBitFields) {
     printf("ChannelV1::defaultValue parameter of of range!! %u\n", e);
     return 0;
   }
@@ -90,7 +90,7 @@ uint32_t            ChannelV1::defaultValue(ChannelBitFields e) {
 }
 
 char*      ChannelV1::name     (ChannelBitFields e, bool init) {
-  static char _chNames[ChannelV1::NumberOfChannelBitFields + 1][120] = {
+  static char _chNames[NumberOfChannelBitFields + 1][120] = {
       {"TrimBits             "},              //    TrimBits,
       {"EnableTest           "},            //    EnableTest,
       {"ChannelMask          "},           //    ChannelMask,
@@ -99,10 +99,29 @@ char*      ChannelV1::name     (ChannelBitFields e, bool init) {
   };
   static char range[60];
 
-  if (init && (e < ChannelV1::NumberOfChannelBitFields)) {
+  if (init && (e < NumberOfChannelBitFields)) {
     sprintf(range, "  (%u..%u)    ", 0, _chs[e].mask);
     strncat(_chNames[e], range, 40);
   }
 
-  return e < ChannelV1::NumberOfChannelBitFields ? _chNames[e] : _chNames[ChannelV1::NumberOfChannelBitFields];
+  return e < NumberOfChannelBitFields ? _chNames[e] : _chNames[NumberOfChannelBitFields];
+}
+
+void ChannelV1::operator=(ChannelV1& foo) {
+  unsigned i=0;
+  while (i<NumberOfChannelBitFields) {
+    ChannelBitFields c = (ChannelBitFields)i++;
+    set(c,foo.get(c));
+  }
+}
+
+bool ChannelV1::operator==(ChannelV1& foo) {
+  unsigned i=0;
+  bool ret = true;
+  while (i<NumberOfChannelBitFields) {
+    ChannelBitFields c = (ChannelBitFields)i++;
+    ret |= (get(c) == foo.get(c));
+    if (!ret) printf("\tChannelV1 %u != %u at %s\n", get(c), foo.get(c), ChannelV1::name(c));
+  }
+  return ret;
 }

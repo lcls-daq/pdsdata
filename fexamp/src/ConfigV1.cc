@@ -59,37 +59,37 @@ class RegisterV1 {
 static uint32_t _regsfoo[ConfigV1::NumberOfRegisters][4] = {
     //addr shift  mask    default
             // GenControl
-    { 0,    0,   0xf,        0},        //    AsicVersion
+    { 0,    0,   0xf,        1},        //    AsicVersion
     { 0,    5,   0x1,        0},        //    CckDisable
     { 0,    6,   0x1,        0},        //    MckDisable
     { 0,    7,   0x1,        0},        //    EnExtTrig
     { 0,    8,   0xf,        0},        //    LemoSelect
-    { 0,    12,  0x1,        0},        //    NoPayload
+    { 0,    12,  0x1,        1},        //    NoPayload
     { 0,    13,  0x1,        0},        //    ClkDisable
-    { 0,    14,  0x1,        0},        //    AsicRstHwEn
+    { 0,    14,  0x1,        1},        //    AsicRstHwEn
             // TimeControl0
-    { 1,    0,   0xff,       0},        //    PtDelay
-    { 1,    8,   0xff,       0},        //    ScDelay
-    { 1,    16,  0xff,       0},        //    CCkPosWidth
-    { 1,    24,  0xff,       0},        //    CCkNegWidth
+    { 1,    0,   0xff,       15},       //    PtDelay
+    { 1,    8,   0xff,       255},      //    ScDelay
+    { 1,    16,  0xff,       14},       //    CCkPosWidth
+    { 1,    24,  0xff,       14},       //    CCkNegWidth
             // TimeControl1
-    { 2,    0,   0xffff,     0},        //    ScPosWidth
-    { 2,    16,  0xffff,     0},        //    ScNegWidth
+    { 2,    0,   0xffff,     999},      //    ScPosWidth
+    { 2,    16,  0xffff,     999},      //    ScNegWidth
             // TimeControl2
-    { 3,    0,   0xfff,      0},        //    ScCount
-    { 3,    16,  0xff,       0},        //    MckPosWidth
-    { 3,    24,  0xff,       0},        //    AdcClkPer
+    { 3,    0,   0xfff,      15},       //    ScCount
+    { 3,    16,  0xff,       19},       //    MckPosWidth
+    { 3,    24,  0xff,       19},       //    AdcClkPer
             // TimeControl3
-    { 4,    0,   0xff,       0},        //    MckNegWidth
+    { 4,    0,   0xff,       19},       //    MckNegWidth
     { 4,    8,   0xf,        0},        //    MckLimit
-    { 4,    16,  0xffff,     0},        //    MckDelay
+    { 4,    16,  0xffff,     174},      //    MckDelay
             // TimeControl4
-    { 5,    0,   0xffff,     0},        //    AdcDelay
-    { 5,    16,  0xffff,     0},        //    AdcPhase
+    { 5,    0,   0xffff,     553},      //    AdcDelay
+    { 5,    16,  0xffff,     35},       //    AdcPhase
             // TimeControl5
-    { 6,    0,   0xff,       0},        //    PerMclkCount
-    { 6,    8,   0xfff,      0},        //    SlowAdcDelay0
-    { 6,    20,  0xfff,      0}         //    SlowAdcDelay1
+    { 6,    0,   0xff,       15},       //    PerMclkCount
+    { 6,    8,   0xfff,      15},       //    SlowAdcDelay0
+    { 6,    20,  0xfff,      365}       //    SlowAdcDelay1
 };
 
 static RegisterV1* _regs = (RegisterV1*) _regsfoo;

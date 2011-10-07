@@ -60,10 +60,13 @@ namespace Pds {
         static uint32_t       rangeHigh(ASIC_Entries);
         static uint32_t       rangeLow (ASIC_Entries);
         static uint32_t       defaultValue(ASIC_Entries);
+        void                  operator=(ASIC_V1&);
+        bool                  operator==(ASIC_V1&);
+        bool                  operator!=(ASIC_V1& foo) { return !(*this==foo); }
 
       private:
-        ChannelV1         _channels[NumberOfChannels];
         uint32_t          _values[NumberOfValues];
+        ChannelV1         _channels[NumberOfChannels];
     };
   }
 }

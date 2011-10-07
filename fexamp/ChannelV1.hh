@@ -32,6 +32,9 @@ namespace Pds {
         static uint32_t       rangeHigh(ChannelBitFields);
         static uint32_t       rangeLow (ChannelBitFields);
         static uint32_t       defaultValue(ChannelBitFields);
+        void                  operator=(ChannelV1&);
+        bool                  operator==(ChannelV1&);
+        bool                  operator!=(ChannelV1& foo) { return !(*this==foo); }
 
       private:
         uint32_t   _value;
