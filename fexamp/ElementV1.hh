@@ -34,19 +34,19 @@ namespace Pds {
         ~ElementV1() {};
 
         FexampWord getRawWord(unsigned index) {
-          FexampWord* dat = (FexampWord*) this+1;
+          FexampWord* dat = (FexampWord*) (this+1);
           return dat[index];
         }
 
         uint32_t ultimateWord(FexampConfigType* c) {
           unsigned size = ElementV1::Uint32sPerSingleSampleArray * ((c->get(FexampConfigType::PerMclkCount)+1)>>4);
-          uint32_t* u = (uint32_t*) this+1;
+          uint32_t* u = (uint32_t*) (this+1);
           return u[size];
         }
 
         uint32_t penultimateWord(FexampConfigType* c) {
           unsigned size = ElementV1::Uint32sPerSingleSampleArray * ((c->get(FexampConfigType::PerMclkCount)+1)>>4);
-          uint32_t* u = (uint32_t*) this+1;
+          uint32_t* u = (uint32_t*) (this+1);
           return u[size+1];
         }
     };
