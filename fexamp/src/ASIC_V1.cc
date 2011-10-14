@@ -152,6 +152,7 @@ void ASIC_V1::operator=(ASIC_V1& foo) {
   i=0;
   while (i<NumberOfChannels) {
     _channels[i] = foo.channels()[i];
+    i += 1;
   }
 }
 
