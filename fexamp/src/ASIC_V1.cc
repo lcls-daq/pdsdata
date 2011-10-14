@@ -159,10 +159,15 @@ void ASIC_V1::operator=(ASIC_V1& foo) {
 bool ASIC_V1::operator==(ASIC_V1& foo) {
   unsigned i=0;
   bool ret = true;
-  while (i<NumberOfASIC_Entries) {
+  while (i<NumberOfASIC_Entries && ret) {
     ASIC_Entries c = (ASIC_Entries)i++;
-    ret |= (get(c) == foo.get(c));
+    ret = (get(c) == foo.get(c));
     if (!ret) printf("\tASIC_V1 %u != %u at %s\n", get(c), foo.get(c), ASIC_V1::name(c));
+  }
+  i=0;
+  while (i<NumberOfChannels && ret) {
+    ret = _channels[i] == foo.channels()[i];
+    i += 1;
   }
   return ret;
 }
