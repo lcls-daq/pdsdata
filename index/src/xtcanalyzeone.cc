@@ -398,7 +398,7 @@ int gotoEvent(const char* sIndexFilename, int iBeginL1Event, int iBeginCalib, ch
 
 int genIndexFromXtcFilename( const string& strXtcFilename, string& strIndexFilename )
 {  
-  unsigned int iFindPos = strXtcFilename.rfind(".xtc");
+  size_t iFindPos = strXtcFilename.rfind(".xtc");
   
   if (iFindPos == string::npos )
     return 1;

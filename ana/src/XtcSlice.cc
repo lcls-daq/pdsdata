@@ -139,7 +139,7 @@ Result XtcSlice::_openChunk(int iChunk, uint64_t i64Offset)
     itChunk != _chunks.end();
     ++itChunk)
   {
-    unsigned int uFind = itChunk->find(sChunk);
+    size_t uFind = itChunk->find(sChunk);
     if (uFind == std::string::npos)
       continue;
       
@@ -460,7 +460,7 @@ void* readSlice(void* arg)
 static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::string& strIndexFilename )
 { 
   strIndexFilename.clear();
-  unsigned int iFindPos = strXtcFilename.rfind(".xtc");
+  size_t iFindPos = strXtcFilename.rfind(".xtc");
   
   if (iFindPos == std::string::npos )
     return 1;
@@ -471,7 +471,7 @@ static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::stri
   int iError = ::stat( strIndexFilename.c_str(), &statFile );
   if ( iError != 0 )
   {
-    unsigned int iFindDir = strXtcFilename.rfind("/");
+    size_t iFindDir = strXtcFilename.rfind("/");
     if (iFindDir == std::string::npos )
       strIndexFilename = "index/" + strXtcFilename + ".idx";
     else

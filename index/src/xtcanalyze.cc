@@ -829,7 +829,7 @@ int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
    */
   string strFnXtc(sXtcFilename);
   
-  unsigned int uPos = strFnXtc.find("-s");
+  size_t uPos = strFnXtc.find("-s");
   if (uPos == string::npos)
   {
     struct ::stat64 statFile;
