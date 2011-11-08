@@ -5,7 +5,7 @@
 #define Pds_FEXAMP_ElementV1_hh
 
 #include "pdsdata/fexamp/ElementHeader.hh"
-#include "pds/config/FexampConfigType.hh"
+#include "pdsdata/fexamp/ConfigV1.hh"
 
 #include <stdint.h>
 
