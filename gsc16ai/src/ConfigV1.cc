@@ -24,8 +24,8 @@ ConfigV1::ConfigV1 (
   _triggerMode  (triggerMode),
   _dataFormat   (dataFormat),
   _fps          (fps),
-  _autocalibEnable(autocalibEnable),
-  _timeTagEnable(timeTagEnable)
+  _autocalibEnable(autocalibEnable ? 1 : 0),
+  _timeTagEnable(timeTagEnable ? 1 : 0)
 {}
 
 void ConfigV1::dump() const {

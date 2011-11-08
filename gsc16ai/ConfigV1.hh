@@ -44,8 +44,8 @@ namespace Pds {
       uint16_t          triggerMode()       const     { return _triggerMode; }
       uint16_t          dataFormat()        const     { return _dataFormat; }
       uint16_t          fps()               const     { return _fps; }
-      bool              autocalibEnable()   const     { return _autocalibEnable; }
-      bool              timeTagEnable()     const     { return _timeTagEnable; }
+      bool              autocalibEnable()   const     { return (_autocalibEnable != 0); }
+      bool              timeTagEnable()     const     { return (_timeTagEnable != 0); }
 
       // misc
       void              dump()              const;
@@ -58,8 +58,8 @@ private:
       uint16_t    _triggerMode;
       uint16_t    _dataFormat;
       uint16_t    _fps;
-      bool        _autocalibEnable;
-      bool        _timeTagEnable;
+      int8_t      _autocalibEnable;
+      int8_t      _timeTagEnable;
     };
   };
 };
