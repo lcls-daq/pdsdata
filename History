@@ -1,3 +1,4 @@
+2011-Nov-08	caf     Tag V03-00-01 	Modified some data types for portability.
 2011-Nov-02	caf     Tag V03-00-00.
 2011-Oct-03	caf     		Added Gsc16ai detector.
 2011-Sep-27	caf     		New xtcmodify feature: "-s <selectpayloadname>" requests one payoad name
