@@ -315,6 +315,28 @@ Result XtcSlice::numEventInCalib(int calib, int& iNumEvents)
   return OK;
 }
 
+Result XtcSlice::numTotalEvent(int& iNumTotalEvents)
+{
+  iNumTotalEvents = -1;
+  
+  _loadIndex();
+  if ( !_index.isValid() )
+  {
+    printf( "XtcSlice::numTotalEvent(): No index file found for %s.\n", 
+      _current->c_str() );
+    return Error;
+  }
+  
+  int iError    = _index.numL1Event(iNumTotalEvents);    
+  if ( iError != 0 )
+  {
+    printf( "XtcSlice::numTotalEvent(): Query L1 Event# failed\n" );
+    return Error;
+  }
+  
+  return OK;  
+}
+
 Result XtcSlice::getTime(int calib, int event, uint32_t& uSeconds, uint32_t& uNanoseconds)
 {
   uSeconds      = 0;
@@ -338,6 +360,28 @@ Result XtcSlice::getTime(int calib, int event, uint32_t& uSeconds, uint32_t& uNa
     return Error;
     
   iError = _index.time(iGlobalEvent, uSeconds, uNanoseconds);
+  if ( iError != 0 )
+    return Error;    
+  
+  return OK;
+}
+
+Result XtcSlice::getTimeGlobal(int iSliceEvent, uint32_t& uSeconds, uint32_t& uNanoseconds)
+{
+  uSeconds      = 0;
+  uNanoseconds  = 0;
+  
+  _loadIndex();
+  if ( !_index.isValid() )
+  {
+    printf( "XtcSlice::getTimeGlobal(): No index file found for %s. Cannot do the jump\n", 
+      _current->c_str() );
+    return Error;
+  }
+    
+  // adjust indexes: from 1-based index to 0-based index
+  int iSliceEventAdj = iSliceEvent - 1;    
+  int iError = _index.time(iSliceEventAdj, uSeconds, uNanoseconds);
   if ( iError != 0 )
     return Error;    
   
@@ -433,7 +477,7 @@ Result XtcSlice::findTime(uint32_t uSeconds, uint32_t uNanoseconds, int& iCalib,
   _loadIndex();
   if ( !_index.isValid() )
   {
-    printf( "XtcSlice::jump(): No index file found for %s. Cannot do the jump\n", 
+    printf( "XtcSlice::findTime(): No index file found for %s.\n", 
       _current->c_str() );
     return Error;
   }
@@ -445,6 +489,53 @@ Result XtcSlice::findTime(uint32_t uSeconds, uint32_t uNanoseconds, int& iCalib,
     return Error;
 
   iCalib = iCalibAdj + 1;
+  iEvent = iEventAdj + 1;    
+    
+  return OK;
+}
+
+Result XtcSlice::findTimeGlobal(uint32_t uSeconds, uint32_t uNanoseconds, int& iSliceEvent, bool& bExactMatch, bool& bOvertime)
+{
+  iSliceEvent = -1;
+  
+  _loadIndex();
+  if ( !_index.isValid() )
+  {
+    printf( "XtcSlice::findTimeGlobal(): No index file found for %s.\n", 
+      _current->c_str() );
+    return Error;
+  }
+  
+  int iSliceEventAdj = -1;
+  int iError = 
+    _index.eventTimeToGlobal(uSeconds, uNanoseconds, iSliceEventAdj, bExactMatch, bOvertime);
+  if ( iError != 0 )
+    return Error;
+
+  iSliceEvent = iSliceEventAdj + 1;    
+    
+  return OK;
+}
+
+Result XtcSlice::findNextFiducial(uint32_t uFiducial, int iFromEvent, int& iEvent)
+{
+  iEvent = -1;
+  
+  _loadIndex();
+  if ( !_index.isValid() )
+  {
+    printf( "XtcSlice::findNextFiducial(): No index file found for %s. Cannot do the jump\n", 
+      _current->c_str() );
+    return Error;
+  }
+  
+  int iFromEventAdj = iFromEvent - 1;
+  int iEventAdj     = -1;
+  int iError = 
+    _index.eventNextFiducialToGlobal(uFiducial, iFromEventAdj, iEventAdj);
+  if ( iError != 0 )
+    return Error;
+
   iEvent = iEventAdj + 1;    
     
   return OK;
@@ -467,8 +558,8 @@ static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::stri
     
   strIndexFilename = strXtcFilename.substr(0, iFindPos) + ".xtc.idx";  
     
-  struct ::stat statFile;
-  int iError = ::stat( strIndexFilename.c_str(), &statFile );
+  struct ::stat64 statFile;
+  int iError = ::stat64( strIndexFilename.c_str(), &statFile );
   if ( iError != 0 )
   {
     size_t iFindDir = strXtcFilename.rfind("/");
@@ -477,7 +568,7 @@ static int genIndexFromXtcFilename( const std::string& strXtcFilename, std::stri
     else
       strIndexFilename = strXtcFilename.substr(0, iFindDir+1) + "index/" + strXtcFilename.substr(iFindDir+1) + ".idx";    
     
-    iError = ::stat( strIndexFilename.c_str(), &statFile );    
+    iError = ::stat64( strIndexFilename.c_str(), &statFile );    
     if ( iError != 0 )
     {
       strIndexFilename.clear();
