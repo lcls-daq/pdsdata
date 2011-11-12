@@ -60,6 +60,7 @@ namespace Pds {
       Id_FexampElement,
       Id_Gsc16aiConfig,
       Id_Gsc16aiData,
+      Id_Phasics,
       NumberOf};
 
     TypeId() {}
