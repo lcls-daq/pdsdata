@@ -63,8 +63,7 @@ const char* TypeId::name(Type type)
     "FexampConfig",
     "FexampElement",
     "Gsc16aiConfig",
-    "Gsc16aiData",
-    "Phasics"
+    "Gsc16aiData"
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
