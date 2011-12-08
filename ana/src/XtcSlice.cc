@@ -27,7 +27,7 @@ XtcSlice::XtcSlice(std::string fname) :
 
 XtcSlice::~XtcSlice() 
 {
-  _close();
+  _close(true);
   
   _index.close();      
 
@@ -233,7 +233,7 @@ Result XtcSlice::_next()
 
 bool XtcSlice::read()
 {
-  return _pool->push(_fd) && !_bclose;
+  return !_bclose && _pool->push(_fd);
 }
 
 Result XtcSlice::_loadIndex()
