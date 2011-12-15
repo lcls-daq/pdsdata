@@ -2,7 +2,7 @@ libnames := appdata
 libsrcs_appdata := XtcMonitorServer.cc XtcMonitorClient.cc XtcMonitorMsg.cc
 
 #tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample acqconfig agatfile
-tgtnames = cfgreader xtcreader livextcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest dmgreader bldreader xtcmodify
+tgtnames = cfgreader xtcreader livextcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest dmgreader bldreader xtcmodify xtcmonwriter
 
 #CXXFLAGS += -pthread -m32 -I/reg/g/pcds/package/root/include
 
@@ -59,3 +59,8 @@ tgtsrcs_xtcEpicsReaderTest := xtcEpicsReaderTest.cc XtcEpicsFileReader.cc XtcEpi
 tgtincs_xtcEpicsReaderTest := 
 tgtlibs_xtcEpicsReaderTest := pdsdata/xtcdata pdsdata/epics
 tgtslib_xtcEpicsReaderTest := 
+
+tgtsrcs_xtcmonwriter := xtcmonwriter.cc 
+tgtlibs_xtcmonwriter := pdsdata/xtcdata pdsdata/appdata 
+tgtslib_xtcmonwriter := $(USRLIBDIR)/rt
+
