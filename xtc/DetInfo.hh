@@ -73,7 +73,8 @@ namespace Pds {
       Fexamp    = 14,
       Gsc16ai   = 15,
       Phasics   = 16,
-      NumDevice = 17
+      Timepix   = 17,
+      NumDevice = 18
     };
 
     DetInfo() {}

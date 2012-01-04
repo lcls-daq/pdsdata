@@ -61,6 +61,8 @@ namespace Pds {
       Id_Gsc16aiConfig,
       Id_Gsc16aiData,
       Id_PhasicsConfig,
+      Id_TimepixConfig,
+      Id_TimepixData,
       NumberOf};
 
     TypeId() {}
