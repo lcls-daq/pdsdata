@@ -18,6 +18,8 @@ namespace Pds
         ConfigV1();
         ~ConfigV1() {};
 
+        enum {Width=640, Height=480, Depth=12};
+
         enum Registers {
           Brightness,
           Gain,
