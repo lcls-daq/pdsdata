@@ -4,7 +4,7 @@ packages := xtc
 endif
 
 ifneq ($(findstring x86_64-linux,$(tgt_arch)),)
-packages := xtc camera phasics
+packages := xtc camera phasics timepix
 endif
 
 ifneq ($(findstring i386-linux,$(tgt_arch)),)
