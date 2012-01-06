@@ -1,0 +1,71 @@
+//
+//  Class for data of Timepix
+//
+#ifndef TIMEPIXDATAV1_HH
+#define TIMEPIXDATAV1_HH
+
+#include <stdint.h>
+#include "pdsdata/xtc/TypeId.hh"
+
+// 4 chips for a total of 512x512 pixels
+#define TIMEPIX_HEIGHT          512
+#define TIMEPIX_WIDTH           512
+#define TIMEPIX_DEPTH           14
+#define TIMEPIX_RAW_DATA_BYTES \
+          ((TIMEPIX_HEIGHT) * (TIMEPIX_WIDTH) * (TIMEPIX_DEPTH) / 8)
+
+namespace Pds
+{
+   namespace Timepix
+   {
+      class DataV1;
+   }
+}
+
+class Pds::Timepix::DataV1
+{
+  public:
+    enum { Version = 1 };
+
+    DataV1() :
+      _timestamp(0),
+      _frameCounter(0),
+      _lostRows(0)
+      {}
+
+    DataV1(uint32_t timestamp, uint16_t frameCounter, uint16_t lostRows) :
+      _timestamp(timestamp),
+      _frameCounter(frameCounter),
+      _lostRows(lostRows)
+      {}
+
+    static Pds::TypeId typeId()
+      { return TypeId(TypeId::Id_TimepixData, Version); }
+
+    unsigned width() const
+      { return (TIMEPIX_WIDTH); }
+
+    unsigned height() const
+      { return (TIMEPIX_HEIGHT); }
+
+    unsigned depth() const
+      { return (TIMEPIX_DEPTH); }
+
+    // size of data appended to the end of this structure
+    unsigned data_size() const
+      { return (TIMEPIX_RAW_DATA_BYTES); }
+
+    // beginning of data appended to the end of this structure
+    const unsigned char* data() const
+      { return reinterpret_cast<const unsigned char*>(this+1); }
+
+    uint32_t timestamp(void) const;
+    uint16_t frameCounter(void) const;
+    uint16_t lostRows(void) const;
+
+    uint32_t _timestamp;
+    uint16_t _frameCounter;
+    uint16_t _lostRows;
+};
+
+#endif
