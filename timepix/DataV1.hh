@@ -11,8 +11,12 @@
 #define TIMEPIX_HEIGHT          512
 #define TIMEPIX_WIDTH           512
 #define TIMEPIX_DEPTH           14
+#define TIMEPIX_DEPTH_BYTES     2
 #define TIMEPIX_RAW_DATA_BYTES \
           ((TIMEPIX_HEIGHT) * (TIMEPIX_WIDTH) * (TIMEPIX_DEPTH) / 8)
+
+#define TIMEPIX_DECODED_DATA_BYTES \
+          ((TIMEPIX_HEIGHT) * (TIMEPIX_WIDTH) * (TIMEPIX_DEPTH_BYTES))
 
 namespace Pds
 {
@@ -51,9 +55,13 @@ class Pds::Timepix::DataV1
     unsigned depth() const
       { return (TIMEPIX_DEPTH); }
 
+    // number of bytes per pixel
+    unsigned depth_bytes() const
+      { return (TIMEPIX_DEPTH_BYTES); }
+
     // size of data appended to the end of this structure
     unsigned data_size() const
-      { return (TIMEPIX_RAW_DATA_BYTES); }
+      { return (TIMEPIX_DECODED_DATA_BYTES); }
 
     // beginning of data appended to the end of this structure
     const unsigned char* data() const
