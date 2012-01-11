@@ -1,3 +1,6 @@
+// $Id: ConfigV1.hh,v 1.2 2012-01-11 23:30:56 caf Exp $
+// Author: Chris Ford <caf@slac.stanford.edu>
+
 //
 //  Class for configuration of Timepix
 //
@@ -28,22 +31,22 @@ namespace Pds {
 
   namespace Timepix {
 
-    typedef struct {
-      int32_t   ikrum;
-      int32_t   disc;
-      int32_t   preamp;
-      int32_t   bufAnalogA;
-      int32_t   bufAnalogB;
-      int32_t   hist;
-      int32_t   thlFine;
-      int32_t   thlCourse;
-      int32_t   vcas;
-      int32_t   fbk;
-      int32_t   gnd;
-      int32_t   ths;
-      int32_t   biasLvds;
-      int32_t   refLvds;
-    } dac_config_t;
+//  typedef struct {
+//    int32_t   ikrum;
+//    int32_t   disc;
+//    int32_t   preamp;
+//    int32_t   bufAnalogA;
+//    int32_t   bufAnalogB;
+//    int32_t   hist;
+//    int32_t   thlFine;
+//    int32_t   thlCourse;
+//    int32_t   vcas;
+//    int32_t   fbk;
+//    int32_t   gnd;
+//    int32_t   ths;
+//    int32_t   biasLvds;
+//    int32_t   refLvds;
+//  } dac_config_t;
 
     class ConfigV1 {
     public:

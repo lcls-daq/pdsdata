@@ -1,3 +1,6 @@
+// $Id: DataV1.hh,v 1.3 2012-01-11 23:30:56 caf Exp $
+// Author: Chris Ford <caf@slac.stanford.edu>
+
 //
 //  Class for data of Timepix
 //
