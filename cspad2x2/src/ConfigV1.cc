@@ -1,0 +1,41 @@
+#include "pdsdata/cspad2x2/ConfigV1.hh"
+
+using namespace Pds::CsPad2x2;
+
+ConfigV1::ConfigV1(
+		   uint32_t inactiveRunMode,
+		   uint32_t activeRunMode,
+		   uint32_t testDataIndex,
+		   uint32_t payloadPerQuad,
+		   uint32_t badAsicMask,
+		   uint32_t AsicMask,
+		   uint32_t roiMask) :
+  _concentratorVersion(0),
+  _inactiveRunMode(inactiveRunMode),
+  _activeRunMode(activeRunMode),
+  _testDataIndex(testDataIndex),
+  _payloadPerQuad(payloadPerQuad),
+  _badAsicMask(badAsicMask),
+  _AsicMask(AsicMask),
+  _roiMask (roiMask)
+{
+}
+
+unsigned ConfigV1::roiMask      (int iq) const
+{
+  return (_roiMask>>(8*iq))&0xff; 
+}
+
+unsigned ConfigV1::numAsicsRead () const
+{
+  return  4;
+}
+
+unsigned ConfigV1::numAsicsStored(int iq) const
+{
+  unsigned m = roiMask(iq);
+  unsigned c;
+  for(c=0; m; c++)
+    m &= m-1;
+  return c<<1;
+}
