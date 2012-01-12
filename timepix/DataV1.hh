@@ -1,4 +1,4 @@
-// $Id: DataV1.hh,v 1.4 2012-01-12 23:55:15 caf Exp $
+// $Id: DataV1.hh,v 1.5 2012-01-12 23:56:10 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include "pdsdata/xtc/TypeId.hh"
 
-// 4 chips for a total of 512x512 pixels
 #define TIMEPIX_HEIGHT          512
 #define TIMEPIX_WIDTH           512
 #define TIMEPIX_DEPTH           14
