@@ -1,8 +1,13 @@
-// $Id: DataV1.hh,v 1.3 2012-01-11 23:30:56 caf Exp $
+// $Id: DataV1.hh,v 1.4 2012-01-12 23:55:15 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
 //  Class for data of Timepix
+//
+//  The Timepix Quad detector includes 4 256x256 elements.
+//  Software should treat it as 512x512 elements of 2 bytes each.
+//
+//  The appended data size is exported by the data_size() method.
 //
 #ifndef TIMEPIXDATAV1_HH
 #define TIMEPIXDATAV1_HH
