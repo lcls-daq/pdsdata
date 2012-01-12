@@ -10,30 +10,30 @@
 namespace Pds {
   namespace CsPad2x2 {
 
-    class CsPadDigitalPotsCfg
+    class CsPad2x2DigitalPotsCfg
     {
       public:
-        CsPadDigitalPotsCfg() {int i = 0; while (i<PotsPerQuad) pots[i++] = 0;}
+        CsPad2x2DigitalPotsCfg() {int i = 0; while (i<PotsPerQuad) pots[i++] = 0;}
         uint8_t         value(unsigned i) const {return pots[i];}
       public:
         uint8_t         pots[PotsPerQuad];
     };
 
-    class CsPadReadOnlyCfg
+    class CsPad2x2ReadOnlyCfg
     {
       public:
-        CsPadReadOnlyCfg() : shiftTest(0), version(0) {};
-        ~CsPadReadOnlyCfg() {};
+        CsPad2x2ReadOnlyCfg() : shiftTest(0), version(0) {};
+        ~CsPad2x2ReadOnlyCfg() {};
 
       public:
         uint32_t        shiftTest;
         uint32_t        version;
     };
 
-    class CsPadGainMapCfg
+    class CsPad2x2GainMapCfg
     {
       public:
-        CsPadGainMapCfg() {};
+        CsPad2x2GainMapCfg() {};
         typedef uint16_t GainMap[ColumnsPerASIC][MaxRowsPerASIC];
         GainMap*       map()       { return &_gainMap; }
         const GainMap* map() const { return &_gainMap; }
@@ -43,9 +43,9 @@ namespace Pds {
 
     class ConfigV1QuadReg
     {
-        class CsPadReadOnlyCfg;
-        class CsPadDigitalPotsCfg;
-        class CsPadGainMapCfg;
+        class CsPad2x2ReadOnlyCfg;
+        class CsPad2x2DigitalPotsCfg;
+        class CsPad2x2GainMapCfg;
 
       public:
         ConfigV1QuadReg() {};
@@ -88,14 +88,14 @@ namespace Pds {
         uint32_t                                   ampIdle()            const   { return _ampIdle;        }
         uint32_t                                   injTotal()           const   { return _injTotal;       }
         uint32_t                                   rowColShiftPer()     const   { return _rowColShiftPer; }
-        Pds::CsPad2x2::CsPadReadOnlyCfg&                          ro      ()        { return _readOnly;       }
-        const Pds::CsPad2x2::CsPadReadOnlyCfg&                    ro      ()  const { return _readOnly;       }
-        Pds::CsPad2x2::CsPadDigitalPotsCfg&                       dp      ()        { return _digitalPots;    }
-        const Pds::CsPad2x2::CsPadDigitalPotsCfg&                 dp      ()  const { return _digitalPots;    }
-        Pds::CsPad2x2::CsPadGainMapCfg*                           gm      ()        { return &_gainMap;       }
-        const Pds::CsPad2x2::CsPadGainMapCfg*                     gm      ()  const { return &_gainMap;       }
-        Pds::CsPad2x2::CsPadReadOnlyCfg*                          readOnly()        { return &_readOnly;      }
-        const Pds::CsPad2x2::CsPadReadOnlyCfg*                    readOnly()  const { return &_readOnly;      }
+        Pds::CsPad2x2::CsPad2x2ReadOnlyCfg&                          ro      ()        { return _readOnly;       }
+        const Pds::CsPad2x2::CsPad2x2ReadOnlyCfg&                    ro      ()  const { return _readOnly;       }
+        Pds::CsPad2x2::CsPad2x2DigitalPotsCfg&                       dp      ()        { return _digitalPots;    }
+        const Pds::CsPad2x2::CsPad2x2DigitalPotsCfg&                 dp      ()  const { return _digitalPots;    }
+        Pds::CsPad2x2::CsPad2x2GainMapCfg*                           gm      ()        { return &_gainMap;       }
+        const Pds::CsPad2x2::CsPad2x2GainMapCfg*                     gm      ()  const { return &_gainMap;       }
+        Pds::CsPad2x2::CsPad2x2ReadOnlyCfg*                          readOnly()        { return &_readOnly;      }
+        const Pds::CsPad2x2::CsPad2x2ReadOnlyCfg*                    readOnly()  const { return &_readOnly;      }
 
       private:
         uint32_t                            _shiftSelect[TwoByTwosPerQuad];
@@ -111,9 +111,9 @@ namespace Pds {
         uint32_t                            _injTotal;
         uint32_t                            _rowColShiftPer;
 
-        Pds::CsPad2x2::CsPadReadOnlyCfg     _readOnly;
-        Pds::CsPad2x2::CsPadDigitalPotsCfg  _digitalPots;
-        Pds::CsPad2x2::CsPadGainMapCfg      _gainMap;
+        Pds::CsPad2x2::CsPad2x2ReadOnlyCfg     _readOnly;
+        Pds::CsPad2x2::CsPad2x2DigitalPotsCfg  _digitalPots;
+        Pds::CsPad2x2::CsPad2x2GainMapCfg      _gainMap;
     };
   };
 };
