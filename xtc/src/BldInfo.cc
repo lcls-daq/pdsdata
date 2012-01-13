@@ -26,14 +26,14 @@ const char* BldInfo::name(const BldInfo& src){
     "XCS-DIO-02",
     "XCS-IPM-03",
     "XCS-DIO-03",
-    "XCS-IPM-03m",
+    "XCS-IPM-mono",
     "XCS-DIO-03m",
     "XCS-YAG-1",
     "XCS-YAG-2",
     "XCS-YAG-3m",
     "XCS-YAG-3",
     "XCS-YAG-mono", 
-    "XCS-IPM-mono",
+    "XCS-DEC-mono",
     "XCS-DIO-mono"
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
