@@ -134,10 +134,10 @@ void ConfigV1::dump() const {
   printf("Readout speed: ");
   switch (readoutSpeed()) {
     case ReadoutSpeed_Slow:
-      printf("Slow");
+      printf("62.5 MHz");
       break;
     case ReadoutSpeed_Fast:
-      printf("Fast");
+      printf("125 MHz");
       break;
     default:
       printf("Invalid");
