@@ -23,11 +23,6 @@ using namespace std;
 //#define CLOCK CLOCK_PROCESS_CPUTIME_ID
 #define CLOCK CLOCK_REALTIME
 
-void sigsegv(int sig_no) {
-}
-
-//  (void) signal(SIGINT, sigfunc);
-
 class MyMonitorServer : public XtcMonitorServer {
 public:
   MyMonitorServer(const char* tag,
@@ -131,7 +126,7 @@ public:
       int iSlice = -1;
       int64_t i64Offset = -1;
       Ana::Result result = _run.next(dg, &iSlice, &i64Offset);
-      if (result == Ana::Error) {
+      if (result != Ana::OK) {
         _runValid = false;
         continue; // need to skip to next run
       }
@@ -227,13 +222,7 @@ void usage(char* progname) {
 }
 
 void sigfunc(int sig_no) {
-  cout << endl;
-  cout << endl;
-  cout << endl;
-  cout << endl;
-  cout << endl;
-  cout << "sigfunc!" << endl;
-  //delete apps;
+  // delete apps; // XXX this causes segfault
   exit(EXIT_SUCCESS);
 }
 
