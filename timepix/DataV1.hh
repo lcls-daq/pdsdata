@@ -1,4 +1,4 @@
-// $Id: DataV1.hh,v 1.5 2012-01-12 23:56:10 caf Exp $
+// $Id: DataV1.hh,v 1.6 2012-01-21 03:27:05 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -15,8 +15,8 @@
 #include <stdint.h>
 #include "pdsdata/xtc/TypeId.hh"
 
-#define TIMEPIX_HEIGHT          512
-#define TIMEPIX_WIDTH           512
+#define TIMEPIX_HEIGHT          1024
+#define TIMEPIX_WIDTH           256
 #define TIMEPIX_DEPTH           14
 #define TIMEPIX_DEPTH_BYTES     2
 #define TIMEPIX_RAW_DATA_BYTES \
