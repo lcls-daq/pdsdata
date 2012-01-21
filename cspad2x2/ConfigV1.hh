@@ -41,11 +41,11 @@ namespace Pds
             uint32_t AsicMask,
 	        uint32_t roiMask);
 
-        ConfigV1QuadReg*                 quad        ()       { return &_quad; }
-        const ConfigV1QuadReg*           quad        () const { return &_quad; }
-        uint32_t                         tdi          () const { return _testDataIndex; }
-        ProtectionSystemThreshold*       protectionThreshold ()       { return &_protectionThreshold; }
-        const ProtectionSystemThreshold* protectionThreshold () const { return &_protectionThreshold; }
+        ConfigV1QuadReg*                 quad();
+        const ConfigV1QuadReg*           quad() const;
+        uint32_t                         tdi() const { return _testDataIndex; }
+        ProtectionSystemThreshold*       protectionThreshold ();
+        const ProtectionSystemThreshold* protectionThreshold () const;
         const uint32_t                   protectionEnable () const { return _protectionEnable; }
         uint32_t                         protectionEnable ()       { return _protectionEnable; }
         void                             protectionEnable(uint32_t e) {_protectionEnable=e; }
@@ -60,7 +60,7 @@ namespace Pds
         unsigned                         numAsicsRead () const;
         unsigned                         numAsicsStored(int iq) const;
         uint32_t                         concentratorVersion() const {return _concentratorVersion; }
-        uint32_t*                        concentratorVersionAddr() {return &_concentratorVersion; }
+        uint32_t*                        concentratorVersionAddr();
         static const int                 version      ()       { return Version; }
       private:
         uint32_t                  _concentratorVersion;

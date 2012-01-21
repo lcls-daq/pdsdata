@@ -10,6 +10,8 @@ namespace Pds {
 
   namespace CsPad2x2 {
 
+    //0x700006 : dacValue,   16-bit Peltier temperature ?????
+
     class ElementHeader {
     public:
       ElementHeader();

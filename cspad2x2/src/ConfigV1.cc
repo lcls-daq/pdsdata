@@ -21,6 +21,31 @@ ConfigV1::ConfigV1(
 {
 }
 
+ProtectionSystemThreshold* ConfigV1::protectionThreshold ()
+{
+  return &_protectionThreshold;
+}
+
+const ProtectionSystemThreshold* ConfigV1::protectionThreshold () const
+{
+  return &_protectionThreshold;
+}
+
+uint32_t* ConfigV1::concentratorVersionAddr()
+{
+  return &_concentratorVersion;
+}
+
+ConfigV1QuadReg* ConfigV1::quad()
+{
+  return &_quad;
+}
+
+const ConfigV1QuadReg* ConfigV1::quad() const
+{
+  return &_quad;
+}
+
 unsigned ConfigV1::roiMask      (int iq) const
 {
   return (_roiMask>>(8*iq))&0xff; 
