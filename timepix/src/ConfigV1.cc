@@ -143,16 +143,24 @@ void ConfigV1::dump() const {
       printf("Invalid");
       break;
   }
-  printf("\nTrigger mode: ");
-  switch (triggerMode()) {
-    case TriggerMode_ExtPos:
-      printf("External/Positive");
+  printf("\n");
+
+  printf("Timepix speed: ");
+  switch (shutterTimeout()) { // timepix speed replaces shutter timeout
+    case 0:
+      printf("100 MHz");
       break;
-    case TriggerMode_ExtNeg:
-      printf("External/Negative");
+    case 1:
+      printf("80 MHz");
       break;
-    case TriggerMode_Soft:
-      printf("Software\nShutter timeout: %d us", shutterTimeout());
+    case 2:
+      printf("40 MHz");
+      break;
+    case 3:
+      printf("10 MHz");
+      break;
+    case 4:
+      printf("2.5 MHz");
       break;
     default:
       printf("Invalid");
@@ -160,13 +168,17 @@ void ConfigV1::dump() const {
   }
   printf("\n");
 
+  printf("DAC0 thl fine: %d\n", dac0ThlFine());
+  printf("DAC1 thl fine: %d\n", dac1ThlFine());
+  printf("DAC2 thl fine: %d\n", dac2ThlFine());
+  printf("DAC3 thl fine: %d\n", dac3ThlFine());
+
   printf("DAC0 ikrum: %d\n", dac0Ikrum());
   printf("DAC0 disc: %d\n", dac0Disc());
   printf("DAC0 preamp: %d\n", dac0Preamp());
   printf("DAC0 buf analog A: %d\n", dac0BufAnalogA());
   printf("DAC0 buf analog B: %d\n", dac0BufAnalogB());
   printf("DAC0 hist: %d\n", dac0Hist());
-  printf("DAC0 thl fine: %d\n", dac0ThlFine());
   printf("DAC0 thl course: %d\n", dac0ThlCourse());
   printf("DAC0 vcas: %d\n", dac0Vcas());
   printf("DAC0 fbk: %d\n", dac0Fbk());
@@ -181,7 +193,6 @@ void ConfigV1::dump() const {
   printf("DAC1 buf analog A: %d\n", dac1BufAnalogA());
   printf("DAC1 buf analog B: %d\n", dac1BufAnalogB());
   printf("DAC1 hist: %d\n", dac1Hist());
-  printf("DAC1 thl fine: %d\n", dac1ThlFine());
   printf("DAC1 thl course: %d\n", dac1ThlCourse());
   printf("DAC1 vcas: %d\n", dac1Vcas());
   printf("DAC1 fbk: %d\n", dac1Fbk());
@@ -196,7 +207,6 @@ void ConfigV1::dump() const {
   printf("DAC2 buf analog A: %d\n", dac2BufAnalogA());
   printf("DAC2 buf analog B: %d\n", dac2BufAnalogB());
   printf("DAC2 hist: %d\n", dac2Hist());
-  printf("DAC2 thl fine: %d\n", dac2ThlFine());
   printf("DAC2 thl course: %d\n", dac2ThlCourse());
   printf("DAC2 vcas: %d\n", dac2Vcas());
   printf("DAC2 fbk: %d\n", dac2Fbk());
@@ -211,7 +221,6 @@ void ConfigV1::dump() const {
   printf("DAC3 buf analog A: %d\n", dac3BufAnalogA());
   printf("DAC3 buf analog B: %d\n", dac3BufAnalogB());
   printf("DAC3 hist: %d\n", dac3Hist());
-  printf("DAC3 thl fine: %d\n", dac3ThlFine());
   printf("DAC3 thl course: %d\n", dac3ThlCourse());
   printf("DAC3 vcas: %d\n", dac3Vcas());
   printf("DAC3 fbk: %d\n", dac3Fbk());
@@ -219,6 +228,23 @@ void ConfigV1::dump() const {
   printf("DAC3 ths: %d\n", dac3Ths());
   printf("DAC3 bias lvds: %d\n", dac3BiasLvds());
   printf("DAC3 ref lvds: %d\n", dac3RefLvds());
+
+  printf("\nTrigger mode: ");
+  switch (triggerMode()) {
+    case TriggerMode_ExtPos:
+      printf("External/Positive");
+      break;
+    case TriggerMode_ExtNeg:
+      printf("External/Negative");
+      break;
+    case TriggerMode_Soft:
+      printf("Software");
+      break;
+    default:
+      printf("Invalid");
+      break;
+  }
+  printf("\n");
 
   printf("------------------------------------\n");
 }
