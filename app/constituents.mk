@@ -1,5 +1,6 @@
-libnames := appdata
+libnames := appdata xtcrunset
 libsrcs_appdata := XtcMonitorServer.cc XtcMonitorClient.cc XtcMonitorMsg.cc
+libsrcs_xtcrunset := XtcRunSet.cc
 
 #tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample acqconfig agatfile
 tgtnames = cfgreader xtcreader livextcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest dmgreader bldreader xtcmodify xtcmonwriter oldmonserver
@@ -40,7 +41,7 @@ tgtsrcs_acqconfig := acqconfig.cc
 tgtlibs_acqconfig := pdsdata/xtcdata pdsdata/acqdata
 
 tgtsrcs_xtcmonserver := xtcmonserver.cc
-tgtlibs_xtcmonserver := pdsdata/xtcdata pdsdata/acqdata pdsdata/appdata pdsdata/anadata pdsdata/indexdata pdsdata/evrdata
+tgtlibs_xtcmonserver := pdsdata/xtcdata pdsdata/acqdata pdsdata/appdata pdsdata/xtcrunset pdsdata/anadata pdsdata/indexdata pdsdata/evrdata
 tgtslib_xtcmonserver := $(USRLIBDIR)/rt
 
 tgtsrcs_oldmonserver := oldmonserver.cc
