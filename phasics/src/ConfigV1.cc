@@ -11,15 +11,21 @@ namespace Pds
       public:
         RegisterV1() {};
         ~RegisterV1() {};
+        uint32_t min;
         uint32_t max;
         uint32_t defaultValue;
     };
 
-    static uint32_t _regsfoo[ConfigV1::NumberOfRegisters][2] = {
+    static uint32_t _regsfoo[ConfigV1::NumberOfRegisters][3] = {
         //max     default value
-        { 1023,   490 },       // Brightness
-        { 511,    255 },       // Gain
-        { 1016,   508 }        // Sharpness
+        { 0,  1023,   599 },       // Brightness
+        { 0,  100,    50  },       // Exposure
+        { 0,  1016,   550 },       // Sharpness
+        { 4,  25,     10  },       // Gamma
+        { 1,  3843,   550 },       // Shutter
+        { 0,  511,    256 },       // Gain
+        { 0,  650,    326 },       // Pan
+        { 0,  490,    246 }        // Tilt
     };
 
     static RegisterV1* _regs = (RegisterV1*) _regsfoo;
@@ -75,7 +81,7 @@ uint32_t   ConfigV1::rangeHigh(Registers r) {
 }
 
 uint32_t   ConfigV1::rangeLow(Registers r) {
-  return 0;
+  return _regs[r].min;
 }
 
 uint32_t   ConfigV1::defaultValue(Registers r) {
@@ -88,15 +94,20 @@ uint32_t   ConfigV1::defaultValue(Registers r) {
 
 char*               ConfigV1::name     (Registers r, bool init) {
   static char _regsNames[NumberOfRegisters+1][120] = {
-      {"Brightness"},      //      Brightness
-      {"Gain"},            //      Gain
-      {"Sharpness"},       //      Sharpness
+      {"  Brightness  "},
+      {"  Exposure    "},
+      {"  Sharpness   "},
+      {"   Gamma      "},
+      {"   Shutter      "},
+      {"    Gain         "},
+      {"     Pan          "},
+      {"     Tilt          "},
       {"----INVALID----"}  //      NumberOfRegisters
   };
   static char range[60];
 
   if (init && (r < ConfigV1::NumberOfRegisters)) {
-    sprintf(range, "  (%u..%u)    ", 0, _regs[r].max);
+    sprintf(range, "  (%u..%u)    ", _regs[r].min , _regs[r].max);
     strncat(_regsNames[r], range, 40);
   }
 

@@ -22,8 +22,13 @@ namespace Pds
 
         enum Registers {
           Brightness,
-          Gain,
+          Exposure,
           Sharpness,
+          Gamma,
+          Shutter,
+          Gain,
+          Pan,
+          Tilt,
           NumberOfRegisters
         };
 
