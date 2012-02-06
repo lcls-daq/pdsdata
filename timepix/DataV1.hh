@@ -1,4 +1,4 @@
-// $Id: DataV1.hh,v 1.6 2012-01-21 03:27:05 caf Exp $
+// $Id: DataV1.hh,v 1.7 2012-02-06 23:40:06 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -15,16 +15,6 @@
 #include <stdint.h>
 #include "pdsdata/xtc/TypeId.hh"
 
-#define TIMEPIX_HEIGHT          1024
-#define TIMEPIX_WIDTH           256
-#define TIMEPIX_DEPTH           14
-#define TIMEPIX_DEPTH_BYTES     2
-#define TIMEPIX_RAW_DATA_BYTES \
-          ((TIMEPIX_HEIGHT) * (TIMEPIX_WIDTH) * (TIMEPIX_DEPTH) / 8)
-
-#define TIMEPIX_DECODED_DATA_BYTES \
-          ((TIMEPIX_HEIGHT) * (TIMEPIX_WIDTH) * (TIMEPIX_DEPTH_BYTES))
-
 namespace Pds
 {
    namespace Timepix
@@ -37,6 +27,13 @@ class Pds::Timepix::DataV1
 {
   public:
     enum { Version = 1 };
+    enum { Height = 512 };
+    enum { Width = 512 };
+    enum { Depth = 14 };
+    enum { DepthBytes = 2 };
+    enum { RawDataBytes = Height * Width * Depth / 8 };
+    enum { DecodedDataBytes = Height * Width * DepthBytes };
+    enum { MaxPixelValue = 11810 };
 
     DataV1() :
       _timestamp(0),
@@ -54,21 +51,21 @@ class Pds::Timepix::DataV1
       { return TypeId(TypeId::Id_TimepixData, Version); }
 
     unsigned width() const
-      { return (TIMEPIX_WIDTH); }
+      { return (Width); }
 
     unsigned height() const
-      { return (TIMEPIX_HEIGHT); }
+      { return (Height); }
 
     unsigned depth() const
-      { return (TIMEPIX_DEPTH); }
+      { return (Depth); }
 
     // number of bytes per pixel
     unsigned depth_bytes() const
-      { return (TIMEPIX_DEPTH_BYTES); }
+      { return (DepthBytes); }
 
     // size of data appended to the end of this structure
     unsigned data_size() const
-      { return (TIMEPIX_DECODED_DATA_BYTES); }
+      { return (RawDataBytes); }
 
     // beginning of data appended to the end of this structure
     const unsigned char* data() const
