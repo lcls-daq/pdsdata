@@ -1,8 +1,8 @@
 //
 //  Class for rectangular frame data
 //
-#ifndef Pds_ElementHeader_hh
-#define Pds_ElementHeader_hh
+#ifndef Pds_ElementHeader2X2_hh
+#define Pds_ElementHeader2X2_hh
 
 #include <stdint.h>
 
