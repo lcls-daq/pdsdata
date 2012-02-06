@@ -155,4 +155,6 @@ namespace Pds {
   };
 };
 
+#pragma pack()
+
 #endif
