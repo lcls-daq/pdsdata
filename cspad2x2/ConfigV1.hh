@@ -57,8 +57,10 @@ namespace Pds
         uint32_t                         asicMask     () const { return _AsicMask; }
         //  "roiMask" is a mask of 2x1 slices
         unsigned                         roiMask      (int iq) const;
+        unsigned                         roiMask      () const;
         unsigned                         numAsicsRead () const;
         unsigned                         numAsicsStored(int iq) const;
+        unsigned                         numAsicsStored() const;
         uint32_t                         concentratorVersion() const {return _concentratorVersion; }
         uint32_t*                        concentratorVersionAddr();
         static const int                 version      ()       { return Version; }

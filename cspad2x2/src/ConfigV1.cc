@@ -48,7 +48,12 @@ const ConfigV1QuadReg* ConfigV1::quad() const
 
 unsigned ConfigV1::roiMask      (int iq) const
 {
-  return (_roiMask>>(8*iq))&0xff; 
+  return _roiMask&0x3;
+}
+
+unsigned ConfigV1::roiMask      () const
+{
+  return _roiMask&0x3;
 }
 
 unsigned ConfigV1::numAsicsRead () const
@@ -58,9 +63,13 @@ unsigned ConfigV1::numAsicsRead () const
 
 unsigned ConfigV1::numAsicsStored(int iq) const
 {
-  unsigned m = roiMask(iq);
+  unsigned m = roiMask(0);
   unsigned c;
   for(c=0; m; c++)
     m &= m-1;
   return c<<1;
+}
+unsigned ConfigV1::numAsicsStored() const
+{
+  return ConfigV1::numAsicsStored(0);
 }
