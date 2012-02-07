@@ -137,7 +137,8 @@ void XtcRunSet::addSinglePath(string path) {
 
 // Add every file in a directory whose full path contains the match string.
 void XtcRunSet::addPathsFromDir(string dirPath, string matchString) {
-  DIR *dp = opendir(dirPath.c_str());
+  cout << "addPathsFromDir(dirPath=[" << dirPath << "], matchstring=[" << matchString << "])" << endl;
+  DIR *dp = opendir((dirPath == "") ? "." : dirPath.c_str());
   if (dp == NULL) {
     string error = string("addPathsFromDir(") + dirPath + ")";
     perror(error.c_str());
@@ -147,7 +148,9 @@ void XtcRunSet::addPathsFromDir(string dirPath, string matchString) {
   struct dirent *dirp;
   while ((dirp = readdir(dp)) != NULL) {
     if (strstr(dirp->d_name, ".xtc")) {
-      string path = dirPath + "/" + dirp->d_name;
+      cout << "dirp->d_name = [" << dirp->d_name << "]" << endl;
+      string path = (dirPath == "" ? dirp->d_name : (dirPath + "/" + dirp->d_name));
+      cout << "path = [" << path << "]" << endl;
       if (matchString.empty() || (path.find(matchString) != string::npos)) {
         newPaths.push_back(path);
       }
@@ -159,18 +162,14 @@ void XtcRunSet::addPathsFromDir(string dirPath, string matchString) {
 // Add every file containing the given run prefix.
 // The run prefix contains the full path of the directory to search.
 void XtcRunSet::addPathsFromRunPrefix(string runPrefix) {
-  // Find *last* occurrence of -r in run prefix
-  // (ignore earlier -r strings that could be in the directory path)
-  size_t index = runPrefix.rfind("-r");
-  if (index == string::npos) {
-    cerr << runPrefix << " is not a valid run prefix." << endl;
-    exit(1);
+  size_t lastSlash = runPrefix.rfind("/");
+  if (lastSlash == string::npos) {
+    addPathsFromDir("", runPrefix);
+  } else {
+    string dirPath = runPrefix.substr(0, lastSlash);
+    runPrefix = runPrefix.substr(lastSlash + 1);
+    addPathsFromDir(dirPath, runPrefix);
   }
-  // The path will be of the form /.../.../eNNN-rNNNN-sNN-cNN.xtc,
-  // so walk back 5 characters from the -r to capture
-  // just the directory path.
-  string dirPath = runPrefix.substr(0, index - 5);
-  addPathsFromDir(dirPath, runPrefix);
 }
 
 // Add every file listed in the list file.
