@@ -1,4 +1,4 @@
-// $Id: DataV1.hh,v 1.7 2012-02-06 23:40:06 caf Exp $
+// $Id: DataV1.hh,v 1.8 2012-02-07 18:55:27 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -65,7 +65,7 @@ class Pds::Timepix::DataV1
 
     // size of data appended to the end of this structure
     unsigned data_size() const
-      { return (RawDataBytes); }
+      { return (DecodedDataBytes); }
 
     // beginning of data appended to the end of this structure
     const unsigned char* data() const
