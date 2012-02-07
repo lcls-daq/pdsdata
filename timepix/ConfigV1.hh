@@ -1,4 +1,4 @@
-// $Id: ConfigV1.hh,v 1.2 2012-01-11 23:30:56 caf Exp $
+// $Id: ConfigV1.hh,v 1.3 2012-02-07 00:08:10 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -57,7 +57,7 @@ namespace Pds {
 
       ConfigV1();
 
-      ConfigV1(uint8_t readoutSpeed, uint8_t triggerMode, int32_t shutterTimeout,
+      ConfigV1(uint8_t readoutSpeed, uint8_t triggerMode, int32_t timepixSpeed,
                int32_t dac0Ikrum, int32_t dac0Disc, int32_t dac0Preamp,
                int32_t dac0BufAnalogA, int32_t dac0BufAnalogB, int32_t dac0Hist,
                int32_t dac0ThlFine, int32_t dac0ThlCourse, int32_t dac0Vcas,
@@ -83,7 +83,7 @@ namespace Pds {
 
       uint8_t           readoutSpeed()      const     { return _readoutSpeed; }
       uint8_t           triggerMode()       const     { return _triggerMode; }
-      int32_t           shutterTimeout()    const     { return _shutterTimeout; }
+      int32_t           timepixSpeed()      const     { return _timepixSpeed; }
 
       int32_t           dac0Ikrum()        const     { return _dac0Ikrum; }
       int32_t           dac0Disc()         const     { return _dac0Disc; }
@@ -151,7 +151,7 @@ namespace Pds {
 
 private:
       int8_t      _readoutSpeed, _triggerMode;
-      int32_t     _shutterTimeout;
+      int32_t     _timepixSpeed;
 
       int32_t     _dac0Ikrum, _dac0Disc, _dac0Preamp;
       int32_t     _dac0BufAnalogA, _dac0BufAnalogB, _dac0Hist;

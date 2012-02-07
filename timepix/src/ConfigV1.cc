@@ -10,7 +10,7 @@ ConfigV1::ConfigV1 ()
 ConfigV1::ConfigV1 (
   uint8_t   readoutSpeed,
   uint8_t   triggerMode,
-  int32_t   shutterTimeout,
+  int32_t   timepixSpeed,
   int32_t   dac0Ikrum,
   int32_t   dac0Disc,
   int32_t   dac0Preamp,
@@ -70,7 +70,7 @@ ConfigV1::ConfigV1 (
   ) :
   _readoutSpeed(readoutSpeed),
   _triggerMode(triggerMode),
-  _shutterTimeout(shutterTimeout),
+  _timepixSpeed(timepixSpeed),
   _dac0Ikrum(dac0Ikrum),
   _dac0Disc(dac0Disc),
   _dac0Preamp(dac0Preamp),
@@ -146,7 +146,7 @@ void ConfigV1::dump() const {
   printf("\n");
 
   printf("Timepix speed: ");
-  switch (shutterTimeout()) { // timepix speed replaces shutter timeout
+  switch (timepixSpeed()) {
     case 0:
       printf("100 MHz");
       break;
