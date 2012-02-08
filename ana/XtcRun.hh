@@ -43,8 +43,8 @@ private:
               ( int iGlobalEvent, std::vector<int>& lSliceEvent );
 
   std::list<XtcSlice*> _slices;
+  std::list<XtcSlice*> _doneSlices;
   std::string          _base;
-  char* _dgTempBuf;
 };
 
 } // namespace Ana

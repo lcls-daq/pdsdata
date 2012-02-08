@@ -8,23 +8,29 @@ bool _live=false;
 
 void XtcRun::live_read(bool l) { _live=l; }
 
-XtcRun::XtcRun() : _dgTempBuf(NULL) {}
+XtcRun::XtcRun() {}
+
+static void deleteSlices(std::list<XtcSlice*>& slices) {
+  for (std::list<XtcSlice*>::iterator it = slices.begin(); it != slices.end(); it++) {
+    printf("deleteSlices: deleting %p\n", *it);
+    delete (*it);
+  }
+  slices.clear();
+}
+
 
 XtcRun::~XtcRun() 
 {
-  for(std::list<XtcSlice*>::iterator it=_slices.begin();
-      it!=_slices.end(); it++)
-    delete (*it);
-  _slices.clear();
-  delete[] _dgTempBuf;
+  printf("~XtcRun(): begin\n");
+  deleteSlices(_slices);
+  deleteSlices(_doneSlices);
+  printf("~XtcRun(): end\n");
 } 
 
-void XtcRun::reset   (std::string fname) 
+void XtcRun::reset(std::string fname) 
 {
-  for(std::list<XtcSlice*>::iterator it=_slices.begin();
-      it!=_slices.end(); it++)
-    delete (*it);
-  _slices.clear();
+  deleteSlices(_slices);
+  deleteSlices(_doneSlices);
   _slices.push_back(new XtcSlice(fname));
   _base = fname.substr(0,fname.find("-s"));
 }
@@ -84,7 +90,7 @@ Result XtcRun::next(Pds::Dgram*& dg, int* piSlice, int64_t* pi64OffsetCur)
     for(std::list<XtcSlice*>::iterator it = _slices.begin();
         it != _slices.end();) {
       if (it != n && (*it)->skip()==End) {
-        delete (*it);
+        _doneSlices.push_back(*it);
         std::list<XtcSlice*>::iterator ee = it++;
         _slices.erase(ee);
       }
@@ -94,14 +100,7 @@ Result XtcRun::next(Pds::Dgram*& dg, int* piSlice, int64_t* pi64OffsetCur)
   }
   Result r = (*n)->next(dg, pi64OffsetCur);
   if (r == End) {
-    // Copy dg before deleting the slice where dg lives
-    delete _dgTempBuf;
-    size_t size = sizeof(*dg) + dg->xtc.sizeofPayload();
-    _dgTempBuf = new char[size];
-    bcopy(_dgTempBuf, dg, size);
-    dg = (Dgram *) _dgTempBuf;
-    // Now we can delete the slice
-    delete (*n);
+    _doneSlices.push_back(*n);
     _slices.erase(n);
     if (_slices.size())
       r = OK;
