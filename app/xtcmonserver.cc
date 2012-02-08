@@ -40,8 +40,8 @@ int main(int argc, char* argv[]) {
   bool verbose = false;
   bool veryverbose = false;
 
-  (void) signal(SIGINT, sigfunc);
-  (void) signal(SIGSEGV, sigfunc);
+  //  (void) signal(SIGINT, sigfunc);
+  //  (void) signal(SIGSEGV, sigfunc);
 
   int c;
   while ((c = getopt(argc, argv, "f:l:x:d:p:n:s:r:c:S:LvVh?")) != -1) {

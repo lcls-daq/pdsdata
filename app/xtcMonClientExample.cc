@@ -392,7 +392,7 @@ int main(int argc, char* argv[]) {
   unsigned client=0;
   bool serialized=false;
   const char* partitionTag = 0;
-  XtcMonitorClient myClient;
+  MyXtcMonitorClient myClient;
   char* endPtr;
 
   while ((c = getopt(argc, argv, "?ht:c:s")) != -1) {

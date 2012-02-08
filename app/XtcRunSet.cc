@@ -25,7 +25,6 @@ private:
   queue<Dgram*> _pool;
 
   void _deleteDatagram(Dgram* dg) {
-    _pool.push(dg); 
   }
 
 public:
@@ -39,8 +38,8 @@ public:
                      numberofEvBuffers,
                      numberofClients,
                      sequenceLength) {
-    //  sum of client queues (nEvBuffers) + clients + transitions + shuffleQ
-    unsigned depth = 2*numberofEvBuffers+XtcMonitorServer::numberofTrBuffers+numberofClients;
+    // Only need these buffers for inserted transitions { Map, Unconfigure, Unmap }
+    unsigned depth = 4;
     for(unsigned i=0; i<depth; i++)
       _pool.push(reinterpret_cast<Dgram*>(new char[sizeofBuffers]));
   }
@@ -68,6 +67,7 @@ public:
     new((char*)&dg->xtc) Xtc(TypeId(TypeId::Id_Xtc,0),ProcInfo(Level::Event,0,0));
     ::printTransition(dg);
     events(dg);
+    _pool.push(dg);
   }
 };
 
