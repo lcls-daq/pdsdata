@@ -44,6 +44,7 @@ private:
 
   std::list<XtcSlice*> _slices;
   std::string          _base;
+  char* _dgTempBuf;
 };
 
 } // namespace Ana

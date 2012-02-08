@@ -8,7 +8,7 @@ bool _live=false;
 
 void XtcRun::live_read(bool l) { _live=l; }
 
-XtcRun::XtcRun() {}
+XtcRun::XtcRun() : _dgTempBuf(NULL) {}
 
 XtcRun::~XtcRun() 
 {
@@ -16,6 +16,7 @@ XtcRun::~XtcRun()
       it!=_slices.end(); it++)
     delete (*it);
   _slices.clear();
+  delete[] _dgTempBuf;
 } 
 
 void XtcRun::reset   (std::string fname) 
@@ -93,6 +94,13 @@ Result XtcRun::next(Pds::Dgram*& dg, int* piSlice, int64_t* pi64OffsetCur)
   }
   Result r = (*n)->next(dg, pi64OffsetCur);
   if (r == End) {
+    // Copy dg before deleting the slice where dg lives
+    delete _dgTempBuf;
+    size_t size = sizeof(*dg) + dg->xtc.sizeofPayload();
+    _dgTempBuf = new char[size];
+    bcopy(_dgTempBuf, dg, size);
+    dg = (Dgram *) _dgTempBuf;
+    // Now we can delete the slice
     delete (*n);
     _slices.erase(n);
     if (_slices.size())
