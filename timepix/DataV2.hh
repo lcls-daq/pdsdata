@@ -1,10 +1,14 @@
-// $Id: DataV2.hh,v 1.1 2012-02-06 23:36:30 caf Exp $
+// $Id: DataV2.hh,v 1.2 2012-02-16 19:37:34 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
 //  Class for data of Timepix
 //
 //  The appended data size is exported by the data_size() method.
+//
+//  Timepix::DataV2 data are shuffled.
+//
+//  To shuffle Timepix::DataV1 data, use this constructor: DataV2(const DataV1&)
 //
 #ifndef TIMEPIXDATAV2_HH
 #define TIMEPIXDATAV2_HH

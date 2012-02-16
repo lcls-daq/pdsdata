@@ -1,4 +1,4 @@
-// $Id: DataV1.hh,v 1.8 2012-02-07 18:55:27 caf Exp $
+// $Id: DataV1.hh,v 1.9 2012-02-16 19:37:34 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -8,6 +8,10 @@
 //  Software should treat it as 512x512 elements of 2 bytes each.
 //
 //  The appended data size is exported by the data_size() method.
+//
+//  Timepix::DataV1 data are NOT shuffled.
+//
+//  For shuffled data see Timepix::DataV2.
 //
 #ifndef TIMEPIXDATAV1_HH
 #define TIMEPIXDATAV1_HH
