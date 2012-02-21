@@ -62,6 +62,12 @@ void XtcRun::init()
     (*it)->init();
 }
 
+static bool hasNullSequence(std::list<XtcSlice*>::iterator it) {
+  XtcSlice* slice = *it;
+  const Sequence* sequence = &slice->hdr().seq;
+  return (sequence == NULL);
+}
+
 Result XtcRun::next(Pds::Dgram*& dg, int* piSlice, int64_t* pi64OffsetCur)
 {  
   //
@@ -74,13 +80,20 @@ Result XtcRun::next(Pds::Dgram*& dg, int* piSlice, int64_t* pi64OffsetCur)
   std::list<XtcSlice*>::iterator n  = _slices.begin();
   for(std::list<XtcSlice*>::iterator it = _slices.begin();
       it != _slices.end(); it++, iSlice++) {
-        
+    if (hasNullSequence(it)) {
+      printf("XtcRun::next: %d: null sequence for slice=%p\n", iSlice, *it);
+      continue;
+    }
     if ((*it)->hdr().seq.service()==Pds::TransitionId::L1Accept &&
         tmin > (*it)->hdr().seq.clock())
     {
       tmin = (*(n = it))->hdr().seq.clock();
       iNextSlice  = iSlice;
     }      
+  }
+  if (hasNullSequence(n)) {
+    printf("XtcRun::next: no valid slices found, returning End\n");
+    return End;
   }
 
   //
