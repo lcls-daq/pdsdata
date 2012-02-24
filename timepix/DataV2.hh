@@ -1,4 +1,4 @@
-// $Id: DataV2.hh,v 1.2 2012-02-16 19:37:34 caf Exp $
+// $Id: DataV2.hh,v 1.3 2012-02-24 01:50:41 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -93,7 +93,7 @@ class Pds::Timepix::DataV2
       return data()+(y*_width+x)*depth_bytes();
     }
 
-  private:
+  // private:
     uint16_t _width;        // pixels per row
     uint16_t _height;       // pixels per column
     uint32_t _timestamp;    // hardware timestamp

@@ -39,8 +39,8 @@ DataV2::DataV2(const DataV1& f) :
   uint16_t *src = (uint16_t *)f.data();
   uint16_t *dest = (uint16_t *)(this+1);
 
-  for (unsigned iy=0; iy < _height * 2; iy++) {
-    for (unsigned ix=0; ix < _width / 2; ix++) {
+  for (unsigned iy=0; iy < _height * 2u; iy++) {
+    for (unsigned ix=0; ix < _width / 2u; ix++) {
       // map pixels from 256x1024 to 512x512
       switch (iy / 256) {
         case 0:
