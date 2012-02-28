@@ -12,7 +12,7 @@ XtcRun::XtcRun() {}
 
 static void deleteSlices(std::list<XtcSlice*>& slices) {
   for (std::list<XtcSlice*>::iterator it = slices.begin(); it != slices.end(); it++) {
-    printf("deleteSlices: deleting %p\n", *it);
+    //printf("deleteSlices: deleting %p\n", *it);
     delete (*it);
   }
   slices.clear();
