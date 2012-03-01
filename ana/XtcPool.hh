@@ -1,8 +1,6 @@
 #ifndef Pds_XtcPool_hh
 #define Pds_XtcPool_hh
 
-#include "pds/service/SafeQueue.hh"
-
 //#define DUMP_DMGOFF
 
 namespace Pds {
@@ -26,8 +24,8 @@ namespace Pds {
   
     private:
       unsigned _eventsize;
-      SafeQueue<char *, true> _pend;
-      SafeQueue<char *, true> _free;
+      class SafeBufferQueue* _pend;
+      class SafeBufferQueue* _free;
       void _waitAndFill(int fd, char* p, unsigned sz);
     };
   }
