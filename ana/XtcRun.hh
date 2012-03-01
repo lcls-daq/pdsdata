@@ -30,6 +30,7 @@ public:
  
   int findTime(const char* sTime, int& iCalib, int& iEvent, bool& bExactMatch, bool& bOvertime);
   int findTime(uint32_t uSeconds, uint32_t uNanoseconds, int& iCalib, int& iEvent, bool& bExactMatch, bool& bOvertime);
+  int getStartAndEndTime(ClockTime& start, ClockTime& end);
   int findNextFiducial
               (uint32_t uFiducialSearch, int iFidFromEvent, int& iCalib, int& iEvent);
   int numCalib(int& iNumCalib);
@@ -45,6 +46,9 @@ private:
   std::list<XtcSlice*> _slices;
   std::list<XtcSlice*> _doneSlices;
   std::string          _base;
+  bool _startAndEndValid;
+  ClockTime _start;
+  ClockTime _end;
 };
 
 } // namespace Ana

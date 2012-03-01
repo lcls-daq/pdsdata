@@ -8,7 +8,7 @@ bool _live=false;
 
 void XtcRun::live_read(bool l) { _live=l; }
 
-XtcRun::XtcRun() {}
+XtcRun::XtcRun() : _startAndEndValid(false) {}
 
 static void deleteSlices(std::list<XtcSlice*>& slices) {
   for (std::list<XtcSlice*>::iterator it = slices.begin(); it != slices.end(); it++) {
@@ -60,6 +60,51 @@ void XtcRun::init()
   for(std::list<XtcSlice*>::iterator it=_slices.begin();
       it!=_slices.end(); it++)
     (*it)->init();
+
+  XtcSlice* firstSlice = NULL;
+  XtcSlice* lastSlice = NULL;
+  for(std::list<XtcSlice*>::iterator it=_slices.begin();
+      it!=_slices.end(); it++) {
+    if (firstSlice == NULL) {
+      firstSlice = *it;
+    }
+    lastSlice = *it;
+  }
+
+  _startAndEndValid = false;
+  if (firstSlice == NULL || lastSlice == NULL) {
+    return;
+  }
+
+  // Set _start
+  uint32_t seconds, nanoseconds;
+  int index = 1;
+  int iError = firstSlice->getTimeGlobal(index, seconds, nanoseconds);
+  if (iError) {
+    return;
+  }
+  _start = ClockTime(seconds, nanoseconds);
+
+  // Set _end
+  iError = lastSlice->numTotalEvent(index);
+  if (iError) {
+    return;
+  }
+  iError = lastSlice->getTimeGlobal(index, seconds, nanoseconds);
+  if (iError) {
+    return;
+  }
+  _end = ClockTime(seconds, nanoseconds);
+  _startAndEndValid = true;
+}
+
+int XtcRun::getStartAndEndTime(ClockTime& start, ClockTime& end) {
+  if (! _startAndEndValid) {
+    return 1;
+  }
+  start = _start;
+  end = _end;
+  return 0;
 }
 
 static bool hasNullSequence(std::list<XtcSlice*>::iterator it) {
