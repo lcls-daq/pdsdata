@@ -29,18 +29,79 @@ int IndexFileReader::open(const char* sXtcIndex)
     return 1;
   }
     
-  int iRead = ::read(_fdXtcIndex, &_fileHeader, sizeof(_fileHeader));
-  if ( iRead != sizeof(_fileHeader) )
+  /*
+   * Read main header
+   */
+  TypeId typeId;
+  int iError = ::read(_fdXtcIndex, &typeId, sizeof(typeId) );
+  if ( iError == -1 )
   {
-    printf( "IndexFileReader::open(): Read header failed. Read %d bytes (expected %d), error = %s\n",
-      iRead, sizeof(_fileHeader), strerror(errno) );
+    printf( "IndexFileReader::open(): read file header version failed (%s)\n", strerror(errno) );
     return 2;
   }
+  
+  if ( typeId.id() != TypeId::Id_Index  )
+  {
+    printf( "IndexFileReader::open(): Unsupported xtc type: %s V%d\n",
+      TypeId::name(typeId.id()), typeId.version() );
+    return 3;
+  }
+  
+  printf( "Xtc index header type: %s V%d\n", TypeId::name(typeId.id()), typeId.version() );
+  
+  /*
+   * Provide back-compatibility with the previous header version
+   */
+  if ( (int) typeId.version() != IndexFileHeaderType::iXtcIndexVersion )
+  {
+    if ( (int) typeId.version() == 1 )
+    {
+      IndexFileHeaderV1 fileHeaderV1;
+      lseek64(_fdXtcIndex, 0, SEEK_SET);
+      int iError = ::read(_fdXtcIndex, &fileHeaderV1, sizeof(IndexFileHeaderV1) );
+      if ( iError == -1 )
+      {
+        printf( "IndexFileReader::open(): read file header failed (%s)\n", strerror(errno) );
+        return 4;
+      }    
+      
+      new (&_fileHeader) IndexFileHeaderType(fileHeaderV1);
+      _iSizeHeader = sizeof(fileHeaderV1);
+    }
+    else
+    {
+      printf( "IndexFileReader::open(): Unsupported xtc type: %s V%d\n",
+        TypeId::name(typeId.id()),
+        typeId.version() );
+      return 5;
+    }
+  }
+  else
+  {
+    lseek64(_fdXtcIndex, 0, SEEK_SET);
+    int iError = ::read(_fdXtcIndex, &_fileHeader, sizeof(_fileHeader) );
+    if ( iError == -1 )
+    {
+      printf( "IndexFileReader::open(): read file header failed (%s)\n", strerror(errno) );
+      return 6;
+    } 
+    
+    _iSizeHeader = sizeof(_fileHeader);
+  }
+  
+  ////!! original
+  //int iRead = ::read(_fdXtcIndex, &_fileHeader, sizeof(_fileHeader));
+  //if ( iRead != sizeof(_fileHeader) )
+  //{
+  //  printf( "IndexFileReader::open(): Read header failed. Read %d bytes (expected %d), error = %s\n",
+  //    iRead, sizeof(_fileHeader), strerror(errno) );
+  //  return 2;
+  //}
   
   /*
    * Calculate the file offset to CalibCycle
    */
-  int64_t i64OffsetCalib = sizeof(_fileHeader) + sizeof(_curL1Node)* (int64_t) _fileHeader.iNumIndex;
+  int64_t i64OffsetCalib = _iSizeHeader + sizeof(_curL1Node)* (int64_t) _fileHeader.iNumIndex;
   
   int64_t i64OffsetSeek = ::lseek64(_fdXtcIndex, i64OffsetCalib, SEEK_SET);
   if ( i64OffsetSeek != i64OffsetCalib )
@@ -53,7 +114,7 @@ int IndexFileReader::open(const char* sXtcIndex)
   {
     _lCalib.resize(_fileHeader.iNumCalib);
     const int iReadSize = _lCalib.size() * sizeof(_lCalib[0]);
-    iRead = ::read(_fdXtcIndex, (void*) &_lCalib[0], iReadSize);
+    int iRead = ::read(_fdXtcIndex, (void*) &_lCalib[0], iReadSize);
     if (iRead != iReadSize)
     {
       printf( "IndexFileReader::open(): Read calib cycle (%d) failed. Read %d bytes (expected %d), error = %s\n",
@@ -66,7 +127,7 @@ int IndexFileReader::open(const char* sXtcIndex)
   {
     _lEvrEvent.resize(_fileHeader.iNumEvrEvents);
     const int iReadSize = _lEvrEvent.size() * sizeof(_lEvrEvent[0]);
-    iRead = ::read(_fdXtcIndex, (void*) &_lEvrEvent[0], iReadSize);
+    int iRead = ::read(_fdXtcIndex, (void*) &_lEvrEvent[0], iReadSize);
     if (iRead != iReadSize)
     {
       printf( "IndexFileReader::open(): Read evr events (%d) failed. Read %d bytes (expected %d), error = %s\n",
@@ -84,7 +145,7 @@ int IndexFileReader::open(const char* sXtcIndex)
     for ( int iDetector = 0; iDetector < _fileHeader.iNumDetector; ++iDetector )
     {
       int iReadSize = sizeof(_lDetector[iDetector]);
-      iRead = ::read(_fdXtcIndex, (void*) &_lDetector[iDetector], iReadSize);
+      int iRead = ::read(_fdXtcIndex, (void*) &_lDetector[iDetector], iReadSize);
       if (iRead != iReadSize)
       {
         printf( "IndexFileReader::open(): Read detector %d procInfo failed. Read %d bytes (expected %d), error = %s\n",
@@ -845,7 +906,7 @@ int IndexFileReader::gotoL1Node(int iL1Node)
     return 2;
   }
       
-  int64_t i64OffsetTo   = sizeof(_fileHeader) + sizeof(_curL1Node)* iL1Node;
+  int64_t i64OffsetTo   = _iSizeHeader + sizeof(_curL1Node)* iL1Node;
   int64_t i64OffsetSeek = ::lseek64(_fdXtcIndex, i64OffsetTo, SEEK_SET);
   if ( i64OffsetSeek != i64OffsetTo )
   {

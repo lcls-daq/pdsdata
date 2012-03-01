@@ -66,6 +66,7 @@ private:
   
   int                 _fdXtcIndex;
   IndexFileHeaderType _fileHeader;
+  int                 _iSizeHeader; // For back-compatability with old version headers
   std::vector<CalibNode>
                       _lCalib;
   std::vector<uint8_t>
