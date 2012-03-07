@@ -2,6 +2,7 @@
 #define PRINCETON_CONFIG_V2_HH
 
 #include <stdint.h>
+#include "ConfigV1.hh"
 
 #pragma pack(4)
 
@@ -31,6 +32,8 @@ public:
    uint16_t         u16ReadoutEventCode, 
    uint16_t         u16DelayMode          = -1  // default value is used by the config program
    );
+  ConfigV2(const ConfigV1& configV1);
+  
 
   uint32_t          width ()            const         { return _uWidth; }
   uint32_t          height()            const         { return _uHeight; }
@@ -40,7 +43,7 @@ public:
   uint32_t          binY  ()            const         { return _uBinY; }    
   float             exposureTime()      const         { return _f32ExposureTime; }
   float             coolingTemp ()      const         { return _f32CoolingTemp; }
-  uint16_t          gainIndex	() 		const         { return _u16GainIndex; }
+  uint16_t          gainIndex ()    const         { return _u16GainIndex; }
   uint16_t          readoutSpeedIndex() const         { return _u16ReadoutSpeedIndex; }
   
   uint16_t          readoutEventCode()  const         { return _u16ReadoutEventCode; }
