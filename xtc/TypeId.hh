@@ -63,6 +63,7 @@ namespace Pds {
       Id_PhasicsConfig,
       Id_TimepixConfig,
       Id_TimepixData,
+      Id_CspadCompressedElement,
       NumberOf};
 
     TypeId() {}

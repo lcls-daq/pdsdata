@@ -66,7 +66,8 @@ const char* TypeId::name(Type type)
     "Gsc16aiData",
     "PhasicsConfig",
     "TimepixConfig",
-    "TimepixData"
+    "TimepixData",
+    "CspadCompressedElement",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
