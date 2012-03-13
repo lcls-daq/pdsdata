@@ -202,7 +202,9 @@ uint32_t ConfigV2::firmwareVersion()
 void ConfigV2::pixelThresh(uint32_t threshSize, uint8_t *thresh)
 {
   _pixelThreshSize = threshSize;
-  memcpy(_pixelThresh, thresh, _pixelThreshSize);
+  if ((_pixelThreshSize > 0) && (_pixelThreshSize <= PixelThreshMax)) {
+    memcpy(_pixelThresh, thresh, _pixelThreshSize);
+  }
 }
 
 uint32_t ConfigV2::pixelThreshSize()
