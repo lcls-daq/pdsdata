@@ -87,7 +87,7 @@ int IndexChunkReader::open(const char* sFnIndex)
      */
     for (int iFileSerial = 0;;++iFileSerial)
     {
-      char sFnBuf[128];
+      char sFnBuf[64];
       sprintf(sFnBuf, "%s%02d.xtc.idx", _strFnBase.c_str(), iFileSerial);
       
       struct ::stat64 statFile;
