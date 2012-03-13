@@ -889,7 +889,7 @@ int genListFromBasename(const char* sXtcFilename, vector<string>& lRunFilename)
     bool bSliceFound = false;
     for (int iSlice = 0; iSlice < MAX_SLICES; ++iSlice)
     {
-      char sFnBuf[64];
+      char sFnBuf[128];
       sprintf(sFnBuf, "%s%02d-c%02d.%s", strFnBase.c_str(), iSlice, iChunk, strFnExt.c_str());
       
       struct ::stat64 statFile;
