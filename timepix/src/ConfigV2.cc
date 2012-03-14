@@ -139,7 +139,7 @@ ConfigV2::ConfigV2 (
   _chip0ID = _chip1ID = _chip2ID = _chip3ID = 0;
 }
 
-const char *ConfigV2::chip0Name()
+const char *ConfigV2::chip0Name() const
 {
   return (_chip0Name);
 }
@@ -149,7 +149,7 @@ void ConfigV2::chip0Name(const char *name)
   strncpy(_chip0Name, name, ChipNameMax);
 }
 
-const char *ConfigV2::chip1Name()
+const char *ConfigV2::chip1Name() const
 {
   return (_chip1Name);
 }
@@ -159,7 +159,7 @@ void ConfigV2::chip1Name(const char *name)
   strncpy(_chip1Name, name, ChipNameMax);
 }
 
-const char *ConfigV2::chip2Name()
+const char *ConfigV2::chip2Name() const
 {
   return (_chip2Name);
 }
@@ -169,7 +169,7 @@ void ConfigV2::chip2Name(const char *name)
   strncpy(_chip2Name, name, ChipNameMax);
 }
 
-const char *ConfigV2::chip3Name()
+const char *ConfigV2::chip3Name() const
 {
   return (_chip3Name);
 }
@@ -184,7 +184,7 @@ void ConfigV2::driverVersion(int32_t version)
   _driverVersion = version;
 }
 
-int32_t ConfigV2::driverVersion()
+int32_t ConfigV2::driverVersion() const
 {
   return (_driverVersion);
 }
@@ -194,7 +194,7 @@ void ConfigV2::firmwareVersion(uint32_t version)
   _firmwareVersion = version;
 }
 
-uint32_t ConfigV2::firmwareVersion()
+uint32_t ConfigV2::firmwareVersion() const
 {
   return (_firmwareVersion);
 }
@@ -207,17 +207,17 @@ void ConfigV2::pixelThresh(uint32_t threshSize, uint8_t *thresh)
   }
 }
 
-uint32_t ConfigV2::pixelThreshSize()
+uint32_t ConfigV2::pixelThreshSize() const
 {
   return (_pixelThreshSize);
 }
 
-const uint8_t * ConfigV2::pixelThresh()
+const uint8_t * ConfigV2::pixelThresh() const
 {
   return (_pixelThresh);
 }
 
-void ConfigV2::dump() {
+void ConfigV2::dump() const {
   printf("-------Timepix Config---------------\n");
   printf("Readout speed: ");
   switch (readoutSpeed()) {

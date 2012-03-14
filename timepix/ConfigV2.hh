@@ -1,4 +1,4 @@
-// $Id: ConfigV2.hh,v 1.1 2012-03-13 17:52:02 caf Exp $
+// $Id: ConfigV2.hh,v 1.2 2012-03-14 00:49:39 caf Exp $
 // Author: Chris Ford <caf@slac.stanford.edu>
 
 //
@@ -116,31 +116,31 @@ namespace Pds {
       int32_t           chipCount()        const     { return ChipCount; }
 
       void              driverVersion(int32_t version);
-      int32_t           driverVersion();
+      int32_t           driverVersion() const;
       void              firmwareVersion(uint32_t version);
-      uint32_t          firmwareVersion();
+      uint32_t          firmwareVersion() const;
       void              pixelThresh(uint32_t size, uint8_t *thresh);
-      uint32_t          pixelThreshSize();
-      const uint8_t *   pixelThresh();
+      uint32_t          pixelThreshSize() const;
+      const uint8_t *   pixelThresh() const;
       void              chip0Name(const char *name);
-      const char *      chip0Name();
+      const char *      chip0Name() const;
       void              chip1Name(const char *name);
-      const char *      chip1Name();
+      const char *      chip1Name() const;
       void              chip2Name(const char *name);
-      const char *      chip2Name();
+      const char *      chip2Name() const;
       void              chip3Name(const char *name);
-      const char *      chip3Name();
+      const char *      chip3Name() const;
       void              chip0ID(int32_t id)          { _chip0ID = id; }
-      int32_t           chip0ID()                    { return _chip0ID; }
+      int32_t           chip0ID()           const    { return _chip0ID; }
       void              chip1ID(int32_t id)          { _chip1ID = id; }
-      int32_t           chip1ID()                    { return _chip1ID; }
+      int32_t           chip1ID()           const    { return _chip1ID; }
       void              chip2ID(int32_t id)          { _chip2ID = id; }
-      int32_t           chip2ID()                    { return _chip2ID; }
+      int32_t           chip2ID()           const    { return _chip2ID; }
       void              chip3ID(int32_t id)          { _chip3ID = id; }
-      int32_t           chip3ID()                    { return _chip3ID; }
+      int32_t           chip3ID()           const    { return _chip3ID; }
 
       // misc
-      void              dump();
+      void              dump() const;
 
 private:
       int8_t      _readoutSpeed, _triggerMode;
