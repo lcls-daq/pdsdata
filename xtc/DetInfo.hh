@@ -74,7 +74,9 @@ namespace Pds {
       Gsc16ai   = 15,
       Phasics   = 16,
       Timepix   = 17,
-      NumDevice = 18
+      Opal2000  = 18,
+      Opal4000  = 19,
+      NumDevice = 20
     };
 
     DetInfo() {}

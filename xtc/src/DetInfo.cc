@@ -55,6 +55,8 @@ const char* DetInfo::name(Device dev) {
     "Gsc16ai",
     "Phasics",
     "Timepix",
+    "Opal2000",
+    "Opal4000",
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
 }
