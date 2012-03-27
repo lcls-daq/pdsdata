@@ -53,7 +53,13 @@ namespace Pds {
       CxiDsd        = 36,
       XcsBeamline   = 37,
       CxiSc2        = 38,
-      NumDetector   = 39
+      MecXuvSpectrometer = 39,
+      MecXrtsForw   = 40,
+      MecXrtsBack   = 41,
+      MecFdi        = 42,
+      MecTimeTool   = 43,
+      MecTargetChamber = 44,
+      NumDetector   = 45
     };
 
     enum Device {
