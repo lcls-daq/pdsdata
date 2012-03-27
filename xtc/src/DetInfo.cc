@@ -30,7 +30,8 @@ const char* DetInfo::name(Detector det){
     "XppSb1Ipm", "XppSb1Pim", "XppMonPim", "XppSb2Ipm", "XppSb3Ipm", "XppSb3Pim", "XppSb4Pim", "XppGon", "XppLas", "XppEndstation",
     "AmoEndstation", "CxiEndstation", "XcsEndstation", "MecEndstation",
     "CxiDg1", "CxiDg2", "CxiDg3", "CxiDg4", "CxiKb1", "CxiDs1", "CxiDs2", "CxiDsu", "CxiSc1", "CxiDsd",
-    "XcsBeamline", "CxiDs2",
+    "XcsBeamline", "CxiSc2",
+    "MecXuvSpectrometer","MecXrtsForw","MecXrtsBack","MecFdi","MecTimeTool","MecTargetChamber",
   };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
 }
