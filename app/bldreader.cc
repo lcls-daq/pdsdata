@@ -20,6 +20,7 @@ public:
     gasdet   = 0;
     ebeam    = 0;
     ebeamV0  = 0;
+    ebeamV1  = 0;
     phasecav = 0;
   }
   void dump() const {
@@ -37,14 +38,17 @@ public:
 			 damaged,
 			 damaged,
 			 damaged);
-    if (ebeam)        printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
+    if (ebeam)        printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
 			     ebeam->fEbeamCharge,
 			     ebeam->fEbeamL3Energy,
 			     ebeam->fEbeamLTUPosX,
 			     ebeam->fEbeamLTUPosY,
 			     ebeam->fEbeamLTUAngX,
 			     ebeam->fEbeamLTUAngY,
-			     ebeam->fEbeamPkCurrBC2);
+			     ebeam->fEbeamPkCurrBC2,
+			     ebeam->fEbeamEnergyBC2,
+			     ebeam->fEbeamPkCurrBC1,
+			     ebeam->fEbeamEnergyBC1);
     else if (ebeamV0) printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
 			     ebeamV0->fEbeamCharge,
 			     ebeamV0->fEbeamL3Energy,
@@ -53,14 +57,26 @@ public:
 			     ebeamV0->fEbeamLTUAngX,
 			     ebeamV0->fEbeamLTUAngY,
 			     damaged);
-    else              printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
-			     damaged,
-			     damaged,
-			     damaged,
-			     damaged,
-			     damaged,
-			     damaged,
+    else if (ebeamV1) printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
+			     ebeamV1->fEbeamCharge,
+			     ebeamV1->fEbeamL3Energy,
+			     ebeamV1->fEbeamLTUPosX,
+			     ebeamV1->fEbeamLTUPosY,
+			     ebeamV1->fEbeamLTUAngX,
+			     ebeamV1->fEbeamLTUAngY,
+                             ebeamV1->fEbeamPkCurrBC2,
 			     damaged);
+    else              printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged,
+			     damaged,
+                             damaged,
+                             damaged,
+                             damaged);
     if (phasecav) printf("%g\t%g\t%g\t%g\n", 
 			 phasecav->fFitTime1,
 			 phasecav->fFitTime2,
@@ -87,6 +103,9 @@ public:
 				     "ebeamLTUAngX[mrad]",
 				     "ebeamLTUAngY[mrad]",
 				     "ebeamPkCurrBC2[Amp]",
+                                     "ebeamBC2Energy[mm]",
+                                     "ebeamPkCurrBC1[Amp]",
+                                     "ebeamBC1Energy[mm]",
 				     "PhCav:FitTime1[ps]",
 				     "PhCav:FitTime2[ps]",
 				     "PhCav:Charge1[pC]",
@@ -101,6 +120,7 @@ public:
   unsigned                      pulseId;
   const BldDataFEEGasDetEnergy* gasdet;
   const BldDataEBeamV0*         ebeamV0;
+  const BldDataEBeamV1*         ebeamV1;
   const BldDataEBeam*           ebeam;
   const BldDataPhaseCavity*     phasecav;
 };
@@ -128,6 +148,9 @@ public:
 	  bld.ebeamV0  = reinterpret_cast<const BldDataEBeamV0*>      (xtc->payload()); 
 	  break;
 	case 1:
+	  bld.ebeamV1    = reinterpret_cast<const BldDataEBeamV1*>      (xtc->payload()); 
+	  break;
+	case 2:
 	  bld.ebeam    = reinterpret_cast<const BldDataEBeam*>        (xtc->payload()); 
 	  break;
 	default:
