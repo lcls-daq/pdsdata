@@ -292,15 +292,15 @@ int IndexList::finishList()
     
   if ( _mapSegToId.size() > sizeof(_l1NodeLast.uMaskDetDmgs) * 8 )
     printf( "Warning: segment # %d > %d! Detector damage bits may not be recorded precisely in index file\n",
-      _mapSegToId.size(), sizeof(_l1NodeLast.uMaskDetDmgs) * 8 );
+      (int) _mapSegToId.size(), (int) sizeof(_l1NodeLast.uMaskDetDmgs) * 8 );
 
   if ( _mapSegToId.size() > sizeof(_l1NodeLast.uMaskDetData) * 8 )
     printf( "Warning: segment # %d > %d! Detector data bits may not be recorded precisely in index file\n",
-      _mapSegToId.size(), sizeof(_l1NodeLast.uMaskDetData) * 8 );
+      (int) _mapSegToId.size(), (int) sizeof(_l1NodeLast.uMaskDetData) * 8 );
       
   if ( _mapEvrToId.size() > sizeof(_l1NodeLast.uMaskEvrEvents) * 8 )
     printf( "Warning: evr event # %d > %d! Evr event bits may not be recorded precisely in index file\n",
-      _mapEvrToId.size(), sizeof(_l1NodeLast.uMaskEvrEvents) * 8 );
+      (int) _mapEvrToId.size(), (int) sizeof(_l1NodeLast.uMaskEvrEvents) * 8 );
         
   return 0;
 }
@@ -314,8 +314,8 @@ int IndexList::addCalibCycle(int64_t i64Offset, uint32_t uSeconds, uint32_t uNan
 void IndexList::printList(int iVerbose) const
 { 
   printf( "XtcFn %s List index# 0x%x (%u) Calib# %d EvrEvt# %d Segment# %u\n",
-    _sXtcFilename, _lNode.size(), _lNode.size(), _lCalib.size(), 
-    _mapEvrToId.size(), _mapSegToId.size()
+    _sXtcFilename, (int) _lNode.size(), (int) _lNode.size(), (int) _lCalib.size(), 
+    (int) _mapEvrToId.size(), (int) _mapSegToId.size()
     );
 
   printf("  Out-of-Order# %u Overlapped with prev %u\n", _iNumOutOrder, _iNumOverlapPrev);
@@ -336,7 +336,7 @@ void IndexList::printList(int iVerbose) const
       time_t t = calibNode.uSeconds;
       strftime(sTimeBuff,128,"%Z %a %F %T",localtime(&t));  
       
-      printf( "Calib %d Off 0x%Lx L1 %d %s.%03u\n", iCalib, calibNode.i64Offset, calibNode.iL1Index,
+      printf( "Calib %d Off 0x%Lx L1 %d %s.%03u\n", iCalib, (long long unsigned) calibNode.i64Offset, calibNode.iL1Index,
         sTimeBuff, (int)(calibNode.uNanoseconds/1e6));
     }
     
@@ -413,7 +413,7 @@ void IndexList::printNode(const L1AcceptNode& node, int iSerial) const
   
   printf( "[%d] %s.%03u Fid 0x%05x Off 0x%Lx Dmg 0x%x ", 
     iSerial, sTimeBuff, (int)(node.uNanoseconds/1e6), 
-    node.uFiducial, node.i64OffsetXtc, node.damage.value() );
+    node.uFiducial, (long long) node.i64OffsetXtc, node.damage.value() );
 
   if ( (int) node.uMaskDetDmgs == -1 && _mapSegToId.size() >= sizeof(node.uMaskDetDmgs) * 8)
     printf( "DetDmg [Undetermined]");
@@ -634,7 +634,7 @@ L1AcceptNode& IndexList::checkInNode( L1AcceptNode& nodeNew )
    *   The new node should be inserted at the front of the list
    */
   printf( "IndexList::checkInNode(): *** event 0x%x need to be inserted at front (total %d elements)\n", 
-    nodeNew.uFiducial, _lNode.size() ); // !! debug
+    nodeNew.uFiducial, (int) _lNode.size() ); // !! debug
    
   _lNode.insert( _lNode.begin(), nodeNew );
   _iCurSerial = 0;

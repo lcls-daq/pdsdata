@@ -38,6 +38,7 @@
 //
 
 #include "Detector.hh"
+#include "pdsdata/cspad/CspadCompressor.hh"
 
 #include <stdint.h>
 
@@ -57,6 +58,16 @@ namespace Pds {
       uint16_t pixel[ColumnsPerASIC][2*MaxRowsPerASIC];
     };
 
+    class CompressedSectionHeader {
+    public:
+      uint32_t  u32Flag;
+      uint32_t  u32CheckSum;
+      uint32_t  u32Width;
+      uint32_t  u32Height;
+      uint32_t  u32Depth;
+      uint32_t  u32DataSize; // Total size of the following image data (not including this header)
+    };
+    
     class ElementIterator {
     public:
       ElementIterator();
@@ -64,19 +75,29 @@ namespace Pds {
       ElementIterator(const ConfigV2&, const Xtc&);
       ElementIterator(const ConfigV3&, const Xtc&);
       ElementIterator(const ElementIterator&);
+      ~ElementIterator();
     public:
       //  Iterate to the next Element/quadrant (0..3)
-      const ElementHeader* next();
+      const ElementHeader*  next();
       //  Iterate to the next Section (0..7) within the current quadrant
-      const Section* next(unsigned& sectionID);
+      const Section*        next(unsigned& sectionID);
+      uint32_t              getQuadWord();
     private:
       const ElementHeader* _elem;
       const ElementHeader* _end;
-      unsigned             _qmask;
+      unsigned             _qmask;      
       unsigned             _smask[4];
       unsigned             _smaskc;
-      const Section*       _section;
+      bool                 _bCompressed;
+      Section*             _section;
       unsigned             _section_id;
+      Section*             _sectionBuf1;
+      Section*             _sectionBuf2;
+      const CompressedSectionHeader*
+                           _compressedSection;
+      CspadCompressor*     _pDecompressor;
+      uint32_t             _uQuadWord;
+      bool                 _bLastQuadWordSet;
     };
   };
 };

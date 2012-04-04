@@ -90,7 +90,7 @@ bool XtcSlice::_open(int64_t i64Offset)
     if (i64OffsetSeek != i64Offset)
     {
       printf( "XtcSlice::_open(): seek failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
-        i64Offset, i64OffsetSeek, strerror(errno) );
+        (long long) i64Offset, (long long) i64OffsetSeek, strerror(errno) );
       return false;
     }        
   }

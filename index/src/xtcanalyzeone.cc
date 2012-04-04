@@ -167,7 +167,7 @@ int printIndexSummary(const Index::IndexFileReader& indexFileReader)
     time_t t = calibNode.uSeconds;
     strftime(sTimeBuff,128,"%Z %a %F %T",localtime(&t));  
         
-    printf( "Calib %d Off 0x%Lx L1 %d %s.%03u\n", iCalib, calibNode.i64Offset, calibNode.iL1Index,
+    printf( "Calib %d Off 0x%Lx L1 %d %s.%03u\n", iCalib, (long long) calibNode.i64Offset, calibNode.iL1Index,
       sTimeBuff, (int)(calibNode.uNanoseconds/1e6));
   }          
   
@@ -386,7 +386,7 @@ int gotoEvent(const char* sIndexFilename, int iBeginL1Event, int iBeginCalib,
       iError = indexChunk.offset(iGlobalEvent, i64Offset);
         
       printf("IndexChunk convert time %s to global Event# %d Match %s Overtime %s in Chunk %d Offset 0x%Lx\n",
-        sTime, iGlobalEvent, (bExactMatch?"Y":"n"), (bOvertime?"Y":"n"), iChunk, i64Offset);      
+        sTime, iGlobalEvent, (bExactMatch?"Y":"n"), (bOvertime?"Y":"n"), iChunk, (long long) i64Offset);      
         
     }
     
@@ -516,10 +516,10 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
     if ( i64OffsetSeek != i64OffsetStart )
     {
       printf("Seek to offset 0x%Lx failed, result = 0x%Lx\n", 
-        i64OffsetStart, i64OffsetSeek );
+        (long long) i64OffsetStart, (long long) i64OffsetSeek );
     }
     else
-      printf("Seek to offset 0x%Lx\n", i64OffsetStart );      
+      printf("Seek to offset 0x%Lx\n", (long long) i64OffsetStart );      
   }  
     
   Dgram *dg;
@@ -542,7 +542,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
        TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),       
        dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
        sDateTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
-       i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);    
+       (long long) i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);    
       
       // Go through the config data and create the cfgSegList object
       XtcIterConfig iterConfig(&(dg->xtc), 0, i64Offset + sizeof(*dg) );
@@ -557,7 +557,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
        TransitionId::name(dg->seq.service()), iGlobalEvent, dg->seq.stamp().control(),
        dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
        sTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
-       i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent,
+       (long long) i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent,
        iCalib, iCalibEvent);    
       
       XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, i64Offset + sizeof(*dg) );
@@ -581,7 +581,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
        TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
        dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
        sDateTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
-       i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);           
+       (long long) i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent);           
        
       XtcIterWithOffset iterDefault(&(dg->xtc), 0, i64Offset + sizeof(*dg) );
       iterDefault.iterate();                   
@@ -608,7 +608,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -623,7 +623,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -639,7 +639,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );     
@@ -654,7 +654,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -690,7 +690,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -702,12 +702,12 @@ int XtcIterConfig::process(Xtc * xtc)
   }  
   else if (level == Level::Source)
   {
-    if ( xtc->contains.id() != TypeId::Id_Epics || _iNumXtc < 1 )
+    if ( xtc->contains.id() != TypeId::Id_Epics || _iNumXtc < 2 )
     {    
       unsigned i = _depth;
       while (i--) printf("  ");
       printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-       Level::name(level), _i64Offset, 
+       Level::name(level), (long long) _i64Offset, 
        xtc->damage.value(), xtc->extent,
        TypeId::name(xtc->contains.id()), xtc->contains.version()
        );
@@ -724,7 +724,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -737,7 +737,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );     
@@ -752,7 +752,7 @@ int XtcIterConfig::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -790,7 +790,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
@@ -807,7 +807,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
       unsigned i = _depth;
       while (i--) printf("  ");
       printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-       Level::name(level), _i64Offset, 
+       Level::name(level), (long long) _i64Offset, 
        xtc->damage.value(), xtc->extent,
        TypeId::name(xtc->contains.id()), xtc->contains.version()
        );
@@ -833,7 +833,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d ",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );     
@@ -848,7 +848,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
     unsigned i = _depth;
     while (i--) printf("  ");
     printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
-     Level::name(level), _i64Offset, 
+     Level::name(level), (long long) _i64Offset, 
      xtc->damage.value(), xtc->extent,
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );

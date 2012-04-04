@@ -83,7 +83,8 @@ namespace Pds {
       Timepix   = 17,
       Opal2000  = 18,
       Opal4000  = 19,
-      NumDevice = 20
+      OceanOptics = 20,
+      NumDevice = 21
     };
 
     DetInfo() {}

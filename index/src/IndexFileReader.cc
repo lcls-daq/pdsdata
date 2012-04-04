@@ -107,7 +107,7 @@ int IndexFileReader::open(const char* sXtcIndex)
   if ( i64OffsetSeek != i64OffsetCalib )
   {
     printf("IndexFileReader::open(): Seek to CalibCycle offset 0x%Lx failed, result = 0x%Lx\n", 
-      i64OffsetCalib, i64OffsetSeek );
+      (long long) i64OffsetCalib, (long long) i64OffsetSeek );
   }
 
   if (_fileHeader.iNumCalib > 0)
@@ -238,7 +238,7 @@ int IndexFileReader::numL1EventInCalib(int iCalib, int& iNumL1Event) const
   if ( iCalib < -1 || iCalib >= (int) _lCalib.size() )
   {
     printf( "IndexFileReader::numL1EventInCalib(): Invalid Calib Cyle #%d (Max # = %d)\n",
-      iCalib, _lCalib.size()-1 );
+      iCalib, (int) _lCalib.size()-1 );
     return 2;
   }    
 
@@ -268,7 +268,7 @@ int IndexFileReader::eventCalibToGlobal(int iCalib, int iEvent, int& iGlobalEven
   if ( iCalib < -1 || iCalib >= (int) _lCalib.size() )
   {
     printf( "IndexFileReader::eventCalibToGlobal(): Invalid Calib# %d (Max # = %d)\n",
-      iCalib, _lCalib.size()-1 );
+      iCalib, (int) _lCalib.size()-1 );
     return 2;
   }   
     
@@ -754,7 +754,7 @@ int IndexFileReader::gotoEventInXtc(int iCalib, int iEvent, int fdXtc, int& iGlo
   if (i64OffsetSeek != i64Offset)
   {
     printf( "IndexFileReader::gotoEventAndSeek(): seek xtc failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
-      i64Offset, i64OffsetSeek, strerror(errno) );
+      (long long) i64Offset, (long long) i64OffsetSeek, strerror(errno) );
     return 6;
   }    
   
@@ -782,7 +782,7 @@ int IndexFileReader::gotoTimeInXtc(uint32_t uSeconds, uint32_t uNanoseconds, int
   if (i64OffsetSeek != _curL1Node.i64OffsetXtc)
   {
     printf( "IndexFileReader::gotoEvent(): seek xtc failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
-      _curL1Node.i64OffsetXtc, i64OffsetSeek, strerror(errno) );
+      (long long) _curL1Node.i64OffsetXtc, (long long) i64OffsetSeek, strerror(errno) );
     return 3;
   }    
   
@@ -809,7 +809,7 @@ int IndexFileReader::gotoNextFiducialInXtc(uint32_t uFiducial, int iFromGlobalEv
   if (i64OffsetSeek != _curL1Node.i64OffsetXtc)
   {
     printf( "IndexFileReader::gotoEvent(): seek xtc failed (expected 0x%Lx, get 0x%Lx), error = %s\n",
-      _curL1Node.i64OffsetXtc, i64OffsetSeek, strerror(errno) );
+      (long long) _curL1Node.i64OffsetXtc, (long long) i64OffsetSeek, strerror(errno) );
     return 3;
   }    
   
@@ -911,7 +911,7 @@ int IndexFileReader::gotoL1Node(int iL1Node)
   if ( i64OffsetSeek != i64OffsetTo )
   {
     printf("IndexFileReader::gotoL1Node(): Seek to CalibCycle offset 0x%Lx failed, result = 0x%Lx\n", 
-      i64OffsetTo, i64OffsetSeek );
+      (long long) i64OffsetTo, (long long) i64OffsetSeek );
   }
     
   _iCurL1Node = -1;  
@@ -921,7 +921,7 @@ int IndexFileReader::gotoL1Node(int iL1Node)
   if ( iRead != sizeof(_curL1Node) )
   {
     printf( "IndexFileReader::gotoL1Node(): Read L1 Node [%d] failed. Read %d bytes (expected %d), error = %s\n",
-      iL1Node, iRead, sizeof(_curL1Node), strerror(errno) );
+      iL1Node, iRead, (int) sizeof(_curL1Node), strerror(errno) );
     return 3;
   }
   

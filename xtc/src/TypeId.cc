@@ -68,6 +68,9 @@ const char* TypeId::name(Type type)
     "TimepixConfig",
     "TimepixData",
     "CspadCompressedElement",
+    "OceanOpticsConfig",
+    "OceanOpticsData",
+    "EpicsConfig",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

@@ -64,6 +64,9 @@ namespace Pds {
       Id_TimepixConfig,
       Id_TimepixData,
       Id_CspadCompressedElement,
+      Id_OceanOpticsConfig,
+      Id_OceanOpticsData,
+      Id_EpicsConfig,
       NumberOf};
 
     TypeId() {}

@@ -21,10 +21,8 @@ static void deleteSlices(std::list<XtcSlice*>& slices) {
 
 XtcRun::~XtcRun() 
 {
-  printf("~XtcRun(): begin\n");
   deleteSlices(_slices);
   deleteSlices(_doneSlices);
-  printf("~XtcRun(): end\n");
 } 
 
 void XtcRun::reset(std::string fname) 

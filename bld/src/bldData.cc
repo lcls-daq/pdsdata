@@ -77,13 +77,13 @@ int BldDataPhaseCavity::print() const
 int BldDataIpimbV0::print() const 
 {   
     printf("BLD Shared IPIMB Data:\n");
-    printf("  Trig Count      : %llu \n",ipimbData.triggerCounter());
+    printf("  Trig Count      : %llu \n", (long long) ipimbData.triggerCounter());
     printf("  IpimbDataCh-0   : %f   \n",ipimbData.channel0Volts());
-    printf("  IpimbDataCh-1   : %f   \n",ipimbData.channel1Volts());    	
-    printf("  IpimbDataCh-2   : %f   \n",ipimbData.channel2Volts());	
+    printf("  IpimbDataCh-1   : %f   \n",ipimbData.channel1Volts());      
+    printf("  IpimbDataCh-2   : %f   \n",ipimbData.channel2Volts());  
     printf("  IpimbDataCh-3   : %f   \n",ipimbData.channel3Volts());
 
-    printf("  IpmFexDataCh-0  : %f   \n",ipmFexData.channel[0]);	
+    printf("  IpmFexDataCh-0  : %f   \n",ipmFexData.channel[0]);  
     printf("  IpmFexDataCh-1  : %f   \n",ipmFexData.channel[1]);
     printf("  IpmFexDataCh-2  : %f   \n",ipmFexData.channel[2]);
     printf("  IpmFexDataCh-3  : %f   \n",ipmFexData.channel[3]);
@@ -97,17 +97,17 @@ int BldDataIpimbV0::print() const
 int BldDataIpimbV1::print() const 
 {   
     printf("BLD Shared IPIMB Data:\n");
-    printf("  Trig Count      : %llu \n",ipimbData.triggerCounter());
+    printf("  Trig Count      : %llu \n", (long long) ipimbData.triggerCounter());
     printf("  IpimbDataCh-0   : %f   \n",ipimbData.channel0Volts());
-    printf("  IpimbDataCh-1   : %f   \n",ipimbData.channel1Volts());    	
-    printf("  IpimbDataCh-2   : %f   \n",ipimbData.channel2Volts());	
+    printf("  IpimbDataCh-1   : %f   \n",ipimbData.channel1Volts());      
+    printf("  IpimbDataCh-2   : %f   \n",ipimbData.channel2Volts());  
     printf("  IpimbDataCh-3   : %f   \n",ipimbData.channel3Volts());
     printf("  IpimbDataCh-0ps : %f   \n",ipimbData.channel0psVolts());
-    printf("  IpimbDataCh-1ps : %f   \n",ipimbData.channel1psVolts());    	
-    printf("  IpimbDataCh-2ps : %f   \n",ipimbData.channel2psVolts());	
+    printf("  IpimbDataCh-1ps : %f   \n",ipimbData.channel1psVolts());      
+    printf("  IpimbDataCh-2ps : %f   \n",ipimbData.channel2psVolts());  
     printf("  IpimbDataCh-3ps : %f   \n",ipimbData.channel3psVolts());
 
-    printf("  IpmFexDataCh-0  : %f   \n",ipmFexData.channel[0]);	
+    printf("  IpmFexDataCh-0  : %f   \n",ipmFexData.channel[0]);  
     printf("  IpmFexDataCh-1  : %f   \n",ipmFexData.channel[1]);
     printf("  IpmFexDataCh-2  : %f   \n",ipmFexData.channel[2]);
     printf("  IpmFexDataCh-3  : %f   \n",ipmFexData.channel[3]);

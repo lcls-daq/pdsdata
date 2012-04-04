@@ -37,7 +37,7 @@ int IndexChunkReader::open(const char* sFnIndex)
    */
   string  strFnIndex(sFnIndex);  
   bool    bSingleIndex = false;  
-  unsigned int uPos = strFnIndex.find("-c");
+  size_t  uPos = strFnIndex.find("-c");
   if (uPos == string::npos)
     bSingleIndex = true;
   
@@ -52,7 +52,7 @@ int IndexChunkReader::open(const char* sFnIndex)
     if ( iError != 0 )
     {
       // test if the file is under the "index" sub-dir      
-      unsigned int iFindDir = strFnIndex.rfind("/");
+      size_t iFindDir = strFnIndex.rfind("/");
       if (iFindDir == std::string::npos )
         _strFnBase = "index/" + _strFnBase;
       else
@@ -95,7 +95,7 @@ int IndexChunkReader::open(const char* sFnIndex)
       if ( iError != 0 )
       {
         // test if the file is under the "index" sub-dir
-        unsigned int iFindDir = strFnIndex.rfind("/");
+        size_t iFindDir = strFnIndex.rfind("/");
         if (iFindDir == std::string::npos )
           sprintf(sFnBuf, "index/%s%02d.xtc.idx", _strFnBase.c_str(), iFileSerial);
         else
@@ -226,7 +226,7 @@ int IndexChunkReader::numL1EventInCalib(int iCalib, int& iNumL1Event) const
   if (iCalib < 0 || iCalib >= (int) _lCalib.size())
   {
     printf("IndexChunkReader::numL1EventInCalib(): Invalid Calib# %d. Max # = %d\n",
-      iCalib, _lCalib.size()-1);
+      iCalib, (int) _lCalib.size()-1);
     return 1;
   }
     
@@ -243,7 +243,7 @@ int IndexChunkReader::eventCalibToGlobal(int iCalib, int iEvent, int& iGlobalEve
   if (iCalib < 0 || iCalib >= (int) _lCalib.size())
   {
     printf("IndexChunkReader::eventCalibToGlobal(): Invalid Calib# %d. Max # = %d\n",
-      iCalib, _lCalib.size()-1);
+      iCalib, (int) _lCalib.size()-1);
     return 2;
   }
   
@@ -298,7 +298,7 @@ int IndexChunkReader::eventChunkToGlobal(int iChunk, int iEvent, int& iGlobalEve
   if (iChunk < 0 || iChunk >= (int) _lIndex.size())
   {
     printf("IndexChunkReader::eventChunkToGlobal(): Invalid Chunk# %d. Max # = %d\n",
-      iChunk, _lIndex.size()-1);
+      iChunk, (int) _lIndex.size()-1);
     return 2;
   }
   
@@ -565,7 +565,7 @@ int IndexChunkReader::gotoEvent(int iCalib, int iEvent, int& iChunk, int64_t& i6
   
   if (iCalib < 0 || iCalib >= (int) _lCalib.size())
   {
-    printf("IndexChunkReader::gotoEvent(): Invalid Calib# %d. Max # = %d\n", iCalib, _lCalib.size()-1);
+    printf("IndexChunkReader::gotoEvent(): Invalid Calib# %d. Max # = %d\n", iCalib, (int) _lCalib.size()-1);
     return 2;
   }
   
@@ -837,13 +837,13 @@ int IndexChunkReader::_makeNewCalib(int iGlobalStartIndex, int iChunk, int iCali
 
 int IndexChunkReader::_listCalib()
 {
-  printf("Listing %d Calibs\n", _lCalib.size());
+  printf("Listing %d Calibs\n", (int) _lCalib.size());
   
   for (int iCalib=0; iCalib<(int)_lCalib.size(); iCalib++)
   {
     const CalibInfo& calibInfo = _lCalib[iCalib];
     printf("Calib[%d] Event# %d ChunkIdx %d Off 0x%Lx Chunks: %d\n",
-      iCalib, calibInfo.iNumL1Event, calibInfo.iChunkL1Index, calibInfo.i64ChunkOffset, calibInfo.lChunkCalib.size());
+      iCalib, calibInfo.iNumL1Event, calibInfo.iChunkL1Index, (long long) calibInfo.i64ChunkOffset, (int) calibInfo.lChunkCalib.size());
       
     for (int iCalibChunk=0; iCalibChunk<(int)calibInfo.lChunkCalib.size(); iCalibChunk++)
     {
