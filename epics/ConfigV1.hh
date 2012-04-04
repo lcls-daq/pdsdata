@@ -14,7 +14,7 @@ namespace Epics
 
 struct PvConfigV1
 {    
-  static const int iMaxPvDescLength = 128;
+  static const int iMaxPvDescLength = 64;
   
   int16_t iPvId;
   char    sPvDesc[iMaxPvDescLength];
