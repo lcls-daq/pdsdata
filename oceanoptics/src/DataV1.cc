@@ -13,16 +13,17 @@ double DataV1::durationOfFrame()
 
 double DataV1::waveLength(const ConfigV1& c, int iPixel)
 {
+  int iPixelAdj = iPixel - iActivePixelIndex;
   return 
-     c.waveLenCalib(0) + iPixel * 
-    (c.waveLenCalib(1) + iPixel * 
-    (c.waveLenCalib(2) + iPixel * 
+     c.waveLenCalib(0) + iPixelAdj * 
+    (c.waveLenCalib(1) + iPixelAdj * 
+    (c.waveLenCalib(2) + iPixelAdj * 
      c.waveLenCalib(3)));
 }
 
 double DataV1::waveLength1stOrder  (const ConfigV1& c, int iPixel)
 {
-  return c.waveLenCalib(0) + iPixel * c.waveLenCalib(1);  
+  return c.waveLenCalib(0) + (iPixel - iActivePixelIndex) * c.waveLenCalib(1);  
 }
 
 double DataV1::nonlinerCorrected   (const ConfigV1& c, int iPixel)
