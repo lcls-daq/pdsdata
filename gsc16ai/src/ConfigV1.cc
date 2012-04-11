@@ -30,14 +30,36 @@ ConfigV1::ConfigV1 (
 
 void ConfigV1::dump() const {
   printf("-------Gsc16ai Config---------------\n");
-  printf("Voltage range: %hd\n", voltageRange());
-  printf("First channel: %hd\n", firstChan());
+  printf("Voltage range: ");
+  switch (voltageRange()) {
+    case VoltageRange_10V:  printf("+/- 10V");  break;
+    case VoltageRange_5V:   printf("+/- 5V");   break;
+    case VoltageRange_2_5V: printf("+/- 2.5V"); break;
+    default:                printf("Invalid");  break;
+  }
+  printf("\nFirst channel: %hd\n", firstChan());
   printf("Last channel: %hd\n", lastChan());
-  printf("Input mode: %hd\n", inputMode());
-  printf("Trigger mode: %hd\n", triggerMode());
-  printf("Data format: %hd\n", dataFormat());
-  printf("Frames per second: %hd\n", fps());
-  printf("Autocalibrate enable: %s\n", autocalibEnable() ? "True" : "False");
+  printf("Input mode: ");
+  switch (inputMode()) {
+    case InputMode_Differential:  printf("Differential"); break;
+    case InputMode_Zero:          printf("Zero");         break;
+    case InputMode_Vref:          printf("Vref");         break;
+    default:                      printf("Invalid");      break;
+  }
+  printf("\nTrigger mode: ");
+  switch (triggerMode()) {
+    case TriggerMode_ExtPos: printf("External/POS");                break;
+    case TriggerMode_ExtNeg: printf("External/NEG");                break;
+    case TriggerMode_IntClk: printf("Internal Clk, %hd Hz", fps()); break;
+    default:                 printf("Invalid");                     break;
+  }
+  printf("\nData format: ");
+  switch (dataFormat()) {
+    case DataFormat_TwosComplement: printf("Two's Complement"); break;
+    case DataFormat_OffsetBinary:   printf("Offset Binary");    break;
+    default:                        printf("Invalid");          break;
+  }
+  printf("\nAutocalibrate enable: %s\n", autocalibEnable() ? "True" : "False");
   printf("Time tag enable: %s\n", timeTagEnable() ? "True" : "False");
   printf("------------------------------------\n");
 }
