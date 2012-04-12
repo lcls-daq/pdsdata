@@ -84,7 +84,9 @@ namespace Pds {
       Opal2000  = 18,
       Opal4000  = 19,
       OceanOptics = 20,
-      NumDevice = 21
+      Opal1600  = 21,
+      Opal8000  = 22,
+      NumDevice = 23
     };
 
     DetInfo() {}
