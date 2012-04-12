@@ -21,6 +21,8 @@ namespace Pds {
                 HfxMonCam,
                 HfxMonImb01, HfxMonImb02,
                 HfxMonImb03,
+                MecLasEm01, MecLasDio01,
+                MecTcTrDio01,
                 NumberOf };
 
     BldInfo() {}
