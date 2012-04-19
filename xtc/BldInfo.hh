@@ -23,6 +23,8 @@ namespace Pds {
                 HfxMonImb03,
                 MecLasEm01, MecLasDio01,
                 MecTcTrDio01,
+                MecXt2Ipm02, MecXt2Ipm03, 
+                MecHxmIpm01,
                 NumberOf };
 
     BldInfo() {}

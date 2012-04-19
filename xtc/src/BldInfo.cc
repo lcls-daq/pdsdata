@@ -38,7 +38,10 @@ const char* BldInfo::name(const BldInfo& src){
     "XCS-DEC-mono",
     "MEC-LAS-EM-01",
     "MEC-LAS-DI-01",
-    "MED-TCTR-DI-01"
+    "MED-TCTR-DI-01",
+    "MEC-XT2-IPM-02",
+    "MEC-XT2-IPM-03",
+    "MEC-HXM-IPM-01",
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }
