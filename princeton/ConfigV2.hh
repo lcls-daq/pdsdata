@@ -51,7 +51,9 @@ public:
 
   uint32_t          setWidth    (uint32_t uWidth)     { return _uWidth = uWidth; }
   uint32_t          setHeight   (uint32_t uHeight)    { return _uHeight = uHeight; }
-  uint16_t          setDelayMode(uint16_t uDelayMode) { return _u16DelayMode = uDelayMode; }
+  uint16_t          setReadoutSpeedIndex
+                                (uint16_t uSpeedIndex){ return _u16ReadoutSpeedIndex = uSpeedIndex; }
+  uint16_t          setDelayMode(uint16_t uDelayMode) { return _u16DelayMode         = uDelayMode;  }
   
   int               size      ()        const         { return sizeof(*this); }
   int               frameSize ()        const; // calculate the frame size based on the current ROI and binning settings
