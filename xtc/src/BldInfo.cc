@@ -37,7 +37,7 @@ const char* BldInfo::name(const BldInfo& src){
     "XCS-DIO-mono",
     "XCS-DEC-mono",
     "MEC-LAS-EM-01",
-    "MEC-LAS-DI-01",
+    "MEC-TCTR-PIP-01",
     "MEC-TCTR-DI-01",
     "MEC-XT2-IPM-02",
     "MEC-XT2-IPM-03",
