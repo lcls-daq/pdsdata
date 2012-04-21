@@ -43,7 +43,7 @@ public:
   uint32_t          binY  ()            const         { return _uBinY; }    
   float             exposureTime()      const         { return _f32ExposureTime; }
   float             coolingTemp ()      const         { return _f32CoolingTemp; }
-  uint16_t          gainIndex ()    const         { return _u16GainIndex; }
+  uint16_t          gainIndex   ()    const           { return _u16GainIndex; }
   uint16_t          readoutSpeedIndex() const         { return _u16ReadoutSpeedIndex; }
   
   uint16_t          readoutEventCode()  const         { return _u16ReadoutEventCode; }
