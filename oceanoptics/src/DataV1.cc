@@ -6,7 +6,7 @@ namespace Pds
 namespace OceanOptics 
 {
 
-double DataV1::durationOfFrame()
+double DataV1::durationOfFrame() const
 {
   return _tsTimeFrameEnd.tv_sec - _tsTimeFrameStart.tv_sec + ( _tsTimeFrameEnd.tv_nsec - _tsTimeFrameStart.tv_nsec) * 1e-9;
 }
@@ -26,7 +26,7 @@ double DataV1::waveLength1stOrder  (const ConfigV1& c, int iPixel)
   return c.waveLenCalib(0) + (iPixel - iActivePixelIndex) * c.waveLenCalib(1);  
 }
 
-double DataV1::nonlinerCorrected   (const ConfigV1& c, int iPixel)
+double DataV1::nonlinerCorrected   (const ConfigV1& c, int iPixel) const
 {
   double fRawValue = (double) (lu16Spetra[iPixel] ^ 0x2000);
   return fRawValue / (

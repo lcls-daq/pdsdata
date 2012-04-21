@@ -15,6 +15,12 @@ namespace Pds
 namespace OceanOptics 
 {
   
+typedef struct
+{
+  uint64_t tv_sec;
+  uint64_t tv_nsec;
+} timespec64;
+
 class DataV1 
 {
 public:
@@ -25,19 +31,19 @@ public:
 
   DataV1() {}
   
-  uint16_t*         data                () {return (uint16_t*) this;}
-  uint64_t          frameCounter        () {return _u64FrameCounter;}
-  uint64_t          numDelayedFrames    () {return _u64NumDelayedFrames;}
-  uint64_t          numDiscardFrames    () {return _u64NumDiscardFrames;}
-  struct timespec   timeFrameStart      () {return _tsTimeFrameStart;}
-  struct timespec   timeFrameFirstData  () {return _tsTimeFrameFirstData;}
-  struct timespec   timeFrameEnd        () {return _tsTimeFrameEnd;}
-  int8_t            numSpectraInData    () {return _i8NumSpectraInData;}
-  int8_t            numSpectraInQueue   () {return _i8NumSpectraInQueue;}
-  int8_t            numSpectraUnused    () {return _i8NumSpectraUnused;}
-  double            durationOfFrame     (); // return unit: in seconds
+  uint16_t*         data                () const {return (uint16_t*) this;}
+  uint64_t          frameCounter        () const {return _u64FrameCounter;}
+  uint64_t          numDelayedFrames    () const {return _u64NumDelayedFrames;}
+  uint64_t          numDiscardFrames    () const {return _u64NumDiscardFrames;}
+  timespec64        timeFrameStart      () const {return _tsTimeFrameStart;}
+  timespec64        timeFrameFirstData  () const {return _tsTimeFrameFirstData;}
+  timespec64        timeFrameEnd        () const {return _tsTimeFrameEnd;}
+  int8_t            numSpectraInData    () const {return _i8NumSpectraInData;}
+  int8_t            numSpectraInQueue   () const {return _i8NumSpectraInQueue;}
+  int8_t            numSpectraUnused    () const {return _i8NumSpectraUnused;}
+  double            durationOfFrame     () const ; // return unit: in seconds
   
-  double            nonlinerCorrected   (const ConfigV1& c, int iPixel);  
+  double            nonlinerCorrected   (const ConfigV1& c, int iPixel) const;  
   
   static double     waveLength          (const ConfigV1& c, int iPixel);
   static double     waveLength1stOrder  (const ConfigV1& c, int iPixel);
@@ -51,9 +57,9 @@ private:
   uint64_t          _u64FrameCounter;    // count from 0
   uint64_t          _u64NumDelayedFrames;
   uint64_t          _u64NumDiscardFrames;
-  struct timespec   _tsTimeFrameStart;
-  struct timespec   _tsTimeFrameFirstData;
-  struct timespec   _tsTimeFrameEnd;
+  timespec64        _tsTimeFrameStart;
+  timespec64        _tsTimeFrameFirstData;
+  timespec64        _tsTimeFrameEnd;
   int32_t           _i32Version;
   int8_t            _i8NumSpectraInData;
   int8_t            _i8NumSpectraInQueue;
