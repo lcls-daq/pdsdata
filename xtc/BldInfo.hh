@@ -21,7 +21,7 @@ namespace Pds {
                 HfxMonCam,
                 HfxMonImb01, HfxMonImb02,
                 HfxMonImb03,
-                MecLasEm01, MecLasDio01,
+                MecLasEm01, MecTctrPip01,
                 MecTcTrDio01,
                 MecXt2Ipm02, MecXt2Ipm03, 
                 MecHxmIpm01,
