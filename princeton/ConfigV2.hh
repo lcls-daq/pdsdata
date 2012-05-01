@@ -12,6 +12,8 @@ namespace Pds
 namespace Princeton 
 {
 
+class ConfigV3; // forward declaration
+
 class ConfigV2 
 {
 public:
@@ -68,6 +70,8 @@ private:
   uint16_t          _u16ReadoutSpeedIndex;
   uint16_t          _u16ReadoutEventCode;
   uint16_t          _u16DelayMode;
+  
+  friend class ConfigV3;
 };
 
 } // namespace Princeton

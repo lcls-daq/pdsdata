@@ -12,6 +12,7 @@ namespace Princeton
 {
 
 class ConfigV2; // forward declaration
+class ConfigV3; // forward declaration
 
 class ConfigV1 
 {
@@ -64,6 +65,7 @@ private:
   uint16_t          _u16DelayMode;
   
   friend class ConfigV2;
+  friend class ConfigV3;
 };
 
 } // namespace Princeton

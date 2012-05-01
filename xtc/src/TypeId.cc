@@ -71,6 +71,8 @@ const char* TypeId::name(Type type)
     "OceanOpticsConfig",
     "OceanOpticsData",
     "EpicsConfig",
+    "FliConfig",
+    "FliFrame",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

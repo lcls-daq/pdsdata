@@ -67,6 +67,8 @@ namespace Pds {
       Id_OceanOpticsConfig,
       Id_OceanOpticsData,
       Id_EpicsConfig,
+      Id_FliConfig,
+      Id_FliFrame,
       NumberOf};
 
     TypeId() {}
