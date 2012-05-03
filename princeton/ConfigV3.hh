@@ -44,11 +44,11 @@ public:
   uint32_t          binY  ()            const         { return _uBinY; }    
   float             exposureTime()      const         { return _f32ExposureTime; }
   float             coolingTemp ()      const         { return _f32CoolingTemp; }
-  uint8_t           gainIndex   ()    const           { return _u8GainIndex; }
+  uint8_t           gainIndex   ()      const         { return _u8GainIndex; }
   uint8_t           readoutSpeedIndex() const         { return _u8ReadoutSpeedIndex; }
   
-  uint16_t          exposureEventCode()  const         { return _u16ExposureEventCode; }
-  uint32_t          numDelayShots()         const         { return _u32NumDelayShots; }
+  uint16_t          exposureEventCode() const         { return _u16ExposureEventCode; }
+  uint32_t          numDelayShots()     const         { return _u32NumDelayShots; }
 
   uint32_t          setWidth    (uint32_t uWidth)     { return _uWidth = uWidth; }
   uint32_t          setHeight   (uint32_t uHeight)    { return _uHeight = uHeight; }
