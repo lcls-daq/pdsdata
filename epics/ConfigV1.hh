@@ -20,6 +20,7 @@ struct PvConfigV1
   char    sPvDesc[iMaxPvDescLength];
   float   fInterval;
   
+  PvConfigV1() {}
   PvConfigV1(int iPvId1, const char* sPvDesc1, float fInterval1);
 };
   
