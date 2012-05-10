@@ -1,7 +1,4 @@
 #include "pdsdata/evr/ConfigV6.hh"
-#include "pdsdata/evr/EventCodeV5.hh"
-#include "pdsdata/evr/PulseConfigV3.hh"
-#include "pdsdata/evr/OutputMap.hh"
 
 #include <string.h>
 
@@ -11,7 +8,7 @@ using namespace EvrData;
 ConfigV6::ConfigV6(
    uint32_t neventcodes,  const EventCodeType*  eventcodes,
    uint32_t npulses,      const PulseType*      pulses,
-   uint32_t noutputs,     const OutputMap*      outputs,
+   uint32_t noutputs,     const OutputMapType*  outputs,
    const SeqConfigType& seq_config ) :   
   _neventcodes(neventcodes),
   _npulses    (npulses), 
@@ -25,8 +22,8 @@ ConfigV6::ConfigV6(
   memcpy(next, pulses, _npulses * sizeof(PulseType));
   next += _npulses * sizeof(PulseType);
   
-  memcpy(next, outputs, _noutputs * sizeof(OutputMap));
-  next += _noutputs * sizeof(OutputMap);
+  memcpy(next, outputs, _noutputs * sizeof(OutputMapType));
+  next += _noutputs * sizeof(OutputMapType);
 
   memcpy(next, &seq_config, seq_config.size());
 }
@@ -59,9 +56,9 @@ uint32_t ConfigV6::noutputs() const
 {
   return _noutputs;
 }
-const OutputMap & ConfigV6::output_map(unsigned output) const
+const ConfigV6::OutputMapType & ConfigV6::output_map(unsigned output) const
 {
-  const OutputMap *m = (const OutputMap *) (
+  const OutputMapType *m = (const OutputMapType *) (
     (char *) (this + 1) + _neventcodes * sizeof(EventCodeType) +
     _npulses * sizeof(PulseType) );
 
@@ -78,6 +75,6 @@ unsigned ConfigV6::size() const
   return (sizeof(*this) + 
           _neventcodes * sizeof(EventCodeType) +
           _npulses     * sizeof(PulseType) + 
-          _noutputs    * sizeof(OutputMap) +
+          _noutputs    * sizeof(OutputMapType) +
           seq_config().size());
 }

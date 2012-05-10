@@ -9,7 +9,7 @@
 #include "pdsdata/xtc/TypeId.hh"
 #include "pdsdata/evr/EventCodeV5.hh"
 #include "pdsdata/evr/PulseConfigV3.hh"
-#include "pdsdata/evr/OutputMap.hh"
+#include "pdsdata/evr/OutputMapV2.hh"
 #include "pdsdata/evr/SequencerConfigV1.hh"
 
 #pragma pack(4)
@@ -39,17 +39,15 @@ public:
   enum { MaxPulses  = 256 }; // Maximum pulses in the system
   enum { MaxOutputs = 256 }; // Maximum outputs in the system
 
-  enum { EvrOutputs = 13 };  // Outputs per module
-
   typedef EventCodeV5       EventCodeType;  
   typedef PulseConfigV3     PulseType;  
-  typedef OutputMap         OutputMapType;  
+  typedef OutputMapV2       OutputMapType;  
   typedef SequencerConfigV1 SeqConfigType;
 
   ConfigV6(
     uint32_t neventcodes, const EventCodeType* eventcodes,
     uint32_t npulses,     const PulseType*     pulses,
-    uint32_t noutputs,    const OutputMap*     outputs,
+    uint32_t noutputs,    const OutputMapType* outputs,
     const SeqConfigType& seq_config);    
 
   //  event codes appended to this structure   
@@ -62,7 +60,7 @@ public:
 
   //  logical output configurations appended to this structure
   uint32_t              noutputs    ()          const;
-  const OutputMap&      output_map  (unsigned)  const;
+  const OutputMapType&  output_map  (unsigned)  const;
 
   const SeqConfigType&  seq_config() const;
 
