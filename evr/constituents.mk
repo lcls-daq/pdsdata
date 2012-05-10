@@ -6,6 +6,7 @@ libsrcs_evrdata += src/ConfigV2.cc
 libsrcs_evrdata += src/ConfigV3.cc
 libsrcs_evrdata += src/ConfigV4.cc
 libsrcs_evrdata += src/ConfigV5.cc
+libsrcs_evrdata += src/ConfigV6.cc
 libsrcs_evrdata += src/DataV3.cc
 libsrcs_evrdata += src/EventCodeV3.cc
 libsrcs_evrdata += src/EventCodeV4.cc
