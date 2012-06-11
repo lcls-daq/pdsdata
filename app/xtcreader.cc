@@ -22,6 +22,10 @@
 #include "pdsdata/camera/FrameFexConfigV1.hh"
 #include "pdsdata/fccd/FccdConfigV1.hh"
 #include "pdsdata/fccd/FccdConfigV2.hh"
+#include "pdsdata/timepix/ConfigV1.hh"
+#include "pdsdata/timepix/ConfigV2.hh"
+#include "pdsdata/timepix/DataV1.hh"
+#include "pdsdata/timepix/DataV2.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
 #include "pdsdata/opal1k/ConfigV1.hh"
 #include "pdsdata/pulnix/TM6740ConfigV1.hh"
@@ -147,6 +151,18 @@ public:
   }
   void process(const DetInfo&, const FCCD::FccdConfigV2&) {
     printf("*** Processing FCCD ConfigV2 object\n");
+  }
+  void process(const DetInfo&, const Timepix::ConfigV1&) {
+    printf("*** Processing Timepix ConfigV1 object\n");
+  }
+  void process(const DetInfo&, const Timepix::ConfigV2&) {
+    printf("*** Processing Timepix ConfigV2 object\n");
+  }
+  void process(const DetInfo&, const Timepix::DataV1&) {
+    printf("*** Processing Timepix DataV1 object\n");
+  }
+  void process(const DetInfo&, const Timepix::DataV2&) {
+    printf("*** Processing Timepix DataV2 object\n");
   }
   void process(const DetInfo&, const Camera::TwoDGaussianV1& o) {
     printf("*** Processing 2DGauss object\n");
@@ -538,6 +554,38 @@ public:
       process(info, *(const EpicsPvHeader*)(xtc->payload()));
       break;
     }
+    case (TypeId::Id_TimepixConfig) :
+      {
+      switch (xtc->contains.version()) {
+        case 1:
+          process(info, *(const Timepix::ConfigV1*)(xtc->payload()));
+          break;
+        case 2:
+          process(info, *(const Timepix::ConfigV2*)(xtc->payload()));
+          break;
+        default:
+          printf(" *** unsupported TypeId::Id_TimepixConfig version = %u ***\n",
+                 xtc->contains.version());
+          break;
+      }
+      break;
+      }
+    case (TypeId::Id_TimepixData) :
+      {
+      switch (xtc->contains.version()) {
+        case 1:
+          process(info, *(const Timepix::DataV1*)(xtc->payload()));
+          break;
+        case 2:
+          process(info, *(const Timepix::DataV2*)(xtc->payload()));
+          break;
+        default:
+          printf(" *** unsupported TypeId::Id_TimepixData version = %u ***\n",
+                 xtc->contains.version());
+          break;
+      }
+      break;
+      }
     /*
      * BLD data
      */
