@@ -84,19 +84,26 @@ int IndexList::updateSegment(const Xtc& xtc)
       
     if ( itFind == _mapSegToId.end() )
     {
-      printf( "IndexList::updateSegment():: *** cannot find segment node for "
-        "ip 0x%x pid 0x%x\n", info.ipAddr(), info.processId() );
-      return 3;
+      iSegmentIndex = _mapSegToId.size();
+              
+      std::pair<TSegmentToIdMap::iterator,bool> 
+        rInsert = _mapSegToId.insert( 
+          TSegmentToIdMap::value_type( info, L1SegmentId(iSegmentIndex) ) );
+              
+      _itCurSeg     = rInsert.first;      
+      _iNumSegments = _mapSegToId.size();
     }     
-  
-    iSegmentIndex = itFind->second.iIndex;
-    if ( iSegmentIndex >= (int) _iNumSegments )
+    else
     {
-      printf( "IndexList::updateSegment():: *** invalid segment index %d (max value %d)\n", 
-        iSegmentIndex, _iNumSegments );
-      return 4;
+      iSegmentIndex = itFind->second.iIndex;
+      if ( iSegmentIndex >= (int) _iNumSegments )
+      {
+        printf( "IndexList::updateSegment():: *** invalid segment index %d (max value %d)\n", 
+          iSegmentIndex, _iNumSegments );
+        return 4;
+      }
+      _itCurSeg = itFind;
     }
-    _itCurSeg                   = itFind;
   }
 
   L1AcceptNode& node  =   *_pCurNode;  
@@ -227,55 +234,9 @@ int IndexList::finishNode(bool bPrint)
 
   finishPrevSegmentId();
   
-  L1AcceptNode& node  =   *_pCurNode;  
-  /*
-   * Convert segment damage mask from un-ordered bits to ordered bits
-   */
+  //L1AcceptNode& node  =   *_pCurNode;  
   if ( _iNumSegments < 0 )
-  {
-    _iNumSegments = _mapSegToId.size();
-    
-    uint32_t  uMaskBit        = 0x1;
-    uint32_t  uMaskDamageNew  = 0;
-    uint32_t  uMaskDetDataNew = 0;
-    
-    int       iMapIndex       = 0;
-    for ( TSegmentToIdMap::iterator 
-      iterMap =  _mapSegToId.begin();
-      iterMap != _mapSegToId.end();
-      iterMap++, iMapIndex++, uMaskBit<<=1 )
-    {
-      int iSegIndex = iterMap->second.iIndex;
-      //const ProcInfo& info      = iterMap->first.procNode;
-      //printf( "Segment %d [org %d] ip 0x%x pid 0x%x\n", 
-      //  iMapIndex, iSegIndex, info.ipAddr(), info.processId()); // !! debug
-      
-      if (iSegIndex < (int) _mapSegToId.size() >= sizeof(node.uMaskDetDmgs) * 8)
-      {      
-        if (iMapIndex < (int) _mapSegToId.size() >= sizeof(node.uMaskDetDmgs) * 8)
-        {
-          if ( (node.uMaskDetDmgs & (1<<iSegIndex)) != 0 )
-            uMaskDamageNew |= uMaskBit;
-
-          if ( (node.uMaskDetData & (1<<iSegIndex)) != 0 )
-            uMaskDetDataNew |= uMaskBit;
-        }
-        else
-        {
-          if ( (node.uMaskDetDmgs & (1<<iSegIndex)) != 0 )
-            uMaskDamageNew  = -1;
-
-          if ( (node.uMaskDetData & (1<<iSegIndex)) != 0 )
-            uMaskDetDataNew = -1;
-        }
-      }
-        
-      iterMap->second.iIndex = iMapIndex;
-    }      
-    
-    node.uMaskDetDmgs = uMaskDamageNew;
-    node.uMaskDetData = uMaskDetDataNew;
-  } // if ( _iNumSegments < 0 )
+    _iNumSegments = _mapSegToId.size();      
   
   if (bPrint)
     printNode(*_pCurNode, _iCurSerial);
@@ -719,43 +680,71 @@ int IndexList::writeFileSupplement(int fdFile) const
   /*
    * Write segments
    */    
+  const L1SegmentIndex* lSegmentIndex[_mapSegToId.size()];
+  const L1SegmentId*    lSegmentId[_mapSegToId.size()];
+  memset(lSegmentIndex, 0, sizeof(lSegmentIndex));
+  memset(lSegmentId   , 0, sizeof(lSegmentId));
   for ( TSegmentToIdMap::const_iterator 
     itMap =  _mapSegToId.begin();
     itMap != _mapSegToId.end();
     itMap++ )
+  {    
+    int iIndex = itMap->second.iIndex;
+    if ( iIndex >= (int) _mapSegToId.size() )
+    {
+      printf("IndexList::writeFileHeader(): Found invalid segment index %d\n", iIndex);
+      continue;
+    }
+    
+    lSegmentIndex[iIndex] = &itMap->first;
+    lSegmentId   [iIndex] = &itMap->second;
+  }
+  
+  for ( int iSeg = 0; iSeg < (int) _mapSegToId.size(); ++iSeg )
   {
-    const ProcInfo& info  = (itMap->first).procNode;
+    if (lSegmentIndex[iSeg] == NULL)
+    {
+      printf( "IndexList::writeFileHeader(): No ProcInfo assigned for segment %d\n",  iSeg);    
+      return 3;
+    }    
+    const L1SegmentIndex& segIndex = *lSegmentIndex[iSeg];
+    const ProcInfo& info  = segIndex.procNode;
     iError = ::write(fdFile, &info, sizeof(info) );
     if ( iError == -1 )
     {
       printf( "IndexList::writeFileHeader(): write proc info failed (%s)\n", strerror(errno) );    
-      return 3;
+      return 4;
     }
 
     /*
      * Write source and typeId list for each segment
      */    
-    const L1SegmentId& segId = itMap->second;
+    if (lSegmentId[iSeg] == NULL)
+    {
+      printf( "IndexList::writeFileHeader(): No src/type data found for segment %d\n",  iSeg);    
+      return 5;
+    }     
+    const L1SegmentId& segId = *lSegmentId[iSeg];
     uint8_t uNumSrc = segId.srcList.size();
     iError = ::write(fdFile, &uNumSrc, sizeof(uNumSrc) );
     if ( iError == -1 )
     {
       printf( "IndexList::writeFileHeader(): write NumSrc failed (%s)\n", strerror(errno) );    
-      return 4;
+      return 6;
     }      
       
     iError = ::write(fdFile, &segId.srcList[0], segId.srcList.size() * sizeof(segId.srcList[0]) );  
     if ( iError == -1 )
     {
       printf( "IndexList::writeFileHeader(): write src list failed (%s)\n", strerror(errno) );    
-      return 5;
+      return 7;
     }      
 
     iError = ::write(fdFile, &segId.typeList[0], segId.typeList.size() * sizeof(segId.typeList[0]) );  
     if ( iError == -1 )
     {
       printf( "IndexList::writeFileHeader(): write type list failed (%s)\n", strerror(errno) );               
-      return 6;
+      return 8;
     }      
   }    
   
