@@ -73,6 +73,7 @@ const char* TypeId::name(Type type)
     "EpicsConfig",
     "FliConfig",
     "FliFrame",
+    "QuartzConfig",
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

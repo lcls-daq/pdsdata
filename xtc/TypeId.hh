@@ -69,6 +69,7 @@ namespace Pds {
       Id_EpicsConfig,
       Id_FliConfig,
       Id_FliFrame,
+      Id_QuartzConfig,
       NumberOf};
 
     TypeId() {}
