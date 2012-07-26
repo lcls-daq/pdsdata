@@ -317,20 +317,11 @@ void ConfigV2::dump() const {
   printf("DAC3 bias lvds: %d\n", dac3BiasLvds());
   printf("DAC3 ref lvds: %d\n", dac3RefLvds());
 
-  printf("Trigger mode: ");
-  switch (triggerMode()) {
-    case TriggerMode_ExtPos:
-      printf("External/Positive");
-      break;
-    case TriggerMode_ExtNeg:
-      printf("External/Negative");
-      break;
-    case TriggerMode_Soft:
-      printf("Software");
-      break;
-    default:
-      printf("Invalid");
-      break;
+  printf("Timepix mode: ");
+  if (triggerMode()) {
+    printf("Time Over Threshold (TOT)");
+  } else {
+    printf("Counting");
   }
   printf("\n");
 
