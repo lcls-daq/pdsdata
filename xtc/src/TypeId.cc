@@ -16,64 +16,64 @@ TypeId::Type TypeId::id() const {return (TypeId::Type)(_value&0xffff);}
 const char* TypeId::name(Type type)
 { 
    static const char* _names[NumberOf] = {
-    "Any",
-    "Xtc",
-    "Frame",
-    "AcqWaveform",
-    "AcqConfig",
-    "TwoDGaussian",
-    "Opal1kConfig",
-    "FrameFexConfig",
-    "EvrConfig",
-    "TM6740Config",
-    "RunControlConfig",
-    "pnCCDframe",
-    "pnCCDconfig",
-    "Epics",    
-    "FEEGasDetEnergy",
-    "EBeamBld",
-    "PhaseCavity",
-    "PrincetonFrame",
-    "PrincetonConfig",    
-    "EvrData",
-    "FrameFccdConfig",
-    "FccdConfig",  
-    "IpimbData",
-    "IpimbConfig",
-    "EncoderData",
-    "EncoderConfig",
-    "EvrIOConfig",
-    "PrincetonInfo",    
-    "CspadElement",
-    "CspadConfig",
-    "IpmFexConfig",
-    "IpmFex",
-    "DiodeFexConfig",
-    "DiodeFex",
-    "PimImageConfig",
-    "SharedIpimb",
-    "AcqTDCConfig",
-    "AcqTDCData",
-    "Index",
-    "XampsConfig",
-    "XampsElement",
-    "Cspad2x2Element",
-    "SharedPIM",
-    "Cspad2x2Config",
-    "FexampConfig",
-    "FexampElement",
-    "Gsc16aiConfig",
-    "Gsc16aiData",
-    "PhasicsConfig",
-    "TimepixConfig",
-    "TimepixData",
-    "CspadCompressedElement",
-    "OceanOpticsConfig",
-    "OceanOpticsData",
-    "EpicsConfig",
-    "FliConfig",
-    "FliFrame",
-    "QuartzConfig",
+    "Any",                     // 0
+    "Xtc",                     // 1
+    "Frame",                   // 2
+    "AcqWaveform",             // 3
+    "AcqConfig",               // 4
+    "TwoDGaussian",            // 5
+    "Opal1kConfig",            // 6
+    "FrameFexConfig",          // 7
+    "EvrConfig",               // 8
+    "TM6740Config",            // 9
+    "RunControlConfig",        // 10
+    "pnCCDframe",              // 11
+    "pnCCDconfig",             // 12
+    "Epics",                   // 13
+    "FEEGasDetEnergy",         // 14
+    "EBeamBld",                // 15
+    "PhaseCavity",             // 16
+    "PrincetonFrame",          // 17
+    "PrincetonConfig",         // 18
+    "EvrData",                 // 19
+    "FrameFccdConfig",         // 20
+    "FccdConfig",              // 21
+    "IpimbData",               // 22
+    "IpimbConfig",             // 23
+    "EncoderData",             // 24
+    "EncoderConfig",           // 25
+    "EvrIOConfig",             // 26
+    "PrincetonInfo",           // 27
+    "CspadElement",            // 28
+    "CspadConfig",             // 29
+    "IpmFexConfig",            // 30
+    "IpmFex",                  // 31
+    "DiodeFexConfig",          // 32
+    "DiodeFex",                // 33
+    "PimImageConfig",          // 34
+    "SharedIpimb",             // 35
+    "AcqTDCConfig",            // 36
+    "AcqTDCData",              // 37
+    "Index",                   // 38
+    "XampsConfig",             // 39
+    "XampsElement",            // 40
+    "Cspad2x2Element",         // 41
+    "SharedPIM",               // 42
+    "Cspad2x2Config",          // 43
+    "FexampConfig",            // 44
+    "FexampElement",           // 45
+    "Gsc16aiConfig",           // 46
+    "Gsc16aiData",             // 47
+    "PhasicsConfig",           // 48
+    "TimepixConfig",           // 49
+    "TimepixData",             // 50
+    "CspadCompressedElement",  // 51
+    "OceanOpticsConfig",       // 52
+    "OceanOpticsData",         // 53
+    "EpicsConfig",             // 54
+    "FliConfig",               // 55
+    "FliFrame",                // 56
+    "QuartzConfig",            // 57
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
