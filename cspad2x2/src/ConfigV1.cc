@@ -11,6 +11,7 @@ ConfigV1::ConfigV1(
 		   uint32_t AsicMask,
 		   uint32_t roiMask) :
   _concentratorVersion(0),
+  _protectionEnable(0),
   _inactiveRunMode(inactiveRunMode),
   _activeRunMode(activeRunMode),
   _testDataIndex(testDataIndex),
@@ -19,6 +20,8 @@ ConfigV1::ConfigV1(
   _AsicMask(AsicMask),
   _roiMask (roiMask)
 {
+  _protectionThreshold.adcThreshold=67;
+  _protectionThreshold.pixelCountThreshold=1200;
 }
 
 ProtectionSystemThreshold* ConfigV1::protectionThreshold ()
