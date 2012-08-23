@@ -30,6 +30,7 @@
 #include "pdsdata/epics/EpicsXtcSettings.hh"
 #include "pdsdata/bld/bldData.hh"
 #include "pdsdata/princeton/ConfigV1.hh"
+#include "pdsdata/cspad/ConfigV4.hh"
 
 using namespace Pds;
 
@@ -184,6 +185,11 @@ public:
   }
   void process(const DetInfo&, const Princeton::ConfigV1&) {
     printf("*** Processing Princeton ConfigV1 object\n");
+  }
+  void process(const DetInfo&, const CsPad::ConfigV4& c) {
+    printf("*** Processing Cspad ConfigV4 object\n");
+    printf("  runDelay %x  intTime %x\n",
+           c.runDelay(), c.quads()[0].intTime());
   }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
@@ -362,6 +368,11 @@ public:
       process(info, *(const Princeton::ConfigV1*)(xtc->payload()));
       break;
     }
+    case (TypeId::Id_CspadConfig) :
+    {
+      process(info, *(const CsPad::ConfigV4*)(xtc->payload()));
+      break;
+    }
     default :
       break;
     }
@@ -412,11 +423,16 @@ int main(int argc, char* argv[]) {
   }
 
   XtcFileIterator iter(fd,0x900000);
-  Dgram* dg = iter.next();
-  printf("%s transition: time 0x%x/0x%x, payloadSize %d\n",TransitionId::name(dg->seq.service()),
-	 dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(), dg->xtc.sizeofPayload());
-  myLevelIter liter(&(dg->xtc),0);
-  liter.iterate();
+  Dgram* dg;
+  while( dg = iter.next() ) {
+    if (dg->seq.service()==TransitionId::Configure ||
+        dg->seq.service()==TransitionId::BeginCalibCycle) {
+      printf("%s transition: time 0x%x/0x%x, payloadSize %d\n",TransitionId::name(dg->seq.service()),
+             dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(), dg->xtc.sizeofPayload());
+      myLevelIter liter(&(dg->xtc),0);
+      liter.iterate();
+    }
+  }
   ::close(fd);
   return 0;
 }

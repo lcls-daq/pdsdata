@@ -70,6 +70,8 @@ namespace Pds {
       Id_FliConfig,
       Id_FliFrame,
       Id_QuartzConfig,
+      Id_CompressedFrame,
+      Id_CompressedTimePixFrame,
       NumberOf};
 
     TypeId() {}

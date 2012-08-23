@@ -264,8 +264,8 @@ const ElementHeader* ElementIterator::next()
       const int status = _pDecompressor->decompress( _compressedSection,
         sizeof(CompressedSectionHeader) + _compressedSection->u32DataSize, image, params );
       if( 0 != status) {
-        printf("Pds::CsPad::ElementIterator::next(): Decompression failed for quad %d (remain mask 0x%x) mask %x data size %d\n",
-            iq, _qmask, _smaskc, _compressedSection->u32DataSize);
+        printf("Pds::CsPad::ElementIterator::next(): Decompression failed for quad %d (remain mask 0x%x) mask %x data size %d status %d\n",
+               iq, _qmask, _smaskc, _compressedSection->u32DataSize, status);
             
         memset( _sectionBuf1, 0, sizeof(Section) );
         _section_id = 0; 
@@ -306,11 +306,12 @@ const ElementHeader* ElementIterator::next()
     {
       const CompressedSectionHeader* 
         s = reinterpret_cast<const CompressedSectionHeader*>(_elem+1);
-      for(unsigned sm=_smask[iq]; sm; sm>>=1)
+      unsigned sid=0;
+      for(unsigned sm=_smask[iq]; sm; sm>>=1, sid++)
         if (sm&1) 
         {
           s = reinterpret_cast<const CompressedSectionHeader*>(
-            (const char*) (s+1) + s->u32DataSize );
+                                                               (const char*) (s+1) + s->u32DataSize );
         }
         
       const uint32_t* u = reinterpret_cast<const uint32_t*>(s);

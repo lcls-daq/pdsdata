@@ -2,7 +2,7 @@
 // This Class's Header --
 //-----------------------
 
-#include "pdsdata/cspad/CspadCompressor.hh"
+#include "pdsdata/camera/FrameCompressor.hh"
 
 //-----------------
 // C/C++ Headers --
@@ -42,9 +42,9 @@ namespace {
 //              ----------------------------------------
 
 namespace Pds {
-namespace CsPad {
+namespace Camera {
 
-CspadCompressor::CspadCompressor() :
+FrameCompressor::FrameCompressor() :
     m_hist_channels      (new unsigned int[0x10000]),
     m_hist_channels_8bits(new unsigned int[0x100]),
 
@@ -58,7 +58,7 @@ CspadCompressor::CspadCompressor() :
     m_image      (0)
 {}
 
-CspadCompressor::~CspadCompressor()
+FrameCompressor::~FrameCompressor()
 {
     delete [] m_hist_channels;
     delete [] m_hist_channels_8bits;
@@ -69,7 +69,7 @@ CspadCompressor::~CspadCompressor()
 }
 
 int
-CspadCompressor::compress (
+FrameCompressor::compress (
     const void*        image,
     const ImageParams& params,
     void*&             outData,
@@ -103,7 +103,6 @@ CspadCompressor::compress (
     m_outbufsize =
         sizeof(uint32_t)     +             // - storage for compression flag(s): data, bitmap, etc.
         sizeof(uint32_t)     +             // - storage for the data checksum (either compressed or not)
-        sizeof(uint32_t) * 3 +             // - storage for image params (width, height, depth)
         sizeof(uint32_t)     +             // - storage for a size of uncompressed data (shorts)
         sizeof(uint32_t)     +             // - storage for the data buffer length (bytes)
         sizeof(uint16_t)     * inbufsize;  // - storage for the data buffer:
@@ -191,9 +190,6 @@ CspadCompressor::compress (
 
         *(uint32_t*)ptr = 0x0;                          ptr += sizeof(uint32_t);
         *(uint32_t*)ptr = incs;                         ptr += sizeof(uint32_t);
-        *(uint32_t*)ptr = params.width;                 ptr += sizeof(uint32_t);
-        *(uint32_t*)ptr = params.height;                ptr += sizeof(uint32_t);
-        *(uint32_t*)ptr = params.depth;                 ptr += sizeof(uint32_t);
         *(uint32_t*)ptr = inbufsize * sizeof(uint16_t); ptr += sizeof(uint32_t);
 
         memcpy((void*)ptr, image, inbufsize * sizeof(uint16_t));
@@ -248,9 +244,6 @@ CspadCompressor::compress (
 
     *(uint32_t*)outptr = 0;              outptr += sizeof(uint32_t);  // skip compression flag
     *(uint32_t*)outptr = 0;              outptr += sizeof(uint32_t);  // skip checksum
-    *(uint32_t*)outptr = params.width;   outptr += sizeof(uint32_t);
-    *(uint32_t*)outptr = params.height;  outptr += sizeof(uint32_t);
-    *(uint32_t*)outptr = params.depth;   outptr += sizeof(uint32_t);
     *(uint32_t*)outptr = 0;              outptr += sizeof(uint32_t);  // skip the final data size
     *(uint16_t*)outptr = 0;              outptr += sizeof(uint16_t);  // skip the base
     *(uint32_t*)outptr = 0;              outptr += sizeof(uint32_t);  // skip the compressed image size
@@ -363,9 +356,6 @@ CspadCompressor::compress (
 
         *(uint32_t*)ptr = compression_flag;             ptr += sizeof(uint32_t);
         *(uint32_t*)ptr = incs;                         ptr += sizeof(uint32_t);
-        *(uint32_t*)ptr = params.width;                 ptr += sizeof(uint32_t);
-        *(uint32_t*)ptr = params.height;                ptr += sizeof(uint32_t);
-        *(uint32_t*)ptr = params.depth;                 ptr += sizeof(uint32_t);
         *(uint32_t*)ptr = data_size;                    ptr += sizeof(uint32_t);
         *(uint16_t*)ptr = base;                         ptr += sizeof(uint16_t);
         *(uint32_t*)ptr = outptr - outptr_after_header;
@@ -380,18 +370,18 @@ CspadCompressor::compress (
         ptr +=  bitmapsize * sizeof(uint16_t);
 
         outData     =       (void*)m_outbuf;
-        outDataSize = ptr - (uint8_t*)m_outbuf;
+        outDataSize = ptr -        m_outbuf;
     }
         
     return Success;
 }
 
 int
-CspadCompressor::decompress (
+FrameCompressor::decompress (
     const void*  outData,
     size_t       outDataSize,
-    void*&       image,
-    ImageParams& params )
+    const ImageParams& params,
+    void*&       image )
 {
     /* Evaluate input parameters and refuse to proceed if any obvious
      * problems were found.
@@ -401,9 +391,6 @@ CspadCompressor::decompress (
     const size_t hdr_size_bytes =
         sizeof(uint32_t)        +  // compression flags
         sizeof(uint32_t)        +  // original image checksum
-        sizeof(uint32_t)        +  // width
-        sizeof(uint32_t)        +  // height
-        sizeof(uint32_t)        +  // depth
         sizeof(uint32_t)        ;  // compressed data block size
 
     if( outDataSize < hdr_size_bytes )
@@ -413,9 +400,6 @@ CspadCompressor::decompress (
     uint8_t*       hdr_ptr               = (uint8_t*)outData;
     const uint32_t hdr_compression_flag  = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
     const uint32_t hdr_original_checksum = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
-    params.width                         = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
-    params.height                        = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
-    params.depth                         = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
 
     if( 2 != params.depth ) return ErrIllegalDepth;  // unsupported image depth
 
@@ -610,7 +594,8 @@ CspadCompressor::decompress (
 }
 
 int
-CspadCompressor::dump(std::ostream& str,
+FrameCompressor::dump(std::ostream& str,
+                      const ImageParams& params,
                       const void* outData,
                       size_t outDataSize) const
 {
@@ -622,23 +607,15 @@ CspadCompressor::dump(std::ostream& str,
     const size_t hdr_size_bytes =
         sizeof(uint32_t)        +  // compression flags
         sizeof(uint32_t)        +  // original image checksum
-        sizeof(uint32_t)        +  // width
-        sizeof(uint32_t)        +  // height
-        sizeof(uint32_t)        +  // depth
         sizeof(uint32_t)        ;  // compressed data block size
 
     if( outDataSize < hdr_size_bytes )
 
         return ErrSmallImage;  // compressed image is too small
 
-    ImageParams params;
-
     uint8_t*       hdr_ptr               = (uint8_t*)outData;
     const uint32_t hdr_compression_flag  = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
     const uint32_t hdr_original_checksum = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
-    params.width                         = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
-    params.height                        = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
-    params.depth                         = *(uint32_t*)hdr_ptr; hdr_ptr += sizeof(uint32_t);
 
     if( 2 != params.depth ) return ErrIllegalDepth;  // unsupported image depth
 
@@ -748,7 +725,7 @@ CspadCompressor::dump(std::ostream& str,
 }
 
 const char*
-CspadCompressor::err2str(int code)
+FrameCompressor::err2str(int code)
 {
     switch(code) {
     case Success:               return "Success";
