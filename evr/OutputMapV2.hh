@@ -16,8 +16,8 @@ namespace Pds {
     public:
       OutputMapV2 ();
       OutputMapV2 ( Source, unsigned source_id, 
-		    Conn  , unsigned conn_id,
-		    unsigned module);
+        Conn  , unsigned conn_id,
+        unsigned module);
     public:
       //  source (generated pulse) of output generation
       Source   source   () const;
@@ -29,6 +29,8 @@ namespace Pds {
     public:
       //  encoded source value
       unsigned map      () const;
+    public:
+      void     print    () const;      
     private:
       uint32_t _v;
     };

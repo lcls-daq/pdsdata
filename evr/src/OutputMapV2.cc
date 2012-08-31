@@ -1,5 +1,6 @@
 #include "pdsdata/evr/OutputMapV2.hh"
 
+#include <stdio.h>
 #include <string.h>
 
 using namespace Pds;
@@ -8,14 +9,14 @@ using namespace EvrData;
 OutputMapV2::OutputMapV2 () {}
 
 OutputMapV2::OutputMapV2 (Source src , unsigned source_id,
-			  Conn   conn, unsigned conn_id,
-			  unsigned module)
+        Conn   conn, unsigned conn_id,
+        unsigned module)
 {
   _v = (((unsigned(src)&0x0f) << 0) | 
-	((    source_id&0xff) << 4) | 
-	((unsigned(conn)&0x0f)<<12) | 
-	((      conn_id&0xff) <<16) |
-	((       module&0xff) <<24));
+  ((    source_id&0xff) << 4) | 
+  ((unsigned(conn)&0x0f)<<12) | 
+  ((      conn_id&0xff) <<16) |
+  ((       module&0xff) <<24));
 }
 
 OutputMapV2::Source OutputMapV2::source() const
@@ -36,8 +37,8 @@ unsigned OutputMapV2::module() const
 unsigned OutputMapV2::map() const
 {
   enum { Pulse_Offset=0, 
-	 DBus_Offset=32, 
-	 Prescaler_Offset=40 }; 
+   DBus_Offset=32, 
+   Prescaler_Offset=40 }; 
   unsigned map=0;
   Source src    = source();
   unsigned    src_id =source_id();
@@ -49,4 +50,12 @@ unsigned OutputMapV2::map() const
   case Force_Low : map = 63; break;
   }
   return map;
+}
+
+void OutputMapV2::print() const
+{
+  static const char* sSourceDesc[] = { "Pulse", "DBuse", "Prescaler", "Force_High", "Force_Low" };
+  static const char* sConnDesc  [] = { "FrontPanel", "UnivIO" };
+  printf("    Source %s id %d  Conn %s id %d  Module %d\n",
+    sSourceDesc[source()], source_id(), sConnDesc[conn()], conn_id(), module() );
 }
