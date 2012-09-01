@@ -10,12 +10,10 @@ ConfigV7::ConfigV7(
    uint32_t neventcodes,  const EventCodeType*  eventcodes,
    uint32_t npulses,      const PulseType*      pulses,
    uint32_t noutputs,     const OutputMapType*  outputs,
-   uint8_t  enableReadGroup,   
    const SeqConfigType& seq_config ) :   
   _neventcodes(neventcodes),
   _npulses    (npulses), 
-  _noutputs   (noutputs),
-  _enableReadGroup(enableReadGroup)
+  _noutputs   (noutputs)
 {
   char *next = (char*) (this + 1);
 
@@ -68,11 +66,6 @@ const ConfigV7::OutputMapType & ConfigV7::output_map(unsigned output) const
   return m[output];
 }
 
-uint8_t ConfigV7::enableReadGroup() const
-{
-  return _enableReadGroup;
-}
-
 const SequencerConfigV1 & ConfigV7::seq_config() const
 {
   return *reinterpret_cast<const SeqConfigType*>(&output_map(_noutputs));
@@ -89,8 +82,8 @@ unsigned ConfigV7::size() const
 
 void ConfigV7::print() const
 {
-  printf("Pds::EvrData::ConfigV7 event %d pulse %d output %d readGroup %s\n", _neventcodes, _npulses, _noutputs, 
-    (_enableReadGroup != 0 ? "On" : "Off"));
+  printf("Pds::EvrData::ConfigV7 event %d pulse %d output %d\n", _neventcodes, _npulses, _noutputs);
+  
   for (unsigned int i=0; i<_neventcodes; ++i)
   {
     printf("  Event code [%d]\n", i);

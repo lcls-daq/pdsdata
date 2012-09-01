@@ -38,7 +38,6 @@ public:
 
   enum { MaxPulses  = 256 }; // Maximum pulses in the system
   enum { MaxOutputs = 256 }; // Maximum outputs in the system
-  enum EnumEnableReadGroup { ReadGroupOff = 0, ReadGroupOn = 1 };
 
   typedef EventCodeV6       EventCodeType;  
   typedef PulseConfigV3     PulseType;  
@@ -49,7 +48,6 @@ public:
     uint32_t neventcodes, const EventCodeType* eventcodes,
     uint32_t npulses,     const PulseType*     pulses,
     uint32_t noutputs,    const OutputMapType* outputs,
-    uint8_t  enableReadGroup,
     const SeqConfigType& seq_config);    
 
   //  event codes appended to this structure   
@@ -64,9 +62,6 @@ public:
   uint32_t              noutputs    ()          const;
   const OutputMapType&  output_map  (unsigned)  const;
   
-  //  enable readout group support
-  uint8_t               enableReadGroup ()      const;
-
   const SeqConfigType&  seq_config() const;
 
   //  size including appended EventCode's, PulseType's and OutputMap's
@@ -77,7 +72,6 @@ private:
   uint32_t _neventcodes;
   uint32_t _npulses;
   uint32_t _noutputs;
-  uint8_t  _enableReadGroup;
 };
 
 } // namespace EvrData
