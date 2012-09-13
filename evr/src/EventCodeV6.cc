@@ -41,7 +41,6 @@ EventCodeV6::EventCodeV6(uint16_t    u16Code,
 }
 
 EventCodeV6::EventCodeV6(uint16_t    u16Code,
-       uint16_t    u16ReadGroup,  
        const char* desc,
        bool        bLatch,
        uint32_t    u32ReportDelay,
@@ -53,7 +52,7 @@ EventCodeV6::EventCodeV6(uint16_t    u16Code,
   _u32MaskTrigger   (0),
   _u32MaskSet       (0),
   _u32MaskClear     (0),
-  _u16ReadGroup     (u16ReadGroup)  
+  _u16ReadGroup     (0)  
 {
   strncpy(_desc, desc, DescSize-1);
   _desc[DescSize-1]=0;

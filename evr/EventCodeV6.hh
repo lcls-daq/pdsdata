@@ -29,7 +29,6 @@ public:
         uint32_t    u32MaskClear);
     
   EventCodeV6(uint16_t    u16Code,         // External control
-        uint16_t    u16ReadGroup,  
         const char* desc,
         bool        bLatch,
         uint32_t    u32ReportDelay = 0,

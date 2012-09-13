@@ -396,10 +396,10 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
       time_t t = dg->seq.clock().seconds();
       strftime(sTimeBuff,128,"%H:%M:%S",localtime(&t));   
       
-      printf( "\n<%d> %s #%d ctl 0x%x vec %d fid 0x%x %s.%03u "
+      printf( "\n<%d> %s #%d ctl 0x%x vec %d fid 0x%x tick 0x%x %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x calib %d event %d\n",
        iSlice, TransitionId::name(dg->seq.service()), uCurEvent, dg->seq.stamp().control(),
-       dg->seq.stamp().vector(), dg->seq.stamp().fiducials(), 
+       dg->seq.stamp().vector(), dg->seq.stamp().ticks(), dg->seq.stamp().fiducials(), 
        sTimeBuff, (int) (dg->seq.clock().nanoseconds() / 1e6),
        (long long) i64Offset, dg->env.value(), dg->xtc.damage.value(), dg->xtc.extent,
        uCurCalib, uCurEvent - uEventCalibBase + 1);    
