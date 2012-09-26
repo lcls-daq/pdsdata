@@ -1,5 +1,5 @@
-#include "pdsdata/andor/ConfigV1.hh"
-#include "pdsdata/andor/FrameV1.hh"
+#include "pdsdata/fli/ConfigV1.hh"
+#include "pdsdata/fli/FrameV1.hh"
 
 #include <string.h>
 
