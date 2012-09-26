@@ -72,6 +72,8 @@ namespace Pds {
       Id_QuartzConfig,
       Id_CompressedFrame,
       Id_CompressedTimePixFrame,
+      Id_AndorConfig,
+      Id_AndorFrame,
       NumberOf};
 
     TypeId() {}

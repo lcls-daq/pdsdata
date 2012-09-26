@@ -76,6 +76,8 @@ const char* TypeId::name(Type type)
     "QuartzConfig",            // 57
     "CompressedFrame",         // 58
     "CompressedTimePixFrame",  // 59
+    "AndorConfig",             // 60
+    "AndorFrame",              // 61
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

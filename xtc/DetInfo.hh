@@ -88,7 +88,8 @@ namespace Pds {
       Opal8000  = 22,
       Fli       = 23,
       Quartz4A150 = 24,
-      NumDevice = 25
+      Andor     = 25,
+      NumDevice = 26
     };
 
     DetInfo() {}

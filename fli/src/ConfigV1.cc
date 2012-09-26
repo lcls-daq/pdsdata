@@ -4,7 +4,7 @@
 #include <string.h>
 
 using namespace Pds;
-using namespace Andor;
+using namespace Fli;
 
 ConfigV1::ConfigV1(
  uint32_t         uWidth, 
