@@ -1,10 +1,10 @@
-#include "pdsdata/fli/ConfigV1.hh"
-#include "pdsdata/fli/FrameV1.hh"
+#include "pdsdata/andor/ConfigV1.hh"
+#include "pdsdata/andor/FrameV1.hh"
 
 #include <string.h>
 
 using namespace Pds;
-using namespace Fli;
+using namespace Andor;
 
 ConfigV1::ConfigV1(
  uint32_t         uWidth, 

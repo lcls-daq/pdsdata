@@ -1,7 +1,7 @@
-#include "pdsdata/fli/FrameV1.hh"
+#include "pdsdata/andor/FrameV1.hh"
 
 using namespace Pds;
-using namespace Fli;
+using namespace Andor;
 
 FrameV1::FrameV1( uint32_t iShotIdStart, float fReadoutTime ) :
  _iShotIdStart(iShotIdStart), _fReadoutTime(fReadoutTime)
