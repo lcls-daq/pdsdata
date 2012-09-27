@@ -122,7 +122,7 @@ unsigned         ConfigV2::npvLabels()         const
 { return _npvLabels; }
 
 const PVLabel& ConfigV2::pvLabel      (unsigned i) const
-{ return reinterpret_cast<const PVLabel*>(&pvLabel(_npvLabels))[i]; }
+{ return reinterpret_cast<const PVLabel*>(&pvMonitor(_npvMonitors))[i]; }
 
 unsigned         ConfigV2::size       ()         const
 { return sizeof(ConfigV2) + _npvControls*sizeof(PVControl) + _npvMonitors*sizeof(PVMonitor) + _npvLabels*sizeof(PVLabel); }
