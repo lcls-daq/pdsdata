@@ -11,9 +11,9 @@ CompressedFrameV1::CompressedFrameV1(const FrameV1& f) :
 {
 }
 
-unsigned                CompressedFrameV1::width () const { return _width ; }
-unsigned                CompressedFrameV1::height() const { return _height; }
-unsigned                CompressedFrameV1::depth () const { return _depth ; }
-unsigned                CompressedFrameV1::offset() const { return _offset; }
+unsigned                 CompressedFrameV1::width () const { return _width ; }
+unsigned                 CompressedFrameV1::height() const { return _height; }
+unsigned                 CompressedFrameV1::depth () const { return _depth ; }
+unsigned                 CompressedFrameV1::offset() const { return _offset; }
 
-const void*             CompressedFrameV1::data  () const { return this+1; }
+const Pds::CompressedPayload& CompressedFrameV1::pd    () const { return _pd; }

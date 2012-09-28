@@ -1,14 +1,15 @@
-#ifndef Pds_CompressedDataV2_hh
-#define Pds_CompressedDataV2_hh
+#ifndef Pds_TimePix_CompressedDataV2_hh
+#define Pds_TimePix_CompressedDataV2_hh
+
+#include "pdsdata/xtc/CompressedPayload.hh"
 
 #include <stdint.h>
 
 namespace Pds {
-  namespace TimePix {
+  namespace Timepix {
     class DataV2;
     class CompressedDataV2 {
     public:
-      enum {Version=1};
       CompressedDataV2() {}
       CompressedDataV2(const DataV2&);      
     public:
@@ -17,16 +18,19 @@ namespace Pds {
       unsigned                timestamp   () const;
       unsigned                frameCounter() const;
       unsigned                lostRows    () const;
-      const void*             data  () const;
     public:
-      void*                   data  ();
+      const CompressedPayload& pd() const;
     private:
       uint16_t _width;        // pixels per row
       uint16_t _height;       // pixels per column
       uint32_t _timestamp;    // hardware timestamp
       uint16_t _frameCounter; // hardware frame counter
       uint16_t _lostRows;     // lost row count
+    private:
+      CompressedPayload _pd;
     };
+
+    DataV2* uncompressed(const CompressedDataV2&);
   };
 };
 

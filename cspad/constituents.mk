@@ -7,4 +7,6 @@ libsrcs_cspaddata := src/ElementV1.cc \
          src/ConfigV4.cc \
          src/ElementIterator.cc \
          src/MiniElementV1.cc \
-         src/CspadCompressor.cc
+         src/CspadCompressor.cc \
+         src/CompressedElementV1.cc \
+         src/CompressedElementV2.cc

@@ -1,45 +1,125 @@
-//-----------------------
-// This Class's Header --
-//-----------------------
 
-#include "pdsdata/camera/FrameCompressor.hh"
+namespace Pds {
 
-//-----------------
-// C/C++ Headers --
-//-----------------
-
-#include <string.h>
-
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-
-using namespace std;
-
-//-------------------------------
-// Collaborating Class Headers --
-//-------------------------------
-
-
-//-----------------------------------------------------------------------
-// Local Macros, Typedefs, Structures, Unions and Forward Declarations --
-//-----------------------------------------------------------------------
+class XtcMapKey {
+public:
+  XtcMapKey(const Xtc& xtc) :
+    _level(xtc.src.level()),
+    _phy  (xtc.src.phy()),
+    _t    (xtc.contains) {}
+  XtcMapKey(const Xtc& xtc, TypeId t) :
+    _level(xtc.src.level()),
+    _phy  (xtc.src.phy()),
+    _t    (t) {}
+public:
+  bool operator<(const XtcMapKey& o) const
+  {
+      if (_level != o._level) return _level < o._level;
+      if (_phy   != o._phy  ) return _phy   < o._phy ;
+      return _t.value() < o._t.value();
+  }
+private:
+  unsigned _level;
+  unsigned _phy;
+  TypeId   _t;
+};
 
 
-namespace {
-    string format_addr( size_t addr )
-    {
-        ostringstream s;
-        s << setw(6) << setfill('0') << addr;
-        return s.str();
+    namespace Camera {
+
+        class FrameCompressor {
+
+        public:
+
+            struct ImageParams {
+                size_t width;   // 1..
+                size_t height;  // 1..
+                size_t depth;   // bytes per pixel
+            };
+
+            enum {
+
+                Success = 0,
+
+                // Status values returned due to incorrect input to operations
+                //
+                ErrZeroImage,         // zero pointer instead of a compressed or uncompressed image
+                ErrIllegalDepth,      // illegal/unsupported image depth
+                ErrIllegalWidth,      // illegal/unsupported image width
+                ErrIllegalHeight,     // illegal/unsupported image height
+                ErrLargeImage,        // image is is too large
+                ErrSmallImage,        // image is is too small 
+
+                // Status values returned by algorithms
+                //
+                ErrBadHdr,            // bad image header
+                ErrBadImageData,      // inconsistent size of the image data block
+                ErrBadImageBitMap,    // inconsistent size of the bitmap data block
+                ErrCSMissmatch,       // checksum doesn't match the original one
+                ErrBitMapMissmatch,   // the bit-map isn't consistent with the compressed image size
+                ErrUnknownComprMethod // unknown compression method
+            };
+
+            FrameCompressor();
+
+            virtual ~FrameCompressor();
+
+            int compress(const void* image, const ImageParams& params, void*& outData, size_t& outDataSize);
+
+            int decompress(const void* outData, size_t outDataSize, const ImageParams& params, void*& image);
+
+            int dump(std::ostream& str, const ImageParams& params, const void* outData, size_t outDataSize) const;
+
+            static const char* err2str(int code);
+
+        private:
+
+            /* Histogram support structures have the same size irrelevant
+             * of how large or small are the images to be compressed.
+             */
+            unsigned int* m_hist_channels;
+            unsigned int* m_hist_channels_8bits;
+
+            /* These structures are reused accross calls to the compression method
+             * in order to optimize memory management operations in case if
+             * subsequent input images have the same size. Otherwise the strucures
+             * will be reinitialzied to suit the storage requirements.
+             */
+            size_t    m_outbufsize;   // the max number of bytes available for the whole output structure
+            uint8_t*  m_outbuf;       // the actual storage for the whole output structure
+
+            size_t    m_outbmapsize;  // the size of 16-bit words in the uncompressed bitmap
+            uint16_t* m_outbmap;      // temporary buffer to store uncompressed bitmap (not a part of the output structure)
+
+            uint16_t* m_outbmapc;     // temporary storage for the compressed bitmap (not a part of the output structure);
+                                      // the storage is allocated to have (exactly) twice as much space as for
+                                      // uncompressed buffer due to 16-bit counters.
+
+            /* These structures are reused accross calls to decompress
+             * to optimize memory management operations in case if
+             * output images have the same size. Otherwise the strucures
+             * will be reinitialzied to suit the storage requirements.
+             */
+            size_t    m_imagesize;  // the number of 16-bit words in the image buffer
+            uint16_t* m_image;      // the actual storage for uncompressed image
+
+
+        };
     }
 }
 
 
-//              ----------------------------------------
-//              -- Public Function Member Definitions --
-//              ----------------------------------------
+
+
+namespace {
+  std::string format_addr( size_t addr )
+    {
+      std::ostringstream s;
+      s << std::setw(6) << std::setfill('0') << addr;
+        return s.str();
+    }
+}
+
 
 namespace Pds {
 namespace Camera {
@@ -478,6 +558,15 @@ FrameCompressor::decompress (
     const size_t bitmap_size_shorts = *(uint32_t*)bitmap_size_ptr; bitmap_size_ptr += sizeof(uint32_t);
     uint16_t*    bitmap_ptr         = (uint16_t*)bitmap_size_ptr;
 
+#if 0
+    printf(" flags : %08x\n"
+           " cksum : %08x\n"
+           " csize : %08x\n"
+           " dsize : %08x\n"
+           " bsize : %08x\n",
+           hdr_compression_flag, hdr_original_checksum, hdr_compressed_size_bytes, data_size_bytes, bitmap_size_shorts);
+#endif
+
     if( hdr_compressed_size_bytes !=
         sizeof(uint16_t) +                      // base
         sizeof(uint32_t) +                      // compressed image itself
@@ -748,3 +837,5 @@ FrameCompressor::err2str(int code)
 
 }  // namespace Codec
 }  // namespace Pds
+
+

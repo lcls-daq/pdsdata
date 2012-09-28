@@ -2,8 +2,8 @@
 
 using namespace Pds;
 
-TypeId::TypeId(Type type, uint32_t version) :
-  _value((version<<16)|type) {}
+TypeId::TypeId(Type type, uint32_t version, bool cmp) :
+  _value((version<<16 )| type | (cmp ? 0x80000000:0)) {}
 
 TypeId::TypeId(const TypeId& v) : _value(v._value) {}
 
@@ -12,6 +12,10 @@ uint32_t TypeId::value() const {return _value;}
 uint32_t TypeId::version() const {return (_value&0xffff0000)>>16;}
 
 TypeId::Type TypeId::id() const {return (TypeId::Type)(_value&0xffff);}
+
+bool     TypeId::compressed() const { return _value&0x80000000; }
+
+unsigned TypeId::compressed_version() const { return (_value&0x7fff0000)>>16; }
 
 const char* TypeId::name(Type type)
 { 
@@ -74,8 +78,8 @@ const char* TypeId::name(Type type)
     "FliConfig",               // 55
     "FliFrame",                // 56
     "QuartzConfig",            // 57
-    "CompressedFrame",         // 58
-    "CompressedTimePixFrame",  // 59
+    "Reserved1",               // 58
+    "Reserved2",               // 59
     "AndorConfig",             // 60
     "AndorFrame",              // 61
   };

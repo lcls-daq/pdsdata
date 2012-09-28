@@ -1,6 +1,8 @@
 #ifndef Pds_CompressedFrameV1_hh
 #define Pds_CompressedFrameV1_hh
 
+#include "pdsdata/xtc/CompressedPayload.hh"
+
 #include <stdint.h>
 
 namespace Pds {
@@ -8,7 +10,6 @@ namespace Pds {
     class FrameV1;
     class CompressedFrameV1 {
     public:
-      enum {Version=1};
       CompressedFrameV1() {}
       CompressedFrameV1(const FrameV1&);
     public:
@@ -17,13 +18,17 @@ namespace Pds {
       unsigned                depth () const;
       unsigned                offset() const;
     public:
-      const void*             data  () const;
+      const CompressedPayload& pd() const;
     private:
       uint32_t         _width;
       uint32_t         _height;
       uint32_t         _depth;
       uint32_t         _offset;
+    private:
+      CompressedPayload _pd;
     };
+
+    FrameV1* uncompressed(const CompressedFrameV1&);
   };
 };
 

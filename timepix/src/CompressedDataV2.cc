@@ -1,6 +1,7 @@
 #include "pdsdata/timepix/CompressedDataV2.hh"
+#include "pdsdata/timepix/DataV2.hh"
 
-using namespace Pds::TimePix;
+using namespace Pds::Timepix;
 
 CompressedDataV2::CompressedDataV2(const DataV2& d) :
   _width       (d.width       ()),
@@ -16,6 +17,5 @@ unsigned                CompressedDataV2::height      () const { return _height;
 unsigned                CompressedDataV2::timestamp   () const { return _timestamp; }
 unsigned                CompressedDataV2::frameCounter() const { return _frameCounter; }
 unsigned                CompressedDataV2::lostRows    () const { return _lostRows; }
-const void*             CompressedDataV2::data  () const { return this+1; }
 
-void*                   CompressedDataV2::data  () { return this+1; }
+const Pds::CompressedPayload& CompressedDataV2::pd() const { return _pd; }
