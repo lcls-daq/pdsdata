@@ -2,7 +2,7 @@
 //  Unofficial example of XTC compression
 //
 #include "pdsdata/camera/FrameV1.hh"
-#include "pdsdata/camera/CompressedFrameV1.hh"
+#include "pdsdata/compress/Camera_FrameV1.hh"
 
 #include "pdsdata/cspad/ConfigV1.hh"
 #include "pdsdata/cspad/ConfigV2.hh"
@@ -10,7 +10,7 @@
 #include "pdsdata/cspad/ConfigV4.hh"
 #include "pdsdata/cspad/ElementV1.hh"
 #include "pdsdata/cspad/ElementV2.hh"
-#include "pdsdata/cspad/CompressedElementV2.hh"
+#include "pdsdata/compress/Cspad_ElementV2.hh"
 #include "pdsdata/cspad/ElementIterator.hh"
 
 #include "pdsdata/xtc/Dgram.hh"
@@ -189,6 +189,13 @@ private:
   //  Compressed data is not.
   //  Enforce alignment during Xtc construction.
   //
+  char* _new(ssize_t sz)
+  {
+    uint32_t* p = _pwrite;
+    _pwrite += sz>>2;
+    return (char*)p;
+  }
+
   void _write(const void* p, ssize_t sz) 
   {
     if (!_aligned)
@@ -295,11 +302,18 @@ private:
     if (!outbuf)
       return false;
 
+#if 1
     Camera::FrameV1 cframe(frame.width (),
-                           frame.height(),
-                           frame.depth (),
-                           frame.offset());
+			   frame.height(),
+			   frame.depth (),
+			   frame.offset());
     _write(&cframe, sizeof(cframe));
+#else    
+    new (_new(sizeof(Camera::FrameV1))) Camera::FrameV1(frame.width (),
+							frame.height(),
+							frame.depth (),
+							frame.offset());
+#endif
     _write(outbuf, frame.pd().dsize());
 
     //  Update the extent of the container

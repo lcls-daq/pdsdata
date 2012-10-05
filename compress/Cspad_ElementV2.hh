@@ -1,9 +1,11 @@
 #ifndef Pds_CompressedElementV2_hh
 #define Pds_CompressedElementV2_hh
 
-#include "ElementHeader.hh"
+#include "pdsdata/cspad/ElementHeader.hh"
 
-#include "pdsdata/xtc/CompressedPayload.hh"
+#include "pdsdata/compress/CompressedPayload.hh"
+
+namespace boost { template<class T> class shared_ptr; };
 
 namespace Pds {
   namespace CsPad {
@@ -14,11 +16,10 @@ namespace Pds {
       CompressedElementV2(const ElementV2&);
     public:
       const CompressedPayload& pd() const;
-    private:
+      boost::shared_ptr<ElementV2> uncompressed() const;
+   private:
       CompressedPayload _pd;
     };
-
-    ElementV2* uncompressed(const CompressedElementV2&);
   };
 };
 #endif

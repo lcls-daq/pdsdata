@@ -89,7 +89,8 @@ namespace Pds {
       Fli       = 23,
       Quartz4A150 = 24,
       Andor     = 25,
-      NumDevice = 26
+      USDUSB    = 26,
+      NumDevice = 27
     };
 
     DetInfo() {}

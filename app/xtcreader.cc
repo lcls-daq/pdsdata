@@ -40,8 +40,10 @@
 #include "pdsdata/evr/ConfigV5.hh"
 #include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/control/ConfigV1.hh"
+#include "pdsdata/control/ConfigV2.hh"
 #include "pdsdata/control/PVControl.hh"
 #include "pdsdata/control/PVMonitor.hh"
+#include "pdsdata/control/PVLabel.hh"
 #include "pdsdata/epics/EpicsPvData.hh"
 #include "pdsdata/epics/EpicsXtcSettings.hh"
 #include "pdsdata/bld/bldData.hh"
@@ -236,6 +238,34 @@ public:
       else
         printf( "%s  ", pvMonitorCur.name() );
       printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
+    }
+          
+  }  
+  void process(const DetInfo&, const ControlData::ConfigV2& config) {
+    printf("*** Processing Control config object\n");    
+    
+    printf( "Control PV Number = %d, Monitor PV Number = %d, Label PV Number = %d\n", config.npvControls(), config.npvMonitors(), config.npvLabels() );
+    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      if (pvControlCur.array())
+        printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
+      else
+        printf( "%s = ", pvControlCur.name() );
+      printf( "%lf\n", pvControlCur.value() );
+    }
+    
+    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      if (pvMonitorCur.array())
+        printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
+      else
+        printf( "%s  ", pvMonitorCur.name() );
+      printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
+    }
+          
+    for(unsigned int iPvLabel=0; iPvLabel < config.npvLabels(); iPvLabel++) {      
+      const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabel(iPvLabel);
+      printf( "%s = %s\n", pvLabelCur.name(), pvLabelCur.value() );
     }
           
   }  
@@ -541,7 +571,17 @@ public:
       break;        
     }
     case (TypeId::Id_ControlConfig) :
-      process(info, *(const ControlData::ConfigV1*)(xtc->payload()));
+      switch(xtc->contains.version()) {
+      case 1:
+	process(info, *(const ControlData::ConfigV1*)(xtc->payload()));
+	break;
+      case 2:
+	process(info, *(const ControlData::ConfigV2*)(xtc->payload()));
+	break;
+      default:
+	printf("Unsupported ControlData::Config version %d\n",xtc->contains.version());
+	break;
+      }
       break;
     case (TypeId::Id_Epics) :      
     {

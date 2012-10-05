@@ -74,7 +74,10 @@ namespace Pds {
       Reserved2,        // previously Id_CompressedTimePixFrame : no corresponding class
       Id_AndorConfig,
       Id_AndorFrame,
+      Id_UsdUsbData,
+      Id_UsdUsbConfig,
       NumberOf};
+    enum { VCompressed = 0x8000 };
 
     TypeId() {}
     TypeId(const TypeId& v);

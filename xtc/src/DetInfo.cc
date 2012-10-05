@@ -64,6 +64,7 @@ const char* DetInfo::name(Device dev) {
     "Fli",
     "Quartz4A150",
     "Andor",
+    "USDUSB",
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
 }

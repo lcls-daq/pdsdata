@@ -1,13 +1,15 @@
 #ifndef Pds_TimePix_CompressedDataV2_hh
 #define Pds_TimePix_CompressedDataV2_hh
 
-#include "pdsdata/xtc/CompressedPayload.hh"
+#include "pdsdata/timepix/DataV2.hh"
+#include "pdsdata/compress/CompressedPayload.hh"
 
 #include <stdint.h>
 
+namespace boost { template<class T> class shared_ptr; };
+
 namespace Pds {
   namespace Timepix {
-    class DataV2;
     class CompressedDataV2 {
     public:
       CompressedDataV2() {}
@@ -20,17 +22,11 @@ namespace Pds {
       unsigned                lostRows    () const;
     public:
       const CompressedPayload& pd() const;
+      boost::shared_ptr<DataV2> uncompressed() const;
     private:
-      uint16_t _width;        // pixels per row
-      uint16_t _height;       // pixels per column
-      uint32_t _timestamp;    // hardware timestamp
-      uint16_t _frameCounter; // hardware frame counter
-      uint16_t _lostRows;     // lost row count
-    private:
+      DataV2            _data;
       CompressedPayload _pd;
     };
-
-    DataV2* uncompressed(const CompressedDataV2&);
   };
 };
 

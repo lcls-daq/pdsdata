@@ -1,4 +1,4 @@
-#include "pdsdata/xtc/CompressedPayload.hh"
+#include "pdsdata/compress/CompressedPayload.hh"
 
 using namespace Pds;
 
@@ -21,3 +21,8 @@ unsigned CompressedPayload::dsize() const { return _dsize; }
 unsigned CompressedPayload::csize() const { return _csize; }
 
 const void* CompressedPayload::cdata() const { return (const void*)(this+1); }
+
+bool CompressedPayload::uncompress(void* outbuf) const
+{
+  return false;
+}

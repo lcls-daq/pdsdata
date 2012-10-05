@@ -82,6 +82,8 @@ const char* TypeId::name(Type type)
     "Reserved2",               // 59
     "AndorConfig",             // 60
     "AndorFrame",              // 61
+    "UsdUsbData",              // 62
+    "UsdUsbConfig",            // 63
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

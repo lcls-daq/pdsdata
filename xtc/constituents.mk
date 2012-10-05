@@ -11,5 +11,4 @@ libsrcs_xtcdata := src/TypeId.cc \
                    src/ClockTime.cc \
                    src/Level.cc \
                    src/ProcInfo.cc \
-                   src/DetInfo.cc \
-                   src/CompressedPayload.cc
+                   src/DetInfo.cc

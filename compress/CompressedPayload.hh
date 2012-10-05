@@ -21,7 +21,8 @@ namespace Pds {
     unsigned dsize() const; // decompressed size
     unsigned csize() const; // compressed size
     const void* cdata() const; // pointer to compressed data
-
+  public:
+    bool uncompress(void* outbuf) const;
   private:
     uint32_t _engine;
     uint32_t _reserved;
