@@ -312,6 +312,12 @@ public:
     printf( "\n" );    
   } 
   
+  void process(const DetInfo&, const BldDataGMDV0& bldData) {
+    printf("*** Processing Bld-GMD V0 object\n");
+    bldData.print();
+    printf( "\n" );    
+  } 
+  
   void process(const DetInfo&, const EvrData::IOConfigV1&) {
     printf("*** Processing EVR IOconfig V1 object\n");
   }
@@ -654,6 +660,11 @@ public:
     case (TypeId::Id_PhaseCavity) :
     {
       process(info, *(const BldDataPhaseCavity*) xtc->payload() );
+      break;        
+    }
+    case (TypeId::Id_GMD) :
+    {
+      process(info, *(const BldDataGMD*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_SharedIpimb) :

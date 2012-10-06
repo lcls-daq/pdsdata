@@ -42,6 +42,7 @@ const char* BldInfo::name(const BldInfo& src){
     "MEC-XT2-IPM-02",
     "MEC-XT2-IPM-03",
     "MEC-HXM-IPM-01",
+    "GMD"
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }

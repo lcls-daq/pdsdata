@@ -57,8 +57,8 @@ public:
   void process(const DetInfo&, const Camera::FrameFexConfigV1& c) {
     printf("*** Processing frame feature extraction config object\n");
     printf("roiBegin (%d,%d)  roiEnd(%d,%d)\n",
-	   c.roiBegin().column, c.roiBegin().row,
-	   c.roiEnd().column, c.roiEnd().row);
+     c.roiBegin().column, c.roiBegin().row,
+     c.roiEnd().column, c.roiEnd().row);
   }
   void process(const DetInfo&, const Camera::FrameFccdConfigV1&) {
     printf("*** Processing FCCD Frame ConfigV1 object\n");
@@ -167,7 +167,12 @@ public:
     printf( "\n" );    
   } 
 
-   
+  void process(const DetInfo&, const BldDataGMDV0& bldData) {
+    printf("*** Processing Bld-GMD V0 object\n");
+    bldData.print();
+    printf( "\n" );    
+  }   
+  
   void process(const DetInfo&, const EvrData::IOConfigV1&) {
     printf("*** Processing EVR IOconfig V1 object\n");
   }
@@ -195,7 +200,7 @@ public:
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
     printf("%s level, payload size %d contains: %s: ",
-	   Level::name(level), xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
+     Level::name(level), xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
      
     const DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
@@ -345,6 +350,11 @@ public:
     case (TypeId::Id_PhaseCavity) :
     {
       process(info, *(const BldDataPhaseCavity*) xtc->payload() );
+      break;        
+    }
+    case (TypeId::Id_GMD) :
+    {
+      process(info, *(const BldDataGMD*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_SharedIpimb) :

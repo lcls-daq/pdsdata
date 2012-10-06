@@ -84,6 +84,7 @@ const char* TypeId::name(Type type)
     "AndorFrame",              // 61
     "UsdUsbData",              // 62
     "UsdUsbConfig",            // 63
+	"GMD",                     // 64
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

@@ -25,6 +25,7 @@ namespace Pds {
                 MecTcTrDio01,
                 MecXt2Ipm02, MecXt2Ipm03, 
                 MecHxmIpm01,
+                GMD,
                 NumberOf };
 
     BldInfo() {}

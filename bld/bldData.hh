@@ -157,6 +157,32 @@ public:
   Camera::FrameV1          frame;
 };
 
+class BldDataGMDV0
+{
+public:
+  enum { version=0 };
+  char     strGasType[32];  // Gas Type
+  float    fPressure;       // Pressure from Spinning Rotor Gauge, SXR:GMD:SRG:01:Pressure
+  float    fTemperature;    // Temp from PT100, SXR:GMD:RTD:40:RAW_AI
+  float    fCurrent;        // Current from Keithley Electrometer, SXR:GMD:ETM:01:Reading
+  int32_t  iHvMeshElectron; // HV Mesh Electron, SXR:GMD:VHQ1:ChA:VoltageMeasure
+  int32_t  iHvMeshIon;      // HV Mesh Ion,      SXR:GMD:VHQ1:ChB:VoltageMeasure
+  int32_t  iHvMultIon;      // HV Mult Ion,      SXR:GMD:VHQ1:ChB:VoltageMeasure
+  float    fChargeQ;        // Charge Q, SXR:GMD:IMD:Charge_Q
+  float    fPhotonEnergy;   // Photon Energy, SIOC:SYS0:ML00:AO627
+  float    fPhotonsPerPulse;// Photons Per Pulse, SXR:GMD:IMD:CalcIMD:PhotonsPerPulse
+  float    fSpare1;         // Spare 1
+  float    fSpare2;         // Spare 2
+  float    fSpare3;         // Spare 3
+  float    fSpare4;         // Spare 4
+  float    fSpare5;         // Spare 5
+  float    fSpare6;         // Spare 6
+      
+  int print() const;    
+};
+
+typedef BldDataGMDV0 BldDataGMD;
+
 #pragma pack()
 }
 #endif

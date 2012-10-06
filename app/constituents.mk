@@ -14,7 +14,7 @@ tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccd
 tgtslib_xtcreader := $(USRLIBDIR)/rt
 
 tgtsrcs_cfgreader := cfgreader.cc
-tgtlibs_cfgreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata pdsdata/camdata pdsdata/ipimbdata
+tgtlibs_cfgreader := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata pdsdata/camdata pdsdata/ipimbdata pdsdata/compressdata pdsdata/cspaddata pdsdata/cspad2x2data pdsdata/timepixdata
 tgtslib_cfgreader := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmodify := xtcmodify.cc

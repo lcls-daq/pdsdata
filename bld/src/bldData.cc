@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "pdsdata/bld/bldData.hh"
 
 using namespace Pds;
@@ -118,6 +119,34 @@ int BldDataIpimbV1::print() const
     return 0;
 }
 
+int BldDataGMDV0::print() const 
+{   
+  printf("BLD GMD Data V0:\n");
+  
+  char strGasTypeTemp[sizeof(strGasType)+1];
+  strncpy(strGasTypeTemp, strGasType, sizeof(strGasType));
+  strGasTypeTemp[sizeof(strGasTypeTemp)-1] = 0;
+  
+  printf("  Gas Type                        : %s\n", strGasTypeTemp);
+  printf("  Pressure (Spinning Rotor Gauge) : %f\n", fPressure);
+  printf("  Temperature (PT100)             : %f\n", fTemperature);
+  printf("  Current (Keithley Electrometer) : %f\n", fCurrent);
+  printf("  Temperature (PT100)             : %f\n", fTemperature);
+  printf("  Voltage (HV Mesh Electron)      : %d\n", iHvMeshElectron);
+  printf("  Voltage (HV Mesh Ion)           : %d\n", iHvMeshIon);
+  printf("  Voltage (HV Mult Ion)           : %d\n", iHvMultIon);
+  printf("  Charge Q                        : %f\n", fChargeQ);
+  printf("  Photon Energy                   : %f\n", fPhotonEnergy);
+  printf("  Photons Per Pulse               : %f\n", fPhotonsPerPulse);
+  printf("  Spare 1                         : %f\n", fSpare1);
+  printf("  Spare 2                         : %f\n", fSpare2);
+  printf("  Spare 3                         : %f\n", fSpare3);
+  printf("  Spare 4                         : %f\n", fSpare4);
+  printf("  Spare 5                         : %f\n", fSpare5);
+  printf("  Spare 6                         : %f\n", fSpare6);
+  
+  return 0;
+}
 
 
 
