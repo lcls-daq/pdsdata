@@ -128,22 +128,22 @@ int BldDataGMDV0::print() const
   strGasTypeTemp[sizeof(strGasTypeTemp)-1] = 0;
   
   printf("  Gas Type                        : %s\n", strGasTypeTemp);
-  printf("  Pressure (Spinning Rotor Gauge) : %f\n", fPressure);
-  printf("  Temperature (PT100)             : %f\n", fTemperature);
-  printf("  Current (Keithley Electrometer) : %f\n", fCurrent);
-  printf("  Temperature (PT100)             : %f\n", fTemperature);
+  printf("  Pressure (Spinning Rotor Gauge) : %lf\n", fPressure);
+  printf("  Temperature (PT100)             : %lf\n", fTemperature);
+  printf("  Current (Keithley Electrometer) : %lf\n", fCurrent);
+  printf("  Temperature (PT100)             : %lf\n", fTemperature);
   printf("  Voltage (HV Mesh Electron)      : %d\n", iHvMeshElectron);
   printf("  Voltage (HV Mesh Ion)           : %d\n", iHvMeshIon);
   printf("  Voltage (HV Mult Ion)           : %d\n", iHvMultIon);
-  printf("  Charge Q                        : %f\n", fChargeQ);
-  printf("  Photon Energy                   : %f\n", fPhotonEnergy);
-  printf("  Photons Per Pulse               : %f\n", fPhotonsPerPulse);
-  printf("  Spare 1                         : %f\n", fSpare1);
-  printf("  Spare 2                         : %f\n", fSpare2);
-  printf("  Spare 3                         : %f\n", fSpare3);
-  printf("  Spare 4                         : %f\n", fSpare4);
-  printf("  Spare 5                         : %f\n", fSpare5);
-  printf("  Spare 6                         : %f\n", fSpare6);
+  printf("  Charge Q                        : %lf\n", fChargeQ);
+  printf("  Photon Energy                   : %lf\n", fPhotonEnergy);
+  printf("  Photons Per Pulse               : %lf\n", fPhotonsPerPulse);
+  printf("  Spare 1                         : %lf\n", fSpare1);
+  printf("  Spare 2                         : %lf\n", fSpare2);
+  printf("  Spare 3                         : %lf\n", fSpare3);
+  printf("  Spare 4                         : %lf\n", fSpare4);
+  printf("  Spare 5                         : %lf\n", fSpare5);
+  printf("  Spare 6                         : %lf\n", fSpare6);
   
   return 0;
 }
