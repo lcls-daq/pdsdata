@@ -76,7 +76,7 @@ namespace Pds {
       Id_AndorFrame,
       Id_UsdUsbData,
       Id_UsdUsbConfig,
-	  Id_GMD,
+      Id_GMD,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
