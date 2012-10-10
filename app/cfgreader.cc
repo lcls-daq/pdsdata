@@ -23,6 +23,7 @@
 #include "pdsdata/evr/ConfigV2.hh"
 #include "pdsdata/evr/ConfigV3.hh"
 #include "pdsdata/evr/ConfigV4.hh"
+#include "pdsdata/evr/ConfigV7.hh"
 #include "pdsdata/control/ConfigV1.hh"
 #include "pdsdata/control/PVControl.hh"
 #include "pdsdata/control/PVMonitor.hh"
@@ -188,6 +189,13 @@ public:
   void process(const DetInfo&, const EvrData::ConfigV4&) {
     printf("*** Processing EVR config V4 object\n");
   }
+  void process(const DetInfo&, const EvrData::ConfigV7& c) {
+    printf("*** Processing EVR config V4 object\n");
+    c.print();
+    const EvrData::ConfigV7::SeqConfigType& s = c.seq_config();
+    printf(" seq src %d/%d : len %d : cycles %d\n",
+           s.sync_source(), s.beam_source(), s.length(), s.cycles());
+  }
   void process(const DetInfo&, const Princeton::ConfigV1&) {
     printf("*** Processing Princeton ConfigV1 object\n");
   }
@@ -302,6 +310,9 @@ public:
         break;
       case 4:
         process(info, *(const EvrData::ConfigV4*)(xtc->payload()));
+        break;
+      case 7:
+        process(info, *(const EvrData::ConfigV7*)(xtc->payload()));
         break;
       default:
         printf("Unsupported evr configuration version %d\n",version);
