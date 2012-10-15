@@ -15,8 +15,11 @@ ConfigV1::ConfigV1(
  uint32_t         uBinY,
  float            f32ExposureTime, 
  float            f32CoolingTemp, 
+ uint8_t          u8FanMode,
+ uint8_t          u8BaselineClamp,
+ uint8_t          u8HighCapacity, 
  uint8_t          u8GainIndex,
- uint8_t          u8ReadoutSpeedIndex,
+ uint16_t         u16ReadoutSpeedIndex,
  uint16_t         u16ExposureEventCode, 
  uint32_t         u32NumDelayShots) :
  _uWidth  (uWidth), 
@@ -27,10 +30,13 @@ ConfigV1::ConfigV1(
  _uBinY   (uBinY),
  _f32ExposureTime       (f32ExposureTime),
  _f32CoolingTemp        (f32CoolingTemp), 
- _u8GainIndex           (u8GainIndex), 
- _u8ReadoutSpeedIndex   (u8ReadoutSpeedIndex), 
- _u16ExposureEventCode   (u16ExposureEventCode),
- _u32NumDelayShots          (u32NumDelayShots)
+ _u8FanMode             (u8FanMode), 
+ _u8BaselineClamp       (u8BaselineClamp), 
+ _u8HighCapacity        (u8HighCapacity), 
+ _u8GainIndex           (u8GainIndex),  
+ _u16ReadoutSpeedIndex  (u16ReadoutSpeedIndex), 
+ _u16ExposureEventCode  (u16ExposureEventCode),
+ _u32NumDelayShots      (u32NumDelayShots)
  {} 
  
 int ConfigV1::frameSize() const
