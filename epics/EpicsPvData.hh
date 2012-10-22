@@ -317,7 +317,9 @@ int EpicsPvTime<iDbrType1, EpicsPvBase> ::printPv() const
     char sTimeText[40];
     
     struct tm tmTimeStamp;
-    localtime_r( (const time_t*) (void*) &this->stamp.secPastEpoch, &tmTimeStamp );
+    /* Old code didn't work on 64bit systems, since stamp.secPastEpoch is 4-bytes, but time_t is 8-bytes. */
+    time_t secPastEpoch = this->stamp.secPastEpoch;
+    localtime_r( &secPastEpoch, &tmTimeStamp );
     tmTimeStamp.tm_year += 20; // Epics Epoch starts from 1990, whereas linux time.h Epoch starts from 1970    
     
     strftime(sTimeText, sizeof(sTimeText), timeFormatStr, &tmTimeStamp );
