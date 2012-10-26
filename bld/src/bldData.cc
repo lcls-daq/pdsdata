@@ -126,7 +126,7 @@ int BldDataGMDV0::print() const
   char strGasTypeTemp[sizeof(strGasType)+1];
   strncpy(strGasTypeTemp, strGasType, sizeof(strGasType));
   strGasTypeTemp[sizeof(strGasTypeTemp)-1] = 0;
-  
+    
   printf("  Gas Type                        : %s\n", strGasTypeTemp);
   printf("  Pressure (Spinning Rotor Gauge) : %lf\n", fPressure);
   printf("  Temperature (PT100)             : %lf\n", fTemperature);
@@ -137,12 +137,12 @@ int BldDataGMDV0::print() const
   printf("  Voltage (HV Mult Ion)           : %d\n", iHvMultIon);
   printf("  Charge Q                        : %lf\n", fChargeQ);
   printf("  Photon Energy                   : %lf\n", fPhotonEnergy);
-  printf("  Photons Per Pulse               : %lf\n", fPhotonsPerPulse);
-  printf("  Spare 1                         : %lf\n", fSpare1);
-  printf("  Spare 2                         : %lf\n", fSpare2);
-  printf("  Spare 3                         : %lf\n", fSpare3);
-  printf("  Spare 4                         : %lf\n", fSpare4);
-  printf("  Spare 5                         : %lf\n", fSpare5);
+  printf("  Pulse Intensity (Electron Multiplier) : %lf\n", fMultPulseIntensity);
+  printf("  Pulse Intensity (ION cup current)     : %lf\n", fKeithleyPulseIntensity);
+  printf("  Pulse Energy (Electron Multiplier)    : %lf\n", fPulseEnergy);
+  printf("  Pulse Energy (FEE Gas Detector)       : %lf\n", fPulseEnergyFEE);
+  printf("  Transmission (Electron Multiplier)    : %lf\n", fTransmission);
+  printf("  Transmission (FEE Gas Detector)       : %lf\n", fTransmissionFEE);
   printf("  Spare 6                         : %lf\n", fSpare6);
   
   return 0;
