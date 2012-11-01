@@ -40,6 +40,15 @@ class BldDataEBeamV0
 {
 public:
   enum { version=0 };
+
+  // uDamageMask bits
+  enum { EbeamChargeDamage   = 0x001,
+         EbeamL3EnergyDamage = 0x002,
+         EbeamLTUPosXDamage  = 0x004,
+         EbeamLTUPosYDamage  = 0x008,
+         EbeamLTUAngXDamage  = 0x010,
+         EbeamLTUAngYDamage  = 0x020 };
+
     uint32_t    uDamageMask;
     double      fEbeamCharge;    /* in nC */ 
     double      fEbeamL3Energy;  /* in MeV */ 
@@ -56,6 +65,16 @@ class BldDataEBeamV1
 {
 public:
   enum { version=1 };
+
+  // uDamageMask bits
+  enum { EbeamChargeDamage    = 0x001,
+         EbeamL3EnergyDamage  = 0x002,
+         EbeamLTUPosXDamage   = 0x004,
+         EbeamLTUPosYDamage   = 0x008,
+         EbeamLTUAngXDamage   = 0x010,
+         EbeamLTUAngYDamage   = 0x020,
+         EbeamPkCurrBC2Damage = 0x040 };
+
     uint32_t    uDamageMask;
     double      fEbeamCharge;    /* in nC */ 
     double      fEbeamL3Energy;  /* in MeV */ 
@@ -73,6 +92,17 @@ class BldDataEBeamV2
 {
 public:
   enum { version=2 };
+
+  // uDamageMask bits
+  enum { EbeamChargeDamage    = 0x001,
+         EbeamL3EnergyDamage  = 0x002,
+         EbeamLTUPosXDamage   = 0x004,
+         EbeamLTUPosYDamage   = 0x008,
+         EbeamLTUAngXDamage   = 0x010,
+         EbeamLTUAngYDamage   = 0x020,
+         EbeamPkCurrBC2Damage = 0x040,
+         EbeamEnergyBC2Damage = 0x080 };
+
     uint32_t    uDamageMask;
     double      fEbeamCharge;    /* in nC */ 
     double      fEbeamL3Energy;  /* in MeV */ 
@@ -90,6 +120,19 @@ class BldDataEBeamV3
 {
 public:
   enum { version=3 };
+
+  // uDamageMask bits
+  enum { EbeamChargeDamage    = 0x001,
+         EbeamL3EnergyDamage  = 0x002,
+         EbeamLTUPosXDamage   = 0x004,
+         EbeamLTUPosYDamage   = 0x008,
+         EbeamLTUAngXDamage   = 0x010,
+         EbeamLTUAngYDamage   = 0x020,
+         EbeamPkCurrBC2Damage = 0x040,
+         EbeamEnergyBC2Damage = 0x080,
+         EbeamPkCurrBC1Damage = 0x100,
+         EbeamEnergyBC1Damage = 0x200 };
+
     uint32_t    uDamageMask;
     double      fEbeamCharge;     /* in nC */ 
     double      fEbeamL3Energy;   /* in MeV */ 
