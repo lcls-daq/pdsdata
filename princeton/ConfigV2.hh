@@ -72,6 +72,7 @@ private:
   uint16_t          _u16DelayMode;
   
   friend class ConfigV3;
+  friend class ConfigV4;
 };
 
 } // namespace Princeton

@@ -202,26 +202,27 @@ public:
 
 class BldDataGMDV0
 {
-public:
-  enum { version=0 }; 
-  char      strGasType[32];    // Gas Type
-  double    fPressure;       // Pressure from Spinning Rotor Gauge
-  double    fTemperature;    // Temp from PT100
-  double    fCurrent;        // Current from Keithley Electrometer
-  int32_t   iHvMeshElectron; // HV Mesh Electron
-  int32_t   iHvMeshIon;      // HV Mesh Ion
-  int32_t   iHvMultIon;      // HV Mult Ion
-  double    fChargeQ;        // Charge Q
-  double    fPhotonEnergy;   // Photon Energy
-  double    fMultPulseIntensity;  // Pulse Intensity derived from Electron Multiplier
-  double    fKeithleyPulseIntensity;  // Pulse Intensity derived from ION cup current
-  double    fPulseEnergy;         // Pulse Energy derived from Electron Multiplier
-  double    fPulseEnergyFEE;      // Pulse Energy from FEE Gas Detector
-  double    fTransmission;        // Transmission derived from Electron Multiplier
-  double    fTransmissionFEE;     // Transmission from FEE Gas Detector
-  double    fSpare6;         // Spare 6  
-      
-  int print() const;    
+  public:
+  enum    {   version =   0   };
+
+  char    strGasType[32];         // Gas Type
+  double  fPressure;              // Pressure from Spinning Rotor Gauge
+  double  fTemperature;           // Temp from PT100
+  double  fCurrent;               // Current from Keithley Electrometer
+  double  fHvMeshElectron;        // HV Mesh Electron
+  double  fHvMeshIon;             // HV Mesh Ion
+  double  fHvMultIon;             // HV Mult Ion
+  double  fChargeQ;               // Charge Q
+  double  fPhotonEnergy;          // Photon Energy
+  double  fMultPulseIntensity;    // Pulse Intensity derived from Electron Multiplier
+  double  fKeithleyPulseIntensity;// Pulse Intensity derived from ION cup current
+  double  fPulseEnergy;           // Pulse Energy derived from Electron Multiplier
+  double  fPulseEnergyFEE;        // Pulse Energy from FEE Gas Detector
+  double  fTransmission;          // Transmission derived from Electron Multiplier
+  double  fTransmissionFEE;       // Transmission from FEE Gas Detector
+  double  fSpare6;                // Spare 6
+
+  int print() const;
 };
 
 typedef BldDataGMDV0 BldDataGMD;

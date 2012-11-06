@@ -132,9 +132,9 @@ int BldDataGMDV0::print() const
   printf("  Temperature (PT100)             : %lf\n", fTemperature);
   printf("  Current (Keithley Electrometer) : %lf\n", fCurrent);
   printf("  Temperature (PT100)             : %lf\n", fTemperature);
-  printf("  Voltage (HV Mesh Electron)      : %d\n", iHvMeshElectron);
-  printf("  Voltage (HV Mesh Ion)           : %d\n", iHvMeshIon);
-  printf("  Voltage (HV Mult Ion)           : %d\n", iHvMultIon);
+  printf("  Voltage (HV Mesh Electron)      : %lf\n", fHvMeshElectron);
+  printf("  Voltage (HV Mesh Ion)           : %lf\n", fHvMeshIon);
+  printf("  Voltage (HV Mult Ion)           : %lf\n", fHvMultIon);
   printf("  Charge Q                        : %lf\n", fChargeQ);
   printf("  Photon Energy                   : %lf\n", fPhotonEnergy);
   printf("  Pulse Intensity (Electron Multiplier) : %lf\n", fMultPulseIntensity);

@@ -66,6 +66,7 @@ private:
   
   friend class ConfigV2;
   friend class ConfigV3;
+  friend class ConfigV4;
 };
 
 } // namespace Princeton

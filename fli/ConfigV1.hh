@@ -75,4 +75,4 @@ private:
 
 #pragma pack()
 
-#endif //#ifndef FLI_CONFIG_V2_HH
+#endif //#ifndef FLI_CONFIG_V1_HH

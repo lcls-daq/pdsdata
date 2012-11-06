@@ -73,6 +73,8 @@ private:
   uint8_t           _u8ReadoutSpeedIndex;
   uint16_t          _u16ExposureEventCode;
   uint32_t          _u32NumDelayShots;
+  
+  friend class ConfigV4;
 };
 
 } // namespace Princeton
@@ -81,4 +83,4 @@ private:
 
 #pragma pack()
 
-#endif //#ifndef PRINCETON_CONFIG_V2_HH
+#endif //#ifndef PRINCETON_CONFIG_V3_HH
