@@ -59,7 +59,8 @@ namespace Pds {
       MecFdi        = 42,
       MecTimeTool   = 43,
       MecTargetChamber = 44,
-      NumDetector   = 45
+      FeeHxSpectrometer = 45,
+      NumDetector   = 46
     };
 
     enum Device {
