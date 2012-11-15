@@ -13,6 +13,7 @@
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/evr/DataV3.hh"
+#include "pdsdata/acqiris/DataDescV1.hh"
 #include "pdsdata/index/IndexFileReader.hh"
 #include "pdsdata/index/IndexChunkReader.hh"
 #include "pdsdata/ana/XtcRun.hh"
@@ -283,7 +284,7 @@ int updateEvr(const Xtc& xtc)
   
   if ( xtc.contains.version() != 3 )
   {
-    printf( "UnExtorted Evr Data Ver %d\n", xtc.contains.version() );
+    printf( "Unsupported Evr Data Ver %d\n", xtc.contains.version() );
     return 1;
   }
   
@@ -296,6 +297,23 @@ int updateEvr(const Xtc& xtc)
       
     printf( "[%u] ", fifoEvent.EventCode);      
   }  
+  
+  return 0;
+}
+
+int updateAcqWaveform(const Xtc& xtc)
+{
+  // assume xtc.contains.id() == TypeId::Id_EvrData
+  
+  if ( xtc.contains.version() != 1 )
+  {
+    printf( "Unsupported AcqWaveform Data Ver %d\n", xtc.contains.version() );
+    return 1;
+  }
+  
+  const Acqiris::DataDescV1& acqData = * reinterpret_cast<const Acqiris::DataDescV1*>(xtc.payload());
+  
+  printf("nbrSamplesInSeg %d  nbrSegments %d ", acqData.nbrSamplesInSeg(), acqData.nbrSegments());
   
   return 0;
 }
@@ -765,7 +783,7 @@ int XtcIterL1Accept::process(Xtc * xtc)
        );
       printf("src %s,%d %s,%d\n",
        DetInfo::name(info.detector()), info.detId(),
-       DetInfo::name(info.device()), info.devId());
+       DetInfo::name(info.device()), info.devId());            
     }
   
     if ( _depth != 1 && _depth != 2 )
@@ -779,6 +797,15 @@ int XtcIterL1Accept::process(Xtc * xtc)
       updateEvr(*xtc);
       printf("\n");
     }
+    
+    if ( xtc->contains.id() == TypeId::Id_AcqWaveform )
+    {
+      unsigned i = _depth;
+      while (i--) printf("  ");
+      printf("  Acq Waveform ");
+      updateAcqWaveform(*xtc);
+      printf("\n");
+    }    
   }  
   else if (level == Level::Reporter)
   {
