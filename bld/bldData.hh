@@ -202,8 +202,8 @@ public:
 
 class BldDataGMDV0
 {
-  public:
-  enum    {   version =   0   };
+public:
+  enum    {version = 0};
 
   char    strGasType[32];         // Gas Type
   double  fPressure;              // Pressure from Spinning Rotor Gauge
@@ -225,7 +225,22 @@ class BldDataGMDV0
   int print() const;
 };
 
-typedef BldDataGMDV0 BldDataGMD;
+class BldDataGMDV1
+{
+public:
+  enum    {version = 1};
+  double  fMilliJoulesPerPulse;    // Shot to shot pulse energy (mJ)
+  double  fMilliJoulesAverage;     // Average pulse energy from ION cup current (mJ)
+  double  fCorrectedSumPerPulse;   // Bg corrected waveform integrated within limits in raw A/D counts
+  double  fBgValuePerSample;       // Avg background value per sample in raw A/D counts
+  double  fRelativeEnergyPerPulse; // Shot by shot pulse energy in arbitrary units
+  double  fSpare1;                 // Spare value for use as needed
+ 
+  int print() const;
+};
+
+
+typedef BldDataGMDV1 BldDataGMD;
 
 #pragma pack()
 }

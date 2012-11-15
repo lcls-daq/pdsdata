@@ -147,5 +147,21 @@ int BldDataGMDV0::print() const
   return 0;
 }
 
+int BldDataGMDV1::print() const
+{
+  printf("BLD GMD Data V1:\n");
+  
+  printf("  Shot to shot pulse energy (mJ)                 : %lf\n", fMilliJoulesPerPulse);
+  printf("  Average pulse energy from ION cup current (mJ) : %lf\n", fMilliJoulesAverage);
+  printf("  Bg corrected waveform (counts)                 : %lf\n", fCorrectedSumPerPulse);
+  printf("  Avg background value per sample (counts)       : %lf\n", fBgValuePerSample);
+  printf("  Shot by shot pulse energy (no units)           : %lf\n", fRelativeEnergyPerPulse);
+  printf("  Spare value 1                                  : %lf\n", fSpare1);
+  
+  return 0;
+}
+
+
+
 
 

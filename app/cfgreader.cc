@@ -173,6 +173,12 @@ public:
     bldData.print();
     printf( "\n" );    
   }   
+
+  void process(const DetInfo&, const BldDataGMDV1& bldData) {
+    printf("*** Processing Bld-GMD V1 object\n");
+    bldData.print();
+    printf( "\n" );
+  }
   
   void process(const DetInfo&, const EvrData::IOConfigV1&) {
     printf("*** Processing EVR IOconfig V1 object\n");
@@ -365,8 +371,18 @@ public:
     }
     case (TypeId::Id_GMD) :
     {
-      process(info, *(const BldDataGMD*) xtc->payload() );
-      break;        
+      switch(xtc->contains.version()) {
+        case 0:
+          process(info, *(const BldDataGMDV0*) xtc->payload() );
+          break;
+        case 1:
+          process(info, *(const BldDataGMDV1*) xtc->payload() );
+          break;
+        default:
+          break;
+      }
+      break;
+      break;
     }
     case (TypeId::Id_SharedIpimb) :
     {
