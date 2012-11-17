@@ -10,6 +10,8 @@
 #include "pdsdata/lusi/PimImageConfigV1.hh"
 #include "pdsdata/pulnix/TM6740ConfigV2.hh"
 #include "pdsdata/camera/FrameV1.hh"
+#include "pdsdata/acqiris/ConfigV1.hh"
+#include "pdsdata/acqiris/DataDescV1.hh"
 #include "pdsdata/xtc/DetInfo.hh"
 
 typedef Pds::Ipimb::DataV1   IpimbDataV1;
@@ -241,6 +243,16 @@ public:
 
 
 typedef BldDataGMDV1 BldDataGMD;
+
+class BldDataAcqADCV1
+{
+public:
+  enum { version=1 };
+  Acqiris::ConfigV1   config;
+  Acqiris::DataDescV1 data;
+};
+
+typedef BldDataAcqADCV1 BldDataAcqADC;
 
 #pragma pack()
 }

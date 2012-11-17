@@ -85,6 +85,7 @@ const char* TypeId::name(Type type)
     "UsdUsbData",              // 62
     "UsdUsbConfig",            // 63
     "GMD",                     // 64
+    "SharedAcqADC",            // 65
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
