@@ -64,7 +64,11 @@ public:
   uint32_t  maskSet     () const { return _u32MaskSet; }
   uint32_t  maskClear   () const { return _u32MaskClear; }
   
-  int16_t  readoutGroup() const { return _u16ReadGroup; }
+  int16_t  readoutGroup () const { return _u16ReadGroup; }
+  
+  void     clearMask    (unsigned uTypeBit);
+  void     setMaskBit   (unsigned uTypeBit, uint32_t u32MaskBit);  
+  void     clearMaskBit (unsigned uTypeBit, uint32_t u32MaskBit);  
   
 public:  
   void     print()        const;

@@ -99,6 +99,42 @@ EventCodeV6::EventCodeV6(const EventCodeV6& c) :
   _desc[DescSize-1]=0;
 }
 
+void EventCodeV6::clearMask(unsigned uTypeBit)
+{
+  if (uTypeBit & 1)
+    _u32MaskTrigger = 0;
+    
+  if (uTypeBit & 2)
+    _u32MaskSet     = 0;
+
+  if (uTypeBit & 4)    
+    _u32MaskClear   = 0;
+}
+
+void EventCodeV6::setMaskBit(unsigned uTypeBit, uint32_t u32MaskBit) 
+{
+  if (uTypeBit & 1)
+    _u32MaskTrigger |= u32MaskBit;
+    
+  if (uTypeBit & 2)
+    _u32MaskSet     |= u32MaskBit;
+
+  if (uTypeBit & 4)    
+    _u32MaskClear   |= u32MaskBit;
+}
+
+void EventCodeV6::clearMaskBit(unsigned uTypeBit, uint32_t u32MaskBit)
+{
+  if (uTypeBit & 1)
+    _u32MaskTrigger &= ~u32MaskBit;
+    
+  if (uTypeBit & 2)
+    _u32MaskSet     &= ~u32MaskBit;
+
+  if (uTypeBit & 4)    
+    _u32MaskClear   &= ~u32MaskBit;  
+}
+
 void EventCodeV6::print() const
 {
   printf("    Code %u  Desc[%s] Group %u  Readout %d Cmd %d Latch %d Report Delay %d Width %d\n"
