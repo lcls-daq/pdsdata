@@ -11,9 +11,9 @@ enum { EventsMask   = 0x3fffffff,
        UsesEvents   = 0x80000000 };
 
 static void appendChannels(const std::list<PVControl>& pvcs, 
-			   const std::list<PVMonitor>& pvms, 
-			   const std::list<PVLabel > & pvls, 
-			   ConfigV2* s)
+         const std::list<PVMonitor>& pvms, 
+         const std::list<PVLabel > & pvls, 
+         ConfigV2* s)
 {
   std::list<PVControl> sorted_pvcs (pvcs); sorted_pvcs.sort();
   std::list<PVMonitor> sorted_pvms (pvms); sorted_pvms.sort();
@@ -37,6 +37,7 @@ ConfigV2::ConfigV2() {}
 
 ConfigV2::ConfigV2(Initialize) :
   _control    (0),
+  _reserved   (0),
   _npvControls(0),
   _npvMonitors(0),
   _npvLabels (0)
@@ -45,6 +46,7 @@ ConfigV2::ConfigV2(Initialize) :
 
 ConfigV2::ConfigV2(const std::list<PVControl>& pvcs,const std::list<PVMonitor>& pvms,const std::list<PVLabel>& pvls) :
   _control    (0),
+  _reserved   (0),
   _duration   (0,0),
   _npvControls(pvcs.size()),
   _npvMonitors(pvms.size()),
@@ -54,8 +56,9 @@ ConfigV2::ConfigV2(const std::list<PVControl>& pvcs,const std::list<PVMonitor>& 
 }
 
 ConfigV2::ConfigV2(const std::list<PVControl>& pvcs,const std::list<PVMonitor>& pvms,const std::list<PVLabel>& pvls,
-		   const ClockTime& t) :
+       const ClockTime& t) :
   _control    (UsesDuration),
+  _reserved   (0),
   _duration   (t),
   _npvControls(pvcs.size()),
   _npvMonitors(pvms.size()),
@@ -65,8 +68,9 @@ ConfigV2::ConfigV2(const std::list<PVControl>& pvcs,const std::list<PVMonitor>& 
 }
 
 ConfigV2::ConfigV2(const std::list<PVControl>& pvcs,const std::list<PVMonitor>& pvms,const std::list<PVLabel>& pvls,
-		   unsigned events ) :
+       unsigned events ) :
   _control    (UsesEvents | (events&EventsMask)),
+  _reserved   (0),
   _duration   (0,0),
   _npvControls(pvcs.size()),
   _npvMonitors(pvms.size()),
@@ -77,6 +81,7 @@ ConfigV2::ConfigV2(const std::list<PVControl>& pvcs,const std::list<PVMonitor>& 
 
 ConfigV2::ConfigV2(const ConfigV2& s) :
   _control    (s._control),
+  _reserved   (0),
   _npvControls(s._npvControls),
   _npvMonitors(s._npvMonitors),
   _npvLabels  (s._npvLabels )
