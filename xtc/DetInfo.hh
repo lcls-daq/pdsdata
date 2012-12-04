@@ -91,7 +91,8 @@ namespace Pds {
       Quartz4A150 = 24,
       Andor     = 25,
       USDUSB    = 26,
-      NumDevice = 27
+      OrcaFl40  = 27,
+      NumDevice = 28
     };
 
     DetInfo() {}
