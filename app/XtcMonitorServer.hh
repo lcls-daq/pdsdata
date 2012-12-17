@@ -31,6 +31,7 @@ namespace Pds {
     enum Result { Handled, Deferred };
     Result events   (Dgram* dg);
     void routine    ();
+    void unlink     ();
   private:
     int  _init             ();
     void _initialize_client();

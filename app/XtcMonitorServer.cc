@@ -96,28 +96,7 @@ XtcMonitorServer::~XtcMonitorServer()
   pthread_kill(_threadID, SIGTERM);
   printf("Not Unlinking Shared Memory... \n");
 
-  printf("Unlinking Message Queues... \n");
-  mq_close(_discoveryQueue);
-  mq_close(_myInputEvQueue);
-  for(unsigned i=0; i<_numberOfClients; i++) {
-    mq_close(_myOutputTrQueue[i]);
-  }
-  for(unsigned i=0; i<_numberOfEvQueues; i++) {
-    mq_close(_myOutputEvQueue[i]);
-  }
-  mq_close(_shuffleQueue);
-
-  char qname[128];
-  XtcMonitorMsg::discoveryQueue (_tag, qname);  mq_unlink(qname);
-  for(unsigned i=0; i<_numberOfClients; i++) {
-    XtcMonitorMsg::transitionInputQueue(_tag,i,qname); mq_unlink(qname);
-  }
-
-  for(unsigned i=0; i<_numberOfEvQueues; i++) {
-    XtcMonitorMsg::eventInputQueue     (_tag,i,qname); mq_unlink(qname);
-  }
-  XtcMonitorMsg::eventInputQueue     (_tag,_numberOfEvQueues,qname); mq_unlink(qname);
-  sprintf(qname, "/PdsShuffleQueue_%s",_tag);  mq_unlink(qname);
+  unlink();
 
   delete[] _postmarks;
 }
@@ -557,5 +536,31 @@ void XtcMonitorServer::_pop_transition()
 {
   _freeTr.push(_cachedTr.top());
   _cachedTr.pop();
+}
+
+void XtcMonitorServer::unlink() 
+{ 
+  printf("Unlinking Message Queues... \n");
+  mq_close(_discoveryQueue);
+  mq_close(_myInputEvQueue);
+  for(unsigned i=0; i<_numberOfClients; i++) {
+    mq_close(_myOutputTrQueue[i]);
+  }
+  for(unsigned i=0; i<_numberOfEvQueues; i++) {
+    mq_close(_myOutputEvQueue[i]);
+  }
+  mq_close(_shuffleQueue);
+
+  char qname[128];
+  XtcMonitorMsg::discoveryQueue (_tag, qname);  mq_unlink(qname);
+  for(unsigned i=0; i<_numberOfClients; i++) {
+    XtcMonitorMsg::transitionInputQueue(_tag,i,qname); mq_unlink(qname);
+  }
+
+  for(unsigned i=0; i<_numberOfEvQueues; i++) {
+    XtcMonitorMsg::eventInputQueue     (_tag,i,qname); mq_unlink(qname);
+  }
+  XtcMonitorMsg::eventInputQueue     (_tag,_numberOfEvQueues,qname); mq_unlink(qname);
+  sprintf(qname, "/PdsShuffleQueue_%s",_tag);  mq_unlink(qname);
 }
 

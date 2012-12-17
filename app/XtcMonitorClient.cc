@@ -93,7 +93,7 @@ namespace Pds {
 	  Dgram* dg = (Dgram*) (_shm + (myMsg.sizeOfBuffers() * i));
 	  if (_client.processDgram(dg))
 	    return false;
-	  if (oq!=NULL)
+	  if (oq!=NULL) {
 	    while (mq_timedsend(oq[ioq], (const char *)&myMsg, sizeof(myMsg), priority, &_tmo)) {
 	      if (oq[++ioq]==-1) {
 		char qname[128];
@@ -101,6 +101,7 @@ namespace Pds {
 		oq[ioq] = _openQueue(qname, O_WRONLY, PERMS_OUT, false);
 	      }
 	    }
+	  }
 	}
 	else {
 	  fprintf(stderr, "ILLEGAL BUFFER INDEX %d\n", i);
