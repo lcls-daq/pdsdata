@@ -45,6 +45,14 @@ namespace Pds {
                 CxiDg1Pim        = 31,
                 CxiDg2Pim        = 32,
                 CxiDg4Pim        = 33,
+                XppMonPim0       = 34,
+                XppMonPim1       = 35,
+                XppSb2Ipm        = 36,
+                XppSb3Ipm        = 37,
+                XppSb3Pim        = 38,
+                XppSb4Pim        = 39,
+                XppEndstation0   = 40,
+                XppEndstation1   = 41,
                 NumberOf };
 
     BldInfo() {}
