@@ -50,6 +50,14 @@ const char* BldInfo::name(const BldInfo& src){
     "CxiDg1_Pim",
     "CxiDg2_Pim",
     "CxiDg4_Pim",
+    "XppMon_Pim0",
+    "XppMon_Pim1",
+    "XppSb2_Ipm",
+    "XppSb3_Ipm",
+    "XppSb3_Pim",
+    "XppSb4_Pim",
+    "XppEnds_Ipm0",
+    "XppEnds_Ipm1",
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }
