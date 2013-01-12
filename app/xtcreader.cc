@@ -24,6 +24,7 @@
 #include "pdsdata/fccd/FccdConfigV2.hh"
 #include "pdsdata/timepix/ConfigV1.hh"
 #include "pdsdata/timepix/ConfigV2.hh"
+#include "pdsdata/timepix/ConfigV3.hh"
 #include "pdsdata/timepix/DataV1.hh"
 #include "pdsdata/timepix/DataV2.hh"
 #include "pdsdata/camera/TwoDGaussianV1.hh"
@@ -159,6 +160,9 @@ public:
   }
   void process(const DetInfo&, const Timepix::ConfigV2&) {
     printf("*** Processing Timepix ConfigV2 object\n");
+  }
+  void process(const DetInfo&, const Timepix::ConfigV3&) {
+    printf("*** Processing Timepix ConfigV3 object\n");
   }
   void process(const DetInfo&, const Timepix::DataV1&) {
     printf("*** Processing Timepix DataV1 object\n");
@@ -614,6 +618,9 @@ public:
           break;
         case 2:
           process(info, *(const Timepix::ConfigV2*)(xtc->payload()));
+          break;
+        case 3:
+          process(info, *(const Timepix::ConfigV3*)(xtc->payload()));
           break;
         default:
           printf(" *** unsupported TypeId::Id_TimepixConfig version = %u ***\n",
