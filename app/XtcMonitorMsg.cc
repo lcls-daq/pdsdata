@@ -29,3 +29,4 @@ void XtcMonitorMsg::discoveryQueue (const char* tag, char* buffer)
   sprintf(buffer,"/PdsFromMonitorDiscovery_%s",tag);
 }
 
+int XtcMonitorMsg::connPort() { return 5740; }

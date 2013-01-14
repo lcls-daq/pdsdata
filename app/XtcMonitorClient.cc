@@ -11,6 +11,9 @@
 #include <mqueue.h>
 #endif
 
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/ProcInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
@@ -19,6 +22,8 @@
 #include "XtcMonitorMsg.hh"
 
 #include <poll.h>
+
+//#define DBUG
 
 static const unsigned MaxClients=10;
 
@@ -46,20 +51,6 @@ static mqd_t _openQueue(const char* name, unsigned flags, unsigned perms,
     }
   }
   return queue;
-}
-
-static void _flushQueue(mqd_t q)
-{
-  // flush the queues just to be sure they are empty.
-  XtcMonitorMsg m;
-  unsigned priority;
-  struct mq_attr mymq_attr;
-  mymq_attr.mq_curmsgs=0;
-  do {
-    mq_getattr(q, &mymq_attr);
-    if (mymq_attr.mq_curmsgs)
-      mq_receive(q, (char*)&m, sizeof(m), &priority);
-  } while (mymq_attr.mq_curmsgs);
 }
 
 namespace Pds {
@@ -93,13 +84,20 @@ namespace Pds {
 	  Dgram* dg = (Dgram*) (_shm + (myMsg.sizeOfBuffers() * i));
 	  if (_client.processDgram(dg))
 	    return false;
-	  if (oq!=NULL) {
+	  if (oq==NULL)
+	    ;
+	  else if (myMsg.serial()) {
 	    while (mq_timedsend(oq[ioq], (const char *)&myMsg, sizeof(myMsg), priority, &_tmo)) {
 	      if (oq[++ioq]==-1) {
 		char qname[128];
 		XtcMonitorMsg::eventOutputQueue(_tag, ioq, qname);
 		oq[ioq] = _openQueue(qname, O_WRONLY, PERMS_OUT, false);
 	      }
+	    }
+	  }
+	  else {
+	    if (mq_timedsend(oq[0], (const char *)&myMsg, sizeof(myMsg), priority, &_tmo)) {
+	      ;
 	    }
 	  }
 	}
@@ -137,32 +135,15 @@ int XtcMonitorClient::run(const char * tag, int tr_index, int ev_index) {
   int error = 0;
   char* qname             = new char[128];
 
-  unsigned priority = 0;
   XtcMonitorMsg myMsg;
 
   mqd_t myOutputEvQueues[MaxClients];
   memset(myOutputEvQueues, -1, sizeof(myOutputEvQueues));
 
-  XtcMonitorMsg::eventOutputQueue(tag,ev_index,qname);
-  myOutputEvQueues[ev_index] = _openQueue(qname, O_WRONLY, PERMS_OUT);
-  if (myOutputEvQueues[ev_index] == (mqd_t)-1)
-    error++;
-
   XtcMonitorMsg::eventInputQueue(tag,ev_index,qname);
   mqd_t myInputEvQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
   if (myInputEvQueue == (mqd_t)-1)
     error++;
-
-  XtcMonitorMsg::discoveryQueue(tag,qname);
-  mqd_t discoveryQueue = _openQueue(qname, O_WRONLY, PERMS_OUT);
-  if (discoveryQueue == (mqd_t)-1)
-    error++;
-
-  XtcMonitorMsg::transitionInputQueue(tag,tr_index,qname);
-  mqd_t myInputTrQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
-  if (myInputTrQueue == (mqd_t)-1)
-    error++;
-  _flushQueue(myInputTrQueue);
 
   if (error) {
     fprintf(stderr, "Could not open at least one message queue!\n");
@@ -170,48 +151,88 @@ int XtcMonitorClient::run(const char * tag, int tr_index, int ev_index) {
     return error;
   }
 
+
   //
   //  Request initialization
   //
-  myMsg.bufferIndex(tr_index);
-  if (mq_send(discoveryQueue, (const char *)&myMsg, sizeof(myMsg), priority)) {
-    perror("mq_send tr queue");
-    error++;
+  int _socket;
+  if ((_socket = ::socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    perror("Failed to open socket");
+    return -1;
   }
 
+  sockaddr_in saddr;
+  saddr.sin_family      = AF_INET;
+  saddr.sin_addr.s_addr = htonl(0x7f000001);
+  saddr.sin_port        = htons(XtcMonitorMsg::connPort());
+  memset(saddr.sin_zero,0,sizeof(saddr.sin_zero));
+
+  while (::connect(_socket, (sockaddr*)&saddr, sizeof(saddr)) < 0) {
+    printf("Failed to connect ..retry in 1 second\n");
+    sleep(1);
+  }
+
+  if (::read(_socket, &myMsg, sizeof(myMsg)) != sizeof(myMsg)) {
+    perror("Reading initialization");
+    return -1;
+  }
+
+  close(_socket);
+  
   //
   //  Initialize shared memory from first message
+  //
+  unsigned sizeOfShm = myMsg.numberOfBuffers() * myMsg.sizeOfBuffers();
+  unsigned pageSize  = (unsigned)sysconf(_SC_PAGESIZE);
+  unsigned remainder = sizeOfShm % pageSize;
+  if (remainder)
+    sizeOfShm += pageSize - remainder;
+
+  XtcMonitorMsg::sharedMemoryName(tag, qname);
+  printf("Opening shared memory %s of size 0x%x (0x%x * 0x%x)\n",
+	 qname,sizeOfShm,myMsg.numberOfBuffers(),myMsg.sizeOfBuffers());
+
+  int shm = shm_open(qname, OFLAGS, PERMS_IN);
+  if (shm < 0) perror("shm_open");
+  char* myShm = (char*)mmap(NULL, sizeOfShm, PROT_READ, MAP_SHARED, shm, 0);
+  if (myShm == MAP_FAILED) perror("mmap");
+  else printf("Shared memory at %p\n", (void*)myShm);
+  
+  XtcMonitorMsg::transitionInputQueue(tag,myMsg.bufferIndex(),qname);
+  mqd_t myInputTrQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
+  if (myInputTrQueue == (mqd_t)-1)
+    error++;
+
+  if (myMsg.serial()) {
+    XtcMonitorMsg::eventOutputQueue(tag,ev_index,qname);
+    myOutputEvQueues[ev_index] = _openQueue(qname, O_WRONLY, PERMS_OUT);
+    if (myOutputEvQueues[ev_index] == (mqd_t)-1)
+      error++;
+  }
+  else {
+    XtcMonitorMsg::eventInputQueue(tag,myMsg.return_queue(),qname);
+    myOutputEvQueues[0] = _openQueue(qname, O_WRONLY, PERMS_OUT);
+    if (myOutputEvQueues[0] == (mqd_t)-1)
+      error++;
+  }
+  
+  if (error) {
+    fprintf(stderr, "Could not open at least one message queue!\n");
+    fprintf(stderr, "tag %s, tr_index %d, ev_index %d\n",tag,tr_index,ev_index);
+    return error;
+  }
+
+
+  //
   //  Seek the Map transition
   //
-  char* myShm = 0;
-  bool init=false;
   do {
-    XtcMonitorMsg myMsg;
     unsigned priority;
     if (mq_receive(myInputTrQueue, (char*)&myMsg, sizeof(myMsg), &priority) < 0) {
       perror("mq_receive buffer");
       return ++error;
     } 
     else {
-      if (!init) {
-        init = true;
-        unsigned sizeOfShm = myMsg.numberOfBuffers() * myMsg.sizeOfBuffers();
-        unsigned pageSize  = (unsigned)sysconf(_SC_PAGESIZE);
-        unsigned remainder = sizeOfShm % pageSize;
-        if (remainder)
-          sizeOfShm += pageSize - remainder;
-
-	XtcMonitorMsg::sharedMemoryName(tag, qname);
-        printf("Opening shared memory %s of size 0x%x (0x%x * 0x%x)\n",
-            qname,sizeOfShm,myMsg.numberOfBuffers(),myMsg.sizeOfBuffers());
-
-        int shm = shm_open(qname, OFLAGS, PERMS_IN);
-        if (shm < 0) perror("shm_open");
-        myShm = (char*)mmap(NULL, sizeOfShm, PROT_READ, MAP_SHARED, shm, 0);
-        if (myShm == MAP_FAILED) perror("mmap");
-        else printf("Shared memory at %p\n", (void*)myShm);
-      }
-
       int i = myMsg.bufferIndex();
       if ( (i>=0) && (i<myMsg.numberOfBuffers())) {
         Dgram* dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * i));
