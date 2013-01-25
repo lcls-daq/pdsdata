@@ -27,6 +27,7 @@
 
 static const unsigned MaxClients=10;
 
+enum {PERMS = S_IRUSR|S_IRGRP|S_IROTH|S_IWUSR|S_IWGRP|S_IWOTH};
 enum {PERMS_IN  = S_IRUSR|S_IRGRP|S_IROTH};
 enum {PERMS_OUT  = S_IWUSR|S_IWGRP|S_IWOTH};
 enum {OFLAGS = O_RDONLY};
@@ -51,6 +52,47 @@ static mqd_t _openQueue(const char* name, unsigned flags, unsigned perms,
     }
   }
   return queue;
+}
+
+static mqd_t _createQueue(const char* name)
+{
+  struct mq_attr attr;
+  attr.mq_maxmsg  = 4;
+  attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
+  attr.mq_flags   = O_NONBLOCK;
+  mqd_t q = mq_open(name,  O_CREAT|O_RDWR, PERMS, &attr);
+  if (q == (mqd_t)-1) {
+    perror("mq_open output");
+    printf("mq_attr:\n\tmq_flags 0x%0lx\n\tmq_maxmsg 0x%0lx\n\tmq_msgsize 0x%0lx\n\t mq_curmsgs 0x%0lx\n",
+        attr.mq_flags, attr.mq_maxmsg, attr.mq_msgsize, attr.mq_curmsgs );
+    fprintf(stderr, "Creating register queue encountered an error!\n");
+    exit(EXIT_FAILURE);
+  }
+  else {  // Open twice to set all of the attributes
+    printf("Opened queue %s (%d)\n",name,q);
+  }
+
+  mq_attr r_attr;
+  mq_getattr(q,&r_attr);
+  if (r_attr.mq_maxmsg != attr.mq_maxmsg ||
+      r_attr.mq_msgsize!= attr.mq_msgsize) {
+
+    printf("Failed to set queue attributes the first time.\n");
+    mq_close(q);
+
+    mqd_t q = mq_open(name,  O_CREAT|O_RDWR, PERMS, &attr);
+    mq_getattr(q,&r_attr);
+
+    if (r_attr.mq_maxmsg != attr.mq_maxmsg ||
+	r_attr.mq_msgsize!= attr.mq_msgsize) {
+      printf("Failed to set queue attributes the second time.\n");
+      printf("open attr  %lx %lx %lx  read attr %lx %lx %lx\n",
+	     attr.mq_flags, attr.mq_maxmsg, attr.mq_msgsize,
+	     r_attr.mq_flags, r_attr.mq_maxmsg, r_attr.mq_msgsize);
+    }
+  }
+
+  return q;
 }
 
 namespace Pds {
@@ -128,57 +170,52 @@ int XtcMonitorClient::processDgram(Dgram* dg) {
   return 0;
 }
 
-int XtcMonitorClient::run(const char * tag, int tr_index) 
+int XtcMonitorClient::run(const char* tag, int tr_index) 
 { return run(tag, tr_index, tr_index); }
 
-int XtcMonitorClient::run(const char * tag, int tr_index, int ev_index) {
+int XtcMonitorClient::run(const char* tag, int tr_index, int ev_index) {
   int error = 0;
   char* qname             = new char[128];
 
   XtcMonitorMsg myMsg;
+  unsigned priority;
 
   mqd_t myOutputEvQueues[MaxClients];
   memset(myOutputEvQueues, -1, sizeof(myOutputEvQueues));
 
-  XtcMonitorMsg::eventInputQueue(tag,ev_index,qname);
-  mqd_t myInputEvQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
-  if (myInputEvQueue == (mqd_t)-1)
-    error++;
-
-  if (error) {
-    fprintf(stderr, "Could not open at least one message queue!\n");
-    fprintf(stderr, "tag %s, tr_index %d, ev_index %d\n",tag,tr_index,ev_index);
-    return error;
-  }
-
-
   //
   //  Request initialization
   //
-  int _socket;
-  if ((_socket = ::socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-    perror("Failed to open socket");
-    return -1;
+  int pid = getpid();
+  XtcMonitorMsg::registerQueue(tag,qname,pid);
+  //  mqd_t registerQueue = _createQueue(qname, O_RDONLY, PERMS_IN);
+  mqd_t registerQueue = _createQueue(qname);
+  if (registerQueue == (mqd_t)-1) {
+    fprintf(stderr, "Could not create registerQueue (%s)!\n",qname);
+    return 1;
   }
 
-  sockaddr_in saddr;
-  saddr.sin_family      = AF_INET;
-  saddr.sin_addr.s_addr = htonl(0x7f000001);
-  saddr.sin_port        = htons(XtcMonitorMsg::connPort());
-  memset(saddr.sin_zero,0,sizeof(saddr.sin_zero));
+  XtcMonitorMsg::discoveryQueue(tag,qname);
+  mqd_t discoveryQueue = _openQueue(qname, O_WRONLY, PERMS_OUT);
+  if (discoveryQueue == (mqd_t)-1)
+    error++;
 
-  while (::connect(_socket, (sockaddr*)&saddr, sizeof(saddr)) < 0) {
-    printf("Failed to connect ..retry in 1 second\n");
-    sleep(1);
+  myMsg.bufferIndex(pid);
+  if (mq_send(discoveryQueue, (const char*)&myMsg, sizeof(myMsg), 0)) {
+    char b[128];
+    sprintf(b,"mq_send %s",qname);
+    perror(b);
   }
 
-  if (::read(_socket, &myMsg, sizeof(myMsg)) != sizeof(myMsg)) {
-    perror("Reading initialization");
-    return -1;
-  }
+  if (mq_receive(registerQueue, (char*)&myMsg, sizeof(myMsg), &priority) < 0) {
+    perror("mq_receive registerQ");
+    return ++error;
+  } 
 
-  close(_socket);
-  
+  mq_close(discoveryQueue);
+  mq_close(registerQueue);
+  XtcMonitorMsg::registerQueue(tag,qname,pid);  mq_unlink(qname);
+
   //
   //  Initialize shared memory from first message
   //
@@ -201,6 +238,11 @@ int XtcMonitorClient::run(const char * tag, int tr_index, int ev_index) {
   XtcMonitorMsg::transitionInputQueue(tag,myMsg.bufferIndex(),qname);
   mqd_t myInputTrQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
   if (myInputTrQueue == (mqd_t)-1)
+    error++;
+
+  XtcMonitorMsg::eventInputQueue(tag,ev_index,qname);
+  mqd_t myInputEvQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
+  if (myInputEvQueue == (mqd_t)-1)
     error++;
 
   if (myMsg.serial()) {
@@ -227,7 +269,6 @@ int XtcMonitorClient::run(const char * tag, int tr_index, int ev_index) {
   //  Seek the Map transition
   //
   do {
-    unsigned priority;
     if (mq_receive(myInputTrQueue, (char*)&myMsg, sizeof(myMsg), &priority) < 0) {
       perror("mq_receive buffer");
       return ++error;

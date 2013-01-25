@@ -30,14 +30,13 @@ namespace Pds {
   public:
     enum Result { Handled, Deferred };
     Result events   (Dgram* dg);
-    void connect    ();
     void routine    ();
     void unlink     ();
   public:
     void distribute (bool);
   private:
     int  _init             ();
-    void _initialize_client(int);
+    void _initialize_client();
     mqd_t _openQueue       (const char* name, mq_attr&);
     void _flushQueue       (mqd_t q);
     void _flushQueue       (mqd_t q, char* m, unsigned sz);
@@ -61,6 +60,7 @@ namespace Pds {
     char*           _myShm;     // the pointer to start of shared memory
     unsigned        _pageSize;
     XtcMonitorMsg   _myMsg;
+    mqd_t           _discoveryQueue;
     mqd_t           _myInputEvQueue;
     mqd_t*          _myOutputEvQueue; // nclients
     std::vector<mqd_t> _myOutputTrQueue; // nclients
@@ -71,7 +71,6 @@ namespace Pds {
     mqd_t           _shuffleQueue;
     timespec        _tmo;
     pthread_t       _taskThread;
-    pthread_t       _connThread;
     EventSequence*  _sequence;
     unsigned        _ievt;
     timespec*       _postmarks;

@@ -28,7 +28,7 @@ namespace Pds {
     static void eventOutputQueue     (const char* tag, unsigned client, char* buffer);
     static void transitionInputQueue (const char* tag, unsigned client, char* buffer);
     static void discoveryQueue       (const char* tag, char* buffer);
-    static int  connPort             ();
+    static void registerQueue        (const char* tag, char* buffer, int id);
   private:
     int32_t  _bufferIndex;
     int32_t  _numberOfBuffers;
