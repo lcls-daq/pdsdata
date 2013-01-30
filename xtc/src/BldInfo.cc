@@ -10,6 +10,11 @@ BldInfo::BldInfo(uint32_t processId, Type type) : Src(Level::Reporter) {
   _phy = type;
 }
 
+bool BldInfo::operator==(const BldInfo& o) const
+{
+  return o.phy()==_phy;
+}
+
 uint32_t BldInfo::processId() const { return _log&0xffffff; }
 
 BldInfo::Type BldInfo::type() const {return (BldInfo::Type)(_phy); }
