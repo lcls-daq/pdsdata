@@ -9,6 +9,7 @@
 #include "pdsdata/cspad2x2/ConfigV2QuadReg.hh"
 
 #include <stdint.h>
+#include "pdsdata/cspad2x2/ProtectionSystem.hh"
 
 #pragma pack(4)
 
@@ -16,16 +17,6 @@ namespace Pds
 {
   namespace CsPad2x2
   {
-    class ProtectionSystemThreshold
-    {
-      public:
-        ProtectionSystemThreshold() {};
-        ~ProtectionSystemThreshold() {};
-
-      public:
-        uint32_t adcThreshold;
-        uint32_t pixelCountThreshold;
-    };
 
     class ConfigV2
     {
