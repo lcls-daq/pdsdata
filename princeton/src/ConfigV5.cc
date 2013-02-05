@@ -1,5 +1,5 @@
 #include "pdsdata/princeton/ConfigV5.hh"
-#include "pdsdata/princeton/FrameV1.hh"
+#include "pdsdata/princeton/FrameV2.hh"
 
 #include <string.h>
 
@@ -123,7 +123,7 @@ ConfigV5::ConfigV5(const ConfigV4& config) :
 
 int ConfigV5::frameSize() const
 {
-  return sizeof(FrameV1) +
+  return sizeof(FrameV2) +
     (int) ((_u32Width + _uBinX-1)/ _uBinX ) *
     (int) ((_u32Height+ _uBinY-1)/ _uBinY ) * 2; // 2 -> 16 bit color depth
 }
