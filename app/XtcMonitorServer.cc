@@ -387,7 +387,6 @@ int XtcMonitorServer::_init()
   }
 
   XtcMonitorMsg::discoveryQueue(p, fromQname);
-  sprintf(fromQname, "/PdsFromMonitorDiscovery_%s",p);
   _pfd[0].fd      = _discoveryQueue  = _openQueue(fromQname,q_attr);
   _pfd[0].events  = POLLIN;
   _pfd[0].revents = 0;
@@ -618,6 +617,7 @@ void XtcMonitorServer::unlink()
     mq_close(_myOutputEvQueue[i]);
   }
   mq_close(_shuffleQueue);
+  mq_close(_discoveryQueue);
 
   char qname[128];
   for(unsigned i=0; i<_myOutputTrQueue.size(); i++) {
@@ -629,5 +629,6 @@ void XtcMonitorServer::unlink()
   }
   XtcMonitorMsg::eventInputQueue     (_tag,_numberOfEvQueues,qname); mq_unlink(qname);
   sprintf(qname, "/PdsShuffleQueue_%s",_tag);  mq_unlink(qname);
+  XtcMonitorMsg::discoveryQueue      (_tag,qname); mq_unlink(qname);
 }
 

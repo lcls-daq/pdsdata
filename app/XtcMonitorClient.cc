@@ -200,7 +200,10 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int ev_index) {
   if (discoveryQueue == (mqd_t)-1)
     error++;
 
-  myMsg.bufferIndex(pid);
+  myMsg.bufferIndex    (pid);
+  myMsg.numberOfBuffers(0);
+  myMsg.sizeOfBuffers  (0);
+  myMsg.return_queue   (0);
   if (mq_send(discoveryQueue, (const char*)&myMsg, sizeof(myMsg), 0)) {
     char b[128];
     sprintf(b,"mq_send %s",qname);
