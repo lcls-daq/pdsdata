@@ -2,12 +2,23 @@
 #include "pdsdata/xtc/Level.hh"
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 using namespace Pds;
 
 BldInfo::BldInfo(uint32_t processId, Type type) : Src(Level::Reporter) {
   _log |= processId&0x00ffffff;
   _phy = type;
+}
+
+BldInfo::BldInfo(const char* sname) : Src(Level::Reporter) 
+{
+  for(unsigned i=0; i<NumberOf; i++) {
+    _phy = i;
+    if (strcmp(sname,name(*this))==0)
+      return;
+  }
+  _phy = NumberOf;
 }
 
 bool BldInfo::operator==(const BldInfo& o) const

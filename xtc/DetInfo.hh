@@ -97,6 +97,7 @@ namespace Pds {
 
     DetInfo() {}
     DetInfo(uint32_t processId, Detector det, uint32_t detId, Device dev, uint32_t devId);
+    DetInfo(const char*);
 
     bool operator==(const DetInfo &) const;
 

@@ -60,6 +60,7 @@ namespace Pds {
     BldInfo() {}
     BldInfo(uint32_t processId,
             Type     type);
+    BldInfo(const char*);
 
     bool operator==(const BldInfo&) const;
 
