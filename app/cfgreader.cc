@@ -493,7 +493,7 @@ int main(int argc, char* argv[]) {
   unsigned count(0);
   XtcFileIterator iter(fd,0x900000);
   Dgram* dg;
-  while( dg = iter.next() ) {
+  while( (dg = iter.next()) ) {
     if (dg->seq.service() == TransitionId::L1Accept)
       if (++count>nevents) break;
 

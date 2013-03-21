@@ -4,10 +4,12 @@
 
 using namespace std;
 
+#if 0
 static void sigfunc(int sig_no) {
   cout << endl << "Caught " << strsignal(sig_no) << " signal, exiting..." << endl;
   exit(0);
 }
+#endif
 
 void usage(char* progname) {
   cerr << "Usage: " << progname
