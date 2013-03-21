@@ -39,6 +39,7 @@
 
 #include "Detector.hh"
 #include "pdsdata/cspad/CspadCompressor.hh"
+#include "pdsdata/xtc/TypeId.hh"
 
 #include <stdint.h>
 
@@ -76,6 +77,10 @@ namespace Pds {
       ElementIterator(const ConfigV2&, const Xtc&);
       ElementIterator(const ConfigV3&, const Xtc&);
       ElementIterator(const ConfigV4&, const Xtc&);
+      ElementIterator(const ConfigV1&, TypeId, const char*, size_t);
+      ElementIterator(const ConfigV2&, TypeId, const char*, size_t);
+      ElementIterator(const ConfigV3&, TypeId, const char*, size_t);
+      ElementIterator(const ConfigV4&, TypeId, const char*, size_t);
       ElementIterator(const ElementIterator&);
       ~ElementIterator();
     public:
@@ -84,6 +89,11 @@ namespace Pds {
       //  Iterate to the next Section (0..7) within the current quadrant
       const Section*        next(unsigned& sectionID);
       uint32_t              getQuadWord();
+    private:
+      void _construct(const ConfigV1&, TypeId, const char*, size_t);
+      void _construct(const ConfigV2&, TypeId, const char*, size_t);
+      void _construct(const ConfigV3&, TypeId, const char*, size_t);
+      void _construct(const ConfigV4&, TypeId, const char*, size_t);
     private:
       const ElementHeader* _elem;
       const ElementHeader* _end;
