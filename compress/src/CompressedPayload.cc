@@ -49,7 +49,7 @@ bool CompressedPayload::uncompress(void* outbuf) const
     if (r == Compress::Hist16Engine::Success)
       result = true;
     else {
-      printf("Hist16Engine::decompress failure %d\n",r);
+      printf("Hist16Engine::decompress failure %d : %s\n",r,e.err2str(r));
       result = false;
     }
     break; }
@@ -63,7 +63,7 @@ bool CompressedPayload::uncompress(void* outbuf) const
     if (r == Compress::HistNEngine::Success)
       result = true;
     else {
-      printf("HistNEngine::decompress failure %d\n",r);
+      printf("HistNEngine::decompress failure %d : %s\n",r,e.err2str(r));
       result = false;
     }
     break; }

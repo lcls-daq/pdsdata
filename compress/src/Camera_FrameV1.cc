@@ -25,7 +25,10 @@ static void Destroy(FrameV1* p) { delete[](char*)p; }
 boost::shared_ptr<FrameV1> CompressedFrameV1::uncompressed() const
 {
   char* p = new char[sizeof(_frame)+_pd.dsize()];
-  FrameV1* v = new(p) FrameV1(_frame);
+  FrameV1* v = new(p) FrameV1(_frame.width(),
+                              _frame.height(),
+                              _frame.depth(),
+                              _frame.offset());
   if (!_pd.uncompress(p + sizeof(_frame))) {
     delete[] p;
     v = 0;
