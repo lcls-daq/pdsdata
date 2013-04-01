@@ -231,6 +231,7 @@ namespace Pds {
 
         Header* hdr = (Header*)ptr;
         hdr->compression_flag = 0;
+        hdr->depth            = depth;
         hdr->checksum         = incs;
         hdr->data_size        = inDataSize;
 
@@ -473,7 +474,7 @@ namespace Pds {
         /* NO COMPRESSION: of the original image. Just copy the image over and
          * recalculate the checksum to make sure nothing has been lost.
          */
-        if( m_imagesize * sizeof(uint16_t) != hdr_compressed_size_bytes )
+        if( m_imagesize != hdr_compressed_size_bytes )
 
           return ErrBadImageData;  // inconsistent size of the uncompressed
         // data block.

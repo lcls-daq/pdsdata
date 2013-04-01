@@ -296,8 +296,16 @@ namespace Pds {
         outDataSize = ptr -        m_outbuf;
 
 #ifdef DBUG
-        printf("  insize %d  outsize %d  base 0x%x  count %d\n",
-               inbufsize*sizeof(uint16_t), outDataSize, base, count_8bits);
+      printf(" ----\n"
+             " flags : %08x\n"
+             " cksum : %08x\n"
+             " csize : %08x\n"
+             " base  : %04x\n"
+             " dsize : %08x\n"
+             " bsize : %08x\n",
+             compression_flag, incs, data_size, base, outptr - outptr_after_header, bitmapsize);
+        printf("  insize %8x  outsize %8x  base 0x%4x  count %8x  image %p\n",
+               inbufsize*sizeof(uint16_t), outDataSize, base, count_8bits, image);
 #endif
       }
         
@@ -386,8 +394,9 @@ namespace Pds {
       const size_t bitmap_size_shorts = *(uint32_t*)bitmap_size_ptr; bitmap_size_ptr += sizeof(uint32_t);
       uint16_t*    bitmap_ptr         = (uint16_t*)bitmap_size_ptr;
 
-#if 0
-      printf(" flags : %08x\n"
+#ifdef DBUG
+      printf(" ----\n"
+             " flags : %08x\n"
              " cksum : %08x\n"
              " csize : %08x\n"
              " base  : %04x\n"

@@ -70,6 +70,6 @@ tgtlibs_xtcmonwriter := pdsdata/xtcdata pdsdata/appdata
 tgtslib_xtcmonwriter := $(USRLIBDIR)/rt
 
 tgtsrcs_xtccompress := xtccompress.cc
-tgtlibs_xtccompress := pdsdata/xtcdata pdsdata/camdata pdsdata/cspaddata pdsdata/cspad2x2data pdsdata/timepixdata pdsdata/compressdata
+tgtlibs_xtccompress := pdsdata/xtcdata pdsdata/camdata pdsdata/cspaddata pdsdata/cspad2x2data pdsdata/pnccddata pdsdata/timepixdata pdsdata/compressdata
 tgtslib_xtccompress := $(USRLIBDIR)/rt
 
