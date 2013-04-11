@@ -1,14 +1,15 @@
 #include "pdsdata/usdusb/ConfigV1.hh"
 
 #include <stdlib.h>
+#include <string.h>
 
 using namespace Pds::UsdUsb;
 
 ConfigV1::ConfigV1( Count_Mode cm[],
-		    Quad_Mode  qm[] ) :
-  _count_mode( (uint32_t[4]){cm[0], cm[1], cm[2], cm[3]} ),  
-  _quad_mode ( (uint32_t[4]){qm[0], qm[1], qm[2], qm[3]} )
+		    Quad_Mode  qm[] )
 {
+  memcpy(_count_mode, cm, sizeof(_count_mode));
+  memcpy(_quad_mode , qm, sizeof(_quad_mode));
 }
 
 ConfigV1::Count_Mode ConfigV1::counting_mode   (unsigned channel) const

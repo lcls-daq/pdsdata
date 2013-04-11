@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <stdint.h>
+#include <string.h>
 
 //#define DBUG
 

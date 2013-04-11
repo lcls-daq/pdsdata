@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <string>
 
 #include "pdsdata/xtc/DetInfo.hh"

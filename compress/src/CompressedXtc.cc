@@ -6,6 +6,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <string.h>
+
 using namespace Pds;
 
 static const unsigned align_mask = sizeof(uint32_t)-1;

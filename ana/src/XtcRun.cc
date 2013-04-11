@@ -1,5 +1,7 @@
 #include "pdsdata/ana/XtcRun.hh"
 
+#include <stdlib.h>
+
 namespace Pds
 {
 namespace Ana

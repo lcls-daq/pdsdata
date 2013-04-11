@@ -3,6 +3,9 @@
 #include "pdsdata/compress/Hist16Engine.hh"
 #include "pdsdata/compress/HistNEngine.hh"
 
+#include <string.h>
+#include <stdio.h>
+
 using namespace Pds;
 
 CompressedPayload::CompressedPayload() {}

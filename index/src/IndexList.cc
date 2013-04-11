@@ -1,7 +1,10 @@
 #include <errno.h>
 #include <errno.h>
 #include <libgen.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/xtc/BldInfo.hh"
 #include "pdsdata/index/IndexList.hh"
@@ -107,20 +110,22 @@ int IndexList::updateSegment(const Xtc& xtc)
   }
 
   L1AcceptNode& node  =   *_pCurNode;  
-  if ( xtc.damage.value() != 0 )
+  if ( xtc.damage.value() != 0 ) {
     if ( iSegmentIndex < (int) sizeof(node.uMaskDetDmgs) * 8 )
       node.uMaskDetDmgs   |=  (1 << iSegmentIndex);  
     else
       node.uMaskDetDmgs   = -1;
-  
+  }
+
   if ( xtc.contains.id() != TypeId::Id_Xtc ) // not a normal segment level
     return 5;
 
-  if ( xtc.sizeofPayload() == 0 )
+  if ( xtc.sizeofPayload() == 0 ) {
     if ( iSegmentIndex < (int) sizeof(node.uMaskDetData) * 8 )
       node.uMaskDetData   |=  (1 << iSegmentIndex);
     else
       node.uMaskDetData   = -1;
+  }
     
   return 0;
 }

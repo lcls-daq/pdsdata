@@ -1,5 +1,6 @@
 #include <iostream>
 #include <signal.h>
+#include <stdlib.h>
 #include "XtcRunSet.hh"
 
 using namespace std;
