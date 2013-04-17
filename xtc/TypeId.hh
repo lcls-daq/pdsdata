@@ -80,7 +80,7 @@ namespace Pds {
       Id_SharedAcqADC,
       Id_OrcaConfig,
       Id_PgpIpimbData,
-      Id_PgpIpimbConfig,
+      Id_ImpConfig,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
