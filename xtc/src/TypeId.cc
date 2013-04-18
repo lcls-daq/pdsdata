@@ -87,8 +87,8 @@ const char* TypeId::name(Type type)
     "GMD",                     // 64
     "SharedAcqADC",            // 65
     "OrcaConfig",              // 66
-    "PgpIpimbData",            // 67
-    "PgpIpimbConfig"          //  68
+    "ImpData",                 // 67
+    "ImpConfig"               //  68
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
