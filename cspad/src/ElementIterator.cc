@@ -263,6 +263,7 @@ void ElementIterator::_construct(const ConfigV4& c,
 
     return;
   }
+}
 
 ElementIterator::ElementIterator(const ConfigV5& c, const Xtc& xtc)
 { _construct(c, xtc.contains, xtc.payload(), xtc.sizeofPayload()); }
