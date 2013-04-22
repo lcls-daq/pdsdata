@@ -119,7 +119,7 @@ uint32_t   ConfigV1::defaultValue(Registers r) {
   return _regs[r].defaultValue & _regs[r].mask;
  }
 
-char*               ConfigV1::name     (Registers r, bool init) {
+char*   const   ConfigV1::name     (Registers r, bool init) {
   static char _regsNames[NumberOfRegisters+1][120] = {
       {"Range"},              //      Range
       {"Cal_range"},          //      Cal_range

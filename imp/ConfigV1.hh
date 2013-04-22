@@ -55,7 +55,7 @@ namespace Pds
         uint32_t              get      (Registers);
         const uint32_t        get      (Registers) const;
         uint32_t              set      (Registers, uint32_t);
-        static char*          name     (Registers, bool init=false);
+        static char* const    name     (Registers, bool init=false);
         static uint32_t       rangeHigh(Registers);
         static uint32_t       rangeLow (Registers);
         static uint32_t       defaultValue(Registers);
