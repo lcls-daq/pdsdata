@@ -4,7 +4,6 @@
 #include "pdsdata/cspad/ConfigV2.hh"
 #include "pdsdata/cspad/ConfigV3.hh"
 #include "pdsdata/cspad/ConfigV4.hh"
-#include "pdsdata/cspad/ConfigV5.hh"
 #include "pdsdata/cspad/ElementV1.hh"
 #include "pdsdata/cspad/ElementV2.hh"
 #include "pdsdata/xtc/Xtc.hh"
@@ -235,66 +234,6 @@ void ElementIterator::_construct(const ConfigV4& c,
   if (  contains.id()!=Pds::TypeId::Id_CspadElement &&
         contains.id()!=Pds::TypeId::Id_CspadCompressedElement ) {
     printf("Pds::CsPad::ElementIterator wrong type (V4) %x/%x\n", contains.id(),contains.version());
-    _elem = 0;
-    _end  = 0;
-    return;
-  }
-
-  if (contains.id()==Pds::TypeId::Id_CspadElement) {
-    if (contains.version()==1) {
-      unsigned amask(c.asicMask());
-      for(int iq=0; iq<4; iq++) {
-        if (_qmask & (1<<iq))
-          _smask[iq] = amask==1 ? 0x3 : 0xff;
-        else
-          _smask[iq] = 0;
-      }
-    }
-    else if (contains.version()==2) {
-      for(int iq=0; iq<4; iq++)
-        _smask[iq] = c.roiMask(iq);
-    }
-    else {
-      printf("Pds::CsPad::ElementIterator wrong type (V3a) %x/%x\n",
-         contains.id(),contains.version());
-      _elem = 0;
-      _end  = 0;
-    }
-
-    return;
-  }
-}
-
-ElementIterator::ElementIterator(const ConfigV5& c, const Xtc& xtc)
-{ _construct(c, xtc.contains, xtc.payload(), xtc.sizeofPayload()); }
-
-ElementIterator::ElementIterator(const ConfigV5& c,
-                                 TypeId          contains,
-                                 const char*     payload,
-                                 size_t          sizeofPayload)
-{ _construct(c, contains, payload, sizeofPayload); }
-
-void ElementIterator::_construct(const ConfigV5& c,
-                                 TypeId          contains,
-                                 const char*     payload,
-                                 size_t          sizeofPayload)
-{
-  _elem  = (const ElementHeader*)(payload);
-  _end   = (const ElementHeader*)(payload+sizeofPayload);
-  _qmask = c.quadMask();
-  _bCompressed = false;
-  _section = NULL;
-  _section_id = 0;
-  _sectionBuf1 = NULL;
-  _sectionBuf2 = NULL;
-  _compressedSection = NULL;
-  _pDecompressor = NULL;
-  _uQuadWord = 0;
-  _bLastQuadWordSet = false;
-
-  if (  contains.id()!=Pds::TypeId::Id_CspadElement &&
-        contains.id()!=Pds::TypeId::Id_CspadCompressedElement ) {
-    printf("Pds::CsPad::ElementIterator wrong type (V5) %x/%x\n", contains.id(),contains.version());
     _elem = 0;
     _end  = 0;
     return;

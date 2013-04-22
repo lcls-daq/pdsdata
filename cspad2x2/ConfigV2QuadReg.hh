@@ -14,6 +14,9 @@ namespace Pds {
 
     class ConfigV2QuadReg
     {
+        class CsPad2x2ReadOnlyCfgV2;
+        class CsPad2x2DigitalPotsCfgV2;
+        class CsPad2x2GainMapCfgV2;
 
       public:
         ConfigV2QuadReg() {};

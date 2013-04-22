@@ -42,9 +42,9 @@ namespace Pds {
 
     class ConfigV1QuadReg
     {
-//        class CsPadReadOnlyCfg;
-//        class CsPadDigitalPotsCfg;
-//        class CsPadGainMapCfg;
+        class CsPadReadOnlyCfg;
+        class CsPadDigitalPotsCfg;
+        class CsPadGainMapCfg;
 
       public:
         ConfigV1QuadReg() {};
