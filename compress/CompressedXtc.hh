@@ -18,6 +18,11 @@ namespace Pds {
                    unsigned headerSize,
                    unsigned depth,
                    CompressedPayload::Engine engine );
+    CompressedXtc( Xtc&     xtc,
+                   const std::list<unsigned>& headerOffsets,
+                   const std::list<unsigned>& headerSizes,
+                   unsigned depth,
+                   CompressedPayload::Engine engine );
   public:
     void* operator new(size_t, void* p) { return p; }
   private:

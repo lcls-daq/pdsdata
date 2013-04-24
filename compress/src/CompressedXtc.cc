@@ -46,25 +46,25 @@ boost::shared_ptr<Xtc> CompressedXtc::uncompress(const Xtc& xtc)
   return q;
 }
 
-CompressedXtc::CompressedXtc( Xtc&     xtc,
-                              const std::list<unsigned>& headerOffsets,
-                              unsigned headerSize,
-                              unsigned depth,
-                              CompressedPayload::Engine engine ) :
-  Xtc( TypeId(xtc.contains.id(), xtc.contains.version(), true),
-       xtc.src,
-       xtc.damage )
+static void compress_image(Xtc& xtc,
+                           Xtc& oxtc,
+                           const std::list<unsigned>& headerOffsets,
+                           const std::list<unsigned>& headerSizes,
+                           unsigned depth,
+                           CompressedPayload::Engine engine ) 
 {
   std::list<unsigned>::const_iterator it=headerOffsets.begin();
+  std::list<unsigned>::const_iterator sz=headerSizes  .begin();
   while(it!=headerOffsets.end()) {
 
     unsigned hoff = *it;
+    unsigned headerSize = *sz;
     char* payload = xtc.payload()+hoff;
-    new (alloc(sizeof(CompressedData))) CompressedData(headerSize);
-    memcpy(alloc(headerSize), payload, headerSize);
+    new (oxtc.alloc(sizeof(CompressedData))) CompressedData(headerSize);
+    memcpy(oxtc.alloc(headerSize), payload, headerSize);
 
     char*    ibuff = payload+headerSize;
-    char*    obuff = (char*)next()+sizeof(CompressedPayload);
+    char*    obuff = (char*)oxtc.next()+sizeof(CompressedPayload);
     unsigned dsize = (++it == headerOffsets.end()) ? (char*)xtc.next()-ibuff : (*it)-hoff-headerSize;
     Compress::Hist16Engine::ImageParams img;
     img.width  = dsize/depth;
@@ -83,7 +83,38 @@ CompressedXtc::CompressedXtc( Xtc&     xtc,
       memcpy(obuff, ibuff, csize=dsize);
     }
 
-    new (alloc(sizeof(CompressedPayload))) CompressedPayload(engine,dsize,csize);
-    alloc((csize+align_mask)&~align_mask);
+    new (oxtc.alloc(sizeof(CompressedPayload))) CompressedPayload(engine,dsize,csize);
+    oxtc.alloc((csize+align_mask)&~align_mask);
+
+    ++sz;
   }
 }
+
+CompressedXtc::CompressedXtc( Xtc&     xtc,
+                              const std::list<unsigned>& headerOffsets,
+                              unsigned headerSize,
+                              unsigned depth,
+                              CompressedPayload::Engine engine ) :
+  Xtc( TypeId(xtc.contains.id(), xtc.contains.version(), true),
+       xtc.src,
+       xtc.damage )
+{
+  std::list<unsigned> headerSizes;
+  for(std::list<unsigned>::const_iterator it=headerOffsets.begin(); it!=headerOffsets.end(); it++)
+    headerSizes.push_back(headerSize);
+
+  compress_image(xtc, *this, headerOffsets, headerSizes, depth, engine);
+}
+
+CompressedXtc::CompressedXtc( Xtc&     xtc,
+                              const std::list<unsigned>& headerOffsets,
+                              const std::list<unsigned>& headerSizes,
+                              unsigned depth,
+                              CompressedPayload::Engine engine ) :
+  Xtc( TypeId(xtc.contains.id(), xtc.contains.version(), true),
+       xtc.src,
+       xtc.damage )
+{
+  compress_image(xtc, *this, headerOffsets, headerSizes, depth, engine);
+}
+
