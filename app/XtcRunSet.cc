@@ -100,11 +100,11 @@ void XtcRunSet::_addPaths(list<string> newPaths) {
   _paths.splice(_paths.end(), newPaths);
 }
 
-long long int XtcRunSet::timeDiff(struct timespec* end, struct timespec* start) {
-  long long int diff;
-  diff =  (end->tv_sec - start->tv_sec) * 1000000000;
-  diff += end->tv_nsec;
-  diff -= start->tv_nsec;
+double XtcRunSet::timeDiff(struct timespec* end, struct timespec* start) {
+  double diff;
+  diff =  double(end->tv_sec - start->tv_sec) * 1.e9;
+  diff += double(end->tv_nsec);
+  diff -= double(start->tv_nsec);
   return diff;
 }
 
@@ -235,7 +235,7 @@ void XtcRunSet::run() {
     } else if (_verbose) {
       timespec now;
       clock_gettime(CLOCK, &now);
-      double hz = dgCount / (timeDiff(&now, &loopStart) / 1.e9);
+      double hz = double(dgCount) / (timeDiff(&now, &loopStart) / 1.e9);
       printf("%18s transition: time %08x/%08x, payloadSize 0x%08x, avg rate %8.3f Hz%c",
              TransitionId::name(dg->seq.service()),
              dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
@@ -257,6 +257,8 @@ void XtcRunSet::run() {
       }
     }
   }
+  //  XtcRun sinks EndRun
+  //  _server->insert(TransitionId::EndRun);
 
   _server->insert(TransitionId::Unconfigure);
   _server->insert(TransitionId::Unmap);

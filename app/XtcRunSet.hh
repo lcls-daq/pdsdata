@@ -20,7 +20,7 @@ private:
   bool _veryverbose;
   bool _skipToNextRun();
   void _addPaths(list<string> newPaths);
-  long long int timeDiff(struct timespec* end, struct timespec* start);
+  double timeDiff(struct timespec* end, struct timespec* start);
   Dgram* next();
 
 public:

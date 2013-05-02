@@ -357,6 +357,8 @@ public:
         iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
       if (event.EventCode == 162)
         printf ("Blank shot eventcode 162 found at eventNo: %u \n",eventCount); 
+      if (event.EventCode == 163)
+        printf ("Blank shot eventcode 163 found at eventNo: %u \n",eventCount); 
     }    
     printf( "\n" );    
   }  
