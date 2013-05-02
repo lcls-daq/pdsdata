@@ -32,7 +32,7 @@ namespace Pds {
 
     class ElementV1 : public ElementHeader {
       public:
-        enum {Version=1, Uint32sPerHeader=4, Uint32sPerSample=2};
+        enum {Version=1, Uint32sPerHeader=8, Uint32sPerSample=2};
 
         ElementV1() {};
         ~ElementV1() {};

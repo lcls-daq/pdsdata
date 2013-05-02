@@ -1,10 +1,10 @@
 #include "pdsdata/imp/ElementHeader.hh"
 
-using namespace Pds::Imp;
-
-ElementHeader::ElementHeader() 
-{
-}
+//using namespace Pds::Imp;
+//
+//ElementHeader::ElementHeader()
+//{
+//}
 
 //unsigned ElementHeader::virtual_channel    () const
 //{
