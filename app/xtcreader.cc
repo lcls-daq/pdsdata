@@ -39,6 +39,8 @@
 #include "pdsdata/evr/ConfigV3.hh"
 #include "pdsdata/evr/ConfigV4.hh"
 #include "pdsdata/evr/ConfigV5.hh"
+#include "pdsdata/evr/ConfigV6.hh"
+#include "pdsdata/evr/ConfigV7.hh"
 #include "pdsdata/evr/DataV3.hh"
 #include "pdsdata/control/ConfigV1.hh"
 #include "pdsdata/control/ConfigV2.hh"
@@ -346,6 +348,12 @@ public:
   void process(const DetInfo&, const EvrData::ConfigV5&) {
     printf("*** Processing EVR config V5 object\n");
   }
+  void process(const DetInfo&, const EvrData::ConfigV6&) {
+    printf("*** Processing EVR config V6 object\n");
+  }
+  void process(const DetInfo&, const EvrData::ConfigV7&) {
+    printf("*** Processing EVR config V7 object\n");
+  }
   void process(const DetInfo&, const EvrData::DataV3& data) {
     printf("*** Processing Evr Data object\n");
     eventCount++;    
@@ -576,6 +584,12 @@ public:
         break;
       case 5:
         process(info, *(const EvrData::ConfigV5*)(xtc->payload()));
+        break;
+      case 6:
+        process(info, *(const EvrData::ConfigV6*)(xtc->payload()));
+        break;
+      case 7:
+        process(info, *(const EvrData::ConfigV7*)(xtc->payload()));
         break;
       default:
         printf("Unsupported evr configuration version %d\n",version);
