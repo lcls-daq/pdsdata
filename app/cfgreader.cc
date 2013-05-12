@@ -239,7 +239,7 @@ public:
     printf("*** Processing EVR config V4 object\n");
   }
   void process(const Src&, const EvrData::ConfigV7& c) {
-    printf("*** Processing EVR config V4 object\n");
+    printf("*** Processing EVR config V7 object\n");
     c.print();
     const EvrData::ConfigV7::SeqConfigType& s = c.seq_config();
     printf(" seq src %d/%d : len %d : cycles %d\n",
