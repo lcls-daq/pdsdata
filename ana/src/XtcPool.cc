@@ -138,9 +138,19 @@ namespace Pds {
               perror("Error reading file");
               exit(1);
             }
+#if 0
             _waitAndFill(fd, dg->xtc.payload()+rsz, sz-rsz);
 	    _pend->push(b);
 	    return true;
+#else
+            //
+            //  Lustre file system requires this
+            //  Also, must run 64-bit mode
+            //
+            off_t rwnd = -rsz-sizeof(Dgram);
+            off_t result = lseek64(fd, rwnd, SEEK_CUR);
+            rsz=0;
+#endif
           }
         }
       }
