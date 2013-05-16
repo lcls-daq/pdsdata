@@ -296,8 +296,13 @@ public:
     bldData.print();
     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataEBeam& bldData) {
-    printf("*** Processing EBeam object\n");
+  void process(const DetInfo&, const BldDataEBeamV2& bldData) {
+    printf("*** Processing EBeamV2 object\n");
+    bldData.print();
+    printf( "\n" );    
+  }  
+  void process(const DetInfo&, const BldDataEBeamV3& bldData) {
+    printf("*** Processing EBeamV3 object\n");
     bldData.print();
     printf( "\n" );    
   }  
@@ -679,7 +684,10 @@ public:
         process(info, *(const BldDataEBeamV1*) xtc->payload() );
         break; 
       case 2:
-        process(info, *(const BldDataEBeam*) xtc->payload() );
+        process(info, *(const BldDataEBeamV2*) xtc->payload() );
+        break; 
+      case 3:
+        process(info, *(const BldDataEBeamV3*) xtc->payload() );
         break; 
       default:
         break;
