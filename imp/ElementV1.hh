@@ -43,7 +43,7 @@ namespace Pds {
           Sample* dat = (Sample*) (u + (sizeof(ElementV1)/sizeof(uint16_t)));
           return dat[index];
         }
-        const Sample getSample(unsigned index) const {
+        const Sample& getSample(unsigned index) const {
           uint16_t* u = (uint16_t*)this;
           Sample* dat = (Sample*) (u + (sizeof(ElementV1)/sizeof(uint16_t)));
           return dat[index];
@@ -51,5 +51,5 @@ namespace Pds {
     };
   };
 };
-
+#pragma pack()
 #endif
