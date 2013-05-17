@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 
-#pragma pack(2)
+#pragma pack(4)
 
 namespace Pds {
 
@@ -26,6 +26,7 @@ namespace Pds {
         ~Sample() {};
 
         uint16_t channel(unsigned i) { return (_value[ i & (channelsPerDevice-1)]); }
+        const uint16_t channel(unsigned i) const { return (_value[ i & (channelsPerDevice-1)]); }
       private:
         uint16_t _value[channelsPerDevice];
     };
@@ -38,6 +39,11 @@ namespace Pds {
         ~ElementV1() {};
 
         Sample getSample(unsigned index) {
+          uint16_t* u = (uint16_t*)this;
+          Sample* dat = (Sample*) (u + (sizeof(ElementV1)/sizeof(uint16_t)));
+          return dat[index];
+        }
+        const Sample getSample(unsigned index) const {
           uint16_t* u = (uint16_t*)this;
           Sample* dat = (Sample*) (u + (sizeof(ElementV1)/sizeof(uint16_t)));
           return dat[index];
