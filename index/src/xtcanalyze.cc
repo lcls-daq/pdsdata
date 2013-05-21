@@ -716,8 +716,8 @@ int XtcIterConfig::process(Xtc * xtc)
     const BldInfo & info = *(BldInfo*) (&xtc->src);
     printf("pid 0x%x type %s\n", info.processId(), BldInfo::name(info));
 
-    if ( _depth != 2 )
-      printf( "XtcIterL1Accept::process(): *** Error depth: Expect 2, but get %d\n", _depth );
+    if ( _depth != 1 )
+      printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d\n", _depth );
   }
   else
   {
