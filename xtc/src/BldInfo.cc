@@ -76,6 +76,7 @@ const char* BldInfo::name(const BldInfo& src){
     "XppEnds_Ipm1",
     "MEC-XT2-PIM-02",
     "MEC-XT2-PIM-03",
+    "CxiEXS",
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }
