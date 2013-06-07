@@ -15,8 +15,11 @@ BldInfo::BldInfo(const char* sname) : Src(Level::Reporter)
 {
   for(unsigned i=0; i<NumberOf; i++) {
     _phy = i;
-    if (strcmp(sname,name(*this))==0)
+    const char* bname = name(*this);
+    unsigned len = strlen(bname);
+    if (strncmp(sname,bname,len)==0) {
       return;
+    }
   }
   _phy = NumberOf;
 }
@@ -76,7 +79,7 @@ const char* BldInfo::name(const BldInfo& src){
     "XppEnds_Ipm1",
     "MEC-XT2-PIM-02",
     "MEC-XT2-PIM-03",
-    "CxiEXS",
+    "CxiDg3_Spec",
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }

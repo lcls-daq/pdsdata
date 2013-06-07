@@ -55,7 +55,7 @@ namespace Pds {
                 XppEndstation1   = 41,
                 MecXt2Pim02      = 42,
                 MecXt2Pim03      = 43,
-                CxiEXS           = 44,
+                CxiDg3Spec       = 44,
                 NumberOf };
 
     BldInfo() {}
