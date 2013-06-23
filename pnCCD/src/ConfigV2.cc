@@ -18,9 +18,13 @@ ConfigV2::ConfigV2(string sConfigFile) {
   if (fp) {
     printf("Reading pnCCD config file\n");
     ret = fread(&_numLinks, sizeof(ConfigV2), 1, fp);
-    if (ret != 1) printf("Error reading pnCCD config file\n");
+    if (ret != 1) {
+      printf("Error reading pnCCD config file\n");
+      throw std::string("Error reading pnCCD config file") ;
+    }
   } else {
-    printf("Could not open pnCCD file\n");
+    perror("Could not open pnCCD file\n");
+    throw std::string("Could not open pnCCD file\n");
   }
 }
 
