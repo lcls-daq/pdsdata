@@ -9,7 +9,7 @@ TypeId::TypeId(const TypeId& v) : _value(v._value) {}
 
 uint32_t TypeId::value() const {return _value;}
 
-uint32_t TypeId::version() const {return (_value&0xffff0000)>>16;}
+uint32_t TypeId::version() const {return (_value&0x7fff0000)>>16;}
 
 TypeId::Type TypeId::id() const {return (TypeId::Type)(_value&0xffff);}
 
