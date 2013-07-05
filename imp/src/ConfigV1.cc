@@ -14,16 +14,16 @@ class RegisterV1 {
 
 static uint32_t _regsfoo[ConfigV1::NumberOfRegisters][2] = {
     //addr     mask           default
-    { 0xffff,        0x1111    },   //    Range
+    { 0xffff,        0x0       },   //    Gain_range
     { 0xffff,        0x5555    },   //    Cal_range
     { 0xffffffff,    0x98968200},   //    Reset
-    { 0xffff,        0x1999    },   //    Bias_data
+    { 0xffff,        0x2000    },   //    Bias_data
     { 0xffff,        0x2fb5    },   //    Cal_data
-    { 0xffff,        0x3fff    },   //    BiasDac_data
+    { 0xffff,        0xf000    },   //    BiasDac_data
     { 0xffff,        0x927c    },   //    Cal_strobe
     { 0x3ff,         0x3ff     },   //    NumberOfSamples
-    { 0xffff,        0x100     },   //    TrigDelay
-    { 0xffff,        0x1f4     }    //    Adc_delay
+    { 0xffff,        0x0       },   //    TrigDelay
+    { 0xffff,        0x80      }    //    Adc_delay
 };
 
 static RegisterV1* _regs = (RegisterV1*) _regsfoo;
@@ -121,7 +121,7 @@ uint32_t   ConfigV1::defaultValue(Registers r) {
 
 char*   const   ConfigV1::name     (Registers r, bool init) {
   static char _regsNames[NumberOfRegisters+1][120] = {
-      {"Range"},              //      Range
+      {"Gain_range"},         //      Gain_range
       {"Cal_range"},          //      Cal_range
       {"Reset"},              //      Reset
       {"Bias_data"},          //      Bias_data
@@ -129,7 +129,7 @@ char*   const   ConfigV1::name     (Registers r, bool init) {
       {"BiasDac_data"},       //      BiasDac_data
       {"Cal_strobe"},         //      Cal_strobe
       {"NumberOfSamples"},    //      NumberOfSamples
-      {"TrigDelay"},          //    TrigDelay
+      {"TrigDelay"},          //      TrigDelay
       {"AdcDelay"},           //      AdcDelay
     {"----INVALID----"}       //      NumberOfRegisters
   };
