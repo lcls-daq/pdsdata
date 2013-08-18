@@ -16,3 +16,4 @@ uint32_t Src::phy()   const { return _phy; }
 Level::Type Src::level() const { return (Level::Type)((_log>>24)&0xff); }
 
 bool Src::operator==(const Src& s) const { return _phy==s._phy && _log==s._log; }
+bool Src::operator<(const Src& s) const  { return (_phy<s._phy) || ((_phy==s._phy) && (_log<s._log)); }

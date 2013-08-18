@@ -20,6 +20,7 @@ namespace Pds {
     Level::Type level() const;
 
     bool operator==(const Src& s) const;
+    bool operator<(const Src& s) const;
 
   protected:
     uint32_t _log; // logical  identifier
