@@ -81,6 +81,7 @@ namespace Pds {
       Id_OrcaConfig,
       Id_ImpData,
       Id_ImpConfig,
+      Id_AliasConfig,
       NumberOf};
     enum { VCompressed = 0x8000 };
 

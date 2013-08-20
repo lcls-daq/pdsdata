@@ -3,6 +3,7 @@ libsrcs_xtcdata := src/TypeId.cc \
                    src/BldInfo.cc \
                    src/XtcIterator.cc \
                    src/Src.cc \
+                   src/SrcAlias.cc \
                    src/TransitionId.cc \
                    src/XtcFileIterator.cc \
                    src/ClockTime.cc \
