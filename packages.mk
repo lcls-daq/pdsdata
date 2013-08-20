@@ -2,11 +2,11 @@
 ifneq ($(findstring ppc-rtems-rce,$(tgt_arch)),)
 packages := xtc
 else
-packages := ipimb encoder pnCCD acqiris camera evr opal1k pulnix control xtc \
+packages := ipimb encoder pnCCD acqiris camera evr opal1k pulnix control xtc alias \
             epics bld princeton fccd cspad lusi xamps fexamp gsc16ai \
             phasics timepix cspad2x2 oceanoptics fli quartz andor usdusb orca \
-	    compress ana index app \
-	    imp
+            compress ana index app \
+            imp
 #
 #  Define macro for including all data types
 #
@@ -20,6 +20,7 @@ datalibs += pdsdata/opal1kdata
 datalibs += pdsdata/pulnixdata
 datalibs += pdsdata/controldata
 datalibs += pdsdata/xtcdata
+datalibs += pdsdata/aliasdata
 datalibs += pdsdata/epics
 datalibs += pdsdata/bld
 datalibs += pdsdata/princetondata

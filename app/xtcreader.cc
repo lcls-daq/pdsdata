@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <map>
+#include <string>
 
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/ProcInfo.hh"
@@ -65,10 +67,15 @@
 #include "pdsdata/lusi/PimImageConfigV1.hh"
 #include "pdsdata/pulnix/TM6740ConfigV1.hh"
 #include "pdsdata/pulnix/TM6740ConfigV2.hh"
+#include "pdsdata/alias/ConfigV1.hh"
 
 static unsigned eventCount = 0;
 
 using namespace Pds;
+using std::map;
+using std::string;
+
+static map<Src,string> aliasMap;
 
 class myLevelIter : public XtcIterator {
 public:
@@ -423,6 +430,16 @@ public:
   {
     printf("*** Processing Pulnix::TM6740ConfigV2 object\n");
   }  
+  void process(const DetInfo &, const Alias::ConfigV1 &aliasConfig)
+  {
+    SrcAlias *pAlias;
+    printf("*** Processing Alias ConfigV1 object\n");
+    aliasConfig.print();
+    for (int ii = 0; ii < aliasConfig.srcAliasCount(); ii++) {
+      pAlias = aliasConfig.srcAliasGet(ii);
+      aliasMap[*((Src *)pAlias)] = string(pAlias->aliasName(), Pds::SrcAlias::AliasNameMax);
+    }
+  }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
@@ -433,9 +450,16 @@ public:
      
     const DetInfo& info = *(DetInfo*)(&xtc->src);
     if (level==Level::Source) {
-      printf("%s,%d  %s,%d\n",
-             DetInfo::name(info.detector()),info.detId(),
-             DetInfo::name(info.device()),info.devId());
+      map<Src,string>::iterator it = aliasMap.find(xtc->src);
+      if (it != aliasMap.end()) {
+        printf("%s (%s,%d  %s,%d)\n", it->second.c_str(),
+               DetInfo::name(info.detector()),info.detId(),
+               DetInfo::name(info.device()),info.devId());
+      } else {
+        printf("%s,%d  %s,%d\n",
+               DetInfo::name(info.detector()),info.detId(),
+               DetInfo::name(info.device()),info.devId());
+      }
     } else {
       ProcInfo& info = *(ProcInfo*)(&xtc->src);
       printf("IpAddress 0x%x ProcessId 0x%x\n",info.ipAddr(),info.processId());
@@ -814,6 +838,19 @@ public:
     case (TypeId::Id_PimImageConfig):
     {
       process(info, *(const Lusi::PimImageConfigV1 *) (xtc->payload()));
+      break;
+    }          
+    case (TypeId::Id_AliasConfig):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const Alias::ConfigV1 *) (xtc->payload()));
+        break;
+      default:
+        printf("Unsupported alias configuration version %d\n", version);
+        break;
+      }
       break;
     }          
     default :
