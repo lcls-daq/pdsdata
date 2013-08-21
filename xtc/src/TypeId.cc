@@ -88,7 +88,8 @@ const char* TypeId::name(Type type)
     "SharedAcqADC",            // 65
     "OrcaConfig",              // 66
     "ImpData",                 // 67
-    "ImpConfig"               //  68
+    "ImpConfig",               // 68
+    "AliasConfig"              // 69
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
