@@ -11,7 +11,7 @@ SrcAlias::SrcAlias(const Src& source, const char *aliasName)
   } else {
     _aliasName[0] = '\0';
   }
-  _pad1 = _pad2 = 0;
+  _pad1 = 0;
 }
 
 bool SrcAlias::operator<(const SrcAlias& m) const

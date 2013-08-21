@@ -11,15 +11,14 @@ namespace Pds {
     enum { AliasNameMax=30 };
 
     SrcAlias() {}
-    SrcAlias(const Src&, const char* = 0);
+    SrcAlias(const Src&, const char*);
 
     const char *  aliasName()     const;
   public:
     bool operator<(const SrcAlias&) const;
   protected:
-    char          _aliasName[AliasNameMax];
+    char          _aliasName[AliasNameMax+1];
     unsigned char _pad1;
-    unsigned char _pad2;
   };
 
 }
