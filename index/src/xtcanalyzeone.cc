@@ -12,7 +12,7 @@
 #include "pdsdata/xtc/BldInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
-#include "pdsdata/evr/DataV3.hh"
+#include "pdsdata/psddl/evr.ddl.h"
 #include "pdsdata/index/IndexFileReader.hh"
 #include "pdsdata/index/IndexChunkReader.hh"
 
@@ -461,10 +461,10 @@ int updateEvr(const Xtc& xtc)
 
   for ( unsigned int uEvent = 0; uEvent < evrData.numFifoEvents(); uEvent++ )
   {
-    const EvrData::DataV3::FIFOEvent& fifoEvent =
-      evrData.fifoEvent(uEvent);
+    const EvrData::FIFOEvent& fifoEvent =
+      evrData.fifoEvents()[uEvent];
 
-    printf( "[%u] ", fifoEvent.EventCode);
+    printf( "[%u] ", fifoEvent.eventCode());
   }
 
   return 0;

@@ -1,12 +1,8 @@
 # List of packages (low level first)
-ifneq ($(findstring ppc-rtems-rce,$(tgt_arch)),)
-packages := xtc
-else
-packages := ipimb encoder pnCCD acqiris camera evr opal1k pulnix control xtc alias \
-            epics bld princeton fccd cspad lusi xamps fexamp gsc16ai \
-            phasics timepix cspad2x2 oceanoptics fli quartz andor usdusb orca \
-            compress ana index app \
-            imp
+#packages := xtc compress psddl ana index app
+#packages := xtc compress psddl ana index
+packages := ana index app
+
 #
 #  Define macro for including all data types
 #
@@ -40,5 +36,3 @@ datalibs += pdsdata/andordata
 datalibs += pdsdata/usdusbdata
 datalibs += pdsdata/orcadata
 datalibs += pdsdata/impdata
-
-endif

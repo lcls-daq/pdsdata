@@ -14,8 +14,8 @@
 #include "pdsdata/xtc/BldInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
-#include "pdsdata/evr/DataV3.hh"
-#include "pdsdata/acqiris/DataDescV1.hh"
+#include "pdsdata/psddl/evr.ddl.h"
+#include "pdsdata/psddl/acqiris.ddl.h"
 #include "pdsdata/index/IndexFileReader.hh"
 #include "pdsdata/index/IndexChunkReader.hh"
 #include "pdsdata/ana/XtcRun.hh"
@@ -294,10 +294,10 @@ int updateEvr(const Xtc& xtc)
 
   for ( unsigned int uEvent = 0; uEvent < evrData.numFifoEvents(); uEvent++ )
   {
-    const EvrData::DataV3::FIFOEvent& fifoEvent =
-      evrData.fifoEvent(uEvent);
+    const EvrData::FIFOEvent& fifoEvent =
+      evrData.fifoEvents()[uEvent];
 
-    printf( "[%u] fid 0x%x clock 0x%x ", fifoEvent.EventCode, fifoEvent.TimestampHigh, fifoEvent.TimestampLow);
+    printf( "[%u] fid 0x%x clock 0x%x ", fifoEvent.eventCode(), fifoEvent.timestampHigh(), fifoEvent.timestampLow());
   }
 
   return 0;
@@ -313,7 +313,7 @@ int updateAcqWaveform(const Xtc& xtc)
     return 1;
   }
 
-  const Acqiris::DataDescV1& acqData = * reinterpret_cast<const Acqiris::DataDescV1*>(xtc.payload());
+  const Acqiris::DataDescV1Elem& acqData = * reinterpret_cast<const Acqiris::DataDescV1Elem*>(xtc.payload());
 
   printf("nbrSamplesInSeg %d  nbrSegments %d ", acqData.nbrSamplesInSeg(), acqData.nbrSegments());
 

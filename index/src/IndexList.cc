@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "pdsdata/evr/DataV3.hh"
+#include "pdsdata/psddl/evr.ddl.h"
 #include "pdsdata/xtc/BldInfo.hh"
 #include "pdsdata/index/IndexList.hh"
 
@@ -206,17 +206,17 @@ int IndexList::updateEvr(const Xtc& xtc)
   
   for ( unsigned int uEvent = 0; uEvent < evrData.numFifoEvents(); uEvent++ )
   {
-    const EvrData::DataV3::FIFOEvent& fifoEvent = 
-      evrData.fifoEvent(uEvent);
+    const EvrData::FIFOEvent& fifoEvent = 
+      evrData.fifoEvents()[uEvent];
       
     TEvrEvtToIdMap::iterator itFind = 
-      _mapEvrToId.find(fifoEvent.EventCode);
+      _mapEvrToId.find(fifoEvent.eventCode());
       
     if ( itFind == _mapEvrToId.end() )
     {
       std::pair<TEvrEvtToIdMap::iterator,bool> 
-        rInsert = _mapEvrToId.insert( 
-          TEvrEvtToIdMap::value_type( fifoEvent.EventCode, _mapEvrToId.size() ) );
+        rInsert = _mapEvrToId.insert(TEvrEvtToIdMap::value_type( fifoEvent.eventCode(), 
+                                                                 _mapEvrToId.size() ) );
       itFind = rInsert.first;
     }
 

@@ -8,13 +8,13 @@ tgtnames = xtcindex xtcanalyze xtcanalyzeone
 #LXFLAGS += -L/reg/g/pcds/package/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic
 
 tgtsrcs_xtcindex := src/xtcindex.cc 
-tgtlibs_xtcindex := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata pdsdata/ipimbdata pdsdata/indexdata
+tgtlibs_xtcindex := pdsdata/xtcdata pdsdata/psddl_pdsdata pdsdata/indexdata
 tgtslib_xtcindex := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcanalyze := src/xtcanalyze.cc 
-tgtlibs_xtcanalyze := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata pdsdata/ipimbdata pdsdata/indexdata pdsdata/anadata
+tgtlibs_xtcanalyze := pdsdata/xtcdata pdsdata/psddl_pdsdata pdsdata/indexdata pdsdata/anadata
 tgtslib_xtcanalyze := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcanalyzeone := src/xtcanalyzeone.cc 
-tgtlibs_xtcanalyzeone := pdsdata/xtcdata pdsdata/acqdata pdsdata/epics pdsdata/pnccddata pdsdata/bld pdsdata/controldata pdsdata/evrdata pdsdata/ipimbdata pdsdata/indexdata
+tgtlibs_xtcanalyzeone := pdsdata/xtcdata pdsdata/psddl_pdsdata pdsdata/indexdata
 tgtslib_xtcanalyzeone := $(USRLIBDIR)/rt
