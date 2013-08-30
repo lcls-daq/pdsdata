@@ -1,26 +1,17 @@
 //
 //  Unofficial example of XTC compression
 //
-#include "pdsdata/camera/FrameV1.hh"
+#include "pdsdata/psddl/camera.ddl.h"
 
-#include "pdsdata/cspad/ConfigV1.hh"
-#include "pdsdata/cspad/ConfigV2.hh"
-#include "pdsdata/cspad/ConfigV3.hh"
-#include "pdsdata/cspad/ConfigV4.hh"
-#include "pdsdata/cspad/ElementV1.hh"
-#include "pdsdata/cspad/ElementV2.hh"
-#include "pdsdata/cspad/ElementIterator.hh"
-#include "pdsdata/cspad2x2/ElementV1.hh"
+#include "pdsdata/psddl/cspad.ddl.h"
+#include "pdsdata/psddl/cspad2x2.ddl.h"
 #include "pdsdata/compress/Hist16Engine.hh"
 #include "pdsdata/compress/HistNEngine.hh"
 #include "pdsdata/compress/CompressedXtc.hh"
 
-#include "pdsdata/pnCCD/ConfigV1.hh"
-#include "pdsdata/pnCCD/ConfigV2.hh"
-#include "pdsdata/pnCCD/FrameV1.hh"
+#include "pdsdata/psddl/pnccd.ddl.h"
 
-#include "pdsdata/timepix/DataV1.hh"
-#include "pdsdata/timepix/DataV2.hh"
+#include "pdsdata/psddl/timepix.ddl.h"
 
 #include "pdsdata/xtc/Dgram.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
@@ -172,26 +163,25 @@ private:
           { const Camera::FrameV1& frame = *reinterpret_cast<const Camera::FrameV1*>(xtc->payload());
             headerOffsets.push_back(0);
             headerSize = sizeof(frame);
-            depth      = frame.depth_bytes();
+            depth      = (frame.depth()+7)/8;
             break; }
           default: break; } break;
 
         case (TypeId::Id_pnCCDframe) :
           switch(xtc->contains.version()) {
           case 1:
-          { const PNCCD::FrameV1* frame = reinterpret_cast<const PNCCD::FrameV1*>(xtc->payload());
-            headerSize = sizeof(*frame);
+          { headerSize = sizeof(PNCCD::FrameV1);
             depth      = 2;
-            const char* payload = xtc->payload();
 
 #define PNCCD_VERSION(v) {                                              \
             XtcMapKey key(*xtc, TypeId(TypeId::Id_pnCCDconfig, v));     \
             if (_xtcmap.find(key)!=_xtcmap.end()) {                     \
               const PNCCD::ConfigV##v& config = *reinterpret_cast<const PNCCD::ConfigV##v*>(_xtcmap[key]->payload()); \
+              unsigned sz = PNCCD::FrameV1::_sizeof(config);            \
               headerOffsets.push_back(0);                               \
-              headerOffsets.push_back((char*)(frame=frame->next(config)) - payload); \
-              headerOffsets.push_back((char*)(frame=frame->next(config)) - payload); \
-              headerOffsets.push_back((char*)(frame=frame->next(config)) - payload); \
+              headerOffsets.push_back(sz);                              \
+              headerOffsets.push_back(sz*2);                            \
+              headerOffsets.push_back(sz*3);                            \
               break; } }
 
             PNCCD_VERSION(1);
@@ -202,16 +192,17 @@ private:
 
         case (TypeId::Id_Cspad2x2Element) :
           { headerOffsets.push_back(0);
-            headerSize = sizeof(CsPad2x2::ElementHeader);
+            headerSize = sizeof(CsPad2x2::ElementV1);
             depth      = 2; 
             break; }
 
         case (TypeId::Id_CspadElement) :
-          { CsPad::ElementIterator* iter = _lookup_iterator(xtc);
-            const Pds::CsPad::ElementHeader* hdr;
-            while( (hdr = iter->next()) )
-              headerOffsets.push_back((char*)hdr - xtc->payload());
-            headerSize = sizeof(CsPad::ElementHeader);
+          { for(unsigned iq=0; iq<4; iq++) {
+              const char* p = _lookup_element(xtc,iq);
+              if (!p) break;
+              headerOffsets.push_back(p-xtc->payload());
+            }
+            headerSize = sizeof(CsPad::ElementV2);
             depth      = 2;
             break; }
 
@@ -311,18 +302,31 @@ public:
   }
 
 private:
-  CsPad::ElementIterator* _lookup_iterator(const Xtc* xtc)
+  const char* _lookup_element(const Xtc* xtc,
+                              unsigned iq)
   {
 #define CSPAD_VER(v) {                                                  \
       XtcMapKey key(*xtc, TypeId(TypeId::Id_CspadConfig, v));           \
-      if (_xtcmap.find(key)!=_xtcmap.end())                             \
-        return new CsPad::ElementIterator( *reinterpret_cast<const CsPad::ConfigV##v*>(_xtcmap[ key ]->payload()), *xtc ); \
-    }
+      if (_xtcmap.find(key)!=_xtcmap.end()) {                           \
+        const CsPad::ConfigV##v& c = *reinterpret_cast<const CsPad::ConfigV##v*>(_xtcmap[ key ]->payload()); \
+        return iq < c.numQuads() ? reinterpret_cast<const char*>(&d.quads(c,iq)) : 0; \
+      } }
 
-    CSPAD_VER(1);
-    CSPAD_VER(2);
-    CSPAD_VER(3);
-    CSPAD_VER(4);
+    if (xtc->contains.version()==1) {
+      const CsPad::DataV1& d = *reinterpret_cast <const CsPad::DataV1*>(xtc->payload());
+      CSPAD_VER(1);
+      CSPAD_VER(2);
+      CSPAD_VER(3);
+      CSPAD_VER(4);
+      CSPAD_VER(5);
+    }
+    else if (xtc->contains.version()==2) {
+      const CsPad::DataV2& d = *reinterpret_cast <const CsPad::DataV2*>(xtc->payload());
+      CSPAD_VER(2);
+      CSPAD_VER(3);
+      CSPAD_VER(4);
+      CSPAD_VER(5);
+    }
     return 0;
 
 #undef CSPAD_VER

@@ -10,10 +10,9 @@
 #include "pdsdata/xtc/ProcInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
-#include "pdsdata/camera/FrameV1.hh"
-#include "pdsdata/fccd/FccdConfigV2.hh"
-#include "pdsdata/princeton/FrameV1.hh"
-#include "pdsdata/princeton/ConfigV1.hh"
+#include "pdsdata/psddl/camera.ddl.h"
+#include "pdsdata/psddl/fccd.ddl.h"
+#include "pdsdata/psddl/princeton.ddl.h"
 
 using namespace Pds;
 
@@ -42,7 +41,7 @@ public:
           break;
         }
         
-        readCount = read(_fd, (void *)frame.data(), imageSize);
+        readCount = read(_fd, (void *)(&frame+1), imageSize);
         if (-1 == readCount) {
           perror("read");
           break;
@@ -69,7 +68,7 @@ public:
       int readCount = 0;
       int maxTries = 10;
       while (readCount < imageSize) {
-        readCount = read(_fd, (void *)f.data(), imageSize);
+        readCount = read(_fd, (void *)(&f+1), imageSize);
         if (-1 == readCount) {
           perror("read");
           break;

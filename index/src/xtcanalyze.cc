@@ -637,7 +637,7 @@ int XtcIterWithOffset::process(Xtc * xtc)
 }
 
 /////!!!debug
-//#include <pdsdata/epics/ConfigV1.hh>
+//#include <pdsdata/psddl/epics.ddl.h>
 
 int XtcIterConfig::process(Xtc * xtc)
 {

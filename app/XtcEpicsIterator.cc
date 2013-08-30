@@ -41,9 +41,9 @@ int XtcEpicsIterator::process(Xtc* xtc)
             printf( "Xtc TypdId version (%d) is not compatible with reader supported version (%d)", iVersion, iXtcVersion );
             break;
         }
-        EpicsPvHeader* pEpicsPvData = (EpicsPvHeader*) ( xtc->payload() );
-        pEpicsPvData->printPv();
-        printf( "\n" );
+        Epics::EpicsPvHeader* pEpicsPvData = (Epics::EpicsPvHeader*) ( xtc->payload() );
+//         pEpicsPvData->printPv();
+//         printf( "\n" );
       }
       break;
     default :

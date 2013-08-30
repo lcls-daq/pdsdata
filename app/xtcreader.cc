@@ -9,64 +9,23 @@
 #include "pdsdata/xtc/ProcInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
-#include "pdsdata/acqiris/ConfigV1.hh"
-#include "pdsdata/acqiris/DataDescV1.hh"
-#include "pdsdata/acqiris/TdcConfigV1.hh"
-#include "pdsdata/acqiris/TdcDataV1.hh"
-#include "pdsdata/ipimb/ConfigV1.hh"
-#include "pdsdata/ipimb/DataV1.hh"
-#include "pdsdata/ipimb/ConfigV2.hh"
-#include "pdsdata/ipimb/DataV2.hh"
-#include "pdsdata/encoder/ConfigV1.hh"
-#include "pdsdata/encoder/DataV1.hh"
-#include "pdsdata/encoder/DataV2.hh"
-#include "pdsdata/camera/FrameV1.hh"
-#include "pdsdata/camera/FrameFexConfigV1.hh"
-#include "pdsdata/fccd/FccdConfigV1.hh"
-#include "pdsdata/fccd/FccdConfigV2.hh"
-#include "pdsdata/timepix/ConfigV1.hh"
-#include "pdsdata/timepix/ConfigV2.hh"
-#include "pdsdata/timepix/ConfigV3.hh"
-#include "pdsdata/timepix/DataV1.hh"
-#include "pdsdata/timepix/DataV2.hh"
-#include "pdsdata/camera/TwoDGaussianV1.hh"
-#include "pdsdata/opal1k/ConfigV1.hh"
-#include "pdsdata/pulnix/TM6740ConfigV1.hh"
-#include "pdsdata/pnCCD/ConfigV1.hh"
-#include "pdsdata/pnCCD/ConfigV2.hh"
-#include "pdsdata/pnCCD/FrameV1.hh"
-#include "pdsdata/evr/IOConfigV1.hh"
-#include "pdsdata/evr/ConfigV1.hh"
-#include "pdsdata/evr/ConfigV2.hh"
-#include "pdsdata/evr/ConfigV3.hh"
-#include "pdsdata/evr/ConfigV4.hh"
-#include "pdsdata/evr/ConfigV5.hh"
-#include "pdsdata/evr/ConfigV6.hh"
-#include "pdsdata/evr/ConfigV7.hh"
-#include "pdsdata/evr/DataV3.hh"
-#include "pdsdata/control/ConfigV1.hh"
-#include "pdsdata/control/ConfigV2.hh"
-#include "pdsdata/control/PVControl.hh"
-#include "pdsdata/control/PVMonitor.hh"
-#include "pdsdata/control/PVLabel.hh"
-#include "pdsdata/epics/EpicsPvData.hh"
-#include "pdsdata/epics/EpicsXtcSettings.hh"
-#include "pdsdata/bld/bldData.hh"
-#include "pdsdata/princeton/ConfigV1.hh"
-#include "pdsdata/princeton/FrameV1.hh"
-#include "pdsdata/princeton/InfoV1.hh"
-#include "pdsdata/cspad/MiniElementV1.hh"
-#include "pdsdata/cspad/ElementV1.hh"
-#include "pdsdata/cspad/ConfigV1.hh"
-#include "pdsdata/lusi/IpmFexConfigV1.hh"
-#include "pdsdata/lusi/IpmFexConfigV2.hh"
-#include "pdsdata/lusi/IpmFexV1.hh"
-#include "pdsdata/lusi/DiodeFexConfigV1.hh"
-#include "pdsdata/lusi/DiodeFexConfigV2.hh"
-#include "pdsdata/lusi/DiodeFexV1.hh"
-#include "pdsdata/lusi/PimImageConfigV1.hh"
-#include "pdsdata/pulnix/TM6740ConfigV1.hh"
-#include "pdsdata/pulnix/TM6740ConfigV2.hh"
+#include "pdsdata/psddl/acqiris.ddl.h"
+#include "pdsdata/psddl/ipimb.ddl.h"
+#include "pdsdata/psddl/encoder.ddl.h"
+#include "pdsdata/psddl/camera.ddl.h"
+#include "pdsdata/psddl/fccd.ddl.h"
+#include "pdsdata/psddl/timepix.ddl.h"
+#include "pdsdata/psddl/opal1k.ddl.h"
+#include "pdsdata/psddl/pulnix.ddl.h"
+#include "pdsdata/psddl/pnccd.ddl.h"
+#include "pdsdata/psddl/evr.ddl.h"
+#include "pdsdata/psddl/control.ddl.h"
+#include "pdsdata/psddl/epics.ddl.h"
+#include "pdsdata/psddl/bld.ddl.h"
+#include "pdsdata/psddl/princeton.ddl.h"
+#include "pdsdata/psddl/cspad.ddl.h"
+#include "pdsdata/psddl/cspad2x2.ddl.h"
+#include "pdsdata/psddl/lusi.ddl.h"
 #include "pdsdata/alias/ConfigV1.hh"
 
 static unsigned eventCount = 0;
@@ -94,36 +53,35 @@ public:
   void process(const DetInfo& i, const Acqiris::TdcDataV1& d) {
     printf("*** Processing acqiris TDC data object for %s\n",
      DetInfo::name(i));
-    const Acqiris::TdcDataV1* p = &d;
-    //  Data is terminated with an AuxIOMarker (Memory bank switch)
-    while(!(p->source() == Acqiris::TdcDataV1::AuxIO &&
-      static_cast<const Acqiris::TdcDataV1::Marker*>(p)->type() < 
-      Acqiris::TdcDataV1::Marker::AuxIOMarker)) {
-      switch(p->source()) {
-      case Acqiris::TdcDataV1::Comm:
-  printf("common start %d\n",
-         static_cast<const Acqiris::TdcDataV1::Common*>(p)->nhits());
-  break;
-      case Acqiris::TdcDataV1::AuxIO:
-  break;
+    ndarray<const Acqiris::TdcDataV1_Item,1> a = d.data();
+    for(unsigned j=0; j<a.shape()[0]; j++) {
+      if (a[j].source() == Acqiris::TdcDataV1_Item::AuxIO &&
+          static_cast<const Acqiris::TdcDataV1Marker&>(a[j]).type() < Acqiris::TdcDataV1Marker::AuxIOMarker) 
+        break;
+      switch(a[j].source()) {
+      case Acqiris::TdcDataV1_Item::Comm:
+        printf("common start %d\n",
+               static_cast<const Acqiris::TdcDataV1Common&>(a[j]).nhits());
+        break;
+      case Acqiris::TdcDataV1_Item::AuxIO:
+        break;
       default:
-  { 
-    const Acqiris::TdcDataV1::Channel& c = 
-      *static_cast<const Acqiris::TdcDataV1::Channel*>(p);
-    if (!c.overflow())
-      printf("ch %d : 0x%x ticks, %g ns\n",
-       p->source(), c.ticks(), c.ticks()*50e-12);
-    break;
-  }
+        { 
+          const Acqiris::TdcDataV1Channel& c = 
+            static_cast<const Acqiris::TdcDataV1Channel&>(a[j]);
+          if (!c.overflow())
+            printf("ch %d : %g ns\n",
+                   a[j].source()-1, c.time());
+          break;
+        }
       }
-      p++;
     }
   }
   void process(const DetInfo& i, const Acqiris::TdcConfigV1& c) {
     printf("*** Processing Acqiris TDC config object for %s\n",
      DetInfo::name(i));
     for(unsigned j=0; j<Acqiris::TdcConfigV1::NChannels; j++) {
-      const Acqiris::TdcChannel& ch = c.channel(j);
+      const Acqiris::TdcChannel& ch = c.channels()[j];
       printf("chan %d : %s, slope %c, level %gv\n",
              ch.channel(),
              ch.mode ()==Acqiris::TdcChannel::Inactive?"inactive":"active",
@@ -236,7 +194,7 @@ public:
     
     printf( "Control PV Number = %d, Monitor PV Number = %d\n", config.npvControls(), config.npvMonitors() );
     for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
-      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
       if (pvControlCur.array())
         printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
       else
@@ -245,7 +203,7 @@ public:
     }
     
     for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
-      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
       if (pvMonitorCur.array())
         printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
       else
@@ -259,7 +217,7 @@ public:
     
     printf( "Control PV Number = %d, Monitor PV Number = %d, Label PV Number = %d\n", config.npvControls(), config.npvMonitors(), config.npvLabels() );
     for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
-      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
       if (pvControlCur.array())
         printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
       else
@@ -268,7 +226,7 @@ public:
     }
     
     for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
-      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
       if (pvMonitorCur.array())
         printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
       else
@@ -277,69 +235,69 @@ public:
     }
           
     for(unsigned int iPvLabel=0; iPvLabel < config.npvLabels(); iPvLabel++) {      
-      const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabel(iPvLabel);
+      const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabels()[iPvLabel];
       printf( "%s = %s\n", pvLabelCur.name(), pvLabelCur.value() );
     }
           
   }  
-  void process(const DetInfo&, const EpicsPvHeader& epicsPv)
+  void process(const DetInfo&, const Epics::EpicsPvHeader& epicsPv)
   {    
     printf("*** Processing Epics object\n");
-    epicsPv.printPv();
+    //    epicsPv.printPv();
     printf( "\n" );
   }
-  void process(const DetInfo&, const BldDataFEEGasDetEnergy& bldData) {
+  void process(const DetInfo&, const Bld::BldDataFEEGasDetEnergy& bldData) {
     printf("*** Processing FEEGasDetEnergy object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataEBeamV0& bldData) {
+  void process(const DetInfo&, const Bld::BldDataEBeamV0& bldData) {
     printf("*** Processing EBeamV0 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataEBeamV1& bldData) {
+  void process(const DetInfo&, const Bld::BldDataEBeamV1& bldData) {
     printf("*** Processing EBeamV1 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataEBeamV2& bldData) {
+  void process(const DetInfo&, const Bld::BldDataEBeamV2& bldData) {
     printf("*** Processing EBeamV2 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataEBeamV3& bldData) {
+  void process(const DetInfo&, const Bld::BldDataEBeamV3& bldData) {
     printf("*** Processing EBeamV3 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataPhaseCavity& bldData) {
+  void process(const DetInfo&, const Bld::BldDataPhaseCavity& bldData) {
     printf("*** Processing PhaseCavity object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   } 
-  void process(const DetInfo&, const BldDataIpimbV0& bldData) {
+  void process(const DetInfo&, const Bld::BldDataIpimbV0& bldData) {
     printf("*** Processing Bld-Ipimb V0 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   } 
 
-  void process(const DetInfo&, const BldDataIpimb& bldData) {
+  void process(const DetInfo&, const Bld::BldDataIpimbV1& bldData) {
     printf("*** Processing Bld-Ipimb V1 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   } 
   
-  void process(const DetInfo&, const BldDataGMDV0& bldData) {
+  void process(const DetInfo&, const Bld::BldDataGMDV0& bldData) {
     printf("*** Processing Bld-GMD V0 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   } 
 
-  void process(const DetInfo&, const BldDataGMDV1& bldData) {
+  void process(const DetInfo&, const Bld::BldDataGMDV1& bldData) {
     printf("*** Processing Bld-GMD V1 object\n");
-    bldData.print();
-    printf( "\n" );
+//     bldData.print();
+//     printf( "\n" );
   }
   
   void process(const DetInfo&, const EvrData::IOConfigV1&) {
@@ -372,12 +330,12 @@ public:
 
     printf( "# of Fifo Events: %u\n", data.numFifoEvents() );
     for ( unsigned int iEventIndex=0; iEventIndex< data.numFifoEvents(); iEventIndex++ ) {
-      const EvrData::DataV3::FIFOEvent& event = data.fifoEvent(iEventIndex);
+      const EvrData::FIFOEvent& event = data.fifoEvents()[iEventIndex];
       printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
-        iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
-      if (event.EventCode == 162)
+              iEventIndex, event.eventCode(), event.timestampHigh(), event.timestampLow() );
+      if (event.eventCode() == 162)
         printf ("Blank shot eventcode 162 found at eventNo: %u \n",eventCount); 
-      if (event.EventCode == 163)
+      if (event.eventCode() == 163)
         printf ("Blank shot eventcode 163 found at eventNo: %u \n",eventCount); 
     }    
     printf( "\n" );    
@@ -391,8 +349,8 @@ public:
   void process(const DetInfo&, const Princeton::InfoV1&) {
     printf("*** Processing Princeton InfoV1 object\n");
   }
-  void process(const DetInfo&, const CsPad::MiniElementV1&) {
-    printf("*** Processing CsPad MiniElementV1 object\n");
+  void process(const DetInfo&, const CsPad2x2::ElementV1&) {
+    printf("*** Processing CsPad2x2 ElementV1 object\n");
   }
   void process(const DetInfo&, const CsPad::ElementV1&) {
     printf("*** Processing CsPad ElementV1 object\n");
@@ -435,7 +393,7 @@ public:
     SrcAlias *pAlias;
     printf("*** Processing Alias ConfigV1 object\n");
     aliasConfig.print();
-    for (int ii = 0; ii < aliasConfig.srcAliasCount(); ii++) {
+    for (unsigned ii = 0; ii < aliasConfig.srcAliasCount(); ii++) {
       pAlias = aliasConfig.srcAliasGet(ii);
       aliasMap[*((Src *)pAlias)] = string(pAlias->aliasName(), Pds::SrcAlias::AliasNameMax);
     }
@@ -646,13 +604,13 @@ public:
       break;
     case (TypeId::Id_Epics) :      
     {
-      int iVersion = xtc->contains.version();
-      if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
-      {
-          printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
-          break;
-      }
-      process(info, *(const EpicsPvHeader*)(xtc->payload()));
+//       int iVersion = xtc->contains.version();
+//       if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
+//       {
+//           printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
+//           break;
+//       }
+      process(info, *(const Epics::EpicsPvHeader*)(xtc->payload()));
       break;
     }
     case (TypeId::Id_TimepixConfig) :
@@ -695,23 +653,23 @@ public:
      */
     case (TypeId::Id_FEEGasDetEnergy) :
     {
-      process(info, *(const BldDataFEEGasDetEnergy*) xtc->payload() );
+      process(info, *(const Bld::BldDataFEEGasDetEnergy*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_EBeam) :
     {
       switch(xtc->contains.version()) {
       case 0:
-        process(info, *(const BldDataEBeamV0*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV0*) xtc->payload() );
         break; 
       case 1:
-        process(info, *(const BldDataEBeamV1*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV1*) xtc->payload() );
         break; 
       case 2:
-        process(info, *(const BldDataEBeamV2*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV2*) xtc->payload() );
         break; 
       case 3:
-        process(info, *(const BldDataEBeamV3*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV3*) xtc->payload() );
         break; 
       default:
         break;
@@ -720,17 +678,17 @@ public:
     }    
     case (TypeId::Id_PhaseCavity) :
     {
-      process(info, *(const BldDataPhaseCavity*) xtc->payload() );
+      process(info, *(const Bld::BldDataPhaseCavity*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_GMD) :
     {
       switch(xtc->contains.version()) {
         case 0:
-          process(info, *(const BldDataGMDV0*) xtc->payload() );
+          process(info, *(const Bld::BldDataGMDV0*) xtc->payload() );
           break;
         case 1:
-          process(info, *(const BldDataGMDV1*) xtc->payload() );
+          process(info, *(const Bld::BldDataGMDV1*) xtc->payload() );
           break;
         default:
           break;
@@ -741,10 +699,10 @@ public:
     {
      switch(xtc->contains.version()) {
       case 0:
-        process(info, *(const BldDataIpimbV0*) xtc->payload() );
+        process(info, *(const Bld::BldDataIpimbV0*) xtc->payload() );
         break; 
       case 1:
-        process(info, *(const BldDataIpimb*) xtc->payload() );
+        process(info, *(const Bld::BldDataIpimbV1*) xtc->payload() );
         break; 
       default:
         break;
@@ -768,7 +726,7 @@ public:
     }    
     case (TypeId::Id_Cspad2x2Element) :
     {
-      process(info, *(const CsPad::MiniElementV1*)(xtc->payload()));
+      process(info, *(const CsPad2x2::ElementV1*)(xtc->payload()));
       break;
     }    
     case (TypeId::Id_CspadElement) :

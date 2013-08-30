@@ -1,7 +1,6 @@
 # List of packages (low level first)
-#packages := xtc compress psddl ana index app
-#packages := xtc compress psddl ana index
-packages := ana index app
+packages := xtc alias compress psddl ana index app
+#packages := index app
 
 #
 #  Define macro for including all data types

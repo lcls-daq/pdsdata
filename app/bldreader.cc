@@ -9,7 +9,7 @@
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/xtc/Level.hh"
 #include "pdsdata/xtc/BldInfo.hh"
-#include "pdsdata/bld/bldData.hh"
+#include "pdsdata/psddl/bld.ddl.h"
 
 using namespace Pds;
 
@@ -18,102 +18,82 @@ class bldData {
 public:
   void reset() { 
     gasdet   = 0;
-    ebeam    = 0;
     ebeamV0  = 0;
     ebeamV1  = 0;
+    ebeamV2  = 0;
+    ebeamV3  = 0;
     phasecav = 0;
-    gmd      = 0;
+    gmdV0    = 0;
+    gmdV1    = 0;
   }
   void dump() const {
     printf("%d\t%d\t%d\t",
      seconds,
      nanoseconds,
      pulseId);
+
     if (gasdet)   printf("%g\t%g\t%g\t%g\t", 
-       gasdet->f_11_ENRC,
-       gasdet->f_12_ENRC,
-       gasdet->f_21_ENRC,
-       gasdet->f_22_ENRC);
+                         gasdet->f_11_ENRC(),
+                         gasdet->f_12_ENRC(),
+                         gasdet->f_21_ENRC(),
+                         gasdet->f_22_ENRC());
     else          printf("%g\t%g\t%g\t%g\t", 
-       damaged,
-       damaged,
-       damaged,
-       damaged);
-    if (ebeam)        printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
-           ebeam->fEbeamCharge,
-           ebeam->fEbeamL3Energy,
-           ebeam->fEbeamLTUPosX,
-           ebeam->fEbeamLTUPosY,
-           ebeam->fEbeamLTUAngX,
-           ebeam->fEbeamLTUAngY,
-           ebeam->fEbeamPkCurrBC2,
-           ebeam->fEbeamEnergyBC2,
-           ebeam->fEbeamPkCurrBC1,
-           ebeam->fEbeamEnergyBC1);
-    else if (ebeamV0) printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
-           ebeamV0->fEbeamCharge,
-           ebeamV0->fEbeamL3Energy,
-           ebeamV0->fEbeamLTUPosX,
-           ebeamV0->fEbeamLTUPosY,
-           ebeamV0->fEbeamLTUAngX,
-           ebeamV0->fEbeamLTUAngY,
-           damaged);
-    else if (ebeamV1) printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
-           ebeamV1->fEbeamCharge,
-           ebeamV1->fEbeamL3Energy,
-           ebeamV1->fEbeamLTUPosX,
-           ebeamV1->fEbeamLTUPosY,
-           ebeamV1->fEbeamLTUAngX,
-           ebeamV1->fEbeamLTUAngY,
-                             ebeamV1->fEbeamPkCurrBC2,
-           damaged);
-    else              printf("%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t",
-           damaged,
-           damaged,
-           damaged,
-           damaged,
-           damaged,
-           damaged,
-           damaged,
-                             damaged,
-                             damaged,
-                             damaged);
+                         damaged,
+                         damaged,
+                         damaged,
+                         damaged);
+    
+    if (ebeamV0) printf("%g\t%g\t%g\t%g\t%g\t%g\t",
+                        ebeamV0->ebeamCharge(),
+                        ebeamV0->ebeamL3Energy(),
+                        ebeamV0->ebeamLTUPosX(),
+                        ebeamV0->ebeamLTUPosY(),
+                        ebeamV0->ebeamLTUAngX(),
+                        ebeamV0->ebeamLTUAngY());
+    if (ebeamV1) printf("%g\t",
+                        ebeamV1->ebeamPkCurrBC2());
+    if (ebeamV2) printf("%g\t",
+                        ebeamV2->ebeamEnergyBC2());
+    if (ebeamV3) printf("%g\t%g\t",
+                        ebeamV3->ebeamPkCurrBC1(),
+                        ebeamV3->ebeamEnergyBC1());
+
     if (phasecav) printf("%g\t%g\t%g\t%g\n", 
-       phasecav->fFitTime1,
-       phasecav->fFitTime2,
-       phasecav->fCharge1,
-       phasecav->fCharge2);
+                         phasecav->fitTime1(),
+                         phasecav->fitTime2(),
+                         phasecav->charge1(),
+                         phasecav->charge2());
     else          printf("%g\t%g\t%g\t%g\n", 
-       damaged,
-       damaged,
-       damaged,
-       damaged);
-       
-    if (gmd) gmd->print();
+                         damaged,
+                         damaged,
+                         damaged,
+                         damaged);
+    
+    //    if (gmd) gmd->print();
   }
   void header() const {
     static const char* headers[] = { "seconds",
-             "nanoseconds",
-             "pulseId",
-             "GDET:FEE:11:ENRC[mJ]",
-             "GDET:FEE:12:ENRC[mJ]",
-             "GDET:FEE:21:ENRC[mJ]",
-             "GDET:FEE:22:ENRC[mJ]",
-             "ebeamCharge[nC]",
-             "ebeamL3Energy[MeV]",
-             "ebeamLTUPosX[mm]",
-             "ebeamLTUPosY[mm]",
-             "ebeamLTUAngX[mrad]",
-             "ebeamLTUAngY[mrad]",
-             "ebeamPkCurrBC2[Amp]",
+                                     "nanoseconds",
+                                     "pulseId",
+                                     "GDET:FEE:11:ENRC[mJ]",
+                                     "GDET:FEE:12:ENRC[mJ]",
+                                     "GDET:FEE:21:ENRC[mJ]",
+                                     "GDET:FEE:22:ENRC[mJ]",
+                                     "ebeamCharge[nC]",
+                                     "ebeamL3Energy[MeV]",
+                                     "ebeamLTUPosX[mm]",
+                                     "ebeamLTUPosY[mm]",
+                                     "ebeamLTUAngX[mrad]",
+                                     "ebeamLTUAngY[mrad]",
+                                     "ebeamPkCurrBC2[Amp]",
                                      "ebeamBC2Energy[mm]",
                                      "ebeamPkCurrBC1[Amp]",
                                      "ebeamBC1Energy[mm]",
-             "PhCav:FitTime1[ps]",
-             "PhCav:FitTime2[ps]",
-             "PhCav:Charge1[pC]",
-             "PhCav:Charge2[pC]",
-             NULL };
+                                     "PhCav:FitTime1[ps]",
+                                     "PhCav:FitTime2[ps]",
+                                     "PhCav:Charge1[pC]",
+                                     "PhCav:Charge2[pC]",
+                                     NULL };
     for(const char** h = headers; *h != NULL; h++)
       printf("%s\t",*h);
     printf("\n");
@@ -121,12 +101,14 @@ public:
   unsigned                      seconds;
   unsigned                      nanoseconds;
   unsigned                      pulseId;
-  const BldDataFEEGasDetEnergy* gasdet;
-  const BldDataEBeamV0*         ebeamV0;
-  const BldDataEBeamV1*         ebeamV1;
-  const BldDataEBeam*           ebeam;
-  const BldDataPhaseCavity*     phasecav;
-  const BldDataGMD*             gmd;
+  const Bld::BldDataFEEGasDetEnergy* gasdet;
+  const Bld::BldDataEBeamV0*         ebeamV0;
+  const Bld::BldDataEBeamV1*         ebeamV1;
+  const Bld::BldDataEBeamV2*         ebeamV2;
+  const Bld::BldDataEBeamV3*         ebeamV3;
+  const Bld::BldDataPhaseCavity*     phasecav;
+  const Bld::BldDataGMDV0*             gmdV0;
+  const Bld::BldDataGMDV1*             gmdV1;
 };
 
 static bldData bld;
@@ -147,31 +129,34 @@ public:
       const BldInfo& info = static_cast<const BldInfo&>(xtc->src);
       switch(info.type()) {
       case BldInfo::EBeam          : 
-  switch(xtc->contains.version()) {
-  case 0:
-    bld.ebeamV0  = reinterpret_cast<const BldDataEBeamV0*>      (xtc->payload()); 
-    break;
-  case 1:
-    bld.ebeamV1    = reinterpret_cast<const BldDataEBeamV1*>      (xtc->payload()); 
-    break;
-  case 2:
-    bld.ebeam    = reinterpret_cast<const BldDataEBeam*>        (xtc->payload()); 
-    break;
-  default:
-    break;
-  }
-  break;
+        if (xtc->contains.version()>=0)
+          bld.ebeamV0  = reinterpret_cast<const Bld::BldDataEBeamV0*>      (xtc->payload()); 
+        if (xtc->contains.version()>=1)
+          bld.ebeamV1  = reinterpret_cast<const Bld::BldDataEBeamV1*>      (xtc->payload()); 
+        if (xtc->contains.version()>=2)
+          bld.ebeamV2  = reinterpret_cast<const Bld::BldDataEBeamV2*>      (xtc->payload()); 
+        if (xtc->contains.version()>=3)
+          bld.ebeamV3  = reinterpret_cast<const Bld::BldDataEBeamV3*>      (xtc->payload()); 
+        break;
       case BldInfo::PhaseCavity    : 
-  bld.phasecav = reinterpret_cast<const BldDataPhaseCavity*>    (xtc->payload()); 
-  break;
+        bld.phasecav = reinterpret_cast<const Bld::BldDataPhaseCavity*>    (xtc->payload()); 
+        break;
       case BldInfo::FEEGasDetEnergy: 
-  bld.gasdet   = reinterpret_cast<const BldDataFEEGasDetEnergy*>(xtc->payload()); 
-  break;
+        bld.gasdet   = reinterpret_cast<const Bld::BldDataFEEGasDetEnergy*>(xtc->payload()); 
+        break;
       case BldInfo::GMD: 
-  bld.gmd      = reinterpret_cast<const BldDataGMD*>(xtc->payload()); 
-  break;
+        switch(xtc->contains.version()) {
+        case 0:
+          bld.gmdV0     = reinterpret_cast<const Bld::BldDataGMDV0*>(xtc->payload()); 
+          break;
+        case 1:
+          bld.gmdV1     = reinterpret_cast<const Bld::BldDataGMDV1*>(xtc->payload()); 
+          break;
+        default:
+          break;
+        }
       default:
-  break;
+        break;
       }
     }
     return Continue;

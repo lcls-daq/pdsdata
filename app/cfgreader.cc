@@ -9,33 +9,20 @@
 #include "pdsdata/xtc/ProcInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
-#include "pdsdata/acqiris/ConfigV1.hh"
-#include "pdsdata/ipimb/ConfigV1.hh"
-#include "pdsdata/ipimb/ConfigV2.hh"
-#include "pdsdata/encoder/ConfigV1.hh"
-#include "pdsdata/camera/FrameFexConfigV1.hh"
-#include "pdsdata/camera/FrameFccdConfigV1.hh"
-#include "pdsdata/fccd/FccdConfigV1.hh"
-#include "pdsdata/opal1k/ConfigV1.hh"
-#include "pdsdata/pulnix/TM6740ConfigV1.hh"
-#include "pdsdata/pnCCD/ConfigV1.hh"
-#include "pdsdata/pnCCD/ConfigV2.hh"
-#include "pdsdata/evr/IOConfigV1.hh"
-#include "pdsdata/evr/ConfigV1.hh"
-#include "pdsdata/evr/ConfigV2.hh"
-#include "pdsdata/evr/ConfigV3.hh"
-#include "pdsdata/evr/ConfigV4.hh"
-#include "pdsdata/evr/ConfigV7.hh"
-#include "pdsdata/control/ConfigV2.hh"
-#include "pdsdata/control/ConfigV1.hh"
-#include "pdsdata/control/PVControl.hh"
-#include "pdsdata/control/PVMonitor.hh"
-#include "pdsdata/control/PVLabel.hh"
-#include "pdsdata/epics/EpicsPvData.hh"
-#include "pdsdata/epics/EpicsXtcSettings.hh"
-#include "pdsdata/bld/bldData.hh"
-#include "pdsdata/princeton/ConfigV1.hh"
-#include "pdsdata/cspad/ConfigV4.hh"
+#include "pdsdata/psddl/acqiris.ddl.h"
+#include "pdsdata/psddl/ipimb.ddl.h"
+#include "pdsdata/psddl/encoder.ddl.h"
+#include "pdsdata/psddl/camera.ddl.h"
+#include "pdsdata/psddl/fccd.ddl.h"
+#include "pdsdata/psddl/opal1k.ddl.h"
+#include "pdsdata/psddl/pulnix.ddl.h"
+#include "pdsdata/psddl/pnccd.ddl.h"
+#include "pdsdata/psddl/evr.ddl.h"
+#include "pdsdata/psddl/control.ddl.h"
+#include "pdsdata/psddl/epics.ddl.h"
+#include "pdsdata/psddl/bld.ddl.h"
+#include "pdsdata/psddl/princeton.ddl.h"
+#include "pdsdata/psddl/cspad.ddl.h"
 
 using namespace Pds;
 
@@ -52,11 +39,11 @@ public:
   }
   void process(const Src&, const Ipimb::ConfigV1& o) {
     printf("*** Processing Ipimb config object\n");
-    o.dump();
+    //    o.dump();
   }
   void process(const Src&, const Ipimb::ConfigV2& o) {
     printf("*** Processing Ipimb config object\n");
-    o.dump();
+    //    o.dump();
   }
   void process(const Src&, const Encoder::ConfigV1&) {
     printf("*** Processing Encoder config object\n");
@@ -70,8 +57,8 @@ public:
   void process(const Src&, const Camera::FrameFexConfigV1& c) {
     printf("*** Processing frame feature extraction config object\n");
     printf("roiBegin (%d,%d)  roiEnd(%d,%d)\n",
-     c.roiBegin().column, c.roiBegin().row,
-     c.roiEnd().column, c.roiEnd().row);
+           c.roiBegin().column(), c.roiBegin().row(),
+           c.roiEnd().column(), c.roiEnd().row());
   }
   void process(const Src&, const Camera::FrameFccdConfigV1&) {
     printf("*** Processing FCCD Frame ConfigV1 object\n");
@@ -121,7 +108,7 @@ public:
     
     printf( "Control PV Number = %d, Monitor PV Number = %d\n", config.npvControls(), config.npvMonitors() );
     for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
-      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
       if (pvControlCur.array())
         printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
       else
@@ -130,7 +117,7 @@ public:
     }
     
     for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
-      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
       if (pvMonitorCur.array())
         printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
       else
@@ -145,7 +132,7 @@ public:
     printf( "Control PV Number = %d, Monitor PV Number = %d, Label PV Number = %d\n",
             config.npvControls(), config.npvMonitors(), config.npvLabels() );
     for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
-      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
       if (pvControlCur.array())
         printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
       else
@@ -154,7 +141,7 @@ public:
     }
     
     for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
-      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
       if (pvMonitorCur.array())
         printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
       else
@@ -163,64 +150,74 @@ public:
     }
           
     for(unsigned int iPvLabel=0; iPvLabel < config.npvLabels(); iPvLabel++) {      
-      const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabel(iPvLabel);
+      const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabels()[iPvLabel];
       printf( "%s = %s\n", pvLabelCur.name(), pvLabelCur.value() );
     }
           
   }  
-  void process(const Src&, const EpicsPvHeader& epicsPv)
+  void process(const Src&, const Epics::EpicsPvHeader& epicsPv)
   {    
-    printf("*** Processing Epics object\n");
-    epicsPv.printPv();
-    printf( "\n" );
+    if (epicsPv.isCtrl()) {
+      const Epics::EpicsPvCtrlHeader& ctrlPv = static_cast<const Epics::EpicsPvCtrlHeader&>(epicsPv);
+      printf("*** Processing Epics Cntrl object\n");
+      printf("Id %d\nName %s\nType %d\n",
+             epicsPv.pvId(),
+             ctrlPv.pvName(),
+             epicsPv.dbrType());
+    }
+    else {
+      printf("*** Processing Epics Time object\n");
+      printf("Id %d\n",
+             epicsPv.pvId());
+    }
   }
-  void process(const Src&, const BldDataFEEGasDetEnergy& bldData) {
+  void process(const Src&, const Bld::BldDataFEEGasDetEnergy& bldData) {
     printf("*** Processing FEEGasDetEnergy object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   }  
-  void process(const Src&, const BldDataEBeamV0& bldData) {
+  void process(const Src&, const Bld::BldDataEBeamV0& bldData) {
     printf("*** Processing EBeamV0 object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   }  
-  void process(const Src&, const BldDataEBeamV1& bldData) {
+  void process(const Src&, const Bld::BldDataEBeamV1& bldData) {
     printf("*** Processing EBeamV1 object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   }  
-  void process(const Src&, const BldDataEBeam& bldData) {
+  void process(const Src&, const Bld::BldDataEBeamV2& bldData) {
     printf("*** Processing EBeam object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   }  
-  void process(const Src&, const BldDataPhaseCavity& bldData) {
+  void process(const Src&, const Bld::BldDataPhaseCavity& bldData) {
     printf("*** Processing PhaseCavity object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   }
-  void process(const Src&, const BldDataIpimbV0& bldData) {
+  void process(const Src&, const Bld::BldDataIpimbV0& bldData) {
     printf("*** Processing Bld-Ipimb V0 object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   } 
 
-  void process(const Src&, const BldDataIpimb& bldData) {
+  void process(const Src&, const Bld::BldDataIpimbV1& bldData) {
     printf("*** Processing Bld-Ipimb V1 object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   } 
 
-  void process(const Src&, const BldDataGMDV0& bldData) {
+  void process(const Src&, const Bld::BldDataGMDV0& bldData) {
     printf("*** Processing Bld-GMD V0 object\n");
-    bldData.print();
-    printf( "\n" );    
+    //    bldData.print();
+    //    printf( "\n" );    
   }   
 
-  void process(const Src&, const BldDataGMDV1& bldData) {
+  void process(const Src&, const Bld::BldDataGMDV1& bldData) {
     printf("*** Processing Bld-GMD V1 object\n");
-    bldData.print();
-    printf( "\n" );
+    //    bldData.print();
+    //    printf( "\n" );
   }
   
   void process(const Src&, const EvrData::IOConfigV1&) {
@@ -240,10 +237,10 @@ public:
   }
   void process(const Src&, const EvrData::ConfigV7& c) {
     printf("*** Processing EVR config V7 object\n");
-    c.print();
-    const EvrData::ConfigV7::SeqConfigType& s = c.seq_config();
-    printf(" seq src %d/%d : len %d : cycles %d\n",
-           s.sync_source(), s.beam_source(), s.length(), s.cycles());
+    //    c.print();
+    //    const EvrData::ConfigV7::SeqConfigType& s = c.seq_config();
+    //    printf(" seq src %d/%d : len %d : cycles %d\n",
+    //           s.sync_source(), s.beam_source(), s.length(), s.cycles());
   }
   void process(const Src&, const Princeton::ConfigV1&) {
     printf("*** Processing Princeton ConfigV1 object\n");
@@ -251,7 +248,7 @@ public:
   void process(const Src&, const CsPad::ConfigV4& c) {
     printf("*** Processing Cspad ConfigV4 object\n");
     printf("  runDelay %x  intTime %x\n",
-           c.runDelay(), c.quads()[0].intTime());
+           c.runDelay(), c.quads(0).intTime());
   }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
@@ -392,13 +389,13 @@ public:
     case (TypeId::Id_Epics) :      
     {
       if (!noEpics) {
-        int iVersion = xtc->contains.version();
-        if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
-          {
-            printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
-            break;
-          }
-        process(info, *(const EpicsPvHeader*)(xtc->payload()));
+//         int iVersion = xtc->contains.version();
+//         if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
+//           {
+//             printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
+//             break;
+//           }
+        process(info, *(const Epics::EpicsPvHeader*)(xtc->payload()));
       }
       break;
     }
@@ -407,20 +404,20 @@ public:
      */
     case (TypeId::Id_FEEGasDetEnergy) :
     {
-      process(info, *(const BldDataFEEGasDetEnergy*) xtc->payload() );
+      process(info, *(const Bld::BldDataFEEGasDetEnergy*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_EBeam) :
     {
       switch(xtc->contains.version()) {
       case 0:
-        process(info, *(const BldDataEBeamV0*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV0*) xtc->payload() );
         break; 
       case 1:
-        process(info, *(const BldDataEBeamV1*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV1*) xtc->payload() );
         break; 
       case 2:
-        process(info, *(const BldDataEBeam*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV2*) xtc->payload() );
         break; 
       default:
         break;
@@ -428,17 +425,17 @@ public:
     }    
     case (TypeId::Id_PhaseCavity) :
     {
-      process(info, *(const BldDataPhaseCavity*) xtc->payload() );
+      process(info, *(const Bld::BldDataPhaseCavity*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_GMD) :
     {
       switch(xtc->contains.version()) {
         case 0:
-          process(info, *(const BldDataGMDV0*) xtc->payload() );
+          process(info, *(const Bld::BldDataGMDV0*) xtc->payload() );
           break;
         case 1:
-          process(info, *(const BldDataGMDV1*) xtc->payload() );
+          process(info, *(const Bld::BldDataGMDV1*) xtc->payload() );
           break;
         default:
           break;
@@ -451,10 +448,10 @@ public:
 
      switch(xtc->contains.version()) {
       case 0:
-        process(info, *(const BldDataIpimbV0*) xtc->payload() );
+        process(info, *(const Bld::BldDataIpimbV0*) xtc->payload() );
         break; 
       case 1:
-        process(info, *(const BldDataIpimb*) xtc->payload() );
+        process(info, *(const Bld::BldDataIpimbV1*) xtc->payload() );
         break; 
       default:
         break;

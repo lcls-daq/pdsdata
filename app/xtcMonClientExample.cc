@@ -7,32 +7,17 @@
 #include "pdsdata/xtc/ProcInfo.hh"
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/xtc/XtcFileIterator.hh"
-#include "pdsdata/acqiris/ConfigV1.hh"
-#include "pdsdata/acqiris/DataDescV1.hh"
-#include "pdsdata/ipimb/ConfigV1.hh"
-#include "pdsdata/ipimb/DataV1.hh"
-#include "pdsdata/camera/FrameV1.hh"
-#include "pdsdata/camera/FrameFexConfigV1.hh"
-#include "pdsdata/camera/TwoDGaussianV1.hh"
-#include "pdsdata/evr/IOConfigV1.hh"
-#include "pdsdata/evr/ConfigV1.hh"
-#include "pdsdata/evr/ConfigV2.hh"
-#include "pdsdata/evr/ConfigV3.hh"
-#include "pdsdata/evr/ConfigV4.hh"
-#include "pdsdata/evr/DataV3.hh"
-#include "pdsdata/opal1k/ConfigV1.hh"
-#include "pdsdata/pnCCD/FrameV1.hh"
-#include "pdsdata/pnCCD/ConfigV1.hh"
-#include "pdsdata/encoder/ConfigV1.hh"
-#include "pdsdata/encoder/DataV1.hh"
-#include "pdsdata/control/ConfigV1.hh"
-#include "pdsdata/control/PVControl.hh"
-#include "pdsdata/control/PVMonitor.hh"
-#include "pdsdata/epics/EpicsPvData.hh"
-#include "pdsdata/epics/EpicsXtcSettings.hh"
-#include "pdsdata/bld/bldData.hh"
-#include "pdsdata/princeton/ConfigV1.hh"
-#include "pdsdata/princeton/FrameV1.hh"
+#include "pdsdata/psddl/acqiris.ddl.h"
+#include "pdsdata/psddl/ipimb.ddl.h"
+#include "pdsdata/psddl/camera.ddl.h"
+#include "pdsdata/psddl/evr.ddl.h"
+#include "pdsdata/psddl/opal1k.ddl.h"
+#include "pdsdata/psddl/pnccd.ddl.h"
+#include "pdsdata/psddl/encoder.ddl.h"
+#include "pdsdata/psddl/control.ddl.h"
+#include "pdsdata/psddl/epics.ddl.h"
+#include "pdsdata/psddl/bld.ddl.h"
+#include "pdsdata/psddl/princeton.ddl.h"
 
 #include "XtcMonitorClient.hh"
 
@@ -96,10 +81,10 @@ public:
       printf("*** Processing pnCCD frame number %x segment %d\n",f.frameNumber(),i);
       printf("  pnCCD frameHeader: %08X, %u, %u, %u\n", f.specialWord(), f.frameNumber(),
           f.timeStampHi(), f.timeStampLo());
-      const uint16_t* data = f.data();
-      unsigned last  = f.sizeofData(cfg); 
+      const uint16_t* data = reinterpret_cast<const uint16_t*>(&f+1);
+      //      unsigned last  = f.sizeofData(cfg); 
       printf("First data words: 0x%4.4x 0x%4.4x\n",data[0],data[1]);
-      printf("Last  data words: 0x%4.4x 0x%4.4x\n",data[last-2],data[last-1]);
+      //      printf("Last  data words: 0x%4.4x 0x%4.4x\n",data[last-2],data[last-1]);
     }
   }
   void process(const DetInfo&, const ControlData::ConfigV1& config) {
@@ -107,7 +92,7 @@ public:
     
     printf( "Control PV Number = %d, Monitor PV Number = %d\n", config.npvControls(), config.npvMonitors() );
     for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
-      const Pds::ControlData::PVControl& pvControlCur = config.pvControl(iPvControl);
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
       if (pvControlCur.array())
         printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
       else
@@ -116,7 +101,7 @@ public:
     }
     
     for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
-      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitor(iPvMonitor);
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
       if (pvMonitorCur.array())
         printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
       else
@@ -125,36 +110,36 @@ public:
     }
           
   }  
-  void process(const DetInfo&, const EpicsPvHeader& epicsPv)
+  void process(const DetInfo&, const Epics::EpicsPvHeader& epicsPv)
   {    
     printf("*** Processing Epics object\n");
-    epicsPv.printPv();
-    printf( "\n" );
+//     epicsPv.printPv();
+//     printf( "\n" );
   }
-  void process(const DetInfo&, const BldDataFEEGasDetEnergy& bldData) {
+  void process(const DetInfo&, const Bld::BldDataFEEGasDetEnergy& bldData) {
     printf("*** Processing FEEGasDetEnergy object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataEBeamV0& bldData) {
+  void process(const DetInfo&, const Bld::BldDataEBeamV0& bldData) {
     printf("*** Processing EBeamV0 object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataEBeam& bldData) {
+  void process(const DetInfo&, const Bld::BldDataEBeamV3& bldData) {
     printf("*** Processing EBeam object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataPhaseCavity& bldData) {
+  void process(const DetInfo&, const Bld::BldDataPhaseCavity& bldData) {
     printf("*** Processing PhaseCavity object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
-  void process(const DetInfo&, const BldDataGMD& bldData) {
+  void process(const DetInfo&, const Bld::BldDataGMDV1& bldData) {
     printf("*** Processing Bld GMD object\n");
-    bldData.print();
-    printf( "\n" );    
+//     bldData.print();
+//     printf( "\n" );    
   }  
   void process(const DetInfo&, const EvrData::ConfigV1&) {
     printf("*** Processing EVR config V1 object\n");
@@ -178,9 +163,9 @@ public:
     
     for ( unsigned int iEventIndex=0; iEventIndex< data.numFifoEvents(); iEventIndex++ )
     {
-      const EvrData::DataV3::FIFOEvent& event = data.fifoEvent(iEventIndex);
+      const EvrData::FIFOEvent& event = data.fifoEvents()[iEventIndex];
       printf( "[%02u] Event Code %u  TimeStampHigh 0x%x  TimeStampLow 0x%x\n",
-        iEventIndex, event.EventCode, event.TimestampHigh, event.TimestampLow );
+              iEventIndex, event.eventCode(), event.timestampHigh(), event.timestampLow() );
     }
     
     printf( "\n" );    
@@ -315,13 +300,13 @@ public:
       break;
     case (TypeId::Id_Epics) :      
     {
-      int iVersion = xtc->contains.version();
-      if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
-      {
-          printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
-          break;
-      }
-      process(info, *(const EpicsPvHeader*)(xtc->payload()));
+//       int iVersion = xtc->contains.version();
+//       if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
+//       {
+//           printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
+//           break;
+//       }
+      process(info, *(const Epics::EpicsPvHeader*)(xtc->payload()));
       break;
     }
     /*
@@ -329,17 +314,17 @@ public:
      */
     case (TypeId::Id_FEEGasDetEnergy) :
     {
-      process(info, *(const BldDataFEEGasDetEnergy*) xtc->payload() );
+      process(info, *(const Bld::BldDataFEEGasDetEnergy*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_EBeam) :
     {
       switch(xtc->contains.version()) {
       case 0:
-        process(info, *(const BldDataEBeamV0*) xtc->payload() );
+        process(info, *(const Bld::BldDataEBeamV0*) xtc->payload() );
         break; 
-      case 1:
-        process(info, *(const BldDataEBeam*) xtc->payload() );
+      case 3:
+        process(info, *(const Bld::BldDataEBeamV3*) xtc->payload() );
         break; 
       default:
         break;
@@ -347,12 +332,12 @@ public:
     }    
     case (TypeId::Id_PhaseCavity) :
     {
-      process(info, *(const BldDataPhaseCavity*) xtc->payload() );
+      process(info, *(const Bld::BldDataPhaseCavity*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_GMD) :
     {
-      process(info, *(const BldDataGMD*) xtc->payload() );
+      process(info, *(const Bld::BldDataGMDV1*) xtc->payload() );
       break;        
     }
     case (TypeId::Id_PrincetonConfig) :
