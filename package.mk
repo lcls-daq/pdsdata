@@ -14,9 +14,9 @@ quiet := @
 pkg_name := $(notdir $(shell pwd))
 
 # Defines which directories are being created by this makefile
-incdir  := $(INSTALLDIR)/pdsdata/${pkg_name}
-libdir  := $(INSTALLDIR)/lib/$(INSTALLARCH)
-bindir  := $(INSTALLDIR)/bin/$(INSTALLARCH)
+incdir  := $(INSTALLDIR)/${INSTALLARCH}/pdsdata/${pkg_name}
+libdir  := $(INSTALLDIR)/$(INSTALLARCH)/lib
+bindir  := $(INSTALLDIR)/$(INSTALLARCH)/bin
 objdir  := /tmp/pdsdata/obj
 prod_dirs := $(strip $(bindir) $(libdir) $(incdir))
 
