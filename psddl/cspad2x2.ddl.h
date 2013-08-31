@@ -68,6 +68,7 @@ namespace CsPad2x2 {
 
 class CsPad2x2DigitalPotsCfg {
 public:
+  CsPad2x2DigitalPotsCfg(const uint8_t* arg__pots);
   CsPad2x2DigitalPotsCfg() {}
   CsPad2x2DigitalPotsCfg(const CsPad2x2DigitalPotsCfg& other) {
     const char* src = reinterpret_cast<const char*>(&other);
@@ -147,6 +148,7 @@ private:
 
 class CsPad2x2GainMapCfg {
 public:
+  CsPad2x2GainMapCfg(const uint16_t* arg__gainMap);
   CsPad2x2GainMapCfg() {}
   CsPad2x2GainMapCfg(const CsPad2x2GainMapCfg& other) {
     const char* src = reinterpret_cast<const char*>(&other);

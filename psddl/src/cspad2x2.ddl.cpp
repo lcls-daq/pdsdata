@@ -6,6 +6,14 @@
 #include <iostream>
 namespace Pds {
 namespace CsPad2x2 {
+CsPad2x2DigitalPotsCfg::CsPad2x2DigitalPotsCfg(const uint8_t* arg__pots)
+{
+  if (arg__pots) std::copy(arg__pots, arg__pots+(80), &_pots[0]);
+}
+CsPad2x2GainMapCfg::CsPad2x2GainMapCfg(const uint16_t* arg__gainMap)
+{
+  if (arg__gainMap) std::copy(arg__gainMap, arg__gainMap+(35890), &_gainMap[0][0]);
+}
 uint32_t
 ConfigV1::numAsicsRead() const {
   return 4;

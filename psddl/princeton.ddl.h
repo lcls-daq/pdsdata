@@ -22,6 +22,10 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_PrincetonConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
+  ConfigV1(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, uint32_t arg__u32ReadoutSpeedIndex, uint16_t arg__u16ReadoutEventCode, uint16_t arg__u16DelayMode)
+    : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _u32ReadoutSpeedIndex(arg__u32ReadoutSpeedIndex), _u16ReadoutEventCode(arg__u16ReadoutEventCode), _u16DelayMode(arg__u16DelayMode)
+  {
+  }
   ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
@@ -79,6 +83,10 @@ class ConfigV2 {
 public:
   enum { TypeId = Pds::TypeId::Id_PrincetonConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 2 /**< XTC type version number */ };
+  ConfigV2(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, uint16_t arg__u16GainIndex, uint16_t arg__u16ReadoutSpeedIndex, uint16_t arg__u16ReadoutEventCode, uint16_t arg__u16DelayMode)
+    : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _u16GainIndex(arg__u16GainIndex), _u16ReadoutSpeedIndex(arg__u16ReadoutSpeedIndex), _u16ReadoutEventCode(arg__u16ReadoutEventCode), _u16DelayMode(arg__u16DelayMode)
+  {
+  }
   ConfigV2() {}
   ConfigV2(const ConfigV2& other) {
     const char* src = reinterpret_cast<const char*>(&other);
@@ -138,6 +146,10 @@ class ConfigV3 {
 public:
   enum { TypeId = Pds::TypeId::Id_PrincetonConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 3 /**< XTC type version number */ };
+  ConfigV3(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, uint8_t arg__u8GainIndex, uint8_t arg__u8ReadoutSpeedIndex, uint16_t arg__u16ExposureEventCode, uint32_t arg__u32NumDelayShots)
+    : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _u8GainIndex(arg__u8GainIndex), _u8ReadoutSpeedIndex(arg__u8ReadoutSpeedIndex), _u16ExposureEventCode(arg__u16ExposureEventCode), _u32NumDelayShots(arg__u32NumDelayShots)
+  {
+  }
   ConfigV3() {}
   ConfigV3(const ConfigV3& other) {
     const char* src = reinterpret_cast<const char*>(&other);
@@ -197,6 +209,10 @@ class ConfigV4 {
 public:
   enum { TypeId = Pds::TypeId::Id_PrincetonConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 4 /**< XTC type version number */ };
+  ConfigV4(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, uint32_t arg__u32MaskedHeight, uint32_t arg__u32KineticHeight, float arg__f32VsSpeed, float arg__f32ExposureTime, float arg__f32CoolingTemp, uint8_t arg__u8GainIndex, uint8_t arg__u8ReadoutSpeedIndex, uint16_t arg__u16ExposureEventCode, uint32_t arg__u32NumDelayShots)
+    : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _u32MaskedHeight(arg__u32MaskedHeight), _u32KineticHeight(arg__u32KineticHeight), _f32VsSpeed(arg__f32VsSpeed), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _u8GainIndex(arg__u8GainIndex), _u8ReadoutSpeedIndex(arg__u8ReadoutSpeedIndex), _u16ExposureEventCode(arg__u16ExposureEventCode), _u32NumDelayShots(arg__u32NumDelayShots)
+  {
+  }
   ConfigV4() {}
   ConfigV4(const ConfigV4& other) {
     const char* src = reinterpret_cast<const char*>(&other);
