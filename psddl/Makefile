@@ -38,7 +38,7 @@ src/%.ddl.cpp:
 #  Copy the manual code (replacing PsddlPds namespace with Pds)
 #
 src/%.cpp:
-	$(quiet)sed -e 's/psddl_pdsdata/pdsdata\/psddl/' $(RELEASE_DIR)/psddl_pdsdata/src/$@ | sed -e 's/PsddlPds/Pds/' > src/$@
+	$(quiet)sed -e 's/psddl_pdsdata/pdsdata\/psddl/' $(RELEASE_DIR)/psddl_pdsdata/$@ | sed -e 's/PsddlPds/Pds/' > $@
 
 include ../package.mk
 
