@@ -26,7 +26,7 @@
 #include "pdsdata/psddl/cspad.ddl.h"
 #include "pdsdata/psddl/cspad2x2.ddl.h"
 #include "pdsdata/psddl/lusi.ddl.h"
-#include "pdsdata/alias/ConfigV1.hh"
+#include "pdsdata/psddl/alias.ddl.h"
 
 static unsigned eventCount = 0;
 
@@ -390,13 +390,12 @@ public:
   }  
   void process(const DetInfo &, const Alias::ConfigV1 &aliasConfig)
   {
-    SrcAlias *pAlias;
     printf("*** Processing Alias ConfigV1 object\n");
-    aliasConfig.print();
-    for (unsigned ii = 0; ii < aliasConfig.srcAliasCount(); ii++) {
-      pAlias = aliasConfig.srcAliasGet(ii);
-      aliasMap[*((Src *)pAlias)] = string(pAlias->aliasName(), Pds::SrcAlias::AliasNameMax);
-    }
+    ndarray<const SrcAlias,1> a = aliasConfig.srcAlias();
+    for(const SrcAlias* p = a.begin(); p!=a.end(); p++) {
+      printf("\t%08x.%08x\t%s\n",p->log(),p->phy(),p->aliasName());
+      aliasMap[*((Src *)p)] = string(p->aliasName(), Pds::SrcAlias::AliasNameMax);
+    }      
   }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");

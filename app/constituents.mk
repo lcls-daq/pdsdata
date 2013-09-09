@@ -10,7 +10,7 @@ tgtnames = cfgreader xtcreader livextcreader xtcmonserver xtcmonclient xtcmoncli
 #LXFLAGS += -L/reg/g/pcds/package/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic
 
 tgtsrcs_xtcreader := xtcreader.cc
-tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/psddl_pdsdata pdsdata/aliasdata
+tgtlibs_xtcreader := pdsdata/xtcdata pdsdata/psddl_pdsdata
 tgtslib_xtcreader := $(USRLIBDIR)/rt
 
 tgtsrcs_cfgreader := cfgreader.cc
@@ -18,11 +18,11 @@ tgtlibs_cfgreader := pdsdata/xtcdata pdsdata/psddl_pdsdata
 tgtslib_cfgreader := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmodify := xtcmodify.cc
-tgtlibs_xtcmodify := pdsdata/xtcdata pdsdata/psddl_pdsdata pdsdata/aliasdata
+tgtlibs_xtcmodify := pdsdata/xtcdata pdsdata/psddl_pdsdata
 tgtslib_xtcmodify := $(USRLIBDIR)/rt
 
 tgtsrcs_livextcreader := livextcreader.cc
-tgtlibs_livextcreader := pdsdata/xtcdata pdsdata/psddl_pdsdata pdsdata/aliasdata
+tgtlibs_livextcreader := pdsdata/xtcdata pdsdata/psddl_pdsdata
 tgtslib_livextcreader := $(USRLIBDIR)/rt
 
 tgtsrcs_dmgreader := dmgreader.cc
