@@ -28,6 +28,7 @@ public:
   Result next(Pds::Dgram*& dg, int* piSlice = NULL, int64_t* pi64OffsetCur = NULL);
 
   int jump    (int calib, int jump, int& eventNum);
+  int jump2   (int calib, int jump, int& eventNum);
 
   int findTime(const char* sTime, int& iCalib, int& iEvent, bool& bExactMatch, bool& bOvertime);
   int findTime(uint32_t uSeconds, uint32_t uNanoseconds, int& iCalib, int& iEvent, bool& bExactMatch, bool& bOvertime);

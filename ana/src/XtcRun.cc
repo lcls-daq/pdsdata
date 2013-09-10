@@ -239,6 +239,248 @@ int XtcRun::jump(int calib, int jump, int& eventNum)
     int iEventSum = 0;
     int iSlice        = 0;
     for(std::list<XtcSlice*>::iterator
+        it =  _slices.begin();
+        it != _slices.end();
+        it++, iSlice++)
+    {
+      int iEventSlice;
+      int iError =
+        (*it)->jump( calib, 0, iEventSlice );
+
+      if ( iError == 0 )
+        iEventSum += iEventSlice-1;
+      else
+        iErrorAll++;
+    }
+
+    if ( iErrorAll != 0 )
+    {
+      eventNum = -1;
+      return 1;
+    }
+
+    ++iEventSum;
+    eventNum          = iEventSum;
+    _iCurCalib        = calib;
+    _iCurEventGlobal  = eventNum;
+    _iCurCalibBaseEvt = eventNum;
+    return 0;
+  }
+
+  struct TSliceJumpInfo
+  {
+    int iNumEvent;
+    int iLowerBound;
+    int iUpperBound;
+    int iCurrentCalib;
+    int iCurrentIndex;
+  } infoList[ _slices.size() ];
+
+  int iNumEventTotal = 0;
+  int iSlice         = 0;
+  for(std::list<XtcSlice*>::iterator
+      it =  _slices.begin();
+      it != _slices.end();
+      it++, iSlice++)
+  {
+    infoList[iSlice].iLowerBound = 1;
+
+    int iError = (*it)->numEventInCalib(calib, infoList[iSlice].iNumEvent);
+    if (iError != 0)
+    {
+      printf("XtcRun::jump(): Cannot get Event# for Slice %d in Calib# %d\n", iSlice, calib);
+      return 2;
+    }
+
+    infoList[iSlice].iUpperBound    = infoList[iSlice].iNumEvent;
+    infoList[iSlice].iCurrentCalib  = -1;
+    infoList[iSlice].iCurrentIndex  = -1;
+    iNumEventTotal                  += infoList[iSlice].iNumEvent;
+  }
+  if (jump < 0 || jump > iNumEventTotal)
+  {
+    printf("XtcRun::jump(): Invalid Event# %d (Max # = %d)\n", jump, iNumEventTotal);
+    return 3;
+  }
+
+  int iJumpAvg  = (int) ( (jump+_slices.size()-1) / _slices.size());
+  if (iJumpAvg < 1)
+    iJumpAvg = 1;
+  else if (iJumpAvg > infoList[0].iUpperBound )
+    iJumpAvg = infoList[0].iUpperBound;
+
+  std::list<XtcSlice*>::iterator it;
+  for (int iSlice=0;;iSlice = (iSlice+1) % _slices.size())
+  {
+    if (iSlice == 0)
+        it = _slices.begin();
+    else
+        ++it;
+
+    if (infoList[iSlice].iLowerBound > infoList[iSlice].iNumEvent)
+      continue;
+
+    if (infoList[iSlice].iLowerBound > infoList[iSlice].iUpperBound)
+    {
+      printf("XtcRun::jump(): Cannot jump to Event# %d (internal error)\n", jump);
+      return 4;
+    }
+
+
+    int iTestIndex;
+
+    if (iJumpAvg > infoList[iSlice].iLowerBound && iJumpAvg < infoList[iSlice].iUpperBound)
+      iTestIndex = iJumpAvg;
+    else
+      iTestIndex = (infoList[iSlice].iLowerBound + infoList[iSlice].iUpperBound)/2;
+
+    //for (int iSliceUpdate = 0; iSliceUpdate < (int) _slices.size(); iSliceUpdate++ )
+    //{
+    //  //!! debug
+    //  printf("** Jump slice %d LB %d UB %d\n", iSliceUpdate, infoList[iSliceUpdate].iLowerBound, infoList[iSliceUpdate].iUpperBound);
+    //}
+
+    ////!! debug
+    //printf("** Jump slice %d  test %d LB %d UB %d", iSlice, iTestIndex, infoList[iSlice].iLowerBound, infoList[iSlice].iUpperBound);
+
+    infoList[iSlice].iCurrentIndex = iTestIndex;
+
+    uint32_t uSeconds, uNanoseconds;
+    (*it)->getTime(calib, iTestIndex, uSeconds, uNanoseconds);
+
+    int iLocalEventSum  = 0;
+    int iSliceQuery     = 0;
+    for(std::list<XtcSlice*>::iterator
+        itQuery =  _slices.begin();
+        itQuery != _slices.end();
+        itQuery++, iSliceQuery++)
+    {
+      if (iSliceQuery == iSlice)
+      {
+        iLocalEventSum += iTestIndex-1;
+        continue;
+      }
+
+      int   iCalibQuery       = -1;
+      int   iEventQuery       = -1;
+      bool  bExactMatchQuery  = false;
+      bool  bOvertimeSlice    = false;
+      int iError = (*itQuery)->findTime(uSeconds, uNanoseconds, iCalibQuery, iEventQuery, bExactMatchQuery, bOvertimeSlice);
+      if (iError != 0)
+      {
+        if (bOvertimeSlice)
+        {
+          iCalibQuery = calib;
+          iEventQuery = infoList[iSliceQuery].iNumEvent+1;
+        }
+        else // Abnormal error
+          continue;
+      }
+
+      if (iCalibQuery != calib)
+      {
+        if (iCalibQuery < calib)
+        {
+          printf("XtcRun::jump(): Inconsistent Calib# in different Slices: %d [Slice %d] and %d [Slice %d]\n",
+                 calib, iSlice, iCalibQuery, iSliceQuery );
+          return 4;
+        }
+        else
+        {
+          iCalibQuery = calib;
+          iEventQuery = infoList[iSliceQuery].iNumEvent+1;
+        }
+      }
+
+      infoList[iSliceQuery].iCurrentIndex = iEventQuery;
+
+      iLocalEventSum += iEventQuery-1;
+    } // itQuery loop
+
+    ++iLocalEventSum;
+    ////!! debug
+    //printf(" event %d  (target jump %d)\n", iLocalEventSum, jump);
+    if (iLocalEventSum < jump)
+    {
+      for (int iSliceUpdate = 0; iSliceUpdate < (int) _slices.size(); iSliceUpdate++ )
+      {
+        ////!! debug
+        //printf("  ** Jump update slice %d LB from %d to %d\n", iSliceUpdate, infoList[iSliceUpdate].iLowerBound, infoList[iSliceUpdate].iCurrentIndex);
+        if (infoList[iSliceUpdate].iCurrentIndex>infoList[iSliceUpdate].iLowerBound)
+          infoList[iSliceUpdate].iLowerBound = infoList[iSliceUpdate].iCurrentIndex;
+      }
+    }
+    else if (iLocalEventSum > jump)
+    {
+      ////!! debug
+      //printf("  ** Jump update slice %d UB from %d to %d\n", iSlice, infoList[iSlice].iUpperBound, infoList[iSlice].iCurrentIndex-1);
+      infoList[iSlice].iUpperBound = infoList[iSlice].iCurrentIndex;
+      for (int iSliceUpdate = 0; iSliceUpdate < (int) _slices.size(); iSliceUpdate++ )
+      {
+        if (iSliceUpdate == iSlice)
+          continue;
+        ////!! debug
+        //printf("  ** Jump update slice %d UB from %d to %d\n", iSliceUpdate, infoList[iSliceUpdate].iUpperBound, infoList[iSliceUpdate].iCurrentIndex);
+
+        if (infoList[iSliceUpdate].iCurrentIndex<infoList[iSliceUpdate].iUpperBound)
+          infoList[iSliceUpdate].iUpperBound = infoList[iSliceUpdate].iCurrentIndex;
+      }
+    }
+    else // (iLocalEventSum == jump) : we have found the correct event
+    {
+      int iErrorAll = 0;
+
+      int iGlobalEventSum = 0;
+      int iSliceUpdate = 0;
+      for(std::list<XtcSlice*>::iterator
+          itUpdate =  _slices.begin();
+          itUpdate != _slices.end();
+          itUpdate++, iSliceUpdate++)
+      {
+        int iEventSlice;
+        int iError =
+          (*itUpdate)->jump( calib, infoList[iSliceUpdate].iCurrentIndex, iEventSlice, true );
+
+        if ( iError == 0 )
+          iGlobalEventSum += iEventSlice-1;
+        else
+        {
+          printf("XtcRun::jump(): Jump failed in Slice %d for Calib# %d Event# %d\n",
+                 iSliceUpdate, calib, infoList[iSliceUpdate].iCurrentIndex);
+          iErrorAll++;
+        }
+      }
+
+      if ( iErrorAll != 0 )
+      {
+        eventNum = -1;
+        return 5;
+      }
+
+      ++iGlobalEventSum;
+      eventNum          = iGlobalEventSum;
+      _iCurCalib        = calib;
+      _iCurEventGlobal  = eventNum - 1;
+      _iCurCalibBaseEvt = eventNum - jump;
+
+      printf("XtcRun::jump(): Jumped to Calib# %d Event# %d (Global# %d)\n",
+             calib, iLocalEventSum, iGlobalEventSum); //!!debug
+
+      return 0;
+    }
+  } // for each slice
+
+  return 6;
+}
+
+int XtcRun::jump2(int calib, int jump, int& eventNum)
+{
+  if (jump == 0)
+  {
+    int iErrorAll     = 0;
+    int iEventSum = 0;
+    int iSlice        = 0;
+    for(std::list<XtcSlice*>::iterator
       it =  _slices.begin();
       it != _slices.end();
       it++, iSlice++)
