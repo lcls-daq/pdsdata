@@ -1,29 +1,36 @@
-include packages.mk
+include setup.mk
+
+# List of packages (low level first)
+packages := xtc compress psddl ana index app
 
 SHELL := /bin/bash
 
-packages.d := $(addsuffix .D,$(packages))
+packages.% := $(addsuffix .%,$(packages))
 
-.PHONY: all print $(packages.d)
-
-all: $(packages.d)
+.PHONY: special print $(packages.%) $(archs)
 
 print:
 	@echo "CURDIR = $(CURDIR)"
 	@echo "packages = $(packages)"
 	@echo "packages.d = $(packages.d)"
+	@echo "packages.a = $(packages.a)"
 	@echo "CPPFLAGS = $(CPPFLAGS)"
 	@echo "CXXFLAGS = $(CXXFLAGS)"
-	@echo "MAKE = $(MAKE)"
 
 define package_template
-$(1).D:
-	@echo "[PK] Package <$(1)>"
-	$(quiet)$(MAKE) -C $(1) all
+$(1).%:
+	@echo "[PK] Target <$$*> package <$(1)>"
+	$(quiet)$(MAKE) -C $(1) $$*
 endef
 
 $(foreach pkg,$(packages),$(eval $(call package_template,$(pkg))))
 
+define arch_template
+packages_$(1) := $$(foreach pkg,$$(packages),$$(pkg).$(1))
+$(1): $$(packages_$(1));
+endef
+
+$(foreach arc,$(archs),$(eval $(call arch_template,$(arc))))
+
 Makefile:;
-packages.mk:;
 

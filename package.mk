@@ -10,14 +10,21 @@ MV    := mv -f
 empty :=
 space := $(empty) $(empty)
 
-quiet := @
 pkg_name := $(notdir $(shell pwd))
 
 # Defines which directories are being created by this makefile
+ifneq ($(findstring special,$(tgt_arch)),)
 incdir  := $(INSTALLDIR)/pdsdata/${pkg_name}
 libdir  := $(INSTALLDIR)/lib
 bindir  := $(INSTALLDIR)/bin
-objdir  := /tmp/pdsdata/obj
+objdir  := obj
+else
+incdir  := $(INSTALLDIR)/${tgt_arch}/pdsdata/${pkg_name}
+libdir  := $(INSTALLDIR)/${tgt_arch}/lib
+bindir  := $(INSTALLDIR)/${tgt_arch}/bin
+objdir  := obj/${tgt_arch}
+endif
+
 prod_dirs := $(strip $(bindir) $(libdir) $(incdir))
 
 LIBEXTNS := so
@@ -27,6 +34,24 @@ CXX := g++
 LD  := g++
 LX  := g++
 
+ifneq ($(findstring i386-linux,$(tgt_arch)),)
+CXXFLAGS   := -m32
+CPPFLAGS   := $(CFLAGS) -m32
+USRLIBDIR  := /usr/lib
+endif
+
+ifneq ($(findstring x86_64-linux,$(tgt_arch)),)
+CPPFLAGS   := $(CFLAGS)
+USRLIBDIR  := /usr/lib64
+endif
+
+ifneq ($(findstring -dbg,$(tgt_arch)),)
+CPPFLAGS   += -g
+endif
+
+ifneq ($(findstring -opt,$(tgt_arch)),)
+CPPFLAGS   += -O4
+endif
 
 # Procedures
 # ----------
@@ -113,7 +138,7 @@ temp_dirs := $(strip $(sort $(foreach o,$(objects),$(dir $(o)))))
 
 # Rules
 # -----
-rules := all dir obj lib bin clean cleanall userall userclean print
+rules := all dir objs lib bin clean cleanall userall userclean print
 
 .PHONY: $(rules) $(libnames) $(tgtnames)
 
@@ -123,7 +148,7 @@ all: all-m
 
 all-m: clean $(prod_dirs) $(temp_dirs) bin install clean;
 
-obj: $(objects);
+objs: $(objects);
 
 lib: $(libraries);
 
@@ -141,6 +166,8 @@ print:
 	@echo   "targets   = $(targets)"
 	@echo	"libraries = $(libraries)"
 	@echo	"objects   = $(objects)"
+	@echo	"CXXFLAGS  = $(CXXFLAGS)"
+	@echo	"CPPFLAGS  = $(CPPFLAGS)"
 
 clean: userclean
 	$(quiet)$(RM) -r $(temp_dirs)
