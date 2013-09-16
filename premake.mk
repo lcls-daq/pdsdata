@@ -1,6 +1,10 @@
 # Rules
 # -----
-.PHONY: $(archs)
+.PHONY: $(archs) gen install clean
+
+gen install clean:
+	@echo "Make target <$@>"
+	$(quiet)$(MAKE) PREMAKE_DONE=y $@
 
 define arch_template
 $(1):

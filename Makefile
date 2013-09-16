@@ -7,7 +7,7 @@ SHELL := /bin/bash
 
 packages.% := $(addsuffix .%,$(packages))
 
-.PHONY: special print $(packages.%) $(archs)
+.PHONY: print $(packages.%) $(archs) special gen clean install
 
 print:
 	@echo "CURDIR = $(CURDIR)"
@@ -30,7 +30,9 @@ packages_$(1) := $$(foreach pkg,$$(packages),$$(pkg).$(1))
 $(1): $$(packages_$(1));
 endef
 
-$(foreach arc,$(archs),$(eval $(call arch_template,$(arc))))
+$(foreach arc,$(archs) install clean,$(eval $(call arch_template,$(arc))))
+
+gen: psddl.gen
 
 Makefile:;
 

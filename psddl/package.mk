@@ -13,20 +13,12 @@ cpp_src  := $(filter-out $(xml_src), $(patsubst %.cpp,src/%.cpp,$(cpps)))
 libnames := psddl_pdsdata
 libsrcs_psddl_pdsdata := $(xml_src) $(cpp_src)
 
-.PHONY: gen all
-
-#
-#  Add machine-generated code step before compilation
-#
-all: pre-gen gen all-m
+.PHONY: gen pre-gen
 
 pre-gen:
 	$(quiet)rm -f $(libsrcs_psddl_pdsdata)
-#
-#  Handle special manual file (epics.cpp)
-#    Replace namespace and include directory and copy into package
-#
-gen: $(xml_src) $(cpp_src)
+
+gen: pre-gen $(xml_src) $(cpp_src)
 
 #
 #  Machine generate the code

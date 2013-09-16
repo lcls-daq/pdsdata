@@ -12,20 +12,16 @@ space := $(empty) $(empty)
 
 pkg_name := $(notdir $(shell pwd))
 
-# Defines which directories are being created by this makefile
-ifneq ($(findstring special,$(tgt_arch)),)
-incdir  := $(INSTALLDIR)/pdsdata/${pkg_name}
-libdir  := $(INSTALLDIR)/lib
-bindir  := $(INSTALLDIR)/bin
-objdir  := obj
-else
-incdir  := $(INSTALLDIR)/${tgt_arch}/pdsdata/${pkg_name}
-libdir  := $(INSTALLDIR)/${tgt_arch}/lib
-bindir  := $(INSTALLDIR)/${tgt_arch}/bin
-objdir  := obj/${tgt_arch}
-endif
+RELEASE_DIR := $(PWD)/..
+build_dir := ${RELEASE_DIR}/build/pdsdata
 
-prod_dirs := $(strip $(bindir) $(libdir) $(incdir))
+# Defines which directories are being created by this makefile
+incdir  := $(INSTALLDIR)/pdsdata/${pkg_name}
+libdir  := $(build_dir)/lib
+bindir  := $(build_dir)/bin
+objdir  := $(build_dir)/obj/${pkg_name}
+
+prod_dirs := $(strip $(INSTALLDIR)/lib $(INSTALLDIR)/bin $(incdir))
 
 LIBEXTNS := so
 DEFINES  := -fPIC -D_REENTRANT -D__pentium__ -Wall
@@ -53,6 +49,8 @@ ifneq ($(findstring -opt,$(tgt_arch)),)
 CPPFLAGS   += -O4
 endif
 
+override CPPFLAGS += -I$(RELEASE_DIR)
+
 # Procedures
 # ----------
 
@@ -67,19 +65,13 @@ getobjects = $(strip \
 	$(patsubst %.cpp,$(1)/%.o,$(filter %.cpp,$(2))) \
 	$(patsubst %.c,$(1)/%.o, $(filter %.c,$(2))) \
 	$(patsubst %.s,$(1)/%.o, $(filter %.s,$(2))))
-getprj = $(word 1,$(subst /, ,$(1)))
-getlib = $(word 2,$(subst /, ,$(1)))
-#getlib = $(1)
-getproject = $(libdir)
-#getlibrary = $(call getproject,$(call getprj,$(1)))/lib$(call getlib,$(1)).$(LIBEXTNS)
-#getlibraries = $(foreach prjlib,$(1),$(call getlibrary,$(prjlib)))
-#getprojects  = $(foreach prjlib,$(1),$(call getprj,$(prjlib)))
-#getlinkdirs  = $(addprefix -L, $(sort $(foreach prj,$(call getprojects,$(1)),$(call getproject,$(prj)))))
+getlib = $(1)
 getlinksdir  = $(addprefix -L, $(sort $(dir $(1))))
 getlinklibs  = $(addprefix -l,$(foreach prjlib,$(1),$(call getlib,$(prjlib))))
 getlinkslib  = $(addprefix -l,$(notdir $(1)))
-#getrpath  = $$ORIGIN/../../../$(1)/lib/$(tgt_arch)
-#getrpaths = $(subst $(space),:,$(strip $(foreach prj,$(call getprojects,$(1)),$(call getrpath,$(prj)))))
+
+getrpath = $$ORIGIN/../lib
+getrpaths = $(subst $(space),:,$(strip $(call getrpath)))
 
 
 define library_template
@@ -87,21 +79,11 @@ define library_template
   libobjs_$(1) := $$(call getobjects,$$(objdir),$$(libsrcs_$(1)))
   libraries    += $$(library_$(1))
   objects      += $$(libobjs_$(1))
-#  libraries_$(1) := $$(call getlibraries,$$(liblibs_$(1)))
-#  linkdirs_$(1)  := $$(call getlinkdirs,$$(liblibs_$(1)))
-#  linkdirs_$(1)  += $$(call getlinksdir,$$(libslib_$(1)))
-ifneq ($$(liblibs_$(1)),)
-#  linklibs_$(1)  := $$(call reverse,$$(call getlinklibs,$$(liblibs_$(1))))
-endif
-ifneq ($$(libslib_$(1)),)
-#  linklibs_$(1)  += $$(call reverse,$$(call getlinkslib,$$(libslib_$(1))))
-endif
 ifeq ($$(LIBEXTNS),so)
 ifneq ($$(ifversn_$(1)),)
   ifversnflags_$(1) := -Wl,--version-script=$$(ifversn_$(1))
 endif
 endif
-#  linkflags_$(1) := $$(linkdirs_$(1)) $$(linklibs_$(1))
 $$(library_$(1)): $$(libobjs_$(1))
 endef
 
@@ -112,21 +94,16 @@ define target_template
   tgtobjs_$(1) := $$(call getobjects,$$(objdir),$$(tgtsrcs_$(1)))
   targets      += $$(target_$(1))
   objects      += $$(tgtobjs_$(1))
-#  libraries_$(1) := $$(call getlibraries,$$(tgtlibs_$(1)))
-#  linkdirs_$(1)  := $$(call getlinkdirs,$$(tgtlibs_$(1)))
   linkdirs_$(1)  := -L$(libdir)
   linkdirs_$(1)  += $$(call getlinksdir,$$(tgtslib_$(1)))
 ifneq ($$(tgtlibs_$(1)),)
-#  linklibs_$(1)  := $$(call reverse,$$(call getlinklibs,$$(tgtlibs_$(1))))
   linklibs_$(1)  := $$(call getlinklibs,$$(tgtlibs_$(1)))
 endif
 ifneq ($$(tgtslib_$(1)),)
-#  linklibs_$(1)  += $$(call reverse,$$(call getlinkslib,$$(tgtslib_$(1))))
   linklibs_$(1)  += $$(call getlinkslib,$$(tgtslib_$(1)))
 endif
 ifeq ($$(LIBEXTNS),so)
-#  rpaths_$(1)    := -Wl,-rpath='$$(call getrpaths,$$(tgtlibs_$(1)))'
-  rpaths_$(1)    := -Wl,-rpath='$(libdir)'
+  rpaths_$(1)    := -Wl,-rpath='$$(call getrpath)'
 endif
 linkflags_$(1) := $$(linkdirs_$(1)) $$(linklibs_$(1)) $$(rpaths_$(1))
 $$(target_$(1)): $$(tgtobjs_$(1)) $$(libraries_$(1))
@@ -134,19 +111,17 @@ endef
 
 $(foreach tgt,$(tgtnames),$(eval $(call target_template,$(tgt))))
 
-temp_dirs := $(strip $(sort $(foreach o,$(objects),$(dir $(o)))))
+temp_dirs := $(strip $(sort $(foreach o,$(objects),$(dir $(o)))) $(libdir) $(bindir))
 
 # Rules
 # -----
-rules := all dir objs lib bin clean cleanall userall userclean print
+rules := all dir objs lib bin clean cleanall userall userclean install print
 
 .PHONY: $(rules) $(libnames) $(tgtnames)
 
 .SUFFIXES:  # Kills all implicit rules
 
-all: all-m
-
-all-m: clean $(prod_dirs) $(temp_dirs) bin install clean;
+all: $(temp_dirs) bin;
 
 objs: $(objects);
 
@@ -154,8 +129,10 @@ lib: $(libraries);
 
 bin: lib $(targets);
 
-install:
+install: $(prod_dirs)
 	cp ${incfiles} $(incdir)
+	cp -rf ${libdir} $(INSTALLDIR)/.
+	cp -rf ${bindir} $(INSTALLDIR)/.
 
 print:
 	@echo	"bindir    = $(bindir)"
@@ -170,11 +147,9 @@ print:
 	@echo	"CPPFLAGS  = $(CPPFLAGS)"
 
 clean: userclean
-	$(quiet)$(RM) -r $(temp_dirs)
+	$(quiet)$(RM) $(objects) $(libraries) $(targets)
 
 cleanall: clean userclean
-	$(quiet)$(RM) -r $(temp_dirs)
-
 
 # Directory structure
 $(prod_dirs) $(temp_dirs):
@@ -191,7 +166,6 @@ $(libdir)/lib%.$(LIBEXTNS):
 $(bindir)/%:
 	@echo "[LT] Linking target $*"
 	$(quiet)$(LX) $(DEFINES) $(tgtobjs_$*) $(linkflags_$*) $(CXXFLAGS) -o $@
-
 
 # Objects for C++ assembly files
 $(objdir)/%.o: %.cc
