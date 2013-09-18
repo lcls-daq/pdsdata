@@ -8,9 +8,39 @@
 #include <cstddef>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
-#include "pdsdata/xtc/SrcAlias.hh"
+#include "pdsdata/xtc/Src.hh"
 namespace Pds {
 namespace Alias {
+
+/** @class SrcAlias
+
+  
+*/
+
+#pragma pack(push,4)
+
+class SrcAlias {
+public:
+  enum { AliasNameMax = 31 };
+  SrcAlias()
+  {
+  }
+  SrcAlias(const Pds::Src& arg__src, const char* arg__aliasName);
+  /** The src identifier */
+  const Pds::Src& src() const { return _src; }
+  /** Alias name for src identifier */
+  const char* aliasName() const { return _aliasName; }
+  uint8_t operator <(const Alias::SrcAlias& other) const;
+  uint8_t operator ==(const Alias::SrcAlias& other) const;
+  static uint32_t _sizeof() { return ((((((0+(Pds::Src::_sizeof()))+(1*(AliasNameMax)))+1)+4)-1)/4)*4; }
+  /** Method which returns the shape (dimensions) of the data returned by aliasName() method. */
+  std::vector<int> aliasName_shape() const;
+private:
+  Pds::Src	_src;	/**< The src identifier */
+  char	_aliasName[AliasNameMax];	/**< Alias name for src identifier */
+  char	_pad1;
+};
+#pragma pack(pop)
 
 /** @class ConfigV1
 
@@ -25,7 +55,7 @@ public:
   ConfigV1()
   {
   }
-  ConfigV1(uint32_t arg__numSrcAlias, const Pds::SrcAlias* arg__srcAlias);
+  ConfigV1(uint32_t arg__numSrcAlias, const Alias::SrcAlias* arg__srcAlias);
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -42,22 +72,22 @@ public:
     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
-  ndarray<const Pds::SrcAlias, 1> srcAlias(const boost::shared_ptr<T>& owner) const { 
+  ndarray<const Alias::SrcAlias, 1> srcAlias(const boost::shared_ptr<T>& owner) const { 
     ptrdiff_t offset=4;
-    const Pds::SrcAlias* data = (const Pds::SrcAlias*)(((char*)this)+offset);
-    return make_ndarray(boost::shared_ptr<const Pds::SrcAlias>(owner, data), this->numSrcAlias());
+    const Alias::SrcAlias* data = (const Alias::SrcAlias*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const Alias::SrcAlias>(owner, data), this->numSrcAlias());
   }
   /** SrcAlias configuration objects
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const Pds::SrcAlias, 1> srcAlias() const { ptrdiff_t offset=4;
-  const Pds::SrcAlias* data = (const Pds::SrcAlias*)(((char*)this)+offset);
+  ndarray<const Alias::SrcAlias, 1> srcAlias() const { ptrdiff_t offset=4;
+  const Alias::SrcAlias* data = (const Alias::SrcAlias*)(((char*)this)+offset);
   return make_ndarray(data, this->numSrcAlias()); }
-  uint32_t _sizeof() const { return ((((4+(40*(this->numSrcAlias())))+4)-1)/4)*4; }
+  uint32_t _sizeof() const { return ((((4+(Alias::SrcAlias::_sizeof()*(this->numSrcAlias())))+4)-1)/4)*4; }
 private:
   uint32_t	_numSrcAlias;	/**< Number of alias definitions */
-  //Pds::SrcAlias	_srcAlias[this->numSrcAlias()];
+  //Alias::SrcAlias	_srcAlias[this->numSrcAlias()];
 };
 } // namespace Alias
 } // namespace Pds

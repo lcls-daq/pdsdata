@@ -22,6 +22,7 @@ namespace Pds {
     bool operator==(const Src& s) const;
     bool operator<(const Src& s) const;
 
+    static uint32_t _sizeof() { return sizeof(Src); }
   protected:
     uint32_t _log; // logical  identifier
     uint32_t _phy; // physical identifier

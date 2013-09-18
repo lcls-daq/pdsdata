@@ -731,10 +731,15 @@ public:
   {
   }
   ConfigV5(uint32_t arg__neventcodes, uint32_t arg__npulses, uint32_t arg__noutputs, const EvrData::EventCodeV5* arg__eventcodes, const EvrData::PulseConfigV3* arg__pulses, const EvrData::OutputMap* arg__output_maps, const EvrData::SequencerConfigV1& arg__seq_config);
-private:
-  ConfigV5(const ConfigV5&);
-  ConfigV5& operator=(const ConfigV5&);
-public:
+  ConfigV5(const ConfigV5& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV5& operator=(const ConfigV5& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
   uint32_t neventcodes() const { return _neventcodes; }
   uint32_t npulses() const { return _npulses; }
   uint32_t noutputs() const { return _noutputs; }
@@ -779,6 +784,7 @@ public:
   return make_ndarray(data, this->_noutputs); }
   const EvrData::SequencerConfigV1& seq_config() const { ptrdiff_t offset=((12+(40*(this->_neventcodes)))+(16*(this->_npulses)))+(4*(this->_noutputs));
   return *(const EvrData::SequencerConfigV1*)(((const char*)this)+offset); }
+  uint32_t _sizeof() const { return (((((((12+(EvrData::EventCodeV5::_sizeof()*(this->_neventcodes)))+(EvrData::PulseConfigV3::_sizeof()*(this->_npulses)))+(EvrData::OutputMap::_sizeof()*(this->_noutputs)))+(this->seq_config()._sizeof()))+4)-1)/4)*4; }
 private:
   uint32_t	_neventcodes;
   uint32_t	_npulses;
@@ -807,10 +813,15 @@ public:
   {
   }
   ConfigV6(uint32_t arg__neventcodes, uint32_t arg__npulses, uint32_t arg__noutputs, const EvrData::EventCodeV5* arg__eventcodes, const EvrData::PulseConfigV3* arg__pulses, const EvrData::OutputMapV2* arg__output_maps, const EvrData::SequencerConfigV1& arg__seq_config);
-private:
-  ConfigV6(const ConfigV6&);
-  ConfigV6& operator=(const ConfigV6&);
-public:
+  ConfigV6(const ConfigV6& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV6& operator=(const ConfigV6& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
   uint32_t neventcodes() const { return _neventcodes; }
   uint32_t npulses() const { return _npulses; }
   uint32_t noutputs() const { return _noutputs; }
@@ -855,6 +866,7 @@ public:
   return make_ndarray(data, this->_noutputs); }
   const EvrData::SequencerConfigV1& seq_config() const { ptrdiff_t offset=((12+(40*(this->_neventcodes)))+(16*(this->_npulses)))+(4*(this->_noutputs));
   return *(const EvrData::SequencerConfigV1*)(((const char*)this)+offset); }
+  uint32_t _sizeof() const { return (((((((12+(EvrData::EventCodeV5::_sizeof()*(this->_neventcodes)))+(EvrData::PulseConfigV3::_sizeof()*(this->_npulses)))+(EvrData::OutputMapV2::_sizeof()*(this->_noutputs)))+(this->seq_config()._sizeof()))+4)-1)/4)*4; }
 private:
   uint32_t	_neventcodes;
   uint32_t	_npulses;
@@ -883,10 +895,15 @@ public:
   {
   }
   ConfigV7(uint32_t arg__neventcodes, uint32_t arg__npulses, uint32_t arg__noutputs, const EvrData::EventCodeV6* arg__eventcodes, const EvrData::PulseConfigV3* arg__pulses, const EvrData::OutputMapV2* arg__output_maps, const EvrData::SequencerConfigV1& arg__seq_config);
-private:
-  ConfigV7(const ConfigV7&);
-  ConfigV7& operator=(const ConfigV7&);
-public:
+  ConfigV7(const ConfigV7& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV7& operator=(const ConfigV7& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
   uint32_t neventcodes() const { return _neventcodes; }
   uint32_t npulses() const { return _npulses; }
   uint32_t noutputs() const { return _noutputs; }
@@ -931,6 +948,7 @@ public:
   return make_ndarray(data, this->_noutputs); }
   const EvrData::SequencerConfigV1& seq_config() const { ptrdiff_t offset=((12+(44*(this->_neventcodes)))+(16*(this->_npulses)))+(4*(this->_noutputs));
   return *(const EvrData::SequencerConfigV1*)(((const char*)this)+offset); }
+  uint32_t _sizeof() const { return (((((((12+(EvrData::EventCodeV6::_sizeof()*(this->_neventcodes)))+(EvrData::PulseConfigV3::_sizeof()*(this->_npulses)))+(EvrData::OutputMapV2::_sizeof()*(this->_noutputs)))+(this->seq_config()._sizeof()))+4)-1)/4)*4; }
 private:
   uint32_t	_neventcodes;
   uint32_t	_npulses;

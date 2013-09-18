@@ -487,13 +487,19 @@ public:
   enum { TypeId = Pds::TypeId::Id_SharedPim /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
   BldDataPimV1() {}
-private:
-  BldDataPimV1(const BldDataPimV1&);
-  BldDataPimV1& operator=(const BldDataPimV1&);
-public:
+  BldDataPimV1(const BldDataPimV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataPimV1& operator=(const BldDataPimV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
   const Pulnix::TM6740ConfigV2& camConfig() const { return _camConfig; }
   const Lusi::PimImageConfigV1& pimConfig() const { return _pimConfig; }
   const Camera::FrameV1& frame() const { return _frame; }
+  uint32_t _sizeof() const { return ((((((0+(Pulnix::TM6740ConfigV2::_sizeof()))+(Lusi::PimImageConfigV1::_sizeof()))+(this->_frame._sizeof()))+4)-1)/4)*4; }
 private:
   Pulnix::TM6740ConfigV2	_camConfig;
   Lusi::PimImageConfigV1	_pimConfig;

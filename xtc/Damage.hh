@@ -18,6 +18,7 @@ namespace Pds {
     // reserve the top byte to augment user defined errors
     enum {NotUserBitsMask=0x00FFFFFF, UserBitsShift = 24};
 
+    Damage() {}
     Damage(uint32_t v) : _damage(v) {}
     uint32_t  value() const             { return _damage; }
     void     increase(Damage::Value v)  { _damage |= ((1<<v) & NotUserBitsMask); }

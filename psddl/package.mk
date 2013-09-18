@@ -15,7 +15,7 @@ libsrcs_psddl_pdsdata := $(wildcard src/*.cpp)
 .PHONY: gen pre-gen
 
 pre-gen:
-	$(quiet)rm -f $(libsrcs_psddl_pdsdata)
+	$(quiet)rm -f $(xml_src)
 
 gen: pre-gen $(xml_src)
 

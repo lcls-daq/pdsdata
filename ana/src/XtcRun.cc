@@ -58,6 +58,10 @@ unsigned XtcRun::run_number() const
 
 void XtcRun::init()
 {
+  _iCurCalib        = 0;
+  _iCurEventGlobal  = 0;
+  _iCurCalibBaseEvt = 0;
+
   for(std::list<XtcSlice*>::iterator it=_slices.begin();
       it!=_slices.end(); it++)
     (*it)->init();
@@ -132,10 +136,6 @@ void XtcRun::init()
   }
   _end = ClockTime(seconds, nanoseconds);
   _startAndEndValid = true;
-
-  _iCurCalib        = 0;
-  _iCurEventGlobal  = 0;
-  _iCurCalibBaseEvt = 0;
 }
 
 int XtcRun::numTotalEvent(int& iNumTotalEvent) {

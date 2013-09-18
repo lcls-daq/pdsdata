@@ -33,6 +33,7 @@ static unsigned eventCount = 0;
 using namespace Pds;
 using std::map;
 using std::string;
+using Pds::Alias::SrcAlias;
 
 static map<Src,string> aliasMap;
 
@@ -393,8 +394,8 @@ public:
     printf("*** Processing Alias ConfigV1 object\n");
     ndarray<const SrcAlias,1> a = aliasConfig.srcAlias();
     for(const SrcAlias* p = a.begin(); p!=a.end(); p++) {
-      printf("\t%08x.%08x\t%s\n",p->log(),p->phy(),p->aliasName());
-      aliasMap[*((Src *)p)] = string(p->aliasName(), Pds::SrcAlias::AliasNameMax);
+      printf("\t%08x.%08x\t%s\n",p->src().log(),p->src().phy(),p->aliasName());
+      aliasMap[p->src()] = string(p->aliasName(), SrcAlias::AliasNameMax);
     }      
   }
   int process(Xtc* xtc) {
