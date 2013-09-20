@@ -8,6 +8,7 @@
 #include <cstddef>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
+#include "pdsdata/psddl/acqiris.ddl.h"
 #include "pdsdata/psddl/camera.ddl.h"
 #include "pdsdata/psddl/ipimb.ddl.h"
 #include "pdsdata/psddl/lusi.ddl.h"
@@ -618,6 +619,31 @@ private:
   double	_fBgValuePerSample;	/**< Avg background value per sample in raw A/D counts */
   double	_fRelativeEnergyPerPulse;	/**< Shot by shot pulse energy in arbitrary units */
   double	_fSpare1;
+};
+#pragma pack(pop)
+
+/** @class BldDataAcqADCV1
+
+  Combined structure which includes Acqiris.ConfigV1 and 
+            Acqiris.DataDescV1 objects.
+*/
+
+#pragma pack(push,4)
+
+class BldDataAcqADCV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_SharedAcqADC /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  BldDataAcqADCV1() {}
+private:
+  BldDataAcqADCV1(const BldDataAcqADCV1&);
+  BldDataAcqADCV1& operator=(const BldDataAcqADCV1&);
+public:
+  const Acqiris::ConfigV1& config() const { return _config; }
+  const Acqiris::DataDescV1& data() const { return _data; }
+private:
+  Acqiris::ConfigV1	_config;
+  Acqiris::DataDescV1	_data;
 };
 #pragma pack(pop)
 } // namespace Bld

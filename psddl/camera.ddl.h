@@ -198,6 +198,8 @@ public:
   /** Returns pixel data array when stored data type is 16-bit (depth() is greater than 8).
                 If data type is 8-bit then empty array is returned, use data8() method in this case. */
   ndarray<const uint16_t, 2> data16() const;
+  /** Number of bytes per pixel. */
+  uint32_t depth_bytes() const { return (this->depth()+7)/8; }
   uint32_t _sizeof() const { return ((((16+(1*(this->_width*this->_height*((this->_depth+7)/8))))+4)-1)/4)*4; }
 private:
   uint32_t	_width;	/**< Number of pixels in a row. */

@@ -630,6 +630,8 @@ public:
   uint32_t height() const { return Height; }
   uint32_t depth() const { return Depth; }
   uint32_t depth_bytes() const { return DepthBytes; }
+  /** Size of the image data in bytes. */
+  uint32_t data_size() const { return this->width() * this->height() * this->depth_bytes(); }
   static uint32_t _sizeof() { return ((((8+(2*(Height)*(Width)))+4)-1)/4)*4; }
 private:
   uint32_t	_timestamp;
@@ -654,6 +656,7 @@ public:
     : _width(width), _height(height), _timestamp(timestamp), _frameCounter(frameCounter), _lostRows(lostRows)
   {
   }
+  DataV2(const Timepix::DataV1& datav1);
   DataV2() {}
   DataV2(const DataV2& other) {
     const char* src = reinterpret_cast<const char*>(&other);
@@ -689,6 +692,8 @@ public:
   return make_ndarray(data, this->height(), this->width()); }
   uint32_t depth() const { return Depth; }
   uint32_t depth_bytes() const { return (Depth+7)/8; }
+  /** Size of the image data in bytes. */
+  uint32_t data_size() const { return this->width() * this->height() * this->depth_bytes(); }
   uint32_t _sizeof() const { return ((((12+(2*(this->height())*(this->width())))+4)-1)/4)*4; }
 private:
   uint16_t	_width;	/**< Pixels per row */
