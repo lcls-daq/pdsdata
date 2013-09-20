@@ -1258,7 +1258,7 @@ public:
     : _iNumPv(numPv)
   {
   }
-  ConfigV1(int32_t arg__iNumPv, const Epics::PvConfigV1* arg__pvControls);
+  ConfigV1(int32_t arg__iNumPv, const Epics::PvConfigV1* arg__pvConfig);
   ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
@@ -1273,20 +1273,20 @@ public:
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
-  ndarray<const Epics::PvConfigV1, 1> pvControls(const boost::shared_ptr<T>& owner) const { 
+  ndarray<const Epics::PvConfigV1, 1> getPvConfig(const boost::shared_ptr<T>& owner) const { 
     ptrdiff_t offset=4;
     const Epics::PvConfigV1* data = (const Epics::PvConfigV1*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const Epics::PvConfigV1>(owner, data), this->numPv());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const Epics::PvConfigV1, 1> pvControls() const { ptrdiff_t offset=4;
+  ndarray<const Epics::PvConfigV1, 1> getPvConfig() const { ptrdiff_t offset=4;
   const Epics::PvConfigV1* data = (const Epics::PvConfigV1*)(((char*)this)+offset);
   return make_ndarray(data, this->numPv()); }
   uint32_t _sizeof() const { return ((((4+(Epics::PvConfigV1::_sizeof()*(this->numPv())))+4)-1)/4)*4; }
 private:
   int32_t	_iNumPv;
-  //Epics::PvConfigV1	_pvControls[this->numPv()];
+  //Epics::PvConfigV1	_pvConfig[this->numPv()];
 };
 #pragma pack(pop)
 } // namespace Epics

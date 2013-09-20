@@ -268,13 +268,13 @@ double
 EpicsPvTimeDouble::value(uint32_t i) const {
   return data()[i];
 }
-ConfigV1::ConfigV1(int32_t arg__iNumPv, const Epics::PvConfigV1* arg__pvControls)
+ConfigV1::ConfigV1(int32_t arg__iNumPv, const Epics::PvConfigV1* arg__pvConfig)
     : _iNumPv(arg__iNumPv)
 {
-  if (arg__pvControls and (this->numPv())) {
+  if (arg__pvConfig and (this->numPv())) {
     ptrdiff_t offset = 4;
     Epics::PvConfigV1* data = reinterpret_cast<Epics::PvConfigV1*>(((char*)this)+offset);
-    std::copy(arg__pvControls, arg__pvControls+(this->numPv()), data);
+    std::copy(arg__pvConfig, arg__pvConfig+(this->numPv()), data);
   }
 }
 } // namespace Epics
