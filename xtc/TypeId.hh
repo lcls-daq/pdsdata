@@ -82,6 +82,8 @@ namespace Pds {
       Id_ImpData,
       Id_ImpConfig,
       Id_AliasConfig,
+      Id_L3TConfig,
+      Id_L3TData,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
