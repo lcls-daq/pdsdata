@@ -6,6 +6,7 @@
 #include <vector>
 #include <iosfwd>
 #include <cstddef>
+#include <cstring>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
 namespace Pds {

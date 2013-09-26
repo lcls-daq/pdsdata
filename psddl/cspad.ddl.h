@@ -6,6 +6,7 @@
 #include <vector>
 #include <iosfwd>
 #include <cstddef>
+#include <cstring>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
 namespace Pds {
@@ -51,6 +52,7 @@ namespace CsPad {
     ExternalTriggerDrop,
     NumberOfRunModes,
   };
+std::ostream& operator<<(std::ostream& str, CsPad::RunModes enval);
 
   /** Enum specifying different data collection modes. */
   enum DataModes {
@@ -59,6 +61,7 @@ namespace CsPad {
     testData = 2,
     reserved = 3,
   };
+std::ostream& operator<<(std::ostream& str, CsPad::DataModes enval);
 
 /** @class CsPadDigitalPotsCfg
 

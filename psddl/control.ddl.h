@@ -6,6 +6,7 @@
 #include <vector>
 #include <iosfwd>
 #include <cstddef>
+#include <cstring>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
 #include "pdsdata/xtc/ClockTime.hh"
@@ -220,6 +221,109 @@ public:
   }
   /** Maximum number of events per scan. */
   uint32_t events() const { return uint32_t(this->_control & 0x3fffffff); }
+  /** returns true if the configuration uses duration control. */
+  uint8_t uses_duration() const { return uint8_t((this->_control>>30) & 0x1); }
+  /** returns true if the configuration uses events limit. */
+  uint8_t uses_events() const { return uint8_t((this->_control>>31) & 0x1); }
+  /** Maximum duration of the scan. */
+  const Pds::ClockTime& duration() const { return _duration; }
+  /** Number of PVControl objects in this configuration. */
+  uint32_t npvControls() const { return _npvControls; }
+  /** Number of PVMonitor objects in this configuration. */
+  uint32_t npvMonitors() const { return _npvMonitors; }
+  /** Number of PVLabel objects in this configuration. */
+  uint32_t npvLabels() const { return _npvLabels; }
+  /** PVControl configuration objects
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const ControlData::PVControl, 1> pvControls(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=28;
+    const ControlData::PVControl* data = (const ControlData::PVControl*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const ControlData::PVControl>(owner, data), this->npvControls());
+  }
+  /** PVControl configuration objects
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const ControlData::PVControl, 1> pvControls() const { ptrdiff_t offset=28;
+  const ControlData::PVControl* data = (const ControlData::PVControl*)(((char*)this)+offset);
+  return make_ndarray(data, this->npvControls()); }
+  /** PVMonitor configuration objects
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const ControlData::PVMonitor, 1> pvMonitors(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=28+(44*(this->npvControls()));
+    const ControlData::PVMonitor* data = (const ControlData::PVMonitor*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const ControlData::PVMonitor>(owner, data), this->npvMonitors());
+  }
+  /** PVMonitor configuration objects
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const ControlData::PVMonitor, 1> pvMonitors() const { ptrdiff_t offset=28+(44*(this->npvControls()));
+  const ControlData::PVMonitor* data = (const ControlData::PVMonitor*)(((char*)this)+offset);
+  return make_ndarray(data, this->npvMonitors()); }
+  /** PVLabel configuration objects
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const ControlData::PVLabel, 1> pvLabels(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(28+(44*(this->npvControls())))+(52*(this->npvMonitors()));
+    const ControlData::PVLabel* data = (const ControlData::PVLabel*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const ControlData::PVLabel>(owner, data), this->npvLabels());
+  }
+  /** PVLabel configuration objects
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const ControlData::PVLabel, 1> pvLabels() const { ptrdiff_t offset=(28+(44*(this->npvControls())))+(52*(this->npvMonitors()));
+  const ControlData::PVLabel* data = (const ControlData::PVLabel*)(((char*)this)+offset);
+  return make_ndarray(data, this->npvLabels()); }
+  uint32_t _sizeof() const { return ((((((28+(ControlData::PVControl::_sizeof()*(this->npvControls())))+(ControlData::PVMonitor::_sizeof()*(this->npvMonitors())))+(ControlData::PVLabel::_sizeof()*(this->npvLabels())))+4)-1)/4)*4; }
+private:
+  uint32_t	_control;
+  uint32_t	_reserved;
+  Pds::ClockTime	_duration;	/**< Maximum duration of the scan. */
+  uint32_t	_npvControls;	/**< Number of PVControl objects in this configuration. */
+  uint32_t	_npvMonitors;	/**< Number of PVMonitor objects in this configuration. */
+  uint32_t	_npvLabels;	/**< Number of PVLabel objects in this configuration. */
+  //ControlData::PVControl	_pvControls[this->npvControls()];
+  //ControlData::PVMonitor	_pvMonitors[this->npvMonitors()];
+  //ControlData::PVLabel	_pvLabels[this->npvLabels()];
+};
+
+/** @class ConfigV3
+
+  
+*/
+
+
+class ConfigV3 {
+public:
+  enum { TypeId = Pds::TypeId::Id_ControlConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 3 /**< XTC type version number */ };
+  ConfigV3()
+  {
+  }
+  ConfigV3(uint32_t arg__bf_events, uint8_t arg__bf_uses_l3t_events, uint8_t arg__bf_uses_duration, uint8_t arg__bf_uses_events, const Pds::ClockTime& arg__duration, uint32_t arg__npvControls, uint32_t arg__npvMonitors, uint32_t arg__npvLabels, const ControlData::PVControl* arg__pvControls, const ControlData::PVMonitor* arg__pvMonitors, const ControlData::PVLabel* arg__pvLabels);
+  ConfigV3(const ConfigV3& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV3& operator=(const ConfigV3& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Maximum number of events per scan. */
+  uint32_t events() const { return uint32_t(this->_control & 0x1fffffff); }
+  /** returns true if the configuration uses l3trigger events limit. */
+  uint8_t uses_l3t_events() const { return uint8_t((this->_control>>29) & 0x1); }
   /** returns true if the configuration uses duration control. */
   uint8_t uses_duration() const { return uint8_t((this->_control>>30) & 0x1); }
   /** returns true if the configuration uses events limit. */

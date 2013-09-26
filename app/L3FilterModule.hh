@@ -25,6 +25,8 @@ namespace Pds {
   public:
     virtual ~L3FilterModule() {}
   public:
+    virtual void pre_configure () {}
+    virtual void post_configure() {}
     virtual void configure(const Pds::DetInfo&   src,
 			   const Pds::TypeId&    type,
 			   void*                 payload) = 0;

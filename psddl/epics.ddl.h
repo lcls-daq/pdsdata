@@ -6,6 +6,7 @@
 #include <vector>
 #include <iosfwd>
 #include <cstddef>
+#include <cstring>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
 namespace Pds {
@@ -68,6 +69,7 @@ namespace Epics {
     DBR_CTRL_LONG = 33,
     DBR_CTRL_DOUBLE = 34,
   };
+std::ostream& operator<<(std::ostream& str, Epics::DbrTypes enval);
 
 /** @class epicsTimeStamp
 
@@ -126,6 +128,7 @@ private:
   
 */
 
+#pragma pack(push,2)
 
 class dbr_time_short {
 public:
@@ -140,13 +143,14 @@ public:
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
-  static uint32_t _sizeof() { return (((((4+(Epics::epicsTimeStamp::_sizeof()))+2)+4)-1)/4)*4; }
+  static uint32_t _sizeof() { return (((((4+(Epics::epicsTimeStamp::_sizeof()))+2)+2)-1)/2)*2; }
 private:
   int16_t	_status;
   int16_t	_severity;
   Epics::epicsTimeStamp	_stamp;
   int16_t	RISC_pad;
 };
+#pragma pack(pop)
 
 /** @class dbr_time_float
 
@@ -179,6 +183,7 @@ private:
   
 */
 
+#pragma pack(push,2)
 
 class dbr_time_enum {
 public:
@@ -193,19 +198,21 @@ public:
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
-  static uint32_t _sizeof() { return (((((4+(Epics::epicsTimeStamp::_sizeof()))+2)+4)-1)/4)*4; }
+  static uint32_t _sizeof() { return (((((4+(Epics::epicsTimeStamp::_sizeof()))+2)+2)-1)/2)*2; }
 private:
   int16_t	_status;
   int16_t	_severity;
   Epics::epicsTimeStamp	_stamp;
   int16_t	RISC_pad;
 };
+#pragma pack(pop)
 
 /** @class dbr_time_char
 
   
 */
 
+#pragma pack(push,1)
 
 class dbr_time_char {
 public:
@@ -220,7 +227,7 @@ public:
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
-  static uint32_t _sizeof() { return ((((((4+(Epics::epicsTimeStamp::_sizeof()))+2)+1)+4)-1)/4)*4; }
+  static uint32_t _sizeof() { return ((((((4+(Epics::epicsTimeStamp::_sizeof()))+2)+1)+1)-1)/1)*1; }
 private:
   int16_t	_status;
   int16_t	_severity;
@@ -228,6 +235,7 @@ private:
   int16_t	RISC_pad0;
   uint8_t	RISC_pad1;
 };
+#pragma pack(pop)
 
 /** @class dbr_time_long
 
@@ -435,6 +443,7 @@ private:
   
 */
 
+#pragma pack(push,1)
 
 class dbr_ctrl_char {
 public:
@@ -458,7 +467,7 @@ public:
   uint8_t lower_alarm_limit() const { return _lower_alarm_limit; }
   uint8_t upper_ctrl_limit() const { return _upper_ctrl_limit; }
   uint8_t lower_ctrl_limit() const { return _lower_ctrl_limit; }
-  static uint32_t _sizeof() { return (((((((((((((4+(1*(MAX_UNITS_SIZE)))+1)+1)+1)+1)+1)+1)+1)+1)+1)+2)-1)/2)*2; }
+  static uint32_t _sizeof() { return (((((((((((((4+(1*(MAX_UNITS_SIZE)))+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)-1)/1)*1; }
   /** Method which returns the shape (dimensions) of the data returned by units() method. */
   std::vector<int> units_shape() const;
 private:
@@ -475,6 +484,7 @@ private:
   uint8_t	_lower_ctrl_limit;
   uint8_t	RISC_pad;
 };
+#pragma pack(pop)
 
 /** @class dbr_ctrl_long
 
@@ -837,17 +847,17 @@ public:
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint8_t, 1> data(const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=92;
+    ptrdiff_t offset=91;
     const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint8_t>(owner, data), this->numElements());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint8_t, 1> data() const { ptrdiff_t offset=92;
+  ndarray<const uint8_t, 1> data() const { ptrdiff_t offset=91;
   const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
   return make_ndarray(data, this->numElements()); }
   uint8_t value(uint32_t i) const;
-  uint32_t _sizeof() const { return ((((((Epics::EpicsPvCtrlHeader::_sizeof())+(Epics::dbr_ctrl_char::_sizeof()))+(1*(this->numElements())))+2)-1)/2)*2; }
+  uint32_t _sizeof() const { return ((((((Epics::EpicsPvCtrlHeader::_sizeof())+(Epics::dbr_ctrl_char::_sizeof()))+(1*(this->numElements())))+1)-1)/1)*1; }
 private:
   Epics::dbr_ctrl_char	_dbr;
   //uint8_t	_data[this->numElements()];
@@ -993,17 +1003,17 @@ public:
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const int16_t, 1> data(const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=24;
+    ptrdiff_t offset=22;
     const int16_t* data = (const int16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const int16_t>(owner, data), this->numElements());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const int16_t, 1> data() const { ptrdiff_t offset=24;
+  ndarray<const int16_t, 1> data() const { ptrdiff_t offset=22;
   const int16_t* data = (const int16_t*)(((char*)this)+offset);
   return make_ndarray(data, this->numElements()); }
   int16_t value(uint32_t i) const;
-  uint32_t _sizeof() const { return (((((((Epics::EpicsPvTimeHeader::_sizeof())+2)+(Epics::dbr_time_short::_sizeof()))+(2*(this->numElements())))+4)-1)/4)*4; }
+  uint32_t _sizeof() const { return (((((((Epics::EpicsPvTimeHeader::_sizeof())+2)+(Epics::dbr_time_short::_sizeof()))+(2*(this->numElements())))+2)-1)/2)*2; }
 private:
   int16_t	pad0;
   Epics::dbr_time_short	_dbr;
@@ -1075,17 +1085,17 @@ public:
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint16_t, 1> data(const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=24;
+    ptrdiff_t offset=22;
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), this->numElements());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint16_t, 1> data() const { ptrdiff_t offset=24;
+  ndarray<const uint16_t, 1> data() const { ptrdiff_t offset=22;
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, this->numElements()); }
   uint16_t value(uint32_t i) const;
-  uint32_t _sizeof() const { return (((((((Epics::EpicsPvTimeHeader::_sizeof())+2)+(Epics::dbr_time_enum::_sizeof()))+(2*(this->numElements())))+4)-1)/4)*4; }
+  uint32_t _sizeof() const { return (((((((Epics::EpicsPvTimeHeader::_sizeof())+2)+(Epics::dbr_time_enum::_sizeof()))+(2*(this->numElements())))+2)-1)/2)*2; }
 private:
   int16_t	pad0;
   Epics::dbr_time_enum	_dbr;
@@ -1116,17 +1126,17 @@ public:
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint8_t, 1> data(const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=24;
+    ptrdiff_t offset=23;
     const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint8_t>(owner, data), this->numElements());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint8_t, 1> data() const { ptrdiff_t offset=24;
+  ndarray<const uint8_t, 1> data() const { ptrdiff_t offset=23;
   const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
   return make_ndarray(data, this->numElements()); }
   uint8_t value(uint32_t i) const;
-  uint32_t _sizeof() const { return (((((((Epics::EpicsPvTimeHeader::_sizeof())+2)+(Epics::dbr_time_char::_sizeof()))+(1*(this->numElements())))+4)-1)/4)*4; }
+  uint32_t _sizeof() const { return (((((((Epics::EpicsPvTimeHeader::_sizeof())+2)+(Epics::dbr_time_char::_sizeof()))+(1*(this->numElements())))+2)-1)/2)*2; }
 private:
   int16_t	pad0;
   Epics::dbr_time_char	_dbr;

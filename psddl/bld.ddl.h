@@ -6,6 +6,7 @@
 #include <vector>
 #include <iosfwd>
 #include <cstddef>
+#include <cstring>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
 #include "pdsdata/psddl/acqiris.ddl.h"
@@ -330,7 +331,7 @@ public:
   double ebeamCharge() const { return _fEbeamCharge; }
   /** Beam energy in MeV. */
   double ebeamL3Energy() const { return _fEbeamL3Energy; }
-  /** LTU beam position in mm. */
+  /** LTU beam position (BPMS:LTU1:720 through 750) in mm. */
   double ebeamLTUPosX() const { return _fEbeamLTUPosX; }
   /** LTU beam position in mm. */
   double ebeamLTUPosY() const { return _fEbeamLTUPosY; }
@@ -346,20 +347,20 @@ public:
   double ebeamPkCurrBC1() const { return _fEbeamPkCurrBC1; }
   /** Beam position in mm (related to beam energy). */
   double ebeamEnergyBC1() const { return _fEbeamEnergyBC1; }
-  /** Und beam x-position in mm. */
+  /** Undulator launch feedback (BPMs U4 through U10) beam x-position in mm. */
   double ebeamUndPosX() const { return _fEbeamUndPosX; }
-  /** Und beam y-position in mm. */
+  /** Undulator launch feedback beam y-position in mm. */
   double ebeamUndPosY() const { return _fEbeamUndPosY; }
-  /** Und beam x-angle in mrad. */
+  /** Undulator launch feedback beam x-angle in mrad. */
   double ebeamUndAngX() const { return _fEbeamUndAngX; }
-  /** Und beam y-angle in mrad. */
+  /** Undulator launch feedback beam y-angle in mrad. */
   double ebeamUndAngY() const { return _fEbeamUndAngY; }
   static uint32_t _sizeof() { return 116; }
 private:
   uint32_t	_uDamageMask;	/**< Damage mask. */
   double	_fEbeamCharge;	/**< Beam charge in nC. */
   double	_fEbeamL3Energy;	/**< Beam energy in MeV. */
-  double	_fEbeamLTUPosX;	/**< LTU beam position in mm. */
+  double	_fEbeamLTUPosX;	/**< LTU beam position (BPMS:LTU1:720 through 750) in mm. */
   double	_fEbeamLTUPosY;	/**< LTU beam position in mm. */
   double	_fEbeamLTUAngX;	/**< LTU beam angle in mrad. */
   double	_fEbeamLTUAngY;	/**< LTU beam angle in mrad. */
@@ -367,10 +368,10 @@ private:
   double	_fEbeamEnergyBC2;	/**< Beam position in mm (related to beam energy). */
   double	_fEbeamPkCurrBC1;	/**< Beam current in Amps. */
   double	_fEbeamEnergyBC1;	/**< Beam position in mm (related to beam energy). */
-  double	_fEbeamUndPosX;	/**< Und beam x-position in mm. */
-  double	_fEbeamUndPosY;	/**< Und beam y-position in mm. */
-  double	_fEbeamUndAngX;	/**< Und beam x-angle in mrad. */
-  double	_fEbeamUndAngY;	/**< Und beam y-angle in mrad. */
+  double	_fEbeamUndPosX;	/**< Undulator launch feedback (BPMs U4 through U10) beam x-position in mm. */
+  double	_fEbeamUndPosY;	/**< Undulator launch feedback beam y-position in mm. */
+  double	_fEbeamUndAngX;	/**< Undulator launch feedback beam x-angle in mrad. */
+  double	_fEbeamUndAngY;	/**< Undulator launch feedback beam y-angle in mrad. */
 };
 std::ostream& operator<<(std::ostream& str, Bld::BldDataEBeamV4::DamageMask enval);
 #pragma pack(pop)
