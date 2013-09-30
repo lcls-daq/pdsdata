@@ -647,6 +647,45 @@ private:
   Acqiris::DataDescV1	_data;
 };
 #pragma pack(pop)
+
+/** @class BldDataSpectrometerV0
+
+  Structure which contains image projections for spectrometers.
+*/
+
+#pragma pack(push,4)
+
+class BldDataSpectrometerV0 {
+public:
+  enum { TypeId = Pds::TypeId::Id_Spectrometer /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 0 /**< XTC type version number */ };
+  BldDataSpectrometerV0() {}
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint32_t, 1> hproj(const boost::shared_ptr<T>& owner) const { 
+    const uint32_t* data = &_hproj[0];
+    return make_ndarray(boost::shared_ptr<const uint32_t>(owner, data), 1024);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint32_t, 1> hproj() const { return make_ndarray(&_hproj[0], 1024); }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint32_t, 1> vproj(const boost::shared_ptr<T>& owner) const { 
+    const uint32_t* data = &_vproj[0];
+    return make_ndarray(boost::shared_ptr<const uint32_t>(owner, data), 256);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint32_t, 1> vproj() const { return make_ndarray(&_vproj[0], 256); }
+  static uint32_t _sizeof() { return (((((0+(4*(1024)))+(4*(256)))+4)-1)/4)*4; }
+private:
+  uint32_t	_hproj[1024];
+  uint32_t	_vproj[256];
+};
+#pragma pack(pop)
 } // namespace Bld
 } // namespace Pds
 #endif // PDS_BLD_DDL_H

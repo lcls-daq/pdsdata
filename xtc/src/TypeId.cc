@@ -91,7 +91,8 @@ const char* TypeId::name(Type type)
     "ImpConfig",               // 68
     "AliasConfig"              // 69
     "L3TConfig",               // 70
-    "L3TData"                  // 71
+    "L3TData",                 // 71
+    "Spectrometer"             // 72
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

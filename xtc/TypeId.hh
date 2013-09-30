@@ -84,6 +84,7 @@ namespace Pds {
       Id_AliasConfig,
       Id_L3TConfig,
       Id_L3TData,
+      Id_Spectrometer,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
