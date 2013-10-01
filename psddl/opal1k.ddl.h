@@ -49,7 +49,7 @@ public:
   ConfigV1()
   {
   }
-  ConfigV1(uint16_t arg__bf_offset, uint16_t arg__bf_gain, Opal1k::ConfigV1::Depth arg__bf_resol, Opal1k::ConfigV1::Binning arg__bf_vbin, Opal1k::ConfigV1::Mirroring arg__bf_mirr, uint8_t arg__bf_vremap, uint8_t arg__bf_corr, uint8_t arg__bf_lookup, uint32_t arg__defectPixelCount, const uint16_t* arg__lookup_table, const Camera::FrameCoord* arg__defectPixels);
+  ConfigV1(uint16_t arg__bf_offset, uint16_t arg__bf_gain, Opal1k::ConfigV1::Depth arg__bf_resol, Opal1k::ConfigV1::Binning arg__bf_vbin, Opal1k::ConfigV1::Mirroring arg__bf_mirr, uint8_t arg__bf_vremap, uint8_t arg__bf_lookup, uint8_t arg__bf_corr, uint32_t arg__defectPixelCount, const uint16_t* arg__lookup_table, const Camera::FrameCoord* arg__defectPixels);
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -75,10 +75,10 @@ public:
                       (left->right, top->bottom) alternated with
                       (left->right, bottom->top) pixel by pixel */
   uint8_t vertical_remapping() const { return uint8_t((this->_outputOptions>>12) & 0x1); }
-  /** correct defective pixels internally */
-  uint8_t defect_pixel_correction_enabled() const { return uint8_t((this->_outputOptions>>13) & 0x1); }
   /** apply output lookup table corrections */
-  uint8_t output_lookup_table_enabled() const { return uint8_t((this->_outputOptions>>14) & 0x1); }
+  uint8_t output_lookup_table_enabled() const { return uint8_t((this->_outputOptions>>13) & 0x1); }
+  /** correct defective pixels internally */
+  uint8_t defect_pixel_correction_enabled() const { return uint8_t((this->_outputOptions>>14) & 0x1); }
   uint32_t number_of_defect_pixels() const { return _defectPixelCount; }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
