@@ -89,7 +89,7 @@ const char* TypeId::name(Type type)
     "OrcaConfig",              // 66
     "ImpData",                 // 67
     "ImpConfig",               // 68
-    "AliasConfig"              // 69
+    "AliasConfig",             // 69
     "L3TConfig",               // 70
     "L3TData",                 // 71
     "Spectrometer"             // 72

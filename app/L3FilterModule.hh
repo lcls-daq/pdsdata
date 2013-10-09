@@ -25,8 +25,15 @@ namespace Pds {
   public:
     virtual ~L3FilterModule() {}
   public:
+    ///  Called prior to any of the configure() methods
     virtual void pre_configure () {}
+    ///  Called after all of the configure() methods
     virtual void post_configure() {}
+    /**
+     **  The data (payload) passed in the configure method is only
+     **  guaranteed to be valid during the call.  The derived class
+     **  must copy the data if it will be needed later.
+     **/
     virtual void configure(const Pds::DetInfo&   src,
 			   const Pds::TypeId&    type,
 			   void*                 payload) = 0;
@@ -36,6 +43,15 @@ namespace Pds {
     virtual void configure(const Pds::ProcInfo&  src,
 			   const Pds::TypeId&    type,
 			   void*                 payload) = 0;
+
+    ///  Called prior to any of the event() methods
+    virtual void pre_event () {}
+
+    /**
+     **  The data (payload) passed in the event method is
+     **  guaranteed to be valid until the accept method is called.
+     **  No reference to this data shall be made after that time.
+     **/
     virtual void event    (const Pds::DetInfo&   src,
 			   const Pds::TypeId&    type,
 			   void*                 payload) = 0;
@@ -46,9 +62,16 @@ namespace Pds {
 			   const Pds::TypeId&    type,
 			   void*                 payload) = 0;
   public:
-    virtual std::string name() const = 0;
-    virtual std::string configuration() const = 0;
-    virtual bool accept () { return true; }
+    ///  Return a description of the module including any software tag information
+    virtual std::string name() const = 0; 
+    ///  Return a description of the modules configuration.
+    ///  Should be sufficient to reproduce the modules configuration
+   virtual std::string configuration() const = 0;
+    ///  Return true if all required information has been received in the event() methods
+    ///  independent of the accept() result
+    virtual bool complete() { return false; }
+    ///  Return the filter decision for the event data
+    virtual bool accept  () { return true; }
   };
 };
 

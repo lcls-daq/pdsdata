@@ -42,6 +42,9 @@ int XtcIterL1Accept::process(Xtc * xtc)
     
     _pIndexList->updateReporter( *xtc, bStopUpdate );    
   }
+  else if (level == Level::Event)
+  {
+  }
   else
   {         
     printf( "XtcIterL1Accept::process(): *** Error level %s depth = %d", Level::name(level), _depth );     
