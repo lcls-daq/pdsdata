@@ -659,7 +659,21 @@ class BldDataSpectrometerV0 {
 public:
   enum { TypeId = Pds::TypeId::Id_Spectrometer /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 0 /**< XTC type version number */ };
+  BldDataSpectrometerV0(const uint32_t* arg__hproj, const uint32_t* arg__vproj)
+  {
+    if (arg__hproj) std::copy(arg__hproj, arg__hproj+(1024), &_hproj[0]);
+    if (arg__vproj) std::copy(arg__vproj, arg__vproj+(256), &_vproj[0]);
+  }
   BldDataSpectrometerV0() {}
+  BldDataSpectrometerV0(const BldDataSpectrometerV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataSpectrometerV0& operator=(const BldDataSpectrometerV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
