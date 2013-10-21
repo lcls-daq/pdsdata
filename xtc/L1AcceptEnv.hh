@@ -12,9 +12,11 @@ namespace Pds {
     L1AcceptEnv();
     L1AcceptEnv(unsigned groups);
     L1AcceptEnv(unsigned groups, L3TResult l3t);
+    L1AcceptEnv(unsigned groups, L3TResult l3t, bool trim);
   public:
     uint32_t  clientGroupMask() const;
     L3TResult l3t_result     () const;
+    bool      trimmed        () const;
   };
 };
 

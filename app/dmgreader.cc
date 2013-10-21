@@ -54,7 +54,7 @@ private:
 };
 
 void usage(char* progname) {
-  fprintf(stderr,"Usage: %s -f <filename> [-h]\n", progname);
+  fprintf(stderr,"Usage: %s -f <filename> -d <damage mask> [-h]\n", progname);
 }
 
 int main(int argc, char* argv[]) {

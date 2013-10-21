@@ -11,6 +11,7 @@ namespace Pds {
       None   = 0,
       Hist16 = 1,
       HistN  = 2,
+      Hist32 = 3,
     };
 
     CompressedPayload();

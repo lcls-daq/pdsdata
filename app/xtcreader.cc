@@ -401,8 +401,9 @@ public:
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
-    printf("%s level  offset %Ld (0x%Lx), payload size %d contains: %s: ",
-      Level::name(level), _lliOffset, _lliOffset, xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
+    printf("%s level  offset %Ld (0x%Lx), payload size %d contains %s damage 0x%x: ",
+           Level::name(level), _lliOffset, _lliOffset, xtc->sizeofPayload(), TypeId::name(xtc->contains.id()),
+           xtc->damage.value());
     long long lliOffsetPayload = _lliOffset + sizeof(Xtc);
     _lliOffset += sizeof(Xtc) + xtc->sizeofPayload();
      
