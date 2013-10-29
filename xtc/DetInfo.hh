@@ -96,7 +96,8 @@ namespace Pds {
       OrcaFl40  = 27,
       Imp       = 28,
       Epix      = 29,
-      NumDevice = 30
+      Rayonix   = 30,
+      NumDevice = 31
     };
 
     DetInfo() {}
