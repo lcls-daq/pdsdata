@@ -61,7 +61,7 @@ namespace Pds {
       MecTargetChamber = 44,
       FeeHxSpectrometer = 45,
       XrayTransportDiagnostic = 46,
-      Lamp          = 47
+      Lamp          = 47,
       NumDetector   = 48
     };
 
@@ -95,7 +95,7 @@ namespace Pds {
       USDUSB    = 26,
       OrcaFl40  = 27,
       Imp       = 28,
-      Epix      = 29
+      Epix      = 29,
       NumDevice = 30
     };
 
