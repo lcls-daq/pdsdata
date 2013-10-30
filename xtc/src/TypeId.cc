@@ -93,7 +93,7 @@ const char* TypeId::name(Type type)
     "L3TConfig",               // 70
     "L3TData",                 // 71
     "Spectrometer",            // 72
-    "Rayonix"                  // 73
+    "RayonixConfig"            // 73
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
