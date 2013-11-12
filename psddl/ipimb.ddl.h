@@ -59,6 +59,8 @@ public:
   uint32_t trigDelay() const { return _trigDelay; }
   /** Returns CapacitorValue enum for given channel number (0..3). */
   Ipimb::ConfigV1::CapacitorValue capacitorValue(uint32_t ch) const { return CapacitorValue((this->chargeAmpRange() >> (ch*2)) & 0x3); }
+  /** Returns array of CapacitorValue enums. */
+  ndarray<const uint8_t, 1> capacitorValues() const;
   static uint32_t _sizeof() { return 52; }
 private:
   uint64_t	_triggerCounter;
@@ -133,6 +135,8 @@ public:
   uint32_t adcDelay() const { return _adcDelay; }
   /** Returns CapacitorValue enum for given channel number (0..3). */
   Ipimb::ConfigV2::CapacitorValue capacitorValue(uint32_t ch) const { return CapacitorValue((this->chargeAmpRange() >> (ch*4)) & 0xf); }
+  /** Returns array of CapacitorValue enums. */
+  ndarray<const uint8_t, 1> capacitorValues() const;
   static uint32_t _sizeof() { return 60; }
 private:
   uint64_t	_triggerCounter;
