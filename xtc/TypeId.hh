@@ -86,6 +86,10 @@ namespace Pds {
       Id_L3TData,
       Id_Spectrometer,
       Id_RayonixConfig,
+      Id_EpixConfig,
+      Id_EpixElement,
+      Id_EpixSamplerConfig,
+      Id_EpixSamplerElement,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
