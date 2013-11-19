@@ -27,6 +27,7 @@
 #include "pdsdata/psddl/cspad2x2.ddl.h"
 #include "pdsdata/psddl/lusi.ddl.h"
 #include "pdsdata/psddl/alias.ddl.h"
+#include "pdsdata/psddl/rayonix.ddl.h"
 
 static unsigned eventCount = 0;
 
@@ -397,6 +398,27 @@ public:
       printf("\t%08x.%08x\t%s\n",p->src().log(),p->src().phy(),p->aliasName());
       aliasMap[p->src()] = string(p->aliasName(), SrcAlias::AliasNameMax);
     }      
+  }
+  void process(const DetInfo &, const Rayonix::ConfigV1 &rayonixConfig)
+  {
+    char lilbuf[Rayonix::ConfigV1::DeviceIDMax+20];
+    printf("*** Processing Rayonix ConfigV1 object\n");
+    snprintf(lilbuf, sizeof(lilbuf), "deviceID: '%s'", rayonixConfig.deviceID());
+    printf("\t%s\n\treadoutMode: ", lilbuf);
+    switch (rayonixConfig.readoutMode()) {
+      case Rayonix::ConfigV1::Standard: printf("Standard"); break;
+      case Rayonix::ConfigV1::HighGain: printf("HighGain"); break;
+      case Rayonix::ConfigV1::LowNoise: printf("LowNoise"); break;
+      case Rayonix::ConfigV1::EDR: printf("EDR"); break;
+      default: printf("Unrecognized (%d)", (int)rayonixConfig.readoutMode()); break;
+    }
+    printf("\n");
+    printf("\tbinning_f: %d\n", rayonixConfig.binning_f());
+    printf("\tbinning_s: %d\n", rayonixConfig.binning_s());
+    printf("\texposure: %d ms\n", rayonixConfig.exposure());
+    printf("\ttrigger: 0x%08x\n", rayonixConfig.trigger());
+    printf("\trawMode: %d\n", rayonixConfig.rawMode());
+    printf("\tdarkFlag: %d\n", rayonixConfig.darkFlag());
   }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
@@ -812,6 +834,19 @@ public:
       }
       break;
     }          
+    case (TypeId::Id_RayonixConfig):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const Rayonix::ConfigV1*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported Rayonix configuration version %d\n", version);
+        break;
+      }
+      break;
+    }
     default :
       printf("Unsupported TypeId %s (value = %d)\n", TypeId::name(xtc->contains.id()), (int) xtc->contains.id());
       break;
@@ -859,7 +894,7 @@ int main(int argc, char* argv[]) {
 
   int fd = open(xtcname, O_RDONLY | O_LARGEFILE);
   if (fd < 0) {
-    perror("Unable to open file %s\n");
+    fprintf(stderr, "Unable to open file '%s'\n", xtcname);
     exit(2);
   }
 
