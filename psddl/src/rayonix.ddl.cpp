@@ -9,6 +9,9 @@ namespace Rayonix {
 std::ostream& operator<<(std::ostream& str, Rayonix::ConfigV1::ReadoutMode enval) {
   const char* val;
   switch (enval) {
+  case Rayonix::ConfigV1::Unknown:
+    val = "Unknown";
+    break;
   case Rayonix::ConfigV1::Standard:
     val = "Standard";
     break;
@@ -18,8 +21,31 @@ std::ostream& operator<<(std::ostream& str, Rayonix::ConfigV1::ReadoutMode enval
   case Rayonix::ConfigV1::LowNoise:
     val = "LowNoise";
     break;
-  case Rayonix::ConfigV1::EDR:
-    val = "EDR";
+  case Rayonix::ConfigV1::HDR:
+    val = "HDR";
+    break;
+  default:
+    return str << "ReadoutMode(" << int(enval) << ")";
+  }
+  return str << val;
+}
+std::ostream& operator<<(std::ostream& str, Rayonix::ConfigV2::ReadoutMode enval) {
+  const char* val;
+  switch (enval) {
+  case Rayonix::ConfigV2::Unknown:
+    val = "Unknown";
+    break;
+  case Rayonix::ConfigV2::Standard:
+    val = "Standard";
+    break;
+  case Rayonix::ConfigV2::HighGain:
+    val = "HighGain";
+    break;
+  case Rayonix::ConfigV2::LowNoise:
+    val = "LowNoise";
+    break;
+  case Rayonix::ConfigV2::HDR:
+    val = "HDR";
     break;
   default:
     return str << "ReadoutMode(" << int(enval) << ")";
