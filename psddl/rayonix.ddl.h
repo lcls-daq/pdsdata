@@ -25,11 +25,10 @@ public:
   enum { Version = 1 /**< XTC type version number */ };
   enum { DeviceIDMax = 40 };
   enum ReadoutMode {
-    Unknown = 0,
-    Standard = 1,
-    HighGain = 2,
-    LowNoise = 3,
-    HDR = 4,
+    Standard = 0,
+    HighGain = 1,
+    LowNoise = 2,
+    EDR = 3,
   };
   ConfigV1()
   {
