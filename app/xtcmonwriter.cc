@@ -6,15 +6,56 @@
 
 #include "XtcMonitorClient.hh"
 #include "pdsdata/xtc/Dgram.hh"
+#include "pdsdata/xtc/TransitionId.hh"
 
 class MyMonitorClient : public Pds::XtcMonitorClient {
 public:
-  MyMonitorClient(FILE* f)  : _f(f) {}
+  MyMonitorClient(const char* fname)  : _fname(fname), _c(0) {}
   int processDgram(Pds::Dgram* dg) {
-    return fwrite(dg, sizeof(*dg)+dg->xtc.sizeofPayload(), 1, _f)==1 ? 0 : 1;
+    bool lclose=false;
+    bool lerror=false;
+    switch(dg->seq.service()) {
+    case Pds::TransitionId::Map:
+    case Pds::TransitionId::Unconfigure:
+    case Pds::TransitionId::Unmap:
+      break;
+    case Pds::TransitionId::Configure:  // cache the configuration
+      if (_c) delete[] _c;
+      _sizeof_c = sizeof(*dg)+dg->xtc.sizeofPayload();
+      _c = new char[_sizeof_c];
+      memcpy(_c,dg,_sizeof_c);
+      break;
+    case Pds::TransitionId::BeginRun:   // write the configure (and beginrun)
+      _f = fopen(_fname,"w");
+      if (!_f) {
+        perror("Error opening output xtc file");
+        lerror=true;
+        break;
+      }
+      if (fwrite(_c, _sizeof_c, 1, _f)!=1) {
+        lerror=true; 
+        lclose=true; 
+        break; 
+      }
+    default:                            // write all other transitions
+      if (fwrite(dg, sizeof(*dg)+dg->xtc.sizeofPayload(), 1, _f)!=1) {
+        lerror=true;
+        lclose=true;
+      }
+    }
+
+    lclose |= dg->seq.service()==Pds::TransitionId::EndRun;
+
+    if (lclose)
+      fclose(_f);
+
+    return lerror ? 1:0;
   }
 private:
+  const char* _fname;
   FILE* _f;
+  char* _c;
+  unsigned _sizeof_c;
 };
 
 void usage(char* progname) {
@@ -53,16 +94,8 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  FILE* f = fopen(fname,"w");
-  if (!f) {
-    perror("Error opening output xtc file");
-    return -1;
-  }
-
-  MyMonitorClient myClient(f);
+  MyMonitorClient myClient(fname);
   fprintf(stderr, "myClient returned: %d\n", myClient.run(partitionTag,index,index));
-
-  fclose(f);
 
   return 1;
 }
