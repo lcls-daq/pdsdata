@@ -9,6 +9,7 @@ namespace Pds {
   public:
     enum Value {
       DroppedContribution    = 1,
+      Uninitialized          = 11,
       OutOfOrder             = 12,
       OutOfSynch             = 13,
       UserDefined            = 14,
