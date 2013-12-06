@@ -263,6 +263,51 @@ private:
 };
 #pragma pack(pop)
 
+/** @class SrcEventCode
+
+  Describes configuration of self-contained event generator.
+*/
+
+#pragma pack(push,4)
+
+class SrcEventCode {
+public:
+  enum { DescSize = 16 };
+  enum { MaxReadoutGroup = 7 };
+  SrcEventCode()
+  {
+  }
+  SrcEventCode(uint16_t arg__u16Code, uint32_t arg__u32Period, uint32_t arg__u32MaskTriggerP, uint32_t arg__u32MaskTriggerR, const char* arg__desc, uint16_t arg__u16ReadGroup)
+    : _u16Code(arg__u16Code), _u32Period(arg__u32Period), _u32MaskTriggerP(arg__u32MaskTriggerP), _u32MaskTriggerR(arg__u32MaskTriggerR), _u16ReadGroup(arg__u16ReadGroup)
+  {
+    if (arg__desc) std::copy(arg__desc, arg__desc+(16), &_desc[0]);
+  }
+  /** Assigned eventcode. */
+  uint16_t code() const { return _u16Code; }
+  /** Repetition period in 119 MHz counts or 0 for external source. */
+  uint32_t period() const { return _u32Period; }
+  /** Bit mask of persistent pulse triggers. */
+  uint32_t maskTriggerP() const { return _u32MaskTriggerP; }
+  /** Bit mask of running pulse triggers. */
+  uint32_t maskTriggerR() const { return _u32MaskTriggerR; }
+  /** Optional description. */
+  const char* desc() const { return _desc; }
+  /** Assigned readout group. */
+  uint16_t readoutGroup() const { return _u16ReadGroup; }
+  static uint32_t _sizeof() { return (((((16+(1*(DescSize)))+2)+4)-1)/4)*4; }
+  /** Method which returns the shape (dimensions) of the data returned by desc() method. */
+  std::vector<int> desc_shape() const;
+private:
+  uint16_t	_u16Code;	/**< Assigned eventcode. */
+  uint16_t	_u16rsvd;
+  uint32_t	_u32Period;	/**< Repetition period in 119 MHz counts or 0 for external source. */
+  uint32_t	_u32MaskTriggerP;	/**< Bit mask of persistent pulse triggers. */
+  uint32_t	_u32MaskTriggerR;	/**< Bit mask of running pulse triggers. */
+  char	_desc[DescSize];	/**< Optional description. */
+  uint16_t	_u16ReadGroup;	/**< Assigned readout group. */
+};
+#pragma pack(pop)
+
 /** @class OutputMap
 
   
@@ -962,6 +1007,85 @@ private:
   //EvrData::PulseConfigV3	_pulses[this->_npulses];
   //EvrData::OutputMapV2	_output_maps[this->_noutputs];
   //EvrData::SequencerConfigV1	_seq_config;
+};
+#pragma pack(pop)
+
+/** @class SrcConfigV1
+
+  Describes configuration of self-contained event generator.
+*/
+
+#pragma pack(push,4)
+
+class SrcConfigV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_EvsConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  enum { MaxPulses = 12 /**< Maximum pulses in the system */ };
+  enum { MaxOutputs = 12 /**< Maximum outputs in the system */ };
+  SrcConfigV1()
+  {
+  }
+  SrcConfigV1(uint32_t arg__neventcodes, uint32_t arg__npulses, uint32_t arg__noutputs, const EvrData::SrcEventCode* arg__eventcodes, const EvrData::PulseConfigV3* arg__pulses, const EvrData::OutputMapV2* arg__output_maps);
+  SrcConfigV1(const SrcConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  SrcConfigV1& operator=(const SrcConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  uint32_t neventcodes() const { return _neventcodes; }
+  uint32_t npulses() const { return _npulses; }
+  uint32_t noutputs() const { return _noutputs; }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const EvrData::SrcEventCode, 1> eventcodes(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=12;
+    const EvrData::SrcEventCode* data = (const EvrData::SrcEventCode*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const EvrData::SrcEventCode>(owner, data), this->_neventcodes);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const EvrData::SrcEventCode, 1> eventcodes() const { ptrdiff_t offset=12;
+  const EvrData::SrcEventCode* data = (const EvrData::SrcEventCode*)(((char*)this)+offset);
+  return make_ndarray(data, this->_neventcodes); }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const EvrData::PulseConfigV3, 1> pulses(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=12+(36*(this->_neventcodes));
+    const EvrData::PulseConfigV3* data = (const EvrData::PulseConfigV3*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const EvrData::PulseConfigV3>(owner, data), this->_npulses);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const EvrData::PulseConfigV3, 1> pulses() const { ptrdiff_t offset=12+(36*(this->_neventcodes));
+  const EvrData::PulseConfigV3* data = (const EvrData::PulseConfigV3*)(((char*)this)+offset);
+  return make_ndarray(data, this->_npulses); }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const EvrData::OutputMapV2, 1> output_maps(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(12+(36*(this->_neventcodes)))+(16*(this->_npulses));
+    const EvrData::OutputMapV2* data = (const EvrData::OutputMapV2*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const EvrData::OutputMapV2>(owner, data), this->_noutputs);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const EvrData::OutputMapV2, 1> output_maps() const { ptrdiff_t offset=(12+(36*(this->_neventcodes)))+(16*(this->_npulses));
+  const EvrData::OutputMapV2* data = (const EvrData::OutputMapV2*)(((char*)this)+offset);
+  return make_ndarray(data, this->_noutputs); }
+  uint32_t _sizeof() const { return ((((((12+(EvrData::SrcEventCode::_sizeof()*(this->_neventcodes)))+(EvrData::PulseConfigV3::_sizeof()*(this->_npulses)))+(EvrData::OutputMapV2::_sizeof()*(this->_noutputs)))+4)-1)/4)*4; }
+private:
+  uint32_t	_neventcodes;
+  uint32_t	_npulses;
+  uint32_t	_noutputs;
+  //EvrData::SrcEventCode	_eventcodes[this->_neventcodes];
+  //EvrData::PulseConfigV3	_pulses[this->_npulses];
+  //EvrData::OutputMapV2	_output_maps[this->_noutputs];
 };
 #pragma pack(pop)
 

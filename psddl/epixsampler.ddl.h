@@ -50,6 +50,7 @@ public:
   uint32_t samplesPerChannel() const { return _samplesPerChannel; }
   uint32_t baseClockFrequency() const { return _baseClockFrequency; }
   uint8_t testPatternEnable() const { return uint8_t((this->_bitControls>>8) & 0x1); }
+  double sampleInterval_sec() const;
   static uint32_t _sizeof() { return 56; }
 private:
   uint32_t	_version;

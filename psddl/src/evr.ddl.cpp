@@ -32,6 +32,13 @@ EventCodeV6::desc_shape() const {
   shape.push_back(DescSize);
   return shape;
 }
+std::vector<int>
+SrcEventCode::desc_shape() const {
+  std::vector<int> shape;
+  shape.reserve(1);
+  shape.push_back(DescSize);
+  return shape;
+}
 uint32_t
 OutputMap::map() const {
      enum { Pulse_Offset=0, DBus_Offset=32, Prescaler_Offset=40 };    unsigned src_id = source_id();   switch(source()) {   case Pulse     : return src_id + Pulse_Offset;   case DBus      : return src_id + DBus_Offset;   case Prescaler : return src_id + Prescaler_Offset;   case Force_High: return 62;   case Force_Low : return 63;   }   return 0;
@@ -348,6 +355,25 @@ ConfigV7::ConfigV7(uint32_t arg__neventcodes, uint32_t arg__npulses, uint32_t ar
     ptrdiff_t offset = ((12+(44*(this->_neventcodes)))+(16*(this->_npulses)))+(4*(this->_noutputs));
     EvrData::OutputMapV2* data = reinterpret_cast<EvrData::OutputMapV2*>(((char*)this)+offset);
     new (data) SequencerConfigV1(arg__seq_config);
+  }
+}
+SrcConfigV1::SrcConfigV1(uint32_t arg__neventcodes, uint32_t arg__npulses, uint32_t arg__noutputs, const EvrData::SrcEventCode* arg__eventcodes, const EvrData::PulseConfigV3* arg__pulses, const EvrData::OutputMapV2* arg__output_maps)
+    : _neventcodes(arg__neventcodes), _npulses(arg__npulses), _noutputs(arg__noutputs)
+{
+  if (arg__eventcodes and (this->_neventcodes)) {
+    ptrdiff_t offset = 12;
+    EvrData::SrcEventCode* data = reinterpret_cast<EvrData::SrcEventCode*>(((char*)this)+offset);
+    std::copy(arg__eventcodes, arg__eventcodes+(this->_neventcodes), data);
+  }
+  if (arg__pulses and (this->_npulses)) {
+    ptrdiff_t offset = 12+(36*(this->_neventcodes));
+    EvrData::PulseConfigV3* data = reinterpret_cast<EvrData::PulseConfigV3*>(((char*)this)+offset);
+    std::copy(arg__pulses, arg__pulses+(this->_npulses), data);
+  }
+  if (arg__output_maps and (this->_noutputs)) {
+    ptrdiff_t offset = (12+(36*(this->_neventcodes)))+(16*(this->_npulses));
+    EvrData::OutputMapV2* data = reinterpret_cast<EvrData::OutputMapV2*>(((char*)this)+offset);
+    std::copy(arg__output_maps, arg__output_maps+(this->_noutputs), data);
   }
 }
 std::vector<int>
