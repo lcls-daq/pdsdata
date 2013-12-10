@@ -399,6 +399,29 @@ public:
       aliasMap[p->src()] = string(p->aliasName(), SrcAlias::AliasNameMax);
     }      
   }
+  void process(const DetInfo &, const Rayonix::ConfigV2 &rayonixConfig)
+  {
+    char lilbuf[Rayonix::ConfigV2::DeviceIDMax+20];
+    printf("*** Processing Rayonix ConfigV2 object\n");
+    snprintf(lilbuf, sizeof(lilbuf), "deviceID: '%s'", rayonixConfig.deviceID());
+    printf("\t%s\n\treadoutMode: ", lilbuf);
+    switch (rayonixConfig.readoutMode()) {
+      case Rayonix::ConfigV2::Unknown:  printf("Unknown"); break;
+      case Rayonix::ConfigV2::Standard: printf("Standard"); break;
+      case Rayonix::ConfigV2::HighGain: printf("HighGain"); break;
+      case Rayonix::ConfigV2::LowNoise: printf("LowNoise"); break;
+      case Rayonix::ConfigV2::HDR: printf("HDR"); break;
+      default: printf("Unrecognized (%d)", (int)rayonixConfig.readoutMode()); break;
+    }
+    printf("\n");
+    printf("\tbinning_f: %d\n", rayonixConfig.binning_f());
+    printf("\tbinning_s: %d\n", rayonixConfig.binning_s());
+    printf("\ttestPattern: %d\n", rayonixConfig.testPattern());
+    printf("\texposure: %d ms\n", rayonixConfig.exposure());
+    printf("\ttrigger: 0x%08x\n", rayonixConfig.trigger());
+    printf("\trawMode: %d\n", rayonixConfig.rawMode());
+    printf("\tdarkFlag: %d\n", rayonixConfig.darkFlag());
+  }
   void process(const DetInfo &, const Rayonix::ConfigV1 &rayonixConfig)
   {
     char lilbuf[Rayonix::ConfigV1::DeviceIDMax+20];
