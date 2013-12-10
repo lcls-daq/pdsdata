@@ -23,6 +23,7 @@
 #include "pdsdata/psddl/bld.ddl.h"
 #include "pdsdata/psddl/princeton.ddl.h"
 #include "pdsdata/psddl/cspad.ddl.h"
+#include "pdsdata/psddl/rayonix.ddl.h"
 
 using namespace Pds;
 
@@ -250,6 +251,12 @@ public:
     printf("  runDelay %x  intTime %x\n",
            c.runDelay(), c.quads(0).intTime());
   }
+  void process(const Src&, const Rayonix::ConfigV1& c) {
+    printf("*** Processing Rayonix ConfigV1 object \n");
+  }
+  void process(const Src&, const Rayonix::ConfigV2& c) {
+    printf("*** Processing Rayonix ConfigV2 object \n");
+  }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
@@ -467,6 +474,18 @@ public:
     case (TypeId::Id_CspadConfig) :
     {
       process(info, *(const CsPad::ConfigV4*)(xtc->payload()));
+      break;
+    }
+    case (TypeId::Id_RayonixConfig) :
+    {
+      switch(xtc->contains.version()) {
+      case 1:
+        process(info, *(const Rayonix::ConfigV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info, *(const Rayonix::ConfigV2*)(xtc->payload()));
+        break;
+      }
       break;
     }
     default :
