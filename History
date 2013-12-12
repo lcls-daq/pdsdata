@@ -1,3 +1,4 @@
+2013-Dec-12 salnikov	Tag V07-02-10.  Derived from psddldata tag V00-04-53 and psddl V00-12-09.  Generating implementation of EpixSampler::ConfigV1::sampleInterval_sec().
 2013-Nov-12 salnikov	Tag V07-02-07.  Derived from psddldata tag V00-04-47 and psddl V00-12-04.  Added capacitorValues method to ipimb Config types.
 2013-Sep-20 weaver	Tag V07-00-03.  Derived from psddldata tag V00-04-37 and psddl V00-08-14.  Added BldAcqADCV1 and TimePix::DataV2(DataV1&) ctor.
 2013-Sep-18 weaver	Tag V07-00-02.  Derived from psddldata tag V00-04-35.  Moved xtc/SrcAlias to psddl/alias.ddl.h.
