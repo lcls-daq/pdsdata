@@ -864,6 +864,9 @@ public:
       case 1:
         process(info, *(const Rayonix::ConfigV1*)(xtc->payload()));
         break;
+      case 2:
+        process(info, *(const Rayonix::ConfigV2*)(xtc->payload()));
+        break;
       default:
         printf("Unsupported Rayonix configuration version %d\n", version);
         break;
