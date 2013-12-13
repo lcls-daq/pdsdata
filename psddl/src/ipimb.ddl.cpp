@@ -8,7 +8,7 @@ namespace Pds {
 namespace Ipimb {
 ndarray<const uint8_t, 1>
 ConfigV1::capacitorValues() const {
-                   /* return type is actually ndarray<uint8_t, 1> (at least for now) */                 ndarray<uint8_t, 1> cap = make_ndarray<uint8_t>(4);                 for (int ch = 0; ch != 4; ++ ch) {                   cap[ch] = uint8_t((this->chargeAmpRange() >> (ch*4)) & 0xf);                 }                 return cap;
+                   /* return type is actually ndarray<uint8_t, 1> (at least for now) */                 ndarray<uint8_t, 1> cap = make_ndarray<uint8_t>(4);                 for (int ch = 0; ch != 4; ++ ch) {                   cap[ch] = uint8_t((this->chargeAmpRange() >> (ch*2)) & 0x3);                 }                 return cap;
 }
 std::ostream& operator<<(std::ostream& str, Ipimb::ConfigV1::CapacitorValue enval) {
   const char* val;

@@ -8,7 +8,7 @@ namespace Pds {
 namespace Andor {
 uint32_t
 ConfigV1::frameSize() const {
-  return sizeof(FrameV1) + this->numPixels()*2;
+  return 12 + this->numPixels()*2;
 }
 std::ostream& operator<<(std::ostream& str, Andor::ConfigV1::EnumFanMode enval) {
   const char* val;
