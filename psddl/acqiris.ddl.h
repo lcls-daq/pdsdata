@@ -705,25 +705,23 @@ public:
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
     return *this;
   }
-  /** Access TDC data items. The data_shape() method should be used to 
-            obtain the number of elements.
+  /** Access TDC data items.
 
     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
-  ndarray<const Acqiris::TdcDataV1_Item, 1> data(const boost::shared_ptr<T>& owner) const { 
+  ndarray<const Acqiris::TdcDataV1_Item, 1> data(const boost::shared_ptr<T>& owner, uint32_t dim0) const { 
     ptrdiff_t offset=0;
     const Acqiris::TdcDataV1_Item* data = (const Acqiris::TdcDataV1_Item*)(((char*)this)+offset);
-    return make_ndarray(boost::shared_ptr<const Acqiris::TdcDataV1_Item>(owner, data), 0);
+    return make_ndarray(boost::shared_ptr<const Acqiris::TdcDataV1_Item>(owner, data), dim0);
   }
-  /** Access TDC data items. The data_shape() method should be used to 
-            obtain the number of elements.
+  /** Access TDC data items.
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const Acqiris::TdcDataV1_Item, 1> data() const { ptrdiff_t offset=0;
+  ndarray<const Acqiris::TdcDataV1_Item, 1> data(uint32_t dim0) const { ptrdiff_t offset=0;
   const Acqiris::TdcDataV1_Item* data = (const Acqiris::TdcDataV1_Item*)(((char*)this)+offset);
-  return make_ndarray(data, 0); }
+  return make_ndarray(data, dim0); }
   static uint32_t _sizeof() { return ~uint32_t(0); }
 private:
   //Acqiris::TdcDataV1_Item	_data[None];

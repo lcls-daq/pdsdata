@@ -52,10 +52,11 @@ public:
   void process(const DetInfo&, const Acqiris::ConfigV1&) {
     printf("*** Processing Acqiris config object\n");
   }
-  void process(const DetInfo& i, const Acqiris::TdcDataV1& d) {
+  void process(const DetInfo& i, const Acqiris::TdcDataV1& d, uint32_t payloadSize) {
     printf("*** Processing acqiris TDC data object for %s\n",
      DetInfo::name(i));
-    ndarray<const Acqiris::TdcDataV1_Item,1> a = d.data();
+    unsigned nItems = payloadSize / sizeof(Acqiris::TdcDataV1_Item);
+    ndarray<const Acqiris::TdcDataV1_Item,1> a = d.data(nItems);
     for(unsigned j=0; j<a.shape()[0]; j++) {
       if (a[j].source() == Acqiris::TdcDataV1_Item::AuxIO &&
           static_cast<const Acqiris::TdcDataV1Marker&>(a[j]).type() < Acqiris::TdcDataV1Marker::AuxIOMarker) 
@@ -502,7 +503,8 @@ public:
       process(info, *(const Acqiris::TdcConfigV1*)(xtc->payload()));
       break;
     case (TypeId::Id_AcqTdcData) :
-      process(info, *(const Acqiris::TdcDataV1*)(xtc->payload()));
+      // TdcDataV1 need extra info (XTC size) to get the number of items in it
+      process(info, *(const Acqiris::TdcDataV1*)(xtc->payload()), xtc->sizeofPayload());
       break;
     case (TypeId::Id_IpimbData) :
       {
