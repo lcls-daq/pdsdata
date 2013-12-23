@@ -23,10 +23,8 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_L3TConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint32_t arg__module_id_len, uint32_t arg__desc_len, const char* arg__module_id, const char* arg__desc);
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -74,13 +72,11 @@ class DataV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_L3TData /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  DataV1()
-  {
-  }
   DataV1(uint32_t arg__accept)
     : _accept(arg__accept)
   {
   }
+  DataV1() {}
   DataV1(const DataV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

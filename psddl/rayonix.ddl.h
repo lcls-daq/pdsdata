@@ -30,14 +30,12 @@ public:
     LowNoise = 2,
     EDR = 3,
   };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint8_t arg__binning_f, uint8_t arg__binning_s, uint32_t arg__exposure, uint32_t arg__trigger, uint16_t arg__rawMode, uint16_t arg__darkFlag, Rayonix::ConfigV1::ReadoutMode arg__readoutMode, const char* arg__deviceID)
     : _binning_f(arg__binning_f), _binning_s(arg__binning_s), _exposure(arg__exposure), _trigger(arg__trigger), _rawMode(arg__rawMode), _darkFlag(arg__darkFlag), _readoutMode(arg__readoutMode)
   {
     if (arg__deviceID) std::copy(arg__deviceID, arg__deviceID+(40), &_deviceID[0]);
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -89,14 +87,12 @@ public:
     LowNoise = 3,
     HDR = 4,
   };
-  ConfigV2()
-  {
-  }
   ConfigV2(uint8_t arg__binning_f, uint8_t arg__binning_s, int16_t arg__testPattern, uint32_t arg__exposure, uint32_t arg__trigger, uint16_t arg__rawMode, uint16_t arg__darkFlag, Rayonix::ConfigV2::ReadoutMode arg__readoutMode, const char* arg__deviceID)
     : _binning_f(arg__binning_f), _binning_s(arg__binning_s), _testPattern(arg__testPattern), _exposure(arg__exposure), _trigger(arg__trigger), _rawMode(arg__rawMode), _darkFlag(arg__darkFlag), _readoutMode(arg__readoutMode)
   {
     if (arg__deviceID) std::copy(arg__deviceID, arg__deviceID+(40), &_deviceID[0]);
   }
+  ConfigV2() {}
   ConfigV2(const ConfigV2& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

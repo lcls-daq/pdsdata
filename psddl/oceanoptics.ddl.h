@@ -23,9 +23,6 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_OceanOpticsConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1()
-  {
-  }
   ConfigV1(float f32ExposureTime)
     : _f32ExposureTime(f32ExposureTime)
   {
@@ -36,6 +33,7 @@ public:
     if (arg__lfWaveLenCalibCoeff) std::copy(arg__lfWaveLenCalibCoeff, arg__lfWaveLenCalibCoeff+(4), &_lfWaveLenCalibCoeff[0]);
     if (arg__lfNonlinCorrectCoeff) std::copy(arg__lfNonlinCorrectCoeff, arg__lfNonlinCorrectCoeff+(8), &_lfNonlinCorrectCoeff[0]);
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -85,13 +83,11 @@ private:
 
 class timespec64 {
 public:
-  timespec64()
-  {
-  }
   timespec64(uint64_t arg__tv_sec, uint64_t arg__tv_nsec)
     : _tv_sec(arg__tv_sec), _tv_nsec(arg__tv_nsec)
   {
   }
+  timespec64() {}
   uint64_t tv_sec() const { return _tv_sec; }
   uint64_t tv_nsec() const { return _tv_nsec; }
   static uint32_t _sizeof() { return 16; }
@@ -145,7 +141,10 @@ public:
   int8_t numSpectraInData() const { return _i8NumSpectraInData; }
   int8_t numSpectraInQueue() const { return _i8NumSpectraInQueue; }
   int8_t numSpectraUnused() const { return _i8NumSpectraUnused; }
-  double durationOfFrame() const { return this->timeFrameEnd().tv_sec() - this->timeFrameStart().tv_sec() + (this->timeFrameEnd().tv_nsec() - this->timeFrameStart().tv_nsec()) * 1e-9; }
+  double durationOfFrame() const { 
+    return this->timeFrameEnd().tv_sec() - this->timeFrameStart().tv_sec() + 
+	(this->timeFrameEnd().tv_nsec() - this->timeFrameStart().tv_nsec()) * 1e-9; 
+ }
   double nonlinerCorrected(const OceanOptics::ConfigV1& cfg, uint32_t iPixel) const;
   static uint32_t _sizeof() { return (((((((((((((((0+(2*(iNumPixels)))+8)+8)+8)+(OceanOptics::timespec64::_sizeof()))+(OceanOptics::timespec64::_sizeof()))+(OceanOptics::timespec64::_sizeof()))+4)+1)+1)+1)+1)+4)-1)/4)*4; }
 private:

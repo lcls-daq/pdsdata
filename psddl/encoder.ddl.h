@@ -92,13 +92,11 @@ public:
     X4,
     QUAD_END,
   };
-  ConfigV2()
-  {
-  }
   ConfigV2(uint32_t arg__chan_mask, Encoder::ConfigV2::count_mode_type arg__count_mode, Encoder::ConfigV2::quad_mode arg__quadrature_mode, uint32_t arg__input_num, uint32_t arg__input_rising, uint32_t arg__ticks_per_sec)
     : _chan_mask(arg__chan_mask), _count_mode(arg__count_mode), _quadrature_mode(arg__quadrature_mode), _input_num(arg__input_num), _input_rising(arg__input_rising), _ticks_per_sec(arg__ticks_per_sec)
   {
   }
+  ConfigV2() {}
   ConfigV2(const ConfigV2& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -167,14 +165,12 @@ public:
   enum { TypeId = Pds::TypeId::Id_EncoderData /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 2 /**< XTC type version number */ };
   enum { NEncoders = 3 /**< Number of encoders. */ };
-  DataV2()
-  {
-  }
   DataV2(uint32_t arg__33mhz_timestamp, const uint32_t* arg__encoder_count)
     : _33mhz_timestamp(arg__33mhz_timestamp)
   {
     if (arg__encoder_count) std::copy(arg__encoder_count, arg__encoder_count+(3), &_encoder_count[0]);
   }
+  DataV2() {}
   DataV2(const DataV2& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

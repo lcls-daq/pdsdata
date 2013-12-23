@@ -12,7 +12,12 @@ ConfigV1::ConfigV1(uint32_t arg__version, uint32_t arg__runTrigDelay, uint32_t a
 }
 double
 ConfigV1::sampleInterval_sec() const {
-                   double v=0;                 for (unsigned r=baseClockFrequency(); r!=0; r>>=4)                   v += 10*(r & 0xf);                 return double(adcClkHalfT())*2.e-3/v;
+  
+    double v=0;
+    for (unsigned r=baseClockFrequency(); r!=0; r>>=4)
+      v += 10*(r & 0xf);
+    return double(adcClkHalfT())*2.e-3/v;
+
 }
 } // namespace EpixSampler
 } // namespace Pds

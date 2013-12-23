@@ -23,16 +23,14 @@ namespace Alias {
 class SrcAlias {
 public:
   enum { AliasNameMax = 31 };
-  SrcAlias()
-  {
-  }
   SrcAlias(const Pds::Src& arg__src, const char* arg__aliasName);
+  SrcAlias() {}
   /** The src identifier */
   const Pds::Src& src() const { return _src; }
   /** Alias name for src identifier */
   const char* aliasName() const { return _aliasName; }
-  uint8_t operator <(const Alias::SrcAlias& other) const;
-  uint8_t operator ==(const Alias::SrcAlias& other) const;
+  uint8_t operator<(const Alias::SrcAlias& other) const;
+  uint8_t operator==(const Alias::SrcAlias& other) const;
   static uint32_t _sizeof() { return ((((((0+(Pds::Src::_sizeof()))+(1*(AliasNameMax)))+1)+4)-1)/4)*4; }
   /** Method which returns the shape (dimensions) of the data returned by aliasName() method. */
   std::vector<int> aliasName_shape() const;
@@ -53,10 +51,8 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_AliasConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint32_t arg__numSrcAlias, const Alias::SrcAlias* arg__srcAlias);
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

@@ -23,13 +23,11 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_FliConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, uint8_t arg__u8GainIndex, uint8_t arg__u8ReadoutSpeedIndex, uint16_t arg__u16ExposureEventCode, uint32_t arg__u32NumDelayShots)
     : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _u8GainIndex(arg__u8GainIndex), _u8ReadoutSpeedIndex(arg__u8ReadoutSpeedIndex), _u16ExposureEventCode(arg__u16ExposureEventCode), _u32NumDelayShots(arg__u32NumDelayShots)
   {
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -58,7 +56,9 @@ public:
   /** calculate frame Y size in pixels based on the current ROI and binning settings */
   uint32_t numPixelsY() const { return (this->height() + this->binY() - 1) / this->binY(); }
   /** calculate total frame size in pixels based on the current ROI and binning settings */
-  uint32_t numPixels() const { return ((this->width() + this->binX() - 1)/ this->binX())*((this->height() + this->binY() - 1)/ this->binY()); }
+  uint32_t numPixels() const { 
+    return ((this->width() + this->binX() - 1)/ this->binX())*((this->height() + this->binY() - 1)/ this->binY()); 
+ }
   static uint32_t _sizeof() { return 40; }
 private:
   uint32_t	_uWidth;

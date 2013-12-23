@@ -80,13 +80,11 @@ std::ostream& operator<<(std::ostream& str, Epics::DbrTypes enval);
 
 class epicsTimeStamp {
 public:
-  epicsTimeStamp()
-  {
-  }
   epicsTimeStamp(uint32_t arg__secPastEpoch, uint32_t arg__nsec)
     : _secPastEpoch(arg__secPastEpoch), _nsec(arg__nsec)
   {
   }
+  epicsTimeStamp() {}
   /** Seconds since Jan 1, 1990 00:00 UTC */
   uint32_t sec() const { return _secPastEpoch; }
   /** Nanoseconds within second. */
@@ -106,13 +104,11 @@ private:
 class dbr_time_string {
 public:
   enum { DBR_TYPE_ID = DBR_TIME_STRING };
-  dbr_time_string()
-  {
-  }
   dbr_time_string(int16_t status, int16_t severity, const Epics::epicsTimeStamp& stamp)
     : _status(status), _severity(severity), _stamp(stamp)
   {
   }
+  dbr_time_string() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
@@ -133,13 +129,11 @@ private:
 class dbr_time_short {
 public:
   enum { DBR_TYPE_ID = DBR_TIME_SHORT };
-  dbr_time_short()
-  {
-  }
   dbr_time_short(int16_t status, int16_t severity, const Epics::epicsTimeStamp& stamp)
     : _status(status), _severity(severity), _stamp(stamp), RISC_pad(0)
   {
   }
+  dbr_time_short() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
@@ -161,13 +155,11 @@ private:
 class dbr_time_float {
 public:
   enum { DBR_TYPE_ID = DBR_TIME_FLOAT };
-  dbr_time_float()
-  {
-  }
   dbr_time_float(int16_t status, int16_t severity, const Epics::epicsTimeStamp& stamp)
     : _status(status), _severity(severity), _stamp(stamp)
   {
   }
+  dbr_time_float() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
@@ -188,13 +180,11 @@ private:
 class dbr_time_enum {
 public:
   enum { DBR_TYPE_ID = DBR_TIME_ENUM };
-  dbr_time_enum()
-  {
-  }
   dbr_time_enum(int16_t status, int16_t severity, const Epics::epicsTimeStamp& stamp)
     : _status(status), _severity(severity), _stamp(stamp), RISC_pad(0)
   {
   }
+  dbr_time_enum() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
@@ -217,13 +207,11 @@ private:
 class dbr_time_char {
 public:
   enum { DBR_TYPE_ID = DBR_TIME_CHAR };
-  dbr_time_char()
-  {
-  }
   dbr_time_char(int16_t status, int16_t severity, const Epics::epicsTimeStamp& stamp)
     : _status(status), _severity(severity), _stamp(stamp), RISC_pad1(0)
   {
   }
+  dbr_time_char() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
@@ -246,13 +234,11 @@ private:
 class dbr_time_long {
 public:
   enum { DBR_TYPE_ID = DBR_TIME_LONG };
-  dbr_time_long()
-  {
-  }
   dbr_time_long(int16_t status, int16_t severity, const Epics::epicsTimeStamp& stamp)
     : _status(status), _severity(severity), _stamp(stamp)
   {
   }
+  dbr_time_long() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
@@ -272,13 +258,11 @@ private:
 class dbr_time_double {
 public:
   enum { DBR_TYPE_ID = DBR_TIME_DOUBLE };
-  dbr_time_double()
-  {
-  }
   dbr_time_double(int16_t status, int16_t severity, const Epics::epicsTimeStamp& stamp)
     : _status(status), _severity(severity), _stamp(stamp), RISC_pad(0)
   {
   }
+  dbr_time_double() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const Epics::epicsTimeStamp& stamp() const { return _stamp; }
@@ -299,13 +283,11 @@ private:
 class dbr_sts_string {
 public:
   enum { DBR_TYPE_ID = DBR_CTRL_STRING };
-  dbr_sts_string()
-  {
-  }
   dbr_sts_string(int16_t status, int16_t severity)
     : _status(status), _severity(severity)
   {
   }
+  dbr_sts_string() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   static uint32_t _sizeof() { return 4; }
@@ -323,14 +305,12 @@ private:
 class dbr_ctrl_short {
 public:
   enum { DBR_TYPE_ID = DBR_CTRL_SHORT };
-  dbr_ctrl_short()
-  {
-  }
   dbr_ctrl_short(int16_t status, int16_t severity, const char* units, int16_t upper_disp_limit, int16_t lower_disp_limit, int16_t upper_alarm_limit, int16_t upper_warning_limit, int16_t lower_warning_limit, int16_t lower_alarm_limit, int16_t upper_ctrl_limit, int16_t lower_ctrl_limit)
     : _status(status), _severity(severity), _upper_disp_limit(upper_disp_limit), _lower_disp_limit(lower_disp_limit), _upper_alarm_limit(upper_alarm_limit), _upper_warning_limit(upper_warning_limit), _lower_warning_limit(lower_warning_limit), _lower_alarm_limit(lower_alarm_limit), _upper_ctrl_limit(upper_ctrl_limit), _lower_ctrl_limit(lower_ctrl_limit)
   {
     if (units) std::copy(units, units+(8), &_units[0]);
   }
+  dbr_ctrl_short() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const char* units() const { return _units; }
@@ -368,14 +348,12 @@ private:
 class dbr_ctrl_float {
 public:
   enum { DBR_TYPE_ID = DBR_CTRL_FLOAT };
-  dbr_ctrl_float()
-  {
-  }
   dbr_ctrl_float(int16_t status, int16_t severity, int16_t precision, const char* units, float upper_disp_limit, float lower_disp_limit, float upper_alarm_limit, float upper_warning_limit, float lower_warning_limit, float lower_alarm_limit, float upper_ctrl_limit, float lower_ctrl_limit)
     : _status(status), _severity(severity), _precision(precision), RISC_pad(0), _upper_disp_limit(upper_disp_limit), _lower_disp_limit(lower_disp_limit), _upper_alarm_limit(upper_alarm_limit), _upper_warning_limit(upper_warning_limit), _lower_warning_limit(lower_warning_limit), _lower_alarm_limit(lower_alarm_limit), _upper_ctrl_limit(upper_ctrl_limit), _lower_ctrl_limit(lower_ctrl_limit)
   {
     if (units) std::copy(units, units+(8), &_units[0]);
   }
+  dbr_ctrl_float() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   int16_t precision() const { return _precision; }
@@ -416,14 +394,12 @@ private:
 class dbr_ctrl_enum {
 public:
   enum { DBR_TYPE_ID = DBR_CTRL_ENUM };
-  dbr_ctrl_enum()
-  {
-  }
   dbr_ctrl_enum(int16_t status, int16_t severity, int16_t no_str, const char* strings)
     : _status(status), _severity(severity), _no_str(no_str)
   {
     if (strings) std::copy(strings, strings+(416), &_strs[0][0]);
   }
+  dbr_ctrl_enum() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   int16_t no_str() const { return _no_str; }
@@ -448,14 +424,12 @@ private:
 class dbr_ctrl_char {
 public:
   enum { DBR_TYPE_ID = DBR_CTRL_CHAR };
-  dbr_ctrl_char()
-  {
-  }
   dbr_ctrl_char(int16_t status, int16_t severity, const char* units, uint8_t upper_disp_limit, uint8_t lower_disp_limit, uint8_t upper_alarm_limit, uint8_t upper_warning_limit, uint8_t lower_warning_limit, uint8_t lower_alarm_limit, uint8_t upper_ctrl_limit, uint8_t lower_ctrl_limit)
     : _status(status), _severity(severity), _upper_disp_limit(upper_disp_limit), _lower_disp_limit(lower_disp_limit), _upper_alarm_limit(upper_alarm_limit), _upper_warning_limit(upper_warning_limit), _lower_warning_limit(lower_warning_limit), _lower_alarm_limit(lower_alarm_limit), _upper_ctrl_limit(upper_ctrl_limit), _lower_ctrl_limit(lower_ctrl_limit), RISC_pad(0)
   {
     if (units) std::copy(units, units+(8), &_units[0]);
   }
+  dbr_ctrl_char() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const char* units() const { return _units; }
@@ -495,14 +469,12 @@ private:
 class dbr_ctrl_long {
 public:
   enum { DBR_TYPE_ID = DBR_CTRL_LONG };
-  dbr_ctrl_long()
-  {
-  }
   dbr_ctrl_long(int16_t status, int16_t severity, const char* units, int32_t upper_disp_limit, int32_t lower_disp_limit, int32_t upper_alarm_limit, int32_t upper_warning_limit, int32_t lower_warning_limit, int32_t lower_alarm_limit, int32_t upper_ctrl_limit, int32_t lower_ctrl_limit)
     : _status(status), _severity(severity), _upper_disp_limit(upper_disp_limit), _lower_disp_limit(lower_disp_limit), _upper_alarm_limit(upper_alarm_limit), _upper_warning_limit(upper_warning_limit), _lower_warning_limit(lower_warning_limit), _lower_alarm_limit(lower_alarm_limit), _upper_ctrl_limit(upper_ctrl_limit), _lower_ctrl_limit(lower_ctrl_limit)
   {
     if (units) std::copy(units, units+(8), &_units[0]);
   }
+  dbr_ctrl_long() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   const char* units() const { return _units; }
@@ -540,14 +512,12 @@ private:
 class dbr_ctrl_double {
 public:
   enum { DBR_TYPE_ID = DBR_CTRL_DOUBLE };
-  dbr_ctrl_double()
-  {
-  }
   dbr_ctrl_double(int16_t status, int16_t severity, int16_t precision, const char* units, double upper_disp_limit, double lower_disp_limit, double upper_alarm_limit, double upper_warning_limit, double lower_warning_limit, double lower_alarm_limit, double upper_ctrl_limit, double lower_ctrl_limit)
     : _status(status), _severity(severity), _precision(precision), RISC_pad0(0), _upper_disp_limit(upper_disp_limit), _lower_disp_limit(lower_disp_limit), _upper_alarm_limit(upper_alarm_limit), _upper_warning_limit(upper_warning_limit), _lower_warning_limit(lower_warning_limit), _lower_alarm_limit(lower_alarm_limit), _upper_ctrl_limit(upper_ctrl_limit), _lower_ctrl_limit(lower_ctrl_limit)
   {
     if (units) std::copy(units, units+(8), &_units[0]);
   }
+  dbr_ctrl_double() {}
   int16_t status() const { return _status; }
   int16_t severity() const { return _severity; }
   int16_t precision() const { return _precision; }

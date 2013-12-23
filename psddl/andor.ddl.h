@@ -30,13 +30,11 @@ public:
     ENUM_FAN_ACQOFF = 3,
     ENUM_FAN_NUM = 4,
   };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, Andor::ConfigV1::EnumFanMode arg__u8FanMode, uint8_t arg__u8BaselineClamp, uint8_t arg__u8HighCapacity, uint8_t arg__u8GainIndex, uint16_t arg__u16ReadoutSpeedIndex, uint16_t arg__u16ExposureEventCode, uint32_t arg__u32NumDelayShots)
     : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _u8FanMode(arg__u8FanMode), _u8BaselineClamp(arg__u8BaselineClamp), _u8HighCapacity(arg__u8HighCapacity), _u8GainIndex(arg__u8GainIndex), _u16ReadoutSpeedIndex(arg__u16ReadoutSpeedIndex), _u16ExposureEventCode(arg__u16ExposureEventCode), _u32NumDelayShots(arg__u32NumDelayShots)
   {
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

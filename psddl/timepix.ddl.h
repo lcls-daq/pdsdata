@@ -397,9 +397,6 @@ public:
     TimepixMode_Counting = 0,
     TimepixMode_TOT = 1,
   };
-  ConfigV3()
-  {
-  }
   ConfigV3(Timepix::ConfigV3::ReadoutSpeed arg__readoutSpeed, Timepix::ConfigV3::TimepixMode arg__timepixMode, int32_t arg__timepixSpeed, int32_t arg__dac0Ikrum, int32_t arg__dac0Disc, int32_t arg__dac0Preamp, int32_t arg__dac0BufAnalogA, int32_t arg__dac0BufAnalogB, int32_t arg__dac0Hist, int32_t arg__dac0ThlFine, int32_t arg__dac0ThlCourse, int32_t arg__dac0Vcas, int32_t arg__dac0Fbk, int32_t arg__dac0Gnd, int32_t arg__dac0Ths, int32_t arg__dac0BiasLvds, int32_t arg__dac0RefLvds, int32_t arg__dac1Ikrum, int32_t arg__dac1Disc, int32_t arg__dac1Preamp, int32_t arg__dac1BufAnalogA, int32_t arg__dac1BufAnalogB, int32_t arg__dac1Hist, int32_t arg__dac1ThlFine, int32_t arg__dac1ThlCourse, int32_t arg__dac1Vcas, int32_t arg__dac1Fbk, int32_t arg__dac1Gnd, int32_t arg__dac1Ths, int32_t arg__dac1BiasLvds, int32_t arg__dac1RefLvds, int32_t arg__dac2Ikrum, int32_t arg__dac2Disc, int32_t arg__dac2Preamp, int32_t arg__dac2BufAnalogA, int32_t arg__dac2BufAnalogB, int32_t arg__dac2Hist, int32_t arg__dac2ThlFine, int32_t arg__dac2ThlCourse, int32_t arg__dac2Vcas, int32_t arg__dac2Fbk, int32_t arg__dac2Gnd, int32_t arg__dac2Ths, int32_t arg__dac2BiasLvds, int32_t arg__dac2RefLvds, int32_t arg__dac3Ikrum, int32_t arg__dac3Disc, int32_t arg__dac3Preamp, int32_t arg__dac3BufAnalogA, int32_t arg__dac3BufAnalogB, int32_t arg__dac3Hist, int32_t arg__dac3ThlFine, int32_t arg__dac3ThlCourse, int32_t arg__dac3Vcas, int32_t arg__dac3Fbk, int32_t arg__dac3Gnd, int32_t arg__dac3Ths, int32_t arg__dac3BiasLvds, int32_t arg__dac3RefLvds, int8_t arg__dacBias, int8_t arg__flags, int32_t arg__driverVersion, uint32_t arg__firmwareVersion, uint32_t arg__pixelThreshSize, const uint8_t* arg__pixelThresh, const char* arg__chip0Name, const char* arg__chip1Name, const char* arg__chip2Name, const char* arg__chip3Name, int32_t arg__chip0ID, int32_t arg__chip1ID, int32_t arg__chip2ID, int32_t arg__chip3ID)
     : _readoutSpeed(arg__readoutSpeed), _timepixMode(arg__timepixMode), _timepixSpeed(arg__timepixSpeed), _dac0Ikrum(arg__dac0Ikrum), _dac0Disc(arg__dac0Disc), _dac0Preamp(arg__dac0Preamp), _dac0BufAnalogA(arg__dac0BufAnalogA), _dac0BufAnalogB(arg__dac0BufAnalogB), _dac0Hist(arg__dac0Hist), _dac0ThlFine(arg__dac0ThlFine), _dac0ThlCourse(arg__dac0ThlCourse), _dac0Vcas(arg__dac0Vcas), _dac0Fbk(arg__dac0Fbk), _dac0Gnd(arg__dac0Gnd), _dac0Ths(arg__dac0Ths), _dac0BiasLvds(arg__dac0BiasLvds), _dac0RefLvds(arg__dac0RefLvds), _dac1Ikrum(arg__dac1Ikrum), _dac1Disc(arg__dac1Disc), _dac1Preamp(arg__dac1Preamp), _dac1BufAnalogA(arg__dac1BufAnalogA), _dac1BufAnalogB(arg__dac1BufAnalogB), _dac1Hist(arg__dac1Hist), _dac1ThlFine(arg__dac1ThlFine), _dac1ThlCourse(arg__dac1ThlCourse), _dac1Vcas(arg__dac1Vcas), _dac1Fbk(arg__dac1Fbk), _dac1Gnd(arg__dac1Gnd), _dac1Ths(arg__dac1Ths), _dac1BiasLvds(arg__dac1BiasLvds), _dac1RefLvds(arg__dac1RefLvds), _dac2Ikrum(arg__dac2Ikrum), _dac2Disc(arg__dac2Disc), _dac2Preamp(arg__dac2Preamp), _dac2BufAnalogA(arg__dac2BufAnalogA), _dac2BufAnalogB(arg__dac2BufAnalogB), _dac2Hist(arg__dac2Hist), _dac2ThlFine(arg__dac2ThlFine), _dac2ThlCourse(arg__dac2ThlCourse), _dac2Vcas(arg__dac2Vcas), _dac2Fbk(arg__dac2Fbk), _dac2Gnd(arg__dac2Gnd), _dac2Ths(arg__dac2Ths), _dac2BiasLvds(arg__dac2BiasLvds), _dac2RefLvds(arg__dac2RefLvds), _dac3Ikrum(arg__dac3Ikrum), _dac3Disc(arg__dac3Disc), _dac3Preamp(arg__dac3Preamp), _dac3BufAnalogA(arg__dac3BufAnalogA), _dac3BufAnalogB(arg__dac3BufAnalogB), _dac3Hist(arg__dac3Hist), _dac3ThlFine(arg__dac3ThlFine), _dac3ThlCourse(arg__dac3ThlCourse), _dac3Vcas(arg__dac3Vcas), _dac3Fbk(arg__dac3Fbk), _dac3Gnd(arg__dac3Gnd), _dac3Ths(arg__dac3Ths), _dac3BiasLvds(arg__dac3BiasLvds), _dac3RefLvds(arg__dac3RefLvds), _dacBias(arg__dacBias), _flags(arg__flags), _driverVersion(arg__driverVersion), _firmwareVersion(arg__firmwareVersion), _pixelThreshSize(arg__pixelThreshSize), _chip0ID(arg__chip0ID), _chip1ID(arg__chip1ID), _chip2ID(arg__chip2ID), _chip3ID(arg__chip3ID)
   {
@@ -409,6 +406,7 @@ public:
     if (arg__chip2Name) std::copy(arg__chip2Name, arg__chip2Name+(16), &_chip2Name[0]);
     if (arg__chip3Name) std::copy(arg__chip3Name, arg__chip3Name+(16), &_chip3Name[0]);
   }
+  ConfigV3() {}
   ConfigV3(const ConfigV3& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -598,13 +596,11 @@ public:
   enum { Depth = 14 };
   enum { DepthBytes = 2 };
   enum { MaxPixelValue = 11810 };
-  DataV1()
-  {
-  }
   DataV1(uint32_t timestamp, uint16_t frameCounter, uint16_t lostRows)
     : _timestamp(timestamp), _frameCounter(frameCounter), _lostRows(lostRows)
   {
   }
+  DataV1() {}
   DataV1(const DataV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

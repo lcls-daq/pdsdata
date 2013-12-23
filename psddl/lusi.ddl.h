@@ -24,14 +24,12 @@ public:
   enum { TypeId = Pds::TypeId::Id_DiodeFexConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
   enum { NRANGES = 3 };
-  DiodeFexConfigV1()
-  {
-  }
   DiodeFexConfigV1(const float* arg__base, const float* arg__scale)
   {
     if (arg__base) std::copy(arg__base, arg__base+(3), &_base[0]);
     if (arg__scale) std::copy(arg__scale, arg__scale+(3), &_scale[0]);
   }
+  DiodeFexConfigV1() {}
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
@@ -71,14 +69,12 @@ public:
   enum { TypeId = Pds::TypeId::Id_DiodeFexConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 2 /**< XTC type version number */ };
   enum { NRANGES = 16 };
-  DiodeFexConfigV2()
-  {
-  }
   DiodeFexConfigV2(const float* arg__base, const float* arg__scale)
   {
     if (arg__base) std::copy(arg__base, arg__base+(16), &_base[0]);
     if (arg__scale) std::copy(arg__scale, arg__scale+(16), &_scale[0]);
   }
+  DiodeFexConfigV2() {}
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
@@ -117,13 +113,11 @@ class DiodeFexV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_DiodeFex /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  DiodeFexV1()
-  {
-  }
   DiodeFexV1(float arg__value)
     : _value(arg__value)
   {
   }
+  DiodeFexV1() {}
   float value() const { return _value; }
   static uint32_t _sizeof() { return 4; }
 private:
@@ -190,14 +184,12 @@ public:
   enum { TypeId = Pds::TypeId::Id_IpmFexConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 2 /**< XTC type version number */ };
   enum { NCHANNELS = 4 };
-  IpmFexConfigV2()
-  {
-  }
   IpmFexConfigV2(const Lusi::DiodeFexConfigV2* arg__diode, float arg__xscale, float arg__yscale)
     : _xscale(arg__xscale), _yscale(arg__yscale)
   {
     if (arg__diode) std::copy(arg__diode, arg__diode+(4), &_diode[0]);
   }
+  IpmFexConfigV2() {}
   IpmFexConfigV2(const IpmFexConfigV2& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -239,14 +231,12 @@ public:
   enum { TypeId = Pds::TypeId::Id_IpmFex /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
   enum { NCHANNELS = 4 };
-  IpmFexV1()
-  {
-  }
   IpmFexV1(const float* arg__channel, float arg__sum, float arg__xpos, float arg__ypos)
     : _sum(arg__sum), _xpos(arg__xpos), _ypos(arg__ypos)
   {
     if (arg__channel) std::copy(arg__channel, arg__channel+(4), &_channel[0]);
   }
+  IpmFexV1() {}
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
@@ -280,13 +270,11 @@ class PimImageConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_PimImageConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  PimImageConfigV1()
-  {
-  }
   PimImageConfigV1(float arg__xscale, float arg__yscale)
     : _xscale(arg__xscale), _yscale(arg__yscale)
   {
   }
+  PimImageConfigV1() {}
   float xscale() const { return _xscale; }
   float yscale() const { return _yscale; }
   static uint32_t _sizeof() { return 8; }

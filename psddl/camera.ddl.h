@@ -20,13 +20,11 @@ namespace Camera {
 
 class FrameCoord {
 public:
-  FrameCoord()
-  {
-  }
   FrameCoord(uint16_t arg__column, uint16_t arg__row)
     : _column(arg__column), _row(arg__row)
   {
   }
+  FrameCoord() {}
   /** Column index (x value). */
   uint16_t column() const { return _column; }
   /** Row index (y value). */
@@ -81,10 +79,8 @@ public:
     GssRegionOfInterest,
     GssThreshold,
   };
-  FrameFexConfigV1()
-  {
-  }
   FrameFexConfigV1(Camera::FrameFexConfigV1::Forwarding arg__forwarding, uint32_t arg__forward_prescale, Camera::FrameFexConfigV1::Processing arg__processing, const Camera::FrameCoord& arg__roiBegin, const Camera::FrameCoord& arg__roiEnd, uint32_t arg__threshold, uint32_t arg__masked_pixel_count, const Camera::FrameCoord* arg__masked_pixel_coordinates);
+  FrameFexConfigV1() {}
   FrameFexConfigV1(const FrameFexConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -149,14 +145,12 @@ class FrameV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_Frame /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  FrameV1()
-  {
-  }
   FrameV1(uint32_t arg__width, uint32_t arg__height, uint32_t arg__depth, uint32_t arg__offset, const uint8_t* arg__pixel_data);
   FrameV1(uint32_t width, uint32_t height, uint32_t depth, uint32_t offset)
     : _width(width), _height(height), _depth(depth), _offset(offset)
   {
   }
+  FrameV1() {}
   FrameV1(const FrameV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -220,8 +214,8 @@ class TwoDGaussianV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_TwoDGaussian /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  TwoDGaussianV1();
   TwoDGaussianV1(uint64_t arg__integral, double arg__xmean, double arg__ymean, double arg__major_axis_width, double arg__minor_axis_width, double arg__major_axis_tilt);
+  TwoDGaussianV1() {}
   TwoDGaussianV1(const TwoDGaussianV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

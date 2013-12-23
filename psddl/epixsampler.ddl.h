@@ -23,10 +23,8 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_EpixSamplerConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint32_t arg__version, uint32_t arg__runTrigDelay, uint32_t arg__daqTrigDelay, uint32_t arg__daqSetting, uint32_t arg__adcClkHalfT, uint32_t arg__adcPipelineDelay, uint32_t arg__digitalCardId0, uint32_t arg__digitalCardId1, uint32_t arg__analogCardId0, uint32_t arg__analogCardId1, uint32_t arg__numberOfChannels, uint32_t arg__samplesPerChannel, uint32_t arg__baseClockFrequency, uint8_t arg__testPatternEnable);
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

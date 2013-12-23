@@ -28,13 +28,11 @@ public:
     c_100pF,
     c_10nF,
   };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint64_t arg__triggerCounter, uint64_t arg__serialID, uint16_t arg__chargeAmpRange, uint16_t arg__calibrationRange, uint32_t arg__resetLength, uint32_t arg__resetDelay, float arg__chargeAmpRefVoltage, float arg__calibrationVoltage, float arg__diodeBias, uint16_t arg__status, uint16_t arg__errors, uint16_t arg__calStrobeLength, uint32_t arg__trigDelay)
     : _triggerCounter(arg__triggerCounter), _serialID(arg__serialID), _chargeAmpRange(arg__chargeAmpRange), _calibrationRange(arg__calibrationRange), _resetLength(arg__resetLength), _resetDelay(arg__resetDelay), _chargeAmpRefVoltage(arg__chargeAmpRefVoltage), _calibrationVoltage(arg__calibrationVoltage), _diodeBias(arg__diodeBias), _status(arg__status), _errors(arg__errors), _calStrobeLength(arg__calStrobeLength), _trigDelay(arg__trigDelay)
   {
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -102,13 +100,11 @@ public:
     c_10nF,
     expert,
   };
-  ConfigV2()
-  {
-  }
   ConfigV2(uint64_t arg__triggerCounter, uint64_t arg__serialID, uint16_t arg__chargeAmpRange, uint16_t arg__calibrationRange, uint32_t arg__resetLength, uint32_t arg__resetDelay, float arg__chargeAmpRefVoltage, float arg__calibrationVoltage, float arg__diodeBias, uint16_t arg__status, uint16_t arg__errors, uint16_t arg__calStrobeLength, uint32_t arg__trigDelay, uint32_t arg__trigPsDelay, uint32_t arg__adcDelay)
     : _triggerCounter(arg__triggerCounter), _serialID(arg__serialID), _chargeAmpRange(arg__chargeAmpRange), _calibrationRange(arg__calibrationRange), _resetLength(arg__resetLength), _resetDelay(arg__resetDelay), _chargeAmpRefVoltage(arg__chargeAmpRefVoltage), _calibrationVoltage(arg__calibrationVoltage), _diodeBias(arg__diodeBias), _status(arg__status), _errors(arg__errors), _calStrobeLength(arg__calStrobeLength), _trigDelay(arg__trigDelay), _trigPsDelay(arg__trigPsDelay), _adcDelay(arg__adcDelay)
   {
   }
+  ConfigV2() {}
   ConfigV2(const ConfigV2& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -275,7 +271,12 @@ public:
   /** Value of of channel3ps() converted to Volts. */
   float channel3psVolts() const;
   /** Trigger counter value. */
-  uint64_t triggerCounter() const { return (((_triggerCounter >> 48) & 0x000000000000ffffLL) |              ((_triggerCounter >> 16) & 0x00000000ffff0000LL) |              ((_triggerCounter << 16) & 0x0000ffff00000000LL) |              ((_triggerCounter << 48) & 0xffff000000000000LL)); }
+  uint64_t triggerCounter() const { 
+    return (((_triggerCounter >> 48) & 0x000000000000ffffLL) |
+	((_triggerCounter >> 16) & 0x00000000ffff0000LL) |
+	((_triggerCounter << 16) & 0x0000ffff00000000LL) |
+	((_triggerCounter << 48) & 0xffff000000000000LL)); 
+ }
   static uint32_t _sizeof() { return 32; }
 private:
   uint64_t	_triggerCounter;

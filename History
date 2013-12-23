@@ -1,3 +1,5 @@
+2013-Dec-22 salnikov	Tag V07-02-14.  Derived from psddldata tag V01-00-00 and psddl V00-13-00.
+                                        Switching from XML-DDL to new DDL, psddl/package.mk updated, generated code should be identical except for formatting.  
 2013-Dec-22 salnikov	Tag V07-02-13.  Derived from psddldata tag V00-04-57 and psddl V00-12-14.  
                                         Method Acqiris::TdcDataV1::data() now requires an argument which defines the size of the returned array.
 2013-Dec-12 salnikov	Tag V07-02-11.  Derived from psddldata tag V00-04-55 and psddl V00-12-09.  Fixing bug in DDL definition of Ipimb::ConfigV1::capacitorValues(),

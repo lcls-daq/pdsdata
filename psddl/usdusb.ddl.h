@@ -35,14 +35,12 @@ public:
     X2,
     X4,
   };
-  ConfigV1()
-  {
-  }
   ConfigV1(const UsdUsb::ConfigV1::Count_Mode* arg__count_mode, const UsdUsb::ConfigV1::Quad_Mode* arg__quad_mode)
   {
     if (arg__count_mode) std::copy(arg__count_mode, arg__count_mode+(4), &_count_mode[0]);
     if (arg__quad_mode) std::copy(arg__quad_mode, arg__quad_mode+(4), &_quad_mode[0]);
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

@@ -56,7 +56,9 @@ public:
   /** calculate frame Y size in pixels based on the current ROI and binning settings */
   uint32_t numPixelsY() const { return (this->height()+ this->binY() - 1) / this->binY(); }
   /** calculate total frame size in pixels based on the current ROI and binning settings */
-  uint32_t numPixels() const { return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() ); }
+  uint32_t numPixels() const { 
+    return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() );
+ }
   static uint32_t _sizeof() { return 40; }
 private:
   uint32_t	_uWidth;
@@ -118,7 +120,9 @@ public:
   /** calculate frame Y size in pixels based on the current ROI and binning settings */
   uint32_t numPixelsY() const { return (this->height()+ this->binY() - 1) / this->binY(); }
   /** calculate total frame size in pixels based on the current ROI and binning settings */
-  uint32_t numPixels() const { return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() ); }
+  uint32_t numPixels() const { 
+    return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() );
+ }
   static uint32_t _sizeof() { return 40; }
 private:
   uint32_t	_uWidth;
@@ -181,7 +185,9 @@ public:
   /** calculate frame Y size in pixels based on the current ROI and binning settings */
   uint32_t numPixelsY() const { return (this->height()+ this->binY() - 1) / this->binY(); }
   /** calculate total frame size in pixels based on the current ROI and binning settings */
-  uint32_t numPixels() const { return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() ); }
+  uint32_t numPixels() const { 
+    return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() );
+ }
   static uint32_t _sizeof() { return 40; }
 private:
   uint32_t	_uWidth;
@@ -279,9 +285,6 @@ class ConfigV5 {
 public:
   enum { TypeId = Pds::TypeId::Id_PrincetonConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 5 /**< XTC type version number */ };
-  ConfigV5()
-  {
-  }
   ConfigV5(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, uint16_t arg__u16GainIndex, uint16_t arg__u16ReadoutSpeedIndex, uint32_t arg__u32MaskedHeight, uint32_t arg__u32KineticHeight, float arg__f32VsSpeed, int16_t arg__i16InfoReportInterval, uint16_t arg__u16ExposureEventCode, uint32_t arg__u32NumDelayShots)
     : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _u16GainIndex(arg__u16GainIndex), _u16ReadoutSpeedIndex(arg__u16ReadoutSpeedIndex), _u32MaskedHeight(arg__u32MaskedHeight), _u32KineticHeight(arg__u32KineticHeight), _f32VsSpeed(arg__f32VsSpeed), _i16InfoReportInterval(arg__i16InfoReportInterval), _u16ExposureEventCode(arg__u16ExposureEventCode), _u32NumDelayShots(arg__u32NumDelayShots)
   {
@@ -290,6 +293,7 @@ public:
     : _uWidth(width), _uHeight(height)
   {
   }
+  ConfigV5() {}
   ConfigV5(const ConfigV5& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -323,7 +327,9 @@ public:
   /** calculate frame Y size in pixels based on the current ROI and binning settings */
   uint32_t numPixelsY() const { return (this->height()+ this->binY() - 1) / this->binY(); }
   /** calculate total frame size in pixels based on the current ROI and binning settings */
-  uint32_t numPixels() const { return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() ); }
+  uint32_t numPixels() const { 
+    return ((this->width() + this->binX()-1)/ this->binX() )*((this->height()+ this->binY()-1)/ this->binY() );
+ }
   static uint32_t _sizeof() { return 56; }
 private:
   uint32_t	_uWidth;

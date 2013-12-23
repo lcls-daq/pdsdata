@@ -100,11 +100,11 @@ std::ostream& operator<<(std::ostream& str, Encoder::ConfigV2::quad_mode enval) 
 }
 int32_t
 DataV1::value() const {
-  return int(this->encoder_count() << 8)/256;;
+  return int(this->encoder_count() << 8)/256;
 }
 int32_t
 DataV2::value(uint32_t i) const {
-  return int(this->encoder_count()[i] << 8)/256;;
+  return int(this->encoder_count()[i] << 8)/256;
 }
 } // namespace Encoder
 } // namespace Pds

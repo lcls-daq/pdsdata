@@ -21,11 +21,8 @@ namespace Epix {
 
 class AsicConfigV1 {
 public:
-  enum { Version = 1 /**< XTC type version number */ };
-  AsicConfigV1()
-  {
-  }
   AsicConfigV1(uint8_t arg__monostPulser, uint8_t arg__dummyTest, uint8_t arg__dummyMask, uint16_t arg__pulser, uint8_t arg__pbit, uint8_t arg__atest, uint8_t arg__test, uint8_t arg__sabTest, uint8_t arg__hrTest, uint8_t arg__digMon1, uint8_t arg__digMon2, uint8_t arg__pulserDac, uint8_t arg__Dm1En, uint8_t arg__Dm2En, uint8_t arg__slvdSBit, uint8_t arg__VRefDac, uint8_t arg__TpsTComp, uint8_t arg__TpsMux, uint8_t arg__RoMonost, uint8_t arg__TpsGr, uint8_t arg__S2dGr, uint8_t arg__PpOcbS2d, uint8_t arg__Ocb, uint8_t arg__Monost, uint8_t arg__FastppEnable, uint8_t arg__Preamp, uint8_t arg__PixelCb, uint8_t arg__S2dTComp, uint8_t arg__FilterDac, uint8_t arg__TC, uint8_t arg__S2d, uint8_t arg__S2dDacBias, uint8_t arg__TpsTcDac, uint8_t arg__TpsDac, uint8_t arg__S2dTcDac, uint8_t arg__S2dDac, uint8_t arg__TestBe, uint8_t arg__IsEn, uint8_t arg__DelExec, uint8_t arg__DelCckReg, uint16_t arg__RowStartAddr, uint16_t arg__RowStopAddr, uint8_t arg__ColStartAddr, uint8_t arg__ColStopAddr, uint16_t arg__chipID);
+  AsicConfigV1() {}
   AsicConfigV1(const AsicConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -117,14 +114,12 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_EpixConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1()
-  {
-  }
   ConfigV1(uint32_t arg__version, uint32_t arg__runTrigDelay, uint32_t arg__daqTrigDelay, uint32_t arg__dacSetting, uint8_t arg__asicGR, uint8_t arg__asicAcq, uint8_t arg__asicR0, uint8_t arg__asicPpmat, uint8_t arg__asicPpbe, uint8_t arg__asicRoClk, uint8_t arg__asicGRControl, uint8_t arg__asicAcqControl, uint8_t arg__asicR0Control, uint8_t arg__asicPpmatControl, uint8_t arg__asicPpbeControl, uint8_t arg__asicR0ClkControl, uint8_t arg__prepulseR0En, uint32_t arg__adcStreamMode, uint8_t arg__testPatternEnable, uint32_t arg__acqToAsicR0Delay, uint32_t arg__asicR0ToAsicAcq, uint32_t arg__asicAcqWidth, uint32_t arg__asicAcqLToPPmatL, uint32_t arg__asicRoClkHalfT, uint32_t arg__adcReadsPerPixel, uint32_t arg__adcClkHalfT, uint32_t arg__asicR0Width, uint32_t arg__adcPipelineDelay, uint32_t arg__prepulseR0Width, uint32_t arg__prepulseR0Delay, uint32_t arg__digitalCardId0, uint32_t arg__digitalCardId1, uint32_t arg__analogCardId0, uint32_t arg__analogCardId1, uint32_t arg__lastRowExclusions, uint32_t arg__numberOfAsicsPerRow, uint32_t arg__numberOfAsicsPerColumn, uint32_t arg__numberOfRowsPerAsic, uint32_t arg__numberOfPixelsPerAsicRow, uint32_t arg__baseClockFrequency, uint32_t arg__asicMask, const Epix::AsicConfigV1* arg__asics, const uint32_t* arg__asicPixelTestArray, const uint32_t* arg__asicPixelMaskArray);
   ConfigV1(uint32_t numberOfAsicsPerRow, uint32_t numberOfAsicsPerColumn, uint32_t numberOfRowsPerAsic, uint32_t numberOfPixelsPerAsicRow)
     : _numberOfAsicsPerRow(numberOfAsicsPerRow), _numberOfAsicsPerColumn(numberOfAsicsPerColumn), _numberOfRowsPerAsic(numberOfRowsPerAsic), _numberOfPixelsPerAsicRow(numberOfPixelsPerAsicRow)
   {
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

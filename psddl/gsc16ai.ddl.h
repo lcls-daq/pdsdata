@@ -46,13 +46,11 @@ public:
     DataFormat_TwosComplement = 0,
     DataFormat_OffsetBinary,
   };
-  ConfigV1()
-  {
-  }
   ConfigV1(Gsc16ai::ConfigV1::VoltageRange arg__voltageRange, uint16_t arg__firstChan, uint16_t arg__lastChan, Gsc16ai::ConfigV1::InputMode arg__inputMode, Gsc16ai::ConfigV1::TriggerMode arg__triggerMode, Gsc16ai::ConfigV1::DataFormat arg__dataFormat, uint16_t arg__fps, uint8_t arg__autocalibEnable, uint8_t arg__timeTagEnable)
     : _voltageRange(arg__voltageRange), _firstChan(arg__firstChan), _lastChan(arg__lastChan), _inputMode(arg__inputMode), _triggerMode(arg__triggerMode), _dataFormat(arg__dataFormat), _fps(arg__fps), _autocalibEnable(arg__autocalibEnable), _timeTagEnable(arg__timeTagEnable)
   {
   }
+  ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));

@@ -105,13 +105,11 @@ private:
 
 class CsPadReadOnlyCfg {
 public:
-  CsPadReadOnlyCfg()
-  {
-  }
   CsPadReadOnlyCfg(uint32_t arg__shiftTest, uint32_t arg__version)
     : _shiftTest(arg__shiftTest), _version(arg__version)
   {
   }
+  CsPadReadOnlyCfg() {}
   uint32_t shiftTest() const { return _shiftTest; }
   uint32_t version() const { return _version; }
   static uint32_t _sizeof() { return 8; }
@@ -128,13 +126,11 @@ private:
 
 class ProtectionSystemThreshold {
 public:
-  ProtectionSystemThreshold()
-  {
-  }
   ProtectionSystemThreshold(uint32_t arg__adcThreshold, uint32_t arg__pixelCountThreshold)
     : _adcThreshold(arg__adcThreshold), _pixelCountThreshold(arg__pixelCountThreshold)
   {
   }
+  ProtectionSystemThreshold() {}
   uint32_t adcThreshold() const { return _adcThreshold; }
   uint32_t pixelCountThreshold() const { return _pixelCountThreshold; }
   static uint32_t _sizeof() { return 8; }
@@ -189,15 +185,13 @@ private:
 
 class ConfigV1QuadReg {
 public:
-  ConfigV1QuadReg()
-  {
-  }
   ConfigV1QuadReg(const uint32_t* arg__shiftSelect, const uint32_t* arg__edgeSelect, uint32_t arg__readClkSet, uint32_t arg__readClkHold, uint32_t arg__dataMode, uint32_t arg__prstSel, uint32_t arg__acqDelay, uint32_t arg__intTime, uint32_t arg__digDelay, uint32_t arg__ampIdle, uint32_t arg__injTotal, uint32_t arg__rowColShiftPer, const CsPad::CsPadReadOnlyCfg& arg__readOnly, const CsPad::CsPadDigitalPotsCfg& arg__digitalPots, const CsPad::CsPadGainMapCfg& arg__gainMap)
     : _readClkSet(arg__readClkSet), _readClkHold(arg__readClkHold), _dataMode(arg__dataMode), _prstSel(arg__prstSel), _acqDelay(arg__acqDelay), _intTime(arg__intTime), _digDelay(arg__digDelay), _ampIdle(arg__ampIdle), _injTotal(arg__injTotal), _rowColShiftPer(arg__rowColShiftPer), _readOnly(arg__readOnly), _digitalPots(arg__digitalPots), _gainMap(arg__gainMap)
   {
     if (arg__shiftSelect) std::copy(arg__shiftSelect, arg__shiftSelect+(4), &_shiftSelect[0]);
     if (arg__edgeSelect) std::copy(arg__edgeSelect, arg__edgeSelect+(4), &_edgeSelect[0]);
   }
+  ConfigV1QuadReg() {}
   ConfigV1QuadReg(const ConfigV1QuadReg& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -269,15 +263,13 @@ private:
 
 class ConfigV2QuadReg {
 public:
-  ConfigV2QuadReg()
-  {
-  }
   ConfigV2QuadReg(const uint32_t* arg__shiftSelect, const uint32_t* arg__edgeSelect, uint32_t arg__readClkSet, uint32_t arg__readClkHold, uint32_t arg__dataMode, uint32_t arg__prstSel, uint32_t arg__acqDelay, uint32_t arg__intTime, uint32_t arg__digDelay, uint32_t arg__ampIdle, uint32_t arg__injTotal, uint32_t arg__rowColShiftPer, uint32_t arg__ampReset, uint32_t arg__digCount, uint32_t arg__digPeriod, const CsPad::CsPadReadOnlyCfg& arg__readOnly, const CsPad::CsPadDigitalPotsCfg& arg__digitalPots, const CsPad::CsPadGainMapCfg& arg__gainMap)
     : _readClkSet(arg__readClkSet), _readClkHold(arg__readClkHold), _dataMode(arg__dataMode), _prstSel(arg__prstSel), _acqDelay(arg__acqDelay), _intTime(arg__intTime), _digDelay(arg__digDelay), _ampIdle(arg__ampIdle), _injTotal(arg__injTotal), _rowColShiftPer(arg__rowColShiftPer), _ampReset(arg__ampReset), _digCount(arg__digCount), _digPeriod(arg__digPeriod), _readOnly(arg__readOnly), _digitalPots(arg__digitalPots), _gainMap(arg__gainMap)
   {
     if (arg__shiftSelect) std::copy(arg__shiftSelect, arg__shiftSelect+(4), &_shiftSelect[0]);
     if (arg__edgeSelect) std::copy(arg__edgeSelect, arg__edgeSelect+(4), &_edgeSelect[0]);
   }
+  ConfigV2QuadReg() {}
   ConfigV2QuadReg(const ConfigV2QuadReg& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -355,15 +347,13 @@ private:
 
 class ConfigV3QuadReg {
 public:
-  ConfigV3QuadReg()
-  {
-  }
   ConfigV3QuadReg(const uint32_t* arg__shiftSelect, const uint32_t* arg__edgeSelect, uint32_t arg__readClkSet, uint32_t arg__readClkHold, uint32_t arg__dataMode, uint32_t arg__prstSel, uint32_t arg__acqDelay, uint32_t arg__intTime, uint32_t arg__digDelay, uint32_t arg__ampIdle, uint32_t arg__injTotal, uint32_t arg__rowColShiftPer, uint32_t arg__ampReset, uint32_t arg__digCount, uint32_t arg__digPeriod, uint32_t arg__biasTuning, uint32_t arg__pdpmndnmBalance, const CsPad::CsPadReadOnlyCfg& arg__readOnly, const CsPad::CsPadDigitalPotsCfg& arg__digitalPots, const CsPad::CsPadGainMapCfg& arg__gainMap)
     : _readClkSet(arg__readClkSet), _readClkHold(arg__readClkHold), _dataMode(arg__dataMode), _prstSel(arg__prstSel), _acqDelay(arg__acqDelay), _intTime(arg__intTime), _digDelay(arg__digDelay), _ampIdle(arg__ampIdle), _injTotal(arg__injTotal), _rowColShiftPer(arg__rowColShiftPer), _ampReset(arg__ampReset), _digCount(arg__digCount), _digPeriod(arg__digPeriod), _biasTuning(arg__biasTuning), _pdpmndnmBalance(arg__pdpmndnmBalance), _readOnly(arg__readOnly), _digitalPots(arg__digitalPots), _gainMap(arg__gainMap)
   {
     if (arg__shiftSelect) std::copy(arg__shiftSelect, arg__shiftSelect+(4), &_shiftSelect[0]);
     if (arg__edgeSelect) std::copy(arg__edgeSelect, arg__edgeSelect+(4), &_edgeSelect[0]);
   }
+  ConfigV3QuadReg() {}
   ConfigV3QuadReg(const ConfigV3QuadReg& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -731,15 +721,13 @@ class ConfigV5 {
 public:
   enum { TypeId = Pds::TypeId::Id_CspadConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 5 /**< XTC type version number */ };
-  ConfigV5()
-  {
-  }
   ConfigV5(uint32_t arg__concentratorVersion, uint32_t arg__runDelay, uint32_t arg__eventCode, const CsPad::ProtectionSystemThreshold* arg__protectionThresholds, uint32_t arg__protectionEnable, uint32_t arg__inactiveRunMode, uint32_t arg__activeRunMode, uint32_t arg__internalTriggerDelay, uint32_t arg__testDataIndex, uint32_t arg__payloadPerQuad, uint32_t arg__badAsicMask0, uint32_t arg__badAsicMask1, uint32_t arg__AsicMask, uint32_t arg__quadMask, uint32_t arg__roiMask, const CsPad::ConfigV3QuadReg* arg__quads)
     : _concentratorVersion(arg__concentratorVersion), _runDelay(arg__runDelay), _eventCode(arg__eventCode), _protectionEnable(arg__protectionEnable), _inactiveRunMode(arg__inactiveRunMode), _activeRunMode(arg__activeRunMode), _internalTriggerDelay(arg__internalTriggerDelay), _testDataIndex(arg__testDataIndex), _payloadPerQuad(arg__payloadPerQuad), _badAsicMask0(arg__badAsicMask0), _badAsicMask1(arg__badAsicMask1), _AsicMask(arg__AsicMask), _quadMask(arg__quadMask), _roiMask(arg__roiMask)
   {
     if (arg__protectionThresholds) std::copy(arg__protectionThresholds, arg__protectionThresholds+(4), &_protectionThresholds[0]);
     if (arg__quads) std::copy(arg__quads, arg__quads+(4), &_quads[0]);
   }
+  ConfigV5() {}
   ConfigV5(const ConfigV5& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
@@ -1123,7 +1111,7 @@ public:
                 total bit count gives the number of sections active. */
   uint32_t sectionMask(const CsPad::ConfigV5& cfg) const;
   /** Common mode value for a given section, section number can be 0 to config.numSect().
-                Will return 0 for data read from XTC, may be non-zero after calibration. */
+	 Will return 0 for data read from XTC, may be non-zero after calibration. */
   float common_mode(uint32_t section) const;
   uint32_t _sizeof(const CsPad::ConfigV2& cfg) const { return (((((((20+(2*(Nsbtemp)))+4)+(2*(cfg.numAsicsStored(this->quad())/2)*( ColumnsPerASIC)*( MaxRowsPerASIC*2)))+(2*(2)))+4)-1)/4)*4; }
   uint32_t _sizeof(const CsPad::ConfigV3& cfg) const { return (((((((20+(2*(Nsbtemp)))+4)+(2*(cfg.numAsicsStored(this->quad())/2)*( ColumnsPerASIC)*( MaxRowsPerASIC*2)))+(2*(2)))+4)-1)/4)*4; }
