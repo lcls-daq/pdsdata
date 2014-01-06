@@ -10,66 +10,66 @@ tgtnames = cfgreader xtcreader livextcreader xtcmonserver xtcmonclient xtcmoncli
 #LXFLAGS += -L/reg/g/pcds/package/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic
 
 tgtsrcs_xtcreader := xtcreader.cc
-tgtlibs_xtcreader := xtcdata psddl_pdsdata
+tgtlibs_xtcreader := psddl_pdsdata xtcdata 
 tgtslib_xtcreader := $(USRLIBDIR)/rt
 
 tgtsrcs_cfgreader := cfgreader.cc
-tgtlibs_cfgreader := xtcdata psddl_pdsdata
+tgtlibs_cfgreader := psddl_pdsdata xtcdata 
 tgtslib_cfgreader := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmodify := xtcmodify.cc
-tgtlibs_xtcmodify := xtcdata psddl_pdsdata
+tgtlibs_xtcmodify := psddl_pdsdata xtcdata 
 tgtslib_xtcmodify := $(USRLIBDIR)/rt
 
 tgtsrcs_livextcreader := livextcreader.cc
-tgtlibs_livextcreader := xtcdata psddl_pdsdata
+tgtlibs_livextcreader := psddl_pdsdata xtcdata 
 tgtslib_livextcreader := $(USRLIBDIR)/rt
 
 tgtsrcs_dmgreader := dmgreader.cc
-tgtlibs_dmgreader := xtcdata psddl_pdsdata
+tgtlibs_dmgreader := psddl_pdsdata xtcdata 
 tgtslib_dmgreader := $(USRLIBDIR)/rt
 
 tgtsrcs_bldreader := bldreader.cc
-tgtlibs_bldreader := xtcdata psddl_pdsdata
+tgtlibs_bldreader := psddl_pdsdata xtcdata 
 tgtslib_bldreader := $(USRLIBDIR)/rt
 
 tgtsrcs_agatfile := agatfile.cc
-tgtlibs_agatfile := xtcdata psddl_pdsdata  
+tgtlibs_agatfile := psddl_pdsdata xtcdata 
 tgtslib_agatfile := $(USRLIBDIR)/rt
 
 tgtsrcs_acqconfig := acqconfig.cc
-tgtlibs_acqconfig := xtcdata psddl_pdsdata
+tgtlibs_acqconfig := psddl_pdsdata xtcdata 
 
 tgtsrcs_xtcmonserver := xtcmonserver.cc
-tgtlibs_xtcmonserver := xtcdata psddl_pdsdata appdata xtcrunset anadata indexdata
+tgtlibs_xtcmonserver := xtcrunset appdata anadata indexdata psddl_pdsdata xtcdata
 tgtslib_xtcmonserver := $(USRLIBDIR)/rt
 
 tgtsrcs_oldmonserver := oldmonserver.cc
-tgtlibs_oldmonserver := xtcdata psddl_pdsdata appdata
+tgtlibs_oldmonserver := psddl_pdsdata appdata xtcdata 
 tgtslib_oldmonserver := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmonclient := xtcmonclient.cc 
-tgtlibs_xtcmonclient := xtcdata psddl_pdsdata appdata 
+tgtlibs_xtcmonclient := appdata psddl_pdsdata xtcdata
 tgtslib_xtcmonclient := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcmonclientexample := xtcMonClientExample.cc
-tgtlibs_xtcmonclientexample := psddl_pdsdata xtcdata appdata
+tgtlibs_xtcmonclientexample := appdata psddl_pdsdata xtcdata
 tgtslib_xtcmonclientexample := $(USRLIBDIR)/rt
 
 tgtsrcs_agatfile := agatfile.cc
-tgtlibs_agatfile := xtcdata psddl_pdsdata
+tgtlibs_agatfile := psddl_pdsdata xtcdata
 tgtslib_agatfile := $(USRLIBDIR)/rt
 
 tgtsrcs_xtcEpicsReaderTest := xtcEpicsReaderTest.cc XtcEpicsFileReader.cc XtcEpicsFileReader.hh XtcEpicsIterator.cc XtcEpicsIterator.hh
 tgtincs_xtcEpicsReaderTest := 
-tgtlibs_xtcEpicsReaderTest := xtcdata psddl_pdsdata
+tgtlibs_xtcEpicsReaderTest := psddl_pdsdata xtcdata
 tgtslib_xtcEpicsReaderTest := 
 
 tgtsrcs_xtcmonwriter := xtcmonwriter.cc 
-tgtlibs_xtcmonwriter := xtcdata psddl_pdsdata appdata
+tgtlibs_xtcmonwriter := appdata psddl_pdsdata xtcdata
 tgtslib_xtcmonwriter := $(USRLIBDIR)/rt
 
 tgtsrcs_xtccompress := xtccompress.cc
-tgtlibs_xtccompress := xtcdata psddl_pdsdata compressdata
+tgtlibs_xtccompress := compressdata psddl_pdsdata xtcdata
 tgtslib_xtccompress := $(USRLIBDIR)/rt
 
