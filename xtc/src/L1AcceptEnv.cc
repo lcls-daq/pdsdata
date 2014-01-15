@@ -12,7 +12,7 @@ Pds::L1AcceptEnv::L1AcceptEnv(unsigned groups, L3TResult l3t) :
 Pds::L1AcceptEnv::L1AcceptEnv(unsigned groups, L3TResult l3t, bool trim) :
   Env((groups & ((1<<MaxReadoutGroups)-1)) | 
       (unsigned(l3t)<<MaxReadoutGroups)    |
-      trim ? TrimValue : 0) {}
+      (trim ? TrimValue : 0)) {}
 
 uint32_t  Pds::L1AcceptEnv::clientGroupMask() const { return value()&((1<<MaxReadoutGroups)-1); }
 
