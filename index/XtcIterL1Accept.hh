@@ -16,9 +16,9 @@ public:
   { Stop, Continue };
   
   XtcIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset, 
-    IndexList& indexList ) :
+                  IndexList& indexList, unsigned& lquiet ) :
     XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), 
-    _pIndexList(&indexList)
+    _pIndexList(&indexList), _lquiet(lquiet)
   {
   }
 
@@ -28,6 +28,7 @@ private:
   unsigned            _depth;
   int64_t             _i64Offset;
   IndexList*          _pIndexList;
+  unsigned&           _lquiet;
 };
 
 } // namespace Index

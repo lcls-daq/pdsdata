@@ -84,7 +84,8 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex)
   
   IndexList         indexList (sXtcFilename);
   XtcFileIterator   iterFile  (fd, 0x2000000); // largest L1 data: 32 MB
-    
+  unsigned          lquiet    (0);
+
   Dgram *dg;
   int64_t i64Offset = lseek64(fd, 0, SEEK_CUR);
   while ((dg = iterFile.next()))
@@ -97,7 +98,8 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex)
       if ( bInvalidNodeData )
         continue;     
       
-      XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, i64Offset + sizeof(*dg), indexList);           
+      XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, i64Offset + sizeof(*dg), indexList,
+                                   lquiet);           
       iterL1Accept.iterate();
             
       bool bPrintNode = true;
