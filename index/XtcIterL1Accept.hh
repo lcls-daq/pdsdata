@@ -18,7 +18,7 @@ public:
   XtcIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset, 
                   IndexList& indexList) :
     XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), 
-    _pIndexList(&indexList), _lquiet(vquiet), _vquiet(0)
+    _pIndexList(&indexList), _lquiet(_vquiet), _vquiet(0)
   {
   }
 
