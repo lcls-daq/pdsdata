@@ -91,6 +91,7 @@ namespace Pds {
       Id_EpixSamplerConfig,
       Id_EpixSamplerElement,
       Id_EvsConfig,
+      Id_PartitionConfig,
       NumberOf};
     enum { VCompressed = 0x8000 };
 

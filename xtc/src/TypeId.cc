@@ -98,7 +98,8 @@ const char* TypeId::name(Type type)
     "EpixElement",             // 75
     "EpixSamplerConfig",       // 76
     "EpixSamplerElement",      // 77
-    "EvsConfig"                // 78
+    "EvsConfig",               // 78
+    "PartitionConfig"          // 79
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

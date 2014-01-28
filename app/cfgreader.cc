@@ -24,6 +24,7 @@
 #include "pdsdata/psddl/princeton.ddl.h"
 #include "pdsdata/psddl/cspad.ddl.h"
 #include "pdsdata/psddl/rayonix.ddl.h"
+#include "pdsdata/psddl/partition.ddl.h"
 
 using namespace Pds;
 
@@ -257,6 +258,15 @@ public:
   void process(const Src&, const Rayonix::ConfigV2& c) {
     printf("*** Processing Rayonix ConfigV2 object \n");
   }
+  void process(const Src&, const Partition::ConfigV1& c) {
+    printf("*** Processing Partition ConfigV1 object \n");
+    printf("\tBld mask: %016llx\n",c.bldMask());
+    for(unsigned i=0; i<c.numSegments(); i++)
+      printf("\t%08x.%08x: group %d\n",
+             c.segments()[i].src().log(),
+             c.segments()[i].src().phy(),
+             c.segments()[i].group());
+  }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
@@ -486,6 +496,12 @@ public:
         process(info, *(const Rayonix::ConfigV2*)(xtc->payload()));
         break;
       }
+      break;
+    }
+    case (TypeId::Id_PartitionConfig) :
+    {
+      if (xtc->contains.version()==1)
+        process(info, *(const Partition::ConfigV1*)(xtc->payload()));
       break;
     }
     default :
