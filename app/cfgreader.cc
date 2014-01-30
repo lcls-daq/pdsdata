@@ -261,11 +261,11 @@ public:
   void process(const Src&, const Partition::ConfigV1& c) {
     printf("*** Processing Partition ConfigV1 object \n");
     printf("\tBld mask: %016llx\n",c.bldMask());
-    for(unsigned i=0; i<c.numSegments(); i++)
+    for(unsigned i=0; i<c.numSources(); i++)
       printf("\t%08x.%08x: group %d\n",
-             c.segments()[i].src().log(),
-             c.segments()[i].src().phy(),
-             c.segments()[i].group());
+             c.sources()[i].src().log(),
+             c.sources()[i].src().phy(),
+             c.sources()[i].group());
   }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");

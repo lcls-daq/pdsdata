@@ -13,17 +13,17 @@
 namespace Pds {
 namespace Partition {
 
-/** @class Segment
+/** @class Source
 
   
 */
 
 #pragma pack(push,4)
 
-class Segment {
+class Source {
 public:
-  Segment(const Pds::Src& arg__src, uint32_t arg__group);
-  Segment() {}
+  Source(const Pds::Src& arg__src, uint32_t arg__group);
+  Source() {}
   const Pds::Src& src() const { return _src; }
   uint32_t group() const { return _group; }
   static uint32_t _sizeof() { return (((((0+(Pds::Src::_sizeof()))+4)+4)-1)/4)*4; }
@@ -43,7 +43,7 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_PartitionConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1(uint64_t arg__bldMask, uint32_t arg__numSegments, const Partition::Segment* arg__segments);
+  ConfigV1(uint64_t arg__bldMask, uint32_t arg__numSources, const Partition::Source* arg__sources);
   ConfigV1() {}
   ConfigV1(const ConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
@@ -56,30 +56,30 @@ public:
   }
   /** Mask of requested BLD */
   uint64_t bldMask() const { return _bldMask; }
-  /** Number of segment definitions */
-  uint32_t numSegments() const { return _numSegments; }
-  /** Segment configuration objects
+  /** Number of source definitions */
+  uint32_t numSources() const { return _numSources; }
+  /** Source configuration objects
 
     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
-  ndarray<const Partition::Segment, 1> segments(const boost::shared_ptr<T>& owner) const { 
+  ndarray<const Partition::Source, 1> sources(const boost::shared_ptr<T>& owner) const { 
     ptrdiff_t offset=12;
-    const Partition::Segment* data = (const Partition::Segment*)(((char*)this)+offset);
-    return make_ndarray(boost::shared_ptr<const Partition::Segment>(owner, data), this->numSegments());
+    const Partition::Source* data = (const Partition::Source*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const Partition::Source>(owner, data), this->numSources());
   }
-  /** Segment configuration objects
+  /** Source configuration objects
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const Partition::Segment, 1> segments() const { ptrdiff_t offset=12;
-  const Partition::Segment* data = (const Partition::Segment*)(((char*)this)+offset);
-  return make_ndarray(data, this->numSegments()); }
-  uint32_t _sizeof() const { return ((((12+(Partition::Segment::_sizeof()*(this->numSegments())))+8)-1)/8)*8; }
+  ndarray<const Partition::Source, 1> sources() const { ptrdiff_t offset=12;
+  const Partition::Source* data = (const Partition::Source*)(((char*)this)+offset);
+  return make_ndarray(data, this->numSources()); }
+  uint32_t _sizeof() const { return ((((12+(Partition::Source::_sizeof()*(this->numSources())))+8)-1)/8)*8; }
 private:
   uint64_t	_bldMask;	/**< Mask of requested BLD */
-  uint32_t	_numSegments;	/**< Number of segment definitions */
-  //Partition::Segment	_segments[this->numSegments()];
+  uint32_t	_numSources;	/**< Number of source definitions */
+  //Partition::Source	_sources[this->numSources()];
 };
 } // namespace Partition
 } // namespace Pds

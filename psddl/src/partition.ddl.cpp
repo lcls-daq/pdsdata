@@ -6,17 +6,17 @@
 #include <iostream>
 namespace Pds {
 namespace Partition {
-Segment::Segment(const Pds::Src& arg__src, uint32_t arg__group)
+Source::Source(const Pds::Src& arg__src, uint32_t arg__group)
     : _src(arg__src), _group(arg__group)
 {
 }
-ConfigV1::ConfigV1(uint64_t arg__bldMask, uint32_t arg__numSegments, const Partition::Segment* arg__segments)
-    : _bldMask(arg__bldMask), _numSegments(arg__numSegments)
+ConfigV1::ConfigV1(uint64_t arg__bldMask, uint32_t arg__numSources, const Partition::Source* arg__sources)
+    : _bldMask(arg__bldMask), _numSources(arg__numSources)
 {
-  if (arg__segments and (this->numSegments())) {
+  if (arg__sources and (this->numSources())) {
     ptrdiff_t offset = 12;
-    Partition::Segment* data = reinterpret_cast<Partition::Segment*>(((char*)this)+offset);
-    std::copy(arg__segments, arg__segments+(this->numSegments()), data);
+    Partition::Source* data = reinterpret_cast<Partition::Source*>(((char*)this)+offset);
+    std::copy(arg__sources, arg__sources+(this->numSources()), data);
   }
 }
 } // namespace Partition
