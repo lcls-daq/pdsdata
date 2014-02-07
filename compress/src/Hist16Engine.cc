@@ -37,6 +37,10 @@ namespace Pds {
                                 void*              outData,
                                 size_t&            outDataSize )
     {
+#ifdef DBUG
+      printf("Hist16Engine::compress image %p  params [depth %zd  width %zd  height %zd]  outdata %p\n",
+	     image, params.depth, params.width, params.height, outData);
+#endif
       /* Evaluate input parameters and refuse to proceed if any obvious
        * problems were found.
        */
@@ -301,12 +305,12 @@ namespace Pds {
       printf(" ----\n"
              " flags : %08x\n"
              " cksum : %08x\n"
-             " csize : %08x\n"
+             " csize : %08zx\n"
              " base  : %04x\n"
-             " dsize : %08x\n"
-             " bsize : %08x\n",
+             " dsize : %08zx\n"
+             " bsize : %08zx\n",
              compression_flag, incs, data_size, base, outptr - outptr_after_header, bitmapsize);
-        printf("  insize %8x  outsize %8x  base 0x%4x  count %8x  image %p\n",
+        printf("  insize %8zx  outsize %8zx  base 0x%4x  count %8x  image %p\n",
                inbufsize*sizeof(uint16_t), outDataSize, base, count_8bits, image);
 #endif
       }
@@ -400,10 +404,10 @@ namespace Pds {
       printf(" ----\n"
              " flags : %08x\n"
              " cksum : %08x\n"
-             " csize : %08x\n"
+             " csize : %08zx\n"
              " base  : %04x\n"
-             " dsize : %08x\n"
-             " bsize : %08x\n",
+             " dsize : %08zx\n"
+             " bsize : %08zx\n",
              hdr_compression_flag, hdr_original_checksum, hdr_compressed_size_bytes, base, data_size_bytes, bitmap_size_shorts);
 #endif
 
