@@ -18,7 +18,7 @@ bool     TypeId::compressed() const { return _value&0x80000000; }
 unsigned TypeId::compressed_version() const { return (_value&0x7fff0000)>>16; }
 
 const char* TypeId::name(Type type)
-{ 
+{
    static const char* _names[NumberOf] = {
     "Any",                     // 0
     "Xtc",                     // 1
@@ -99,7 +99,10 @@ const char* TypeId::name(Type type)
     "EpixSamplerConfig",       // 76
     "EpixSamplerElement",      // 77
     "EvsConfig",               // 78
-    "PartitionConfig"          // 79
+    "PartitionConfig",         // 79
+    "PimaxConfig",             // 80
+    "PimaxFrame",              // 81
+    "Arraychar",        // 82
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
