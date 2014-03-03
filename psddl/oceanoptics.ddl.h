@@ -74,6 +74,70 @@ private:
 };
 #pragma pack(pop)
 
+/** @class ConfigV2
+
+  
+*/
+
+#pragma pack(push,4)
+
+class ConfigV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_OceanOpticsConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  ConfigV2(float f32ExposureTime)
+    : _f32ExposureTime(f32ExposureTime)
+  {
+  }
+  ConfigV2(float arg__f32ExposureTime, int32_t arg__iDeviceType, const double* arg__lfWaveLenCalibCoeff, const double* arg__lfNonlinCorrectCoeff, double arg__fStrayLightConstant)
+    : _f32ExposureTime(arg__f32ExposureTime), _iDeviceType(arg__iDeviceType), _fStrayLightConstant(arg__fStrayLightConstant)
+  {
+    if (arg__lfWaveLenCalibCoeff) std::copy(arg__lfWaveLenCalibCoeff, arg__lfWaveLenCalibCoeff+(4), &_lfWaveLenCalibCoeff[0]);
+    if (arg__lfNonlinCorrectCoeff) std::copy(arg__lfNonlinCorrectCoeff, arg__lfNonlinCorrectCoeff+(8), &_lfNonlinCorrectCoeff[0]);
+  }
+  ConfigV2() {}
+  ConfigV2(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV2& operator=(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  float exposureTime() const { return _f32ExposureTime; }
+  int32_t deviceType() const { return _iDeviceType; }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> waveLenCalib(const boost::shared_ptr<T>& owner) const { 
+    const double* data = &_lfWaveLenCalibCoeff[0];
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), 4);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> waveLenCalib() const { return make_ndarray(&_lfWaveLenCalibCoeff[0], 4); }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> nonlinCorrect(const boost::shared_ptr<T>& owner) const { 
+    const double* data = &_lfNonlinCorrectCoeff[0];
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), 8);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> nonlinCorrect() const { return make_ndarray(&_lfNonlinCorrectCoeff[0], 8); }
+  double strayLightConstant() const { return _fStrayLightConstant; }
+  static uint32_t _sizeof() { return ((((((8+(8*(4)))+(8*(8)))+8)+4)-1)/4)*4; }
+private:
+  float	_f32ExposureTime;
+  int32_t	_iDeviceType;
+  double	_lfWaveLenCalibCoeff[4];
+  double	_lfNonlinCorrectCoeff[8];
+  double	_fStrayLightConstant;
+};
+#pragma pack(pop)
+
 /** @class timespec64
 
   
@@ -103,6 +167,7 @@ private:
 */
 
 class ConfigV1;
+class ConfigV2;
 #pragma pack(push,4)
 
 class DataV1 {
@@ -142,10 +207,77 @@ public:
   int8_t numSpectraInQueue() const { return _i8NumSpectraInQueue; }
   int8_t numSpectraUnused() const { return _i8NumSpectraUnused; }
   double durationOfFrame() const { 
-    return this->timeFrameEnd().tv_sec() - this->timeFrameStart().tv_sec() + 
-	(this->timeFrameEnd().tv_nsec() - this->timeFrameStart().tv_nsec()) * 1e-9; 
+    return this->timeFrameEnd().tv_sec() - this->timeFrameStart().tv_sec() +
+  (this->timeFrameEnd().tv_nsec() - this->timeFrameStart().tv_nsec()) * 1e-9;
  }
   double nonlinerCorrected(const OceanOptics::ConfigV1& cfg, uint32_t iPixel) const;
+  double nonlinerCorrected(const OceanOptics::ConfigV2& cfg, uint32_t iPixel) const;
+  static uint32_t _sizeof() { return (((((((((((((((0+(2*(iNumPixels)))+8)+8)+8)+(OceanOptics::timespec64::_sizeof()))+(OceanOptics::timespec64::_sizeof()))+(OceanOptics::timespec64::_sizeof()))+4)+1)+1)+1)+1)+4)-1)/4)*4; }
+private:
+  uint16_t	lu16Spetra[iNumPixels];
+  uint64_t	_u64FrameCounter;
+  uint64_t	_u64NumDelayedFrames;
+  uint64_t	_u64NumDiscardFrames;
+  OceanOptics::timespec64	_tsTimeFrameStart;
+  OceanOptics::timespec64	_tsTimeFrameFirstData;
+  OceanOptics::timespec64	_tsTimeFrameEnd;
+  int32_t	_i32Version;
+  int8_t	_i8NumSpectraInData;
+  int8_t	_i8NumSpectraInQueue;
+  int8_t	_i8NumSpectraUnused;
+  int8_t	_iReserved1;
+};
+#pragma pack(pop)
+
+/** @class DataV2
+
+  
+*/
+
+class ConfigV2;
+#pragma pack(push,4)
+
+class DataV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_OceanOpticsData /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  enum { iDataReadSize = 4608 };
+  enum { iNumPixels = 2048 };
+  enum { iActivePixelIndex = 0 };
+  DataV2() {}
+  DataV2(const DataV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  DataV2& operator=(const DataV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 1> data(const boost::shared_ptr<T>& owner) const { 
+    const uint16_t* data = &lu16Spetra[0];
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), iNumPixels);
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 1> data() const { return make_ndarray(&lu16Spetra[0], iNumPixels); }
+  uint64_t frameCounter() const { return _u64FrameCounter; }
+  uint64_t numDelayedFrames() const { return _u64NumDelayedFrames; }
+  uint64_t numDiscardFrames() const { return _u64NumDiscardFrames; }
+  const OceanOptics::timespec64& timeFrameStart() const { return _tsTimeFrameStart; }
+  const OceanOptics::timespec64& timeFrameFirstData() const { return _tsTimeFrameFirstData; }
+  const OceanOptics::timespec64& timeFrameEnd() const { return _tsTimeFrameEnd; }
+  int8_t numSpectraInData() const { return _i8NumSpectraInData; }
+  int8_t numSpectraInQueue() const { return _i8NumSpectraInQueue; }
+  int8_t numSpectraUnused() const { return _i8NumSpectraUnused; }
+  double durationOfFrame() const { 
+    return this->timeFrameEnd().tv_sec() - this->timeFrameStart().tv_sec() +
+  (this->timeFrameEnd().tv_nsec() - this->timeFrameStart().tv_nsec()) * 1e-9;
+ }
+  double nonlinerCorrected(const OceanOptics::ConfigV2& cfg, uint32_t iPixel) const;
   static uint32_t _sizeof() { return (((((((((((((((0+(2*(iNumPixels)))+8)+8)+8)+(OceanOptics::timespec64::_sizeof()))+(OceanOptics::timespec64::_sizeof()))+(OceanOptics::timespec64::_sizeof()))+4)+1)+1)+1)+1)+4)-1)/4)*4; }
 private:
   uint16_t	lu16Spetra[iNumPixels];
