@@ -60,6 +60,10 @@ namespace Pds {
                 FeeSpec0         = 46,
                 SxrSpec0         = 47,
                 XppSpec0         = 48,
+                XcsUserIpm01     = 49,
+                XcsUserIpm02     = 50,
+                XcsUserIpm03     = 51,
+                XcsUserIpm04     = 52,
                 NumberOf };
 
     BldInfo() {}
