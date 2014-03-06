@@ -25,6 +25,7 @@
 #include "pdsdata/psddl/cspad.ddl.h"
 #include "pdsdata/psddl/rayonix.ddl.h"
 #include "pdsdata/psddl/partition.ddl.h"
+#include "pdsdata/psddl/l3t.ddl.h"
 
 using namespace Pds;
 
@@ -267,6 +268,11 @@ public:
              c.sources()[i].src().phy(),
              c.sources()[i].group());
   }
+  void process(const Src&, const L3T::ConfigV1& c) {
+    printf("*** Processing L3T ConfigV1 object \n");
+    printf("\tModule ID: %s\n",c.module_id());
+    printf("%s\n---\n",c.desc());
+  }
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
@@ -502,6 +508,12 @@ public:
     {
       if (xtc->contains.version()==1)
         process(info, *(const Partition::ConfigV1*)(xtc->payload()));
+      break;
+    }
+    case (TypeId::Id_L3TConfig) :
+    {
+      if (xtc->contains.version()==1)
+        process(info, *(const L3T::ConfigV1*)(xtc->payload()));
       break;
     }
     default :
