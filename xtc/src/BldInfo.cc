@@ -84,10 +84,10 @@ const char* BldInfo::name(const BldInfo& src){
     "FEE-SPEC0",
     "SXR-SPEC0",
     "XPP-SPEC0",
-    "XCS-USER-IPM-01",
-    "XCS-USER-IPM-02",
-    "XCS-USER-IPM-03",
-    "XCS-USER-IPM-04",
+    "XCS-USR-IPM-01",
+    "XCS-USR-IPM-02",
+    "XCS-USR-IPM-03",
+    "XCS-USR-IPM-04",
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }
