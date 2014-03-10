@@ -23,8 +23,8 @@ class ConfigV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_PimaxConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  ConfigV1(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, float arg__f32ReadoutSpeed, uint16_t arg__u16GainIndex, uint16_t arg__u16IntesifierGain, double arg__f64GateDelay, double arg__f64GateWidth, uint32_t arg__u32MaskedHeight, uint32_t arg__u32KineticHeight, float arg__f32VsSpeed, int16_t arg__i16InfoReportInterval, uint16_t arg__u16ExposureEventCode, uint32_t arg__u32NumIntegrationShots)
-    : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _f32ReadoutSpeed(arg__f32ReadoutSpeed), _u16GainIndex(arg__u16GainIndex), _u16IntesifierGain(arg__u16IntesifierGain), _f64GateDelay(arg__f64GateDelay), _f64GateWidth(arg__f64GateWidth), _u32MaskedHeight(arg__u32MaskedHeight), _u32KineticHeight(arg__u32KineticHeight), _f32VsSpeed(arg__f32VsSpeed), _i16InfoReportInterval(arg__i16InfoReportInterval), _u16ExposureEventCode(arg__u16ExposureEventCode), _u32NumIntegrationShots(arg__u32NumIntegrationShots)
+  ConfigV1(uint32_t arg__uWidth, uint32_t arg__uHeight, uint32_t arg__uOrgX, uint32_t arg__uOrgY, uint32_t arg__uBinX, uint32_t arg__uBinY, float arg__f32ExposureTime, float arg__f32CoolingTemp, float arg__f32ReadoutSpeed, uint16_t arg__u16GainIndex, uint16_t arg__u16IntensifierGain, double arg__f64GateDelay, double arg__f64GateWidth, uint32_t arg__u32MaskedHeight, uint32_t arg__u32KineticHeight, float arg__f32VsSpeed, int16_t arg__i16InfoReportInterval, uint16_t arg__u16ExposureEventCode, uint32_t arg__u32NumIntegrationShots)
+    : _uWidth(arg__uWidth), _uHeight(arg__uHeight), _uOrgX(arg__uOrgX), _uOrgY(arg__uOrgY), _uBinX(arg__uBinX), _uBinY(arg__uBinY), _f32ExposureTime(arg__f32ExposureTime), _f32CoolingTemp(arg__f32CoolingTemp), _f32ReadoutSpeed(arg__f32ReadoutSpeed), _u16GainIndex(arg__u16GainIndex), _u16IntensifierGain(arg__u16IntensifierGain), _f64GateDelay(arg__f64GateDelay), _f64GateWidth(arg__f64GateWidth), _u32MaskedHeight(arg__u32MaskedHeight), _u32KineticHeight(arg__u32KineticHeight), _f32VsSpeed(arg__f32VsSpeed), _i16InfoReportInterval(arg__i16InfoReportInterval), _u16ExposureEventCode(arg__u16ExposureEventCode), _u32NumIntegrationShots(arg__u32NumIntegrationShots)
   {
   }
   ConfigV1(uint32_t width, uint32_t height)
@@ -51,7 +51,7 @@ public:
   float coolingTemp() const { return _f32CoolingTemp; }
   float readoutSpeed() const { return _f32ReadoutSpeed; }
   uint16_t gainIndex() const { return _u16GainIndex; }
-  uint16_t intesifierGain() const { return _u16IntesifierGain; }
+  uint16_t intensifierGain() const { return _u16IntensifierGain; }
   double gateDelay() const { return _f64GateDelay; }
   double gateWidth() const { return _f64GateWidth; }
   uint32_t maskedHeight() const { return _u32MaskedHeight; }
@@ -82,7 +82,7 @@ private:
   float	_f32CoolingTemp;
   float	_f32ReadoutSpeed;
   uint16_t	_u16GainIndex;
-  uint16_t	_u16IntesifierGain;
+  uint16_t	_u16IntensifierGain;
   double	_f64GateDelay;
   double	_f64GateWidth;
   uint32_t	_u32MaskedHeight;
