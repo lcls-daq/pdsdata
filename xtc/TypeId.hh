@@ -109,6 +109,8 @@ namespace Pds {
     bool     compressed() const;
     unsigned compressed_version() const;
 
+    bool     is_configuration() const;
+
     static const char* name(Type type);
 
   private:

@@ -2,6 +2,7 @@
 #define Pds_MonShmComm_hh
 
 #include <stdint.h>
+#include <string.h>
 
 namespace Pds {
   namespace MonShmComm {
@@ -20,8 +21,9 @@ namespace Pds {
     class Set {
     public:
       Set() {}
-      Set(unsigned m) : mask(m) {}
+      Set(const char* n,unsigned m) : mask(m) { strncpy(hostname,n,32); }
     public:
+      char     hostname[32];
       uint32_t mask;
     };
   };
