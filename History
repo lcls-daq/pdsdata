@@ -1,3 +1,5 @@
+2014-Mar-26 cpo		Tag V07-02-23.  Add const accessor methods to index to
+                                        allow for psana-indexing.
 2014-Jan-07 salnikov	Tag V07-02-15.  Derived from psddldata tag V01-00-01 and psddl V00-13-02.
                                         Changed storage type for enum in Acqiris::TdcChannel class, interface did not change.
 2013-Dec-22 salnikov	Tag V07-02-14.  Derived from psddldata tag V01-00-00 and psddl V00-13-00.
