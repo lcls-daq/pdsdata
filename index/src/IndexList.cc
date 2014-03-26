@@ -775,7 +775,7 @@ int IndexList::readFileHeader(int fdFile, IndexFileHeaderType& fileHeader)
     return 2;
   }
 
-  printf( "Xtc index header type: %s V%d\n", TypeId::name(typeId.id()), typeId.version() );
+  // printf( "Xtc index header type: %s V%d\n", TypeId::name(typeId.id()), typeId.version() );
   
   /*
    * Provide back-compatibility with the previous header version

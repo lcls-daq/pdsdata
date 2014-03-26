@@ -91,9 +91,6 @@ public:
   void  printList     (int iVerbose) const;  
   int   writeToFile   (int fdFile) const;  
   int   readFromFile  (int fdFile);  
-  
-private:    
-  static const int iMaxFilenameLen  = IndexFileHeaderType::iMaxFilenameLen;
 
   typedef   std::vector<CalibNode>        TCalibList;  
   typedef   std::vector<L1AcceptNode>     TNodeList;  
@@ -101,6 +98,9 @@ private:
   typedef   std::map<L1SegmentIndex,L1SegmentId>  
                                           TSegmentToIdMap;
   typedef   std::map<uint32_t,int>        TEvrEvtToIdMap;
+
+private:    
+  static const int iMaxFilenameLen  = IndexFileHeaderType::iMaxFilenameLen;
 
   char                      _sXtcFilename[iMaxFilenameLen];  
   int                       _iNumSegments;
@@ -138,6 +138,12 @@ private:
   
   friend class IndexFileHeaderV1;  
   friend class IndexFileHeaderV2;
+
+public:
+  const TNodeList&  getL1()    const {return _lNode;}
+  const TCalibList& getCalib() const {return _lCalib;}
+  const TSegmentToIdMap& getSeg() const {return _mapSegToId;}
+
 }; // class IndexList
 
 #pragma pack()
