@@ -97,7 +97,7 @@ public:
   typedef   std::vector<Damage>           TSegmentDamageMapList;
   typedef   std::map<L1SegmentIndex,L1SegmentId>  
                                           TSegmentToIdMap;
-  typedef   std::map<uint32_t,int>        TEvrEvtToIdMap;
+  typedef   std::map<int,int>             TEvrEvtToIdMap;
 
 private:    
   static const int iMaxFilenameLen  = IndexFileHeaderType::iMaxFilenameLen;
