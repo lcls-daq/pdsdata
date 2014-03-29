@@ -16,7 +16,7 @@ void usage(char* progname) {
   cerr << "Usage: " << progname
        << " (-f <filename> | -l <filename_list> | -x <run_file_prefix> | -d <xtc_dir>)" // choose one
        << " -p <partitionTag> -n <numberOfBuffers> -s <sizeOfBuffers>" // mandatory
-       << " [-r <ratePerSec>] [-c <# clients>] [-S <sequence length>]" // optional
+       << " [-r <ratePerSec>] [-c <# clients>]" // optional
        << " [-L] [-v] [-V]" // debugging (optional)
        << endl;
 }
@@ -36,7 +36,6 @@ int main(int argc, char* argv[]) {
   // These are optional
   int rate = 60; // Hz
   unsigned nclients = 1;
-  unsigned sequenceLength = 1;
 
   // These are for debugging (also optional)
   bool loop = false;
@@ -47,7 +46,7 @@ int main(int argc, char* argv[]) {
   //  (void) signal(SIGSEGV, sigfunc);
 
   int c;
-  while ((c = getopt(argc, argv, "f:l:x:d:p:n:s:r:c:S:LvVh?")) != -1) {
+  while ((c = getopt(argc, argv, "f:l:x:d:p:n:s:r:c:LvVh?")) != -1) {
     switch (c) {
       case 'f':
         xtcFile = optarg;
@@ -75,9 +74,6 @@ int main(int argc, char* argv[]) {
         break;
       case 'c':
         nclients = strtoul(optarg, NULL, 0);
-        break;
-      case 'S':
-        sscanf(optarg, "%d", &sequenceLength);
         break;
       case 'L':
         loop = true;
@@ -122,7 +118,7 @@ int main(int argc, char* argv[]) {
   }
 
   XtcRunSet runSet;
-  runSet.connect(partitionTag, sizeOfBuffers, numberOfBuffers, nclients, sequenceLength, rate, verbose, veryverbose);
+  runSet.connect(partitionTag, sizeOfBuffers, numberOfBuffers, nclients, rate, verbose, veryverbose);
   do {
     if (xtcFile) {
       runSet.addSinglePath(xtcFile);

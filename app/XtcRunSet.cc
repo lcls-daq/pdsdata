@@ -32,13 +32,11 @@ public:
   MyMonitorServer(const char* tag,
                   unsigned sizeofBuffers, 
                   unsigned numberofEvBuffers, 
-                  unsigned numberofClients,
-                  unsigned sequenceLength) :
+                  unsigned numberofClients) :
     XtcMonitorServer(tag,
                      sizeofBuffers,
                      numberofEvBuffers,
-                     numberofClients,
-                     sequenceLength) {
+                     numberofClients) {
     // Only need these buffers for inserted transitions { Map, Unconfigure, Unmap }
     unsigned depth = 4;
     for(unsigned i=0; i<depth; i++)
@@ -189,7 +187,7 @@ void XtcRunSet::addPathsFromListFile(string listFile) {
   _addPaths(newPaths);
 }
 
-void XtcRunSet::connect(char* partitionTag, unsigned sizeOfBuffers, int numberOfBuffers, unsigned nclients, unsigned sequenceLength, int rate, bool verbose, bool veryverbose) {
+void XtcRunSet::connect(char* partitionTag, unsigned sizeOfBuffers, int numberOfBuffers, unsigned nclients, int rate, bool verbose, bool veryverbose) {
   if (_server == NULL) {
     _verbose = verbose;
     _veryverbose = veryverbose;
@@ -207,8 +205,7 @@ void XtcRunSet::connect(char* partitionTag, unsigned sizeOfBuffers, int numberOf
     _server = new MyMonitorServer(partitionTag,
                                   sizeOfBuffers, 
                                   numberOfBuffers, 
-                                  nclients,
-                                  sequenceLength);
+                                  nclients);
     clock_gettime(CLOCK, &now);
     printf("Opening shared memory took %.3f msec.\n", timeDiff(&now, &start) / 1e6);
   }

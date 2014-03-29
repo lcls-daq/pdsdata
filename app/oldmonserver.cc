@@ -12,7 +12,6 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <queue>
 
 using namespace Pds;
 
@@ -23,25 +22,16 @@ public:
   MyMonitorServer(const char* tag,
 		  unsigned sizeofBuffers, 
 		  unsigned numberofEvBuffers, 
-		  unsigned numberofClients,
-		  unsigned sequenceLength) :
+		  unsigned numberofClients) :
     XtcMonitorServer(tag,
 		     sizeofBuffers,
 		     numberofEvBuffers,
-		     numberofClients,
-		     sequenceLength) 
+		     numberofClients),
+    _sizeofBuffers(sizeofBuffers)
   {
-    //  sum of client queues (nEvBuffers) + clients + transitions + shuffleQ
-    unsigned depth = 2*numberofEvBuffers+XtcMonitorServer::numberofTrBuffers+numberofClients;
-    for(unsigned i=0; i<depth; i++)
-      _pool.push(reinterpret_cast<Dgram*>(new char[sizeofBuffers]));
   }
   ~MyMonitorServer() 
   {
-    while(!_pool.empty()) {
-      delete _pool.front();
-      _pool.pop();
-    }
   }
 public:
   XtcMonitorServer::Result events(Dgram* dg) {
@@ -51,18 +41,17 @@ public:
   }
   Dgram* newDatagram() 
   { 
-    Dgram* dg = _pool.front(); 
-    _pool.pop(); 
+    Dgram* dg = (Dgram*)new char[_sizeofBuffers];
     return dg; 
   }
   void   deleteDatagram(Dgram* dg) { _deleteDatagram(dg); }
 private:
   void  _deleteDatagram(Dgram* dg)
   {
-    _pool.push(dg); 
+    delete[] (char*)dg;
   }
 private:
-  std::queue<Dgram*> _pool;
+  size_t _sizeofBuffers;
 };
 
 static MyMonitorServer* apps;
@@ -149,11 +138,10 @@ int main(int argc, char* argv[]) {
   bool veryverbose = false;
   int numberOfBuffers = 0;
   unsigned sizeOfBuffers = 0;
-  unsigned sequenceLength = 1;
   struct timespec start, now, sleepTime;
   (void) signal(SIGINT, sigfunc);
 
-  while ((c = getopt(argc, argv, "hf:r:n:s:p:lvVc:S:")) != -1) {
+  while ((c = getopt(argc, argv, "hf:r:n:s:p:lvVc:")) != -1) {
     switch (c) {
     case 'h':
       usage(argv[0]);
@@ -166,9 +154,6 @@ int main(int argc, char* argv[]) {
       break;
     case 'n':
       sscanf(optarg, "%d", &numberOfBuffers);
-      break;
-    case 'S':
-      sscanf(optarg, "%d", &sequenceLength);
       break;
     case 's':
       sizeOfBuffers = (unsigned) strtoul(optarg, NULL, 0);
@@ -220,8 +205,7 @@ int main(int argc, char* argv[]) {
   apps = new MyMonitorServer(partitionTag,
 			     sizeOfBuffers, 
 			     numberOfBuffers, 
-			     nclients,
-			     sequenceLength);
+			     nclients);
   
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
   printf("Opening shared memory took %lld nanonseconds.\n", timeDiff(&now, &start));

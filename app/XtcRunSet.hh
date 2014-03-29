@@ -29,7 +29,7 @@ public:
   void addPathsFromDir(string dirPath, string matchString = "");
   void addPathsFromRunPrefix(string runPrefix);
   void addPathsFromListFile(string listFile);
-  void connect(char* partitionTag, unsigned sizeOfBuffers, int numberOfBuffers, unsigned nclients, unsigned sequenceLength, int rate, bool verbose = false, bool veryverbose = false);
+  void connect(char* partitionTag, unsigned sizeOfBuffers, int numberOfBuffers, unsigned nclients, int rate, bool verbose = false, bool veryverbose = false);
   void run();
 };
 
