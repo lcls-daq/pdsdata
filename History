@@ -1,7 +1,6 @@
-2014-Mar-26 cpo		Tag V08-00-01.  Workaround for what I believe
-                                        is a compiler bug when compiling
-                                        indexing with x86_64-opt (works
-                                        with x86_64-dbg).
+2014-Apr-03 cpo         Tag V08-00-02.  Add 64-bit time accessors for psana indexing.
+2014-Mar-26 cpo		Tag V08-00-01.  Workaround for what I believe is a compiler bug when compiling
+                                        indexing with x86_64-opt (works with x86_64-dbg).
 2014-Mar-26 cpo		Tag V07-02-23.  Add const accessor methods to index to
                                         allow for psana-indexing.
 2014-Jan-07 salnikov	Tag V07-02-15.  Derived from psddldata tag V01-00-01 and psddl V00-13-02.
