@@ -38,6 +38,8 @@ struct L1AcceptNode
     
   static const uint32_t uInvalidFiducial  = 0x1ffff;
   static const uint32_t uSegDmgNotPresent = 0x100000;
+
+  uint64_t time() const {return ((uint64_t)uSeconds<<32) | uNanoseconds;}
 };
 
 struct L1SegmentIndex

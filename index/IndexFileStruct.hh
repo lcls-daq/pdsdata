@@ -180,6 +180,8 @@ struct IndexFileL1NodeV1
     
   IndexFileL1NodeV1() : damage(0) {}
   IndexFileL1NodeV1(const L1AcceptNode& node);  
+
+  uint64_t time() const {return ((uint64_t)uSeconds<<32) | uNanoseconds;}
 };
 
 struct CalibNode
@@ -192,6 +194,7 @@ struct CalibNode
   CalibNode() {}
   CalibNode(int64_t i64Offset1, int32_t iL1Index1, uint32_t uSeconds1, uint32_t uNanoseconds1) : 
     i64Offset(i64Offset1), iL1Index(iL1Index1), uSeconds(uSeconds1), uNanoseconds(uNanoseconds1) {}
+  uint64_t time() const {return ((uint64_t)uSeconds<<32) | uNanoseconds;}
 };
 
 //typedef IndexFileHeaderV1 IndexFileHeaderType;
