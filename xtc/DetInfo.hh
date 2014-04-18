@@ -62,8 +62,7 @@ namespace Pds {
       FeeHxSpectrometer = 45,
       XrayTransportDiagnostic = 46,
       Lamp          = 47,
-      Epix10k       = 48,
-      NumDetector   = 49:
+      NumDetector   = 48:
     };
 
     enum Device {
@@ -101,7 +100,8 @@ namespace Pds {
       EpixSampler=31,
       Pimax     = 32,
       Fccd960   = 33,
-      NumDevice = 34
+      Epix10k   = 34,
+      NumDevice = 35
     };
 
     DetInfo() {}
