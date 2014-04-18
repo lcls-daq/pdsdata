@@ -62,7 +62,7 @@ namespace Pds {
       FeeHxSpectrometer = 45,
       XrayTransportDiagnostic = 46,
       Lamp          = 47,
-      NumDetector   = 48:
+      NumDetector   = 48
     };
 
     enum Device {
