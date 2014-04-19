@@ -151,7 +151,8 @@ const char* TypeId::name(Type type)
     "PartitionConfig",         // 79
     "PimaxConfig",             // 80
     "PimaxFrame",              // 81
-    "Arraychar",        // 82
+    "Arraychar",               // 82
+    "Epix10kConfig",        // 83
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
