@@ -17,6 +17,9 @@ int XtcIterL1Accept::process(Xtc * xtc)
   int64_t         i64OffsetPayload  = _i64Offset + sizeof(Xtc);
   bool            bStopUpdate       = false;
 
+  if (xtc->damage.value() & (1<<Damage::IncompleteContribution))
+    return XtcIterL1Accept::Stop;
+    
   if (xtc->extent < sizeof(Xtc) ||
       (xtc->extent&3) ||
       (xtc->contains.id() >= TypeId::NumberOf) ||

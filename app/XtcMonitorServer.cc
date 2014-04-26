@@ -249,7 +249,9 @@ void XtcMonitorServer::distribute(bool l)
 
 bool XtcMonitorServer::_send(Dgram* dg)
 {
-  int r = mq_receive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL); 
+  const timespec no_wait={0,0};
+  int r = mq_timedreceive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL,
+                          &no_wait); 
   if (r>0)
     ;
   else {
