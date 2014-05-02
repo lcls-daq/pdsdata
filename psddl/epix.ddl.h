@@ -166,8 +166,11 @@ public:
   uint32_t lastRowExclusions() const { return _lastRowExclusions; }
   uint32_t numberOfAsicsPerRow() const { return _numberOfAsicsPerRow; }
   uint32_t numberOfAsicsPerColumn() const { return _numberOfAsicsPerColumn; }
+  /** generally 2 x 2 */
   uint32_t numberOfRowsPerAsic() const { return _numberOfRowsPerAsic; }
+  /** for epix100  352 */
   uint32_t numberOfPixelsPerAsicRow() const { return _numberOfPixelsPerAsicRow; }
+  /** for epix100 96*4 */
   uint32_t baseClockFrequency() const { return _baseClockFrequency; }
   uint32_t asicMask() const { return _asicMask; }
   const Epix::AsicConfigV1& asics(uint32_t i0) const { ptrdiff_t offset=112;
@@ -234,9 +237,9 @@ private:
   uint32_t	_lastRowExclusions;
   uint32_t	_numberOfAsicsPerRow;
   uint32_t	_numberOfAsicsPerColumn;
-  uint32_t	_numberOfRowsPerAsic;
-  uint32_t	_numberOfPixelsPerAsicRow;
-  uint32_t	_baseClockFrequency;
+  uint32_t	_numberOfRowsPerAsic;	/**< generally 2 x 2 */
+  uint32_t	_numberOfPixelsPerAsicRow;	/**< for epix100  352 */
+  uint32_t	_baseClockFrequency;	/**< for epix100 96*4 */
   uint32_t	_asicMask;
   //Epix::AsicConfigV1	_asics[this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()];
   //uint32_t	_asicPixelTestArray[this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()][ this->numberOfRowsPerAsic()][ (this->numberOfPixelsPerAsicRow()+31)/32];
@@ -425,9 +428,10 @@ public:
   uint32_t lastRowExclusions() const { return _lastRowExclusions; }
   uint32_t numberOfAsicsPerRow() const { return _numberOfAsicsPerRow; }
   uint32_t numberOfAsicsPerColumn() const { return _numberOfAsicsPerColumn; }
-  /** wish I could find the comments from the old ddl, that were apparently thrown away! */
   uint32_t numberOfRowsPerAsic() const { return _numberOfRowsPerAsic; }
+  /** for epix10k  176 */
   uint32_t numberOfPixelsPerAsicRow() const { return _numberOfPixelsPerAsicRow; }
+  /** for epix10k 48*4 */
   uint32_t baseClockFrequency() const { return _baseClockFrequency; }
   uint32_t asicMask() const { return _asicMask; }
   uint8_t scopeEnable() const { return uint8_t(this->_Scope & 0x1); }
@@ -494,9 +498,9 @@ private:
   uint32_t	_lastRowExclusions;
   uint32_t	_numberOfAsicsPerRow;
   uint32_t	_numberOfAsicsPerColumn;
-  uint32_t	_numberOfRowsPerAsic;	/**< wish I could find the comments from the old ddl, that were apparently thrown away! */
-  uint32_t	_numberOfPixelsPerAsicRow;
-  uint32_t	_baseClockFrequency;
+  uint32_t	_numberOfRowsPerAsic;
+  uint32_t	_numberOfPixelsPerAsicRow;	/**< for epix10k  176 */
+  uint32_t	_baseClockFrequency;	/**< for epix10k 48*4 */
   uint32_t	_asicMask;
   uint32_t	_Scope;
   uint32_t	_ScopeTriggerParms_1;
