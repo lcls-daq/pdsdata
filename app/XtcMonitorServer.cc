@@ -83,6 +83,8 @@ namespace Pds {
 	printf("%08x ",_allocated[i]);
       printf("\n");
 #endif
+      sem_wait(&_sem);
+
       for(std::list<int>::iterator it=_freeTr.begin();
 	  it!=_freeTr.end(); it++)
 	if (_allocated[*it]==0) {
@@ -92,7 +94,6 @@ namespace Pds {
 	  //  Cache the transition for any clients 
 	  //    which may not be listening (yet)
 	  //
-	  sem_wait(&_sem);
 	  if ( _cachedTr.empty() ) {
 	    if (id==TransitionId::Map) {
 	      _freeTr.remove(ibuffer);
@@ -114,7 +115,6 @@ namespace Pds {
 	    else {  // unexpected transition
 	    }
 	  }
-	  sem_post(&_sem);
 
 	  if ((id&1)==0) {
 	    unsigned not_ready=0;
@@ -124,13 +124,18 @@ namespace Pds {
 	      if (odg.seq.service()==TransitionId::Enable)
 		not_ready |= _allocated[itr];
 	    }
+
+	    if (not_ready &~_not_ready)
+	      printf("Transition %s: not_ready %x -> %x\n",
+		     TransitionId::name(id), _not_ready, _not_ready|not_ready);
+
 	    _not_ready |= not_ready;
 	  }
+
+	  sem_post(&_sem);
+
 #ifdef DBUG
 	  printf("not_ready %08x\n",_not_ready);
-	  for(unsigned i=0; i<numberofTrBuffers; i++)
-	    printf("%08x ",_allocated[i]);
-	  printf("\n");
 #endif
 	  return ibuffer;
 	}
@@ -140,6 +145,9 @@ namespace Pds {
 #ifdef DBUG
       printf("allocate[%d,%d] not_ready %08x\n",ibuffer,client,_not_ready);
 #endif
+
+      sem_wait(&_sem);
+
       if (_not_ready & (1<<client)) {
 	TransitionId::Value last=TransitionId::NumberOf;
 	for(unsigned i=0; i<numberofTrBuffers; i++)
@@ -151,32 +159,51 @@ namespace Pds {
 	
 	TransitionId::Value id = 
 	  reinterpret_cast<const Dgram*>(_pShm + _szShm*ibuffer)->seq.service();
-	if (!((id&1)==1 && id<last))
+	if (!((id&1)==1 && id<last)) {
+	  sem_post(&_sem);
 	  return false;
+	}
       }
       _allocated[ibuffer] |= (1<<client);
+
+      sem_post(&_sem);
+
 #ifdef DBUG
       printf("_allocated[%d] = %08x\n",ibuffer,_allocated[ibuffer]);
 #endif 
       return true;
     }
     bool deallocate(int ibuffer, unsigned client) {
-      _allocated[ibuffer] &= ~(1<<client);
+      sem_wait(&_sem);
+      bool result=false;
+      { unsigned v = _allocated[ibuffer] & ~(1<<client);
 #ifdef DBUG
-      printf("_allocated[%d] = %08x\n",ibuffer,_allocated[ibuffer]);
-#endif
+	printf("_deallocate[%d,%d] %08x -> %08x\n",ibuffer,client,
+	       _allocated[ibuffer],v);
+#else
+	if ( _allocated[ibuffer]==v )
+	  printf("_deallocate[%d,%d] %08x no change\n",ibuffer,client,v);
+#endif       
+	_allocated[ibuffer]=v; }
+
       if (_not_ready & (1<<client)) {
 	for(unsigned i=0; i<numberofTrBuffers; i++)
-	  if (_allocated[i] & (1<<client))
+	  if (_allocated[i] & (1<<client)) {
+	    sem_post(&_sem);
 	    return false;
+	  }
+	printf("not_ready %x -> %x\n", _not_ready, _not_ready&~(1<<client));
 	_not_ready &= ~(1<<client);
-	return true;
+	result=true;
       }
-      return false;
+      sem_post(&_sem);
+      return result;
     }
     void deallocate(unsigned client) {
+      sem_wait(&_sem);
       for(unsigned itr=0; itr<numberofTrBuffers; itr++)
 	_allocated[itr] &= ~(1<<client);
+      sem_post(&_sem);
 #ifdef DBUG
       printf("deallocate %d\n",client);
       for(unsigned i=0; i<numberofTrBuffers; i++)
@@ -403,7 +430,7 @@ void XtcMonitorServer::discover()
 void XtcMonitorServer::routine()
 {
   while(1) {
-#ifdef DBUG
+#if 0
     printf("Enter poll with {");
     for(int i=0; i<_nfd; i++)
       printf("%d,",_pfd[i].fd);
@@ -411,7 +438,7 @@ void XtcMonitorServer::routine()
 #endif
     if (::poll(_pfd,_nfd,-1) > 0) {
 
-#ifdef DBUG
+#if 0
       printf("Return poll with {");
       for(int i=0; i<_nfd; i++)
 	printf("%x,",_pfd[i].revents);
@@ -468,10 +495,8 @@ void XtcMonitorServer::routine()
       //
       for(int i=2; i<_nfd; i++) {
 	if (_pfd[i].revents & POLLIN) {
-	  int r = ::recv(_pfd[i].fd, (char*)&_myMsg, sizeof(_myMsg), 0);
-	  if (r < 0)
-	    perror("Recv error from client");
-	  else {
+	  int r;
+	  while((r=::recv(_pfd[i].fd, (char*)&_myMsg, sizeof(_myMsg), MSG_DONTWAIT))>=0) {
 	    for(unsigned q=0; q<_myTrFd.size(); q++)
 	      if (_myTrFd[q]==_pfd[i].fd) {
 		if (r > 0) {
