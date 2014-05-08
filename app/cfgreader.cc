@@ -34,7 +34,7 @@ static bool noEpics;
 class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};
-  myLevelIter(Xtc* xtc, unsigned depth) : 
+  myLevelIter(Xtc* xtc, unsigned depth) :
     XtcIterator(xtc), _depth(depth) {}
 
   void process(const Src&, const Acqiris::ConfigV1&) {
@@ -81,11 +81,11 @@ public:
       printf( "myLevelIter::process(...,PNCCD::ConfigV1&): pnCCD device Id (%d) is out of range (0..1)\n", det.devId() );
       return;
     }
-    
+
     _pnCcdCfgListV1[det.devId()] = config;
     printf("*** Processing pnCCD config.  Number of Links: %d, PayloadSize per Link: %d\n",
            config.numLinks(),config.payloadSizePerLink());
-  }  
+  }
   void process(const Src& info, const PNCCD::ConfigV2& config) {
     const DetInfo& det = static_cast<const DetInfo&>(info);
     if ( det.detId() != 0 )
@@ -107,10 +107,10 @@ public:
     printf("\tCamex Magic 0x%x, info %s, Timing File Name %s\n", config.camexMagic(),config.info(),config.timingFName());
   }
   void process(const Src&, const ControlData::ConfigV1& config) {
-    printf("*** Processing Control config V1 object\n");    
-    
+    printf("*** Processing Control config V1 object\n");
+
     printf( "Control PV Number = %d, Monitor PV Number = %d\n", config.npvControls(), config.npvMonitors() );
-    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
+    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {
       const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
       if (pvControlCur.array())
         printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
@@ -118,8 +118,8 @@ public:
         printf( "%s = ", pvControlCur.name() );
       printf( "%lf\n", pvControlCur.value() );
     }
-    
-    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
+
+    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {
       const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
       if (pvMonitorCur.array())
         printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
@@ -127,14 +127,14 @@ public:
         printf( "%s  ", pvMonitorCur.name() );
       printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
     }
-          
-  }  
+
+  }
   void process(const Src&, const ControlData::ConfigV2& config) {
-    printf("*** Processing Control config V2 object\n");    
-    
+    printf("*** Processing Control config V2 object\n");
+
     printf( "Control PV Number = %d, Monitor PV Number = %d, Label PV Number = %d\n",
             config.npvControls(), config.npvMonitors(), config.npvLabels() );
-    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
+    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {
       const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
       if (pvControlCur.array())
         printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
@@ -142,8 +142,8 @@ public:
         printf( "%s = ", pvControlCur.name() );
       printf( "%lf\n", pvControlCur.value() );
     }
-    
-    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
+
+    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {
       const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
       if (pvMonitorCur.array())
         printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
@@ -151,15 +151,15 @@ public:
         printf( "%s  ", pvMonitorCur.name() );
       printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
     }
-          
-    for(unsigned int iPvLabel=0; iPvLabel < config.npvLabels(); iPvLabel++) {      
+
+    for(unsigned int iPvLabel=0; iPvLabel < config.npvLabels(); iPvLabel++) {
       const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabels()[iPvLabel];
       printf( "%s = %s\n", pvLabelCur.name(), pvLabelCur.value() );
     }
-          
-  }  
+
+  }
   void process(const Src&, const Epics::EpicsPvHeader& epicsPv)
-  {    
+  {
     if (epicsPv.isCtrl()) {
       const Epics::EpicsPvCtrlHeader& ctrlPv = static_cast<const Epics::EpicsPvCtrlHeader&>(epicsPv);
       printf("*** Processing Epics Cntrl object\n");
@@ -177,52 +177,58 @@ public:
   void process(const Src&, const Bld::BldDataFEEGasDetEnergy& bldData) {
     printf("*** Processing FEEGasDetEnergy object\n");
     //    bldData.print();
-    //    printf( "\n" );    
-  }  
+    //    printf( "\n" );
+  }
   void process(const Src&, const Bld::BldDataEBeamV0& bldData) {
     printf("*** Processing EBeamV0 object\n");
     //    bldData.print();
-    //    printf( "\n" );    
-  }  
+    //    printf( "\n" );
+  }
   void process(const Src&, const Bld::BldDataEBeamV1& bldData) {
     printf("*** Processing EBeamV1 object\n");
     //    bldData.print();
-    //    printf( "\n" );    
-  }  
+    //    printf( "\n" );
+  }
   void process(const Src&, const Bld::BldDataEBeamV2& bldData) {
     printf("*** Processing EBeam object\n");
     //    bldData.print();
-    //    printf( "\n" );    
-  }  
+    //    printf( "\n" );
+  }
   void process(const Src&, const Bld::BldDataPhaseCavity& bldData) {
     printf("*** Processing PhaseCavity object\n");
     //    bldData.print();
-    //    printf( "\n" );    
+    //    printf( "\n" );
   }
   void process(const Src&, const Bld::BldDataIpimbV0& bldData) {
     printf("*** Processing Bld-Ipimb V0 object\n");
     //    bldData.print();
-    //    printf( "\n" );    
-  } 
+    //    printf( "\n" );
+  }
 
   void process(const Src&, const Bld::BldDataIpimbV1& bldData) {
     printf("*** Processing Bld-Ipimb V1 object\n");
     //    bldData.print();
-    //    printf( "\n" );    
-  } 
+    //    printf( "\n" );
+  }
 
   void process(const Src&, const Bld::BldDataGMDV0& bldData) {
     printf("*** Processing Bld-GMD V0 object\n");
     //    bldData.print();
-    //    printf( "\n" );    
-  }   
+    //    printf( "\n" );
+  }
 
   void process(const Src&, const Bld::BldDataGMDV1& bldData) {
     printf("*** Processing Bld-GMD V1 object\n");
     //    bldData.print();
     //    printf( "\n" );
   }
-  
+
+  void process(const Src&, const Bld::BldDataGMDV2& bldData) {
+    printf("*** Processing Bld-GMD V1 object\n");
+    //    bldData.print();
+    //    printf( "\n" );
+  }
+
   void process(const Src&, const EvrData::IOConfigV1&) {
     printf("*** Processing EVR IOconfig V1 object\n");
   }
@@ -278,7 +284,7 @@ public:
     Level::Type   level     = xtc->src.level();
     printf("%s level, payload size %d contains: %s: ",
      Level::name(level), xtc->sizeofPayload(), TypeId::name(xtc->contains.id()));
-     
+
     const Src& info = xtc->src;
     switch(xtc->src.level()) {
     case Level::Source:
@@ -297,7 +303,7 @@ public:
     {
         printf("Unsupported Level %d\n", (int) level);
         return Continue;
-    }    
+    }
     switch (xtc->contains.id()) {
     case (TypeId::Id_Xtc) : {
       myLevelIter iter(xtc,_depth+1);
@@ -305,7 +311,7 @@ public:
       break;
     }
     case (TypeId::Id_AcqConfig) :
-    {      
+    {
       unsigned version = xtc->contains.version();
       switch (version) {
       case 1:
@@ -315,10 +321,10 @@ public:
         printf("Unsupported acqiris configuration version %d\n",version);
         break;
       }
-      break;      
+      break;
     }
     case (TypeId::Id_IpimbConfig) :
-    {      
+    {
       unsigned version = xtc->contains.version();
       switch (version) {
       case 1:
@@ -331,10 +337,10 @@ public:
         printf("Unsupported ipimb configuration version %d\n",version);
         break;
       }
-      break;      
+      break;
     }
     case (TypeId::Id_EncoderConfig) :
-    {      
+    {
       unsigned version = xtc->contains.version();
       switch (version) {
       case 1:
@@ -344,7 +350,7 @@ public:
         printf("Unsupported encoder configuration version %d\n",version);
         break;
       }
-      break;      
+      break;
     }
     case (TypeId::Id_Opal1kConfig) :
       process(info, *(const Opal1k::ConfigV1*)(xtc->payload()));
@@ -368,12 +374,12 @@ public:
       break;
       }
     case (TypeId::Id_EvrIOConfig) :
-      {      
+      {
       process(info, *(const EvrData::IOConfigV1*)(xtc->payload()));
       break;
       }
     case (TypeId::Id_EvrConfig) :
-    {      
+    {
       unsigned version = xtc->contains.version();
       switch (version) {
       case 1:
@@ -395,7 +401,7 @@ public:
         printf("Unsupported evr configuration version %d\n",version);
         break;
       }
-      break;      
+      break;
     }
     case (TypeId::Id_ControlConfig) :
       switch(xtc->contains.version()) {
@@ -409,11 +415,11 @@ public:
         break;
       }
       break;
-    case (TypeId::Id_Epics) :      
+    case (TypeId::Id_Epics) :
     {
       if (!noEpics) {
 //         int iVersion = xtc->contains.version();
-//         if ( iVersion != EpicsXtcSettings::iXtcVersion ) 
+//         if ( iVersion != EpicsXtcSettings::iXtcVersion )
 //           {
 //             printf( "Xtc Epics version (%d) is not compatible with reader supported version (%d)", iVersion, EpicsXtcSettings::iXtcVersion );
 //             break;
@@ -428,28 +434,28 @@ public:
     case (TypeId::Id_FEEGasDetEnergy) :
     {
       process(info, *(const Bld::BldDataFEEGasDetEnergy*) xtc->payload() );
-      break;        
+      break;
     }
     case (TypeId::Id_EBeam) :
     {
       switch(xtc->contains.version()) {
       case 0:
         process(info, *(const Bld::BldDataEBeamV0*) xtc->payload() );
-        break; 
+        break;
       case 1:
         process(info, *(const Bld::BldDataEBeamV1*) xtc->payload() );
-        break; 
+        break;
       case 2:
         process(info, *(const Bld::BldDataEBeamV2*) xtc->payload() );
-        break; 
+        break;
       default:
         break;
-      }       
-    }    
+      }
+    }
     case (TypeId::Id_PhaseCavity) :
     {
       process(info, *(const Bld::BldDataPhaseCavity*) xtc->payload() );
-      break;        
+      break;
     }
     case (TypeId::Id_GMD) :
     {
@@ -459,6 +465,9 @@ public:
           break;
         case 1:
           process(info, *(const Bld::BldDataGMDV1*) xtc->payload() );
+          break;
+        case 2:
+          process(info, *(const Bld::BldDataGMDV2*) xtc->payload() );
           break;
         default:
           break;
@@ -472,15 +481,15 @@ public:
      switch(xtc->contains.version()) {
       case 0:
         process(info, *(const Bld::BldDataIpimbV0*) xtc->payload() );
-        break; 
+        break;
       case 1:
         process(info, *(const Bld::BldDataIpimbV1*) xtc->payload() );
-        break; 
+        break;
       default:
         break;
-      }   
-      break; 
-       
+      }
+      break;
+
     }
     case (TypeId::Id_PrincetonConfig) :
     {
@@ -562,7 +571,7 @@ int main(int argc, char* argv[]) {
       parseErr++;
     }
   }
-  
+
   if (!xtcname) {
     usage(argv[0]);
     exit(2);

@@ -16,7 +16,7 @@ using namespace Pds;
 static const double damaged = -1.e9;
 class bldData {
 public:
-  void reset() { 
+  void reset() {
     gasdet   = 0;
     ebeamV0  = 0;
     ebeamV1  = 0;
@@ -25,6 +25,7 @@ public:
     phasecav = 0;
     gmdV0    = 0;
     gmdV1    = 0;
+    gmdV2    = 0;
   }
   void dump() const {
     printf("%d\t%d\t%d\t",
@@ -32,17 +33,17 @@ public:
      nanoseconds,
      pulseId);
 
-    if (gasdet)   printf("%g\t%g\t%g\t%g\t", 
+    if (gasdet)   printf("%g\t%g\t%g\t%g\t",
                          gasdet->f_11_ENRC(),
                          gasdet->f_12_ENRC(),
                          gasdet->f_21_ENRC(),
                          gasdet->f_22_ENRC());
-    else          printf("%g\t%g\t%g\t%g\t", 
+    else          printf("%g\t%g\t%g\t%g\t",
                          damaged,
                          damaged,
                          damaged,
                          damaged);
-    
+
     if (ebeamV0) printf("%g\t%g\t%g\t%g\t%g\t%g\t",
                         ebeamV0->ebeamCharge(),
                         ebeamV0->ebeamL3Energy(),
@@ -58,17 +59,17 @@ public:
                         ebeamV3->ebeamPkCurrBC1(),
                         ebeamV3->ebeamEnergyBC1());
 
-    if (phasecav) printf("%g\t%g\t%g\t%g\n", 
+    if (phasecav) printf("%g\t%g\t%g\t%g\n",
                          phasecav->fitTime1(),
                          phasecav->fitTime2(),
                          phasecav->charge1(),
                          phasecav->charge2());
-    else          printf("%g\t%g\t%g\t%g\n", 
+    else          printf("%g\t%g\t%g\t%g\n",
                          damaged,
                          damaged,
                          damaged,
                          damaged);
-    
+
     //    if (gmd) gmd->print();
   }
   void header() const {
@@ -109,6 +110,7 @@ public:
   const Bld::BldDataPhaseCavity*     phasecav;
   const Bld::BldDataGMDV0*             gmdV0;
   const Bld::BldDataGMDV1*             gmdV1;
+  const Bld::BldDataGMDV2*             gmdV2;
 };
 
 static bldData bld;
@@ -128,29 +130,32 @@ public:
     else if (xtc->src.level() == Level::Reporter) {
       const BldInfo& info = static_cast<const BldInfo&>(xtc->src);
       switch(info.type()) {
-      case BldInfo::EBeam          : 
+      case BldInfo::EBeam          :
         if (xtc->contains.version()>=0)
-          bld.ebeamV0  = reinterpret_cast<const Bld::BldDataEBeamV0*>      (xtc->payload()); 
+          bld.ebeamV0  = reinterpret_cast<const Bld::BldDataEBeamV0*>      (xtc->payload());
         if (xtc->contains.version()>=1)
-          bld.ebeamV1  = reinterpret_cast<const Bld::BldDataEBeamV1*>      (xtc->payload()); 
+          bld.ebeamV1  = reinterpret_cast<const Bld::BldDataEBeamV1*>      (xtc->payload());
         if (xtc->contains.version()>=2)
-          bld.ebeamV2  = reinterpret_cast<const Bld::BldDataEBeamV2*>      (xtc->payload()); 
+          bld.ebeamV2  = reinterpret_cast<const Bld::BldDataEBeamV2*>      (xtc->payload());
         if (xtc->contains.version()>=3)
-          bld.ebeamV3  = reinterpret_cast<const Bld::BldDataEBeamV3*>      (xtc->payload()); 
+          bld.ebeamV3  = reinterpret_cast<const Bld::BldDataEBeamV3*>      (xtc->payload());
         break;
-      case BldInfo::PhaseCavity    : 
-        bld.phasecav = reinterpret_cast<const Bld::BldDataPhaseCavity*>    (xtc->payload()); 
+      case BldInfo::PhaseCavity    :
+        bld.phasecav = reinterpret_cast<const Bld::BldDataPhaseCavity*>    (xtc->payload());
         break;
-      case BldInfo::FEEGasDetEnergy: 
-        bld.gasdet   = reinterpret_cast<const Bld::BldDataFEEGasDetEnergy*>(xtc->payload()); 
+      case BldInfo::FEEGasDetEnergy:
+        bld.gasdet   = reinterpret_cast<const Bld::BldDataFEEGasDetEnergy*>(xtc->payload());
         break;
-      case BldInfo::GMD: 
+      case BldInfo::GMD:
         switch(xtc->contains.version()) {
         case 0:
-          bld.gmdV0     = reinterpret_cast<const Bld::BldDataGMDV0*>(xtc->payload()); 
+          bld.gmdV0     = reinterpret_cast<const Bld::BldDataGMDV0*>(xtc->payload());
           break;
         case 1:
-          bld.gmdV1     = reinterpret_cast<const Bld::BldDataGMDV1*>(xtc->payload()); 
+          bld.gmdV1     = reinterpret_cast<const Bld::BldDataGMDV1*>(xtc->payload());
+          break;
+        case 2:
+          bld.gmdV2     = reinterpret_cast<const Bld::BldDataGMDV2*>(xtc->payload());
           break;
         default:
           break;
@@ -209,7 +214,7 @@ int main(int argc, char* argv[]) {
       parseErr++;
     }
   }
-  
+
   if (!xtcname || parseErr) {
     usage(argv[0]);
     exit(2);
