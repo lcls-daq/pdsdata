@@ -475,7 +475,7 @@ std::ostream& operator<<(std::ostream& str, Bld::BldDataEBeamV5::DamageMask enva
 
 /** @class BldDataPhaseCavity
 
-  PV names: UND:R02:IOC:16:BAT:FitTime1, UND:R02:IOC:16:BAT:FitTime2, 
+  PV names: UND:R02:IOC:16:BAT:FitTime1, UND:R02:IOC:16:BAT:FitTime2,
                 UND:R02:IOC:16:BAT:Charge1,  UND:R02:IOC:16:BAT:Charge2
 */
 
@@ -509,7 +509,7 @@ private:
 
 /** @class BldDataIpimbV0
 
-  Combined structure which includes Ipimb.DataV1, Ipimb.ConfigV1, and 
+  Combined structure which includes Ipimb.DataV1, Ipimb.ConfigV1, and
             Lusi.IpmFexV1 objects.
 */
 
@@ -542,7 +542,7 @@ private:
 
 /** @class BldDataIpimbV1
 
-  Combined structure which includes Ipimb.DataV2, Ipimb.ConfigV2, and 
+  Combined structure which includes Ipimb.DataV2, Ipimb.ConfigV2, and
             Lusi.IpmFexV1 objects.
 */
 
@@ -575,7 +575,7 @@ private:
 
 /** @class BldDataPimV1
 
-  Combined structure which includes Pulnix.TM6740ConfigV2, Lusi.PimImageConfigV1, and 
+  Combined structure which includes Pulnix.TM6740ConfigV2, Lusi.PimImageConfigV1, and
             Camera.FrameV1 objects.
 */
 
@@ -720,9 +720,53 @@ private:
 };
 #pragma pack(pop)
 
+/** @class BldDataGMDV2
+
+  Gas Monitor Detector data.
+*/
+
+#pragma pack(push,4)
+
+class BldDataGMDV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_GMD /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  BldDataGMDV2() {}
+  BldDataGMDV2(const BldDataGMDV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataGMDV2& operator=(const BldDataGMDV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Shot to shot pulse energy (mJ) */
+  double milliJoulesPerPulse() const { return _fMilliJoulesPerPulse; }
+  /** Average pulse energy from ION cup current (mJ) */
+  double milliJoulesAverage() const { return _fMilliJoulesAverage; }
+  /** Sum of all peaks, normalized w/ filt bkgd level */
+  double sumAllPeaksFiltBkgd() const { return _fSumAllPeaksFiltBkgd; }
+  /** Avg background value per waveform in raw A/D counts */
+  double rawAvgBkgd() const { return _fRawAvgBkgd; }
+  /** Shot by shot pulse energy in arbitrary units */
+  double relativeEnergyPerPulse() const { return _fRelativeEnergyPerPulse; }
+  /** Sum of all peaks, normalized w/ raw avg bkgd level */
+  double sumAllPeaksRawBkgd() const { return _fSumAllPeaksRawBkgd; }
+  static uint32_t _sizeof() { return 48; }
+private:
+  double	_fMilliJoulesPerPulse;	/**< Shot to shot pulse energy (mJ) */
+  double	_fMilliJoulesAverage;	/**< Average pulse energy from ION cup current (mJ) */
+  double	_fSumAllPeaksFiltBkgd;	/**< Sum of all peaks, normalized w/ filt bkgd level */
+  double	_fRawAvgBkgd;	/**< Avg background value per waveform in raw A/D counts */
+  double	_fRelativeEnergyPerPulse;	/**< Shot by shot pulse energy in arbitrary units */
+  double	_fSumAllPeaksRawBkgd;	/**< Sum of all peaks, normalized w/ raw avg bkgd level */
+};
+#pragma pack(pop)
+
 /** @class BldDataAcqADCV1
 
-  Combined structure which includes Acqiris.ConfigV1 and 
+  Combined structure which includes Acqiris.ConfigV1 and
             Acqiris.DataDescV1 objects.
 */
 
