@@ -276,17 +276,23 @@ void XtcMonitorServer::distribute(bool l)
 
 bool XtcMonitorServer::_send(Dgram* dg)
 {
+  //
+  //  For reasons I don't yet understand, sometimes the message queues
+  //  are opened in blocking mode.  So, I use mq_timedreceive 
+  //  with a 0 timeout to avoid blocking.
+  //
   const timespec no_wait={0,0};
   int r = mq_timedreceive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL,
                           &no_wait); 
   if (r>0)
     ;
   else {
-    if (r<0) perror("Error reading input event queue");
+    if (r<0) ; // perror("Error reading input event queue");
     for(unsigned i=0; i<_numberOfEvQueues; i++) {
-      r=mq_receive(_myOutputEvQueue[i], (char*)&_myMsg, sizeof(_myMsg), NULL);
+      r=mq_timedreceive(_myOutputEvQueue[i], (char*)&_myMsg, sizeof(_myMsg), NULL,
+                        &no_wait);
       if (r>0) break;
-      if (r<0) perror("Error reading output event queue");
+      if (r<0) ; // perror("Error reading output event queue");
     }
   }
 
@@ -298,7 +304,7 @@ bool XtcMonitorServer::_send(Dgram* dg)
     }
   }
   else {
-    printf("No event message found\n");
+    printf("No shared memory buffer found.  Dropping new event.\n");
     _deleteDatagram(dg);
   }
   return true;

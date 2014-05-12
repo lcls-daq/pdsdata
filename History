@@ -1,3 +1,4 @@
+2014-May-12 weaver	Tag V08-00-07.  Fix to use nonblocking message queue receive in XtcMonitorServer.cc.
 2014-May-08 tomy        Tag V08-00-06.  Add BldDataGMDV2
 2014-Apr-03 cpo         Tag V08-00-02.  Add 64-bit time accessors for psana indexing.
 2014-Mar-26 cpo		Tag V08-00-01.  Workaround for what I believe is a compiler bug when compiling
