@@ -97,7 +97,9 @@ namespace Pds {
                                         // the TCP port for initiating connections
     mqd_t           _myInputEvQueue;    // message queue for returned events
     mqd_t*          _myOutputEvQueue;   // message queues[nclients] for distributing events
-    std::vector<int> _myTrFd;
+    std::vector<int> _myTrFd;           // TCP sockets to clients for distributing
+                                        // transitions and detecting disconnects.
+    std::vector<int> _msgDest;          // last client to which the buffer was sent
     TransitionCache* _transitionCache;
     int             _initFd;
     pollfd*         _pfd;               /* poll descriptors for:

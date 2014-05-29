@@ -238,6 +238,7 @@ XtcMonitorServer::XtcMonitorServer(const char* tag,
   _myInputEvQueue   (-1),
   _myOutputEvQueue  (new mqd_t[numberofEvQueues]),
   _myTrFd           (0),
+  _msgDest          (numberofEvBuffers),
   _pfd              (new pollfd[32]),
   _nfd              (2),
   _ievt             (0) 
@@ -297,6 +298,7 @@ bool XtcMonitorServer::_send(Dgram* dg)
   }
 
   if (r>0) {
+    _msgDest[_myMsg.bufferIndex()]=-1;
     ShMsg m(_myMsg, dg);
     if (mq_timedsend(_shuffleQueue, (const char*)&m, sizeof(m), 0, &_tmo)) {
       printf("ShuffleQ timedout\n");
@@ -472,8 +474,10 @@ void XtcMonitorServer::routine()
 	  for(unsigned i=0; i<=_numberOfEvQueues; i++)
 	    if (mq_timedsend(_myOutputEvQueue[i], (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo))
 	      ; //	    printf("outputEv timedout to client %d\n",i);
-	    else
+	    else {
+              _msgDest[m.msg().bufferIndex()]=i;
 	      break;
+            }
 	}
 	else {
 	  //
@@ -481,10 +485,12 @@ void XtcMonitorServer::routine()
 	  //
 	  bool lsent=false;
 	  for(unsigned i=0; i<_numberOfEvQueues; i++) {
-	    int oq = _myOutputEvQueue[_ievt++%_numberOfEvQueues];
+            int oc = _ievt++%_numberOfEvQueues;
+	    int oq = _myOutputEvQueue[oc];
 	    if (mq_timedsend(oq, (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo))
 	      ;
 	    else {
+              _msgDest[m.msg().bufferIndex()]=oc;
 	      lsent=true;
 	      break;
 	    }
@@ -511,10 +517,29 @@ void XtcMonitorServer::routine()
 		    _update(q,reinterpret_cast<Dgram*>(_myShm+_sizeOfBuffers*_myMsg.bufferIndex())->seq.service());
 		}
 		else { // retire client
-#ifdef DBUG
 		  printf("Retiring client %d [%d]\n",q,_pfd[i].fd);
-#endif
+                  //  Recover buffers last sent to this client
+                  //  First, account for the ones waiting in our input queue
+                  const timespec no_wait={0,0};
+                  while(mq_timedreceive(_myInputEvQueue, (char*)&_myMsg, 
+                                        sizeof(_myMsg), NULL, &no_wait)>0) {
+                    mq_send(_myInputEvQueue, (char*)&_myMsg,sizeof(_myMsg),0);
+                    if (_msgDest[_myMsg.bufferIndex()]>=0)
+                      _msgDest[_myMsg.bufferIndex()]=-1;
+                    else
+                      break;
+                  }
+                  //  Recover the buffers still queued to the retired client
+                  _moveQueue(_myOutputEvQueue[q], _myInputEvQueue);
+                  //  Force recovery of those still outstanding to the retired client
+                  for(int j=0; j<_msgDest.size(); j++)
+                    if (_msgDest[j]==q) {
+                      printf("Recovering buffer %d\n",j);
+                      _myMsg.bufferIndex(j);
+                      mq_send(_myInputEvQueue, (const char*)&_myMsg, sizeof(_myMsg), 0);
+                    }
 		  _myTrFd[q]=-1;
+                  //  Clear the transition tracking for this client
 		  _transitionCache->deallocate(q);
 		  _nfd--;
 		  for(int j=i; j<_nfd; j++)
@@ -581,6 +606,7 @@ int XtcMonitorServer::_init()
   _flushQueue(_myInputEvQueue  = _openQueue(toQname,q_attr));
   for(unsigned i=0; i<_numberOfEvBuffers; i++) {
     _myMsg.bufferIndex(i);
+    _msgDest[i]=-1;
     mq_send(_myInputEvQueue, (const char*)&_myMsg, sizeof(_myMsg), 0);
   }
 
@@ -766,6 +792,8 @@ void XtcMonitorServer::_moveQueue(mqd_t iq, mqd_t oq)
         printf("Failed to reclaim buffer %i : %s\n",
 	       m.bufferIndex(), strerror(errno));
       }
+      else
+        _msgDest[m.bufferIndex()]=-1;
     }
   } while (attr.mq_curmsgs);
 }

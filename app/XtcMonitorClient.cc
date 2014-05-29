@@ -174,7 +174,7 @@ int XtcMonitorClient::processDgram(Dgram* dg) {
 int XtcMonitorClient::run(const char* tag, int tr_index) 
 { return run(tag, tr_index, tr_index); }
 
-int XtcMonitorClient::run(const char* tag, int tr_index, int ev_index) {
+int XtcMonitorClient::run(const char* tag, int tr_index, int) {
   int error = 0;
   char* qname             = new char[128];
 
@@ -251,6 +251,7 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int ev_index) {
     if (myShm == MAP_FAILED) perror("mmap");
     else printf("Shared memory at %p\n", (void*)myShm);
   
+    int ev_index = myMsg.bufferIndex();
     XtcMonitorMsg::eventInputQueue(tag,ev_index,qname);
     mqd_t myInputEvQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
     if (myInputEvQueue == (mqd_t)-1)
