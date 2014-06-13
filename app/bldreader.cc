@@ -18,6 +18,7 @@ class bldData {
 public:
   void reset() {
     gasdet   = 0;
+    gasdetV1 = 0;
     ebeamV0  = 0;
     ebeamV1  = 0;
     ebeamV2  = 0;
@@ -38,6 +39,13 @@ public:
                          gasdet->f_12_ENRC(),
                          gasdet->f_21_ENRC(),
                          gasdet->f_22_ENRC());
+    else if (gasdetV1)   printf("%g\t%g\t%g\t%g\t%g\t%g\t",
+                                gasdetV1->f_11_ENRC(),
+                                gasdetV1->f_12_ENRC(),
+                                gasdetV1->f_21_ENRC(),
+                                gasdetV1->f_22_ENRC(),
+                                gasdetV1->f_63_ENRC(),
+                                gasdetV1->f_64_ENRC());
     else          printf("%g\t%g\t%g\t%g\t",
                          damaged,
                          damaged,
@@ -76,10 +84,12 @@ public:
     static const char* headers[] = { "seconds",
                                      "nanoseconds",
                                      "pulseId",
-                                     "GDET:FEE:11:ENRC[mJ]",
-                                     "GDET:FEE:12:ENRC[mJ]",
-                                     "GDET:FEE:21:ENRC[mJ]",
-                                     "GDET:FEE:22:ENRC[mJ]",
+                                     "GDET:FEE:241:ENRC[mJ]",
+                                     "GDET:FEE:242:ENRC[mJ]",
+                                     "GDET:FEE:361:ENRC[mJ]",
+                                     "GDET:FEE:362:ENRC[mJ]",
+                                     "GDET:FEE:363:ENRC[mJ]",
+                                     "GDET:FEE:364:ENRC[mJ]",
                                      "ebeamCharge[nC]",
                                      "ebeamL3Energy[MeV]",
                                      "ebeamLTUPosX[mm]",
@@ -102,7 +112,8 @@ public:
   unsigned                      seconds;
   unsigned                      nanoseconds;
   unsigned                      pulseId;
-  const Bld::BldDataFEEGasDetEnergy* gasdet;
+  const Bld::BldDataFEEGasDetEnergy*   gasdet;
+  const Bld::BldDataFEEGasDetEnergyV1* gasdetV1;
   const Bld::BldDataEBeamV0*         ebeamV0;
   const Bld::BldDataEBeamV1*         ebeamV1;
   const Bld::BldDataEBeamV2*         ebeamV2;
@@ -144,8 +155,16 @@ public:
         bld.phasecav = reinterpret_cast<const Bld::BldDataPhaseCavity*>    (xtc->payload());
         break;
       case BldInfo::FEEGasDetEnergy:
-        bld.gasdet   = reinterpret_cast<const Bld::BldDataFEEGasDetEnergy*>(xtc->payload());
-        break;
+        switch(xtc->contains.version()) {
+        case 0:
+          bld.gasdet   = reinterpret_cast<const Bld::BldDataFEEGasDetEnergy*>(xtc->payload());
+          break;
+        case 1:
+          bld.gasdetV1 = reinterpret_cast<const Bld::BldDataFEEGasDetEnergyV1*>(xtc->payload());
+          break;
+        default:
+          break;
+        }
       case BldInfo::GMD:
         switch(xtc->contains.version()) {
         case 0:
