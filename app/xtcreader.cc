@@ -254,6 +254,11 @@ public:
 //     bldData.print();
 //     printf( "\n" );    
   }  
+  void process(const DetInfo&, const Bld::BldDataFEEGasDetEnergyV1& bldData) {
+    printf("*** Processing FEEGasDetEnergyV1 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }  
   void process(const DetInfo&, const Bld::BldDataEBeamV0& bldData) {
     printf("*** Processing EBeamV0 object\n");
 //     bldData.print();
@@ -701,8 +706,16 @@ public:
      */
     case (TypeId::Id_FEEGasDetEnergy) :
     {
-      process(info, *(const Bld::BldDataFEEGasDetEnergy*) xtc->payload() );
-      break;        
+      switch(xtc->contains.version()) {
+      case 0:
+        process(info, *(const Bld::BldDataFEEGasDetEnergy*) xtc->payload() );
+        break; 
+      case 1:
+        process(info, *(const Bld::BldDataFEEGasDetEnergyV1*) xtc->payload() );
+        break; 
+      default:
+        break;
+      }
     }
     case (TypeId::Id_EBeam) :
     {
