@@ -1,3 +1,5 @@
+2014-Jun-13 jana        Tag V08-00-09.  Added 2 PMT quantities to Gas Detector BLD data type
+	                                Modified bldreader, cfgreader, xtcreader appropriately.
 2014-May-29 weaver	Tag V08-00-08.  Changed XtcMonitorClient behavior to use event queue passed by server.
 					Changed XtcMonitorServer to recover buffers in use by terminating clients.
 2014-May-12 weaver	Tag V08-00-07.  Fix to use nonblocking message queue receive in XtcMonitorServer.cc.
