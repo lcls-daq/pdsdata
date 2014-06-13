@@ -121,6 +121,11 @@ public:
 //     bldData.print();
 //     printf( "\n" );    
   }  
+  void process(const DetInfo&, const Bld::BldDataFEEGasDetEnergyV1& bldData) {
+    printf("*** Processing FEEGasDetEnergyV1 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }  
   void process(const DetInfo&, const Bld::BldDataEBeamV0& bldData) {
     printf("*** Processing EBeamV0 object\n");
 //     bldData.print();
