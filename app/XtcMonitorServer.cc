@@ -16,6 +16,7 @@
 #include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -271,7 +272,8 @@ void XtcMonitorServer::distribute(bool l)
   _flushQueue(_myInputEvQueue);
   for(unsigned i=0; i<_numberOfEvBuffers; i++) {
     _myMsg.bufferIndex(i);
-    mq_send(_myInputEvQueue, (const char*)&_myMsg, sizeof(_myMsg), 0);
+    if (mq_timedsend(_myInputEvQueue, (const char*)&_myMsg, sizeof(_myMsg), 0, &_tmo)<0)
+      perror("XtcMonitorServer distribute failed to queue buffers to input");
   }
 }
 
@@ -282,15 +284,16 @@ bool XtcMonitorServer::_send(Dgram* dg)
   //  are opened in blocking mode.  So, I use mq_timedreceive 
   //  with a 0 timeout to avoid blocking.
   //
+  XtcMonitorMsg msg;
   const timespec no_wait={0,0};
-  int r = mq_timedreceive(_myInputEvQueue, (char*)&_myMsg, sizeof(_myMsg), NULL,
+  int r = mq_timedreceive(_myInputEvQueue, (char*)&msg, sizeof(msg), NULL,
                           &no_wait); 
   if (r>0)
     ;
   else {
     if (r<0) ; // perror("Error reading input event queue");
     for(unsigned i=0; i<_numberOfEvQueues; i++) {
-      r=mq_timedreceive(_myOutputEvQueue[i], (char*)&_myMsg, sizeof(_myMsg), NULL,
+      r=mq_timedreceive(_myOutputEvQueue[i], (char*)&msg, sizeof(msg), NULL,
                         &no_wait);
       if (r>0) break;
       if (r<0) ; // perror("Error reading output event queue");
@@ -298,8 +301,8 @@ bool XtcMonitorServer::_send(Dgram* dg)
   }
 
   if (r>0) {
-    _msgDest[_myMsg.bufferIndex()]=-1;
-    ShMsg m(_myMsg, dg);
+    _msgDest[msg.bufferIndex()]=-1;
+    ShMsg m(msg, dg);
     if (mq_timedsend(_shuffleQueue, (const char*)&m, sizeof(m), 0, &_tmo)) {
       printf("ShuffleQ timedout\n");
       _deleteDatagram(dg);
@@ -409,8 +412,9 @@ void XtcMonitorServer::discover()
     printf("ConnectionManager listen failed\n");
   else {
     while(1) {
+      timespec tv; tv.tv_sec=tv.tv_nsec=0;
       XtcMonitorMsg m(port);
-      if (mq_send(_discoveryQueue,(const char*)&m,sizeof(m),0)<0) {
+      if (mq_timedsend(_discoveryQueue,(const char*)&m,sizeof(m),0,&_tmo)<0) {
 	perror("Error advertising discovery port");
 	abort();
       }
@@ -496,7 +500,7 @@ void XtcMonitorServer::routine()
 	    }
 	  }
 	  if (!lsent)
-	    if (mq_send(_myInputEvQueue, (const char*)&m.msg(), sizeof(m.msg()), 0))
+	    if (mq_timedsend(_myInputEvQueue, (const char*)&m.msg(), sizeof(m.msg()), 0, &_tmo))
 	      perror("Unable to distribute or reclaim event");
 	}
       }
@@ -508,36 +512,49 @@ void XtcMonitorServer::routine()
       for(int i=2; i<_nfd; i++) {
 	if (_pfd[i].revents & POLLIN) {
 	  int r;
-	  while((r=::recv(_pfd[i].fd, (char*)&_myMsg, sizeof(_myMsg), MSG_DONTWAIT))>=0) {
+          XtcMonitorMsg msg;
+	  while((r=::recv(_pfd[i].fd, (char*)&msg, sizeof(msg), MSG_DONTWAIT))>=0) {
 	    for(unsigned q=0; q<_myTrFd.size(); q++)
 	      if (_myTrFd[q]==_pfd[i].fd) {
 		if (r > 0) {
-		  int itr=_myMsg.bufferIndex()-_numberOfEvBuffers;
+		  int itr=msg.bufferIndex()-_numberOfEvBuffers;
 		  if (_transitionCache->deallocate(itr,q))
-		    _update(q,reinterpret_cast<Dgram*>(_myShm+_sizeOfBuffers*_myMsg.bufferIndex())->seq.service());
+		    _update(q,reinterpret_cast<Dgram*>(_myShm+_sizeOfBuffers*msg.bufferIndex())->seq.service());
 		}
 		else { // retire client
 		  printf("Retiring client %d [%d]\n",q,_pfd[i].fd);
                   //  Recover buffers last sent to this client
                   //  First, account for the ones waiting in our input queue
                   const timespec no_wait={0,0};
-                  while(mq_timedreceive(_myInputEvQueue, (char*)&_myMsg, 
-                                        sizeof(_myMsg), NULL, &no_wait)>0) {
-                    mq_send(_myInputEvQueue, (char*)&_myMsg,sizeof(_myMsg),0);
-                    if (_msgDest[_myMsg.bufferIndex()]>=0)
-                      _msgDest[_myMsg.bufferIndex()]=-1;
-                    else
-                      break;
+                  std::list<int> indices;
+                  while(mq_timedreceive(_myInputEvQueue, (char*)&msg, 
+                                        sizeof(msg), NULL, &no_wait)>0)
+                    indices.push_back(msg.bufferIndex());
+
+                  for(std::list<int>::iterator it=indices.begin();
+                      it!=indices.end(); it++) {
+                    _msgDest[*it]=-1;
+                    msg.bufferIndex(*it);
+                    if (mq_timedsend(_myInputEvQueue, (char*)&msg,sizeof(msg),0,&no_wait)<0) {
+                      perror("Accounting input queue buffers");
+                      printf("May have lost buffer %d\n",*it);
+                    }
                   }
+
                   //  Recover the buffers still queued to the retired client
                   _moveQueue(_myOutputEvQueue[q], _myInputEvQueue);
+
                   //  Force recovery of those still outstanding to the retired client
-                  for(int j=0; j<_msgDest.size(); j++)
+                  for(int j=0; j<int(_msgDest.size()); j++)
                     if (_msgDest[j]==q) {
                       printf("Recovering buffer %d\n",j);
-                      _myMsg.bufferIndex(j);
-                      mq_send(_myInputEvQueue, (const char*)&_myMsg, sizeof(_myMsg), 0);
+                      msg.bufferIndex(j);
+                      if (mq_timedsend(_myInputEvQueue, (const char*)&msg, sizeof(msg), 0, &_tmo)<0)
+                        perror("Failed to recover buffer queued to retired client");
+                      else
+                        _msgDest[j]=-1;
                     }
+
 		  _myTrFd[q]=-1;
                   //  Clear the transition tracking for this client
 		  _transitionCache->deallocate(q);
@@ -607,7 +624,8 @@ int XtcMonitorServer::_init()
   for(unsigned i=0; i<_numberOfEvBuffers; i++) {
     _myMsg.bufferIndex(i);
     _msgDest[i]=-1;
-    mq_send(_myInputEvQueue, (const char*)&_myMsg, sizeof(_myMsg), 0);
+    if (mq_timedsend(_myInputEvQueue, (const char*)&_myMsg, sizeof(_myMsg), 0, &_tmo)<0)
+      perror("Failed to queue buffer to input queue (initialize)");
   }
 
   q_attr.mq_maxmsg  = _numberOfEvBuffers / _numberOfEvQueues;
@@ -788,7 +806,7 @@ void XtcMonitorServer::_moveQueue(mqd_t iq, mqd_t oq)
     if (attr.mq_curmsgs) {
       if (mq_timedreceive(iq, (char*)&m, sizeof(m), NULL, &_tmo) == -1)
         perror("moveQueue: mq_timedreceive");
-      else if (mq_send   (oq, (char*)&m, sizeof(m), 0) == -1) {
+      else if (mq_timedsend   (oq, (char*)&m, sizeof(m), 0, &_tmo) == -1) {
         printf("Failed to reclaim buffer %i : %s\n",
 	       m.bufferIndex(), strerror(errno));
       }
