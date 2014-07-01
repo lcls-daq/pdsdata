@@ -1,3 +1,4 @@
+2014-Jun-30 cpo		Tag V08-00-11.  Added 3 photon-energy related doubles to ebeam bld.  uses psddldata v01-00-11.
 2014-Jun-27 weaver	Tag V08-00-10.  Fixed XtcMonitorServer extra buffer recovery for retiring clients.
 					Removed all potential mq_send blocks.
 2014-Jun-13 jana        Tag V08-00-09.  Added 2 PMT quantities to Gas Detector BLD data type
