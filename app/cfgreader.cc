@@ -199,6 +199,26 @@ public:
     //    bldData.print();
     //    printf( "\n" );
   }
+  void process(const Src&, const Bld::BldDataEBeamV3& bldData) {
+    printf("*** Processing EBeam object\n");
+    //    bldData.print();
+    //    printf( "\n" );
+  }
+  void process(const Src&, const Bld::BldDataEBeamV4& bldData) {
+    printf("*** Processing EBeam object\n");
+    //    bldData.print();
+    //    printf( "\n" );
+  }
+  void process(const Src&, const Bld::BldDataEBeamV5& bldData) {
+    printf("*** Processing EBeam object\n");
+    //    bldData.print();
+    //    printf( "\n" );
+  }
+  void process(const Src&, const Bld::BldDataEBeamV6& bldData) {
+    printf("*** Processing EBeam object\n");
+    //    bldData.print();
+    //    printf( "\n" );
+  }
   void process(const Src&, const Bld::BldDataPhaseCavity& bldData) {
     printf("*** Processing PhaseCavity object\n");
     //    bldData.print();
@@ -460,6 +480,14 @@ public:
         break;
       case 2:
         process(info, *(const Bld::BldDataEBeamV2*) xtc->payload() );
+      case 3:
+        process(info, *(const Bld::BldDataEBeamV3*) xtc->payload() );
+      case 4:
+        process(info, *(const Bld::BldDataEBeamV4*) xtc->payload() );
+      case 5:
+        process(info, *(const Bld::BldDataEBeamV5*) xtc->payload() );
+      case 6:
+        process(info, *(const Bld::BldDataEBeamV6*) xtc->payload() );
         break;
       default:
         break;
