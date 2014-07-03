@@ -277,6 +277,21 @@ public:
   void process(const DetInfo&, const Bld::BldDataEBeamV3& bldData) {
     printf("*** Processing EBeamV3 object\n");
 //     bldData.print();
+//     printf( "\n" ); 
+  }   
+  void process(const DetInfo&, const Bld::BldDataEBeamV4& bldData) {
+    printf("*** Processing EBeamV4 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }
+  void process(const DetInfo&, const Bld::BldDataEBeamV5& bldData) {
+    printf("*** Processing EBeamV5 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }
+  void process(const DetInfo&, const Bld::BldDataEBeamV6& bldData) {
+    printf("*** Processing EBeamV6 object\n");
+//     bldData.print();
 //     printf( "\n" );    
   }  
   void process(const DetInfo&, const Bld::BldDataPhaseCavity& bldData) {
@@ -289,7 +304,6 @@ public:
 //     bldData.print();
 //     printf( "\n" );    
   } 
-
   void process(const DetInfo&, const Bld::BldDataIpimbV1& bldData) {
     printf("*** Processing Bld-Ipimb V1 object\n");
 //     bldData.print();
@@ -731,6 +745,15 @@ public:
         break; 
       case 3:
         process(info, *(const Bld::BldDataEBeamV3*) xtc->payload() );
+        break; 
+      case 4:
+        process(info, *(const Bld::BldDataEBeamV4*) xtc->payload() );
+        break; 
+      case 5:
+        process(info, *(const Bld::BldDataEBeamV5*) xtc->payload() );
+        break; 
+      case 6:
+        process(info, *(const Bld::BldDataEBeamV6*) xtc->payload() );
         break; 
       default:
         break;
