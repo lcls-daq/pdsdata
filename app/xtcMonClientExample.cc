@@ -131,11 +131,36 @@ public:
 //     bldData.print();
 //     printf( "\n" );    
   }  
-  void process(const DetInfo&, const Bld::BldDataEBeamV3& bldData) {
-    printf("*** Processing EBeam object\n");
+  void process(const DetInfo&, const Bld::BldDataEBeamV1& bldData) {
+    printf("*** Processing EBeamV1 object\n");
 //     bldData.print();
 //     printf( "\n" );    
   }  
+  void process(const DetInfo&, const Bld::BldDataEBeamV2& bldData) {
+    printf("*** Processing EBeamV2 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }  
+  void process(const DetInfo&, const Bld::BldDataEBeamV3& bldData) {
+    printf("*** Processing EBeamV3 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }  
+  void process(const DetInfo&, const Bld::BldDataEBeamV4& bldData) {
+    printf("*** Processing EBeamV4 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }   
+  void process(const DetInfo&, const Bld::BldDataEBeamV5& bldData) {
+    printf("*** Processing EBeamV5 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }   
+  void process(const DetInfo&, const Bld::BldDataEBeamV6& bldData) {
+    printf("*** Processing EBeamV6 object\n");
+//     bldData.print();
+//     printf( "\n" );    
+  }   
   void process(const DetInfo&, const Bld::BldDataPhaseCavity& bldData) {
     printf("*** Processing PhaseCavity object\n");
 //     bldData.print();
