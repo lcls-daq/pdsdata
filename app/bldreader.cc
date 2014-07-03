@@ -23,6 +23,9 @@ public:
     ebeamV1  = 0;
     ebeamV2  = 0;
     ebeamV3  = 0;
+    ebeamV4  = 0;
+    ebeamV5  = 0;
+    ebeamV6  = 0;
     phasecav = 0;
     gmdV0    = 0;
     gmdV1    = 0;
@@ -66,6 +69,19 @@ public:
     if (ebeamV3) printf("%g\t%g\t",
                         ebeamV3->ebeamPkCurrBC1(),
                         ebeamV3->ebeamEnergyBC1());
+    if (ebeamV4) printf("%g\t%g\t%g\t%g\t",
+                        ebeamV4->ebeamUndPosX(),
+                        ebeamV4->ebeamUndPosY(),
+                        ebeamV4->ebeamUndAngX(),
+                        ebeamV4->ebeamUndAngY());
+    if (ebeamV5) printf("%g\t%g\t%g\t",
+                        ebeamV5->ebeamXTCAVAmpl(),
+                        ebeamV5->ebeamXTCAVPhase(),
+                        ebeamV5->ebeamDumpCharge());
+    if (ebeamV6) printf("%g\t%g\t%g\t",
+                        ebeamV6->ebeamPhotonEnergy(),
+                        ebeamV6->ebeamLTU250(),
+                        ebeamV6->ebeamLTU450());
 
     if (phasecav) printf("%g\t%g\t%g\t%g\n",
                          phasecav->fitTime1(),
@@ -118,6 +134,9 @@ public:
   const Bld::BldDataEBeamV1*         ebeamV1;
   const Bld::BldDataEBeamV2*         ebeamV2;
   const Bld::BldDataEBeamV3*         ebeamV3;
+  const Bld::BldDataEBeamV4*         ebeamV4;
+  const Bld::BldDataEBeamV5*         ebeamV5;
+  const Bld::BldDataEBeamV6*         ebeamV6;
   const Bld::BldDataPhaseCavity*     phasecav;
   const Bld::BldDataGMDV0*             gmdV0;
   const Bld::BldDataGMDV1*             gmdV1;
@@ -150,6 +169,10 @@ public:
           bld.ebeamV2  = reinterpret_cast<const Bld::BldDataEBeamV2*>      (xtc->payload());
         if (xtc->contains.version()>=3)
           bld.ebeamV3  = reinterpret_cast<const Bld::BldDataEBeamV3*>      (xtc->payload());
+        if (xtc->contains.version()>=5)
+          bld.ebeamV5  = reinterpret_cast<const Bld::BldDataEBeamV5*>      (xtc->payload());
+        if (xtc->contains.version()>=6)
+          bld.ebeamV6  = reinterpret_cast<const Bld::BldDataEBeamV6*>      (xtc->payload());
         break;
       case BldInfo::PhaseCavity    :
         bld.phasecav = reinterpret_cast<const Bld::BldDataPhaseCavity*>    (xtc->payload());
