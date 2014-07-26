@@ -13,12 +13,18 @@ static void sigfunc(int sig_no) {
 #endif
 
 void usage(char* progname) {
-  cerr << "Usage: " << progname
-       << " (-f <filename> | -l <filename_list> | -x <run_file_prefix> | -d <xtc_dir>)" // choose one
-       << " -p <partitionTag> -n <numberOfBuffers> -s <sizeOfBuffers>" // mandatory
-       << " [-r <ratePerSec>] [-c <# clients>]" // optional
-       << " [-L] [-v] [-V]" // debugging (optional)
-       << endl;
+  cerr << "Usage: " << progname 
+       << " -p <partitionTag> -n <numberOfBuffers> -s <sizeOfBuffers>"
+       << " [input_options] [other_options]" << endl;
+  cerr << "input_options:" << endl;
+  cerr << " -f <filename>        : full path of xtc file" << endl
+       << " -l <filename_list>   : name of file contains list of xtc file paths" << endl
+       << " -x <run_file_prefix> : path prefix to match (e.g. e302-r0008)" << endl
+       << " -d <xtc_dir>         : directory containing all xtcs to use" << endl;
+  cerr << "other_options:" << endl;
+  cerr << " [-r <ratePerSec>] [-c <# clients>]" << endl 
+       << " [-L]                 : (continuous loop)" << endl
+       << "[-v] [-V]" << endl;
 }
 
 int main(int argc, char* argv[]) {

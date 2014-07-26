@@ -962,7 +962,7 @@ int main(int argc, char* argv[]) {
     exit(2);
   }
 
-  XtcFileIterator iter(fd,0x2000000);
+  XtcFileIterator iter(fd,0x4000000);
   Dgram* dg;
   long long int lliOffset = lseek64( fd, 0, SEEK_CUR );  
   while ((dg = iter.next())) {

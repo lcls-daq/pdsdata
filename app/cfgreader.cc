@@ -31,6 +31,44 @@ using namespace Pds;
 
 static bool noEpics;
 
+static double EvrClk=119.e6;
+static void _dump_eventcodes(const ndarray<const EvrData::EventCodeV6,1>& a)
+{
+  for(const EvrData::EventCodeV6* p=a.begin(); p!=a.end(); p++) {
+    printf("Eventcode %d: readout %c command %c latch %c\n",
+           p->code(), 
+           p->isReadout()?'t':'f', 
+           p->isCommand()?'t':'f', 
+           p->isLatch()?'t':'f');
+    printf("\treportDelay %u [%fns] Width %u [%fns]  readoutGroup %d\n",
+           p->reportDelay(), p->reportDelay()*1.e9/EvrClk,
+           p->reportWidth(), p->reportWidth()*1.e9/EvrClk,
+           p->readoutGroup());
+    printf("\tmask trigger/set/clear %x/%x/%x\n",
+           p->maskTrigger(),
+           p->maskSet(),
+           p->maskClear());
+  }
+}
+
+static void _dump_pulses(const ndarray<const EvrData::PulseConfigV3,1>& a)
+{
+  for(const EvrData::PulseConfigV3* p=a.begin(); p!=a.end(); p++) {
+    printf("pulse %d: polarity %c prescale %u delay %u [%fns] width %u [%fns]\n",
+           p->pulseId(), p->polarity()?'+':'-', p->prescale(),
+           p->delay(), p->delay()*1.e9/EvrClk,
+           p->width(), p->width()*1.e9/EvrClk);
+  }
+}
+
+static void _dump_outputs(const ndarray<const EvrData::OutputMapV2,1>& a)
+{
+  for(const EvrData::OutputMapV2* p=a.begin(); p!=a.end(); p++) {
+    printf("Output Evr%d-%d  source %u\n",
+           p->module(), p->conn_id(), p->source_id());
+  }
+}
+
 class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};
@@ -131,6 +169,35 @@ public:
   }
   void process(const Src&, const ControlData::ConfigV2& config) {
     printf("*** Processing Control config V2 object\n");
+
+    printf( "Control PV Number = %d, Monitor PV Number = %d, Label PV Number = %d\n",
+            config.npvControls(), config.npvMonitors(), config.npvLabels() );
+    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
+      if (pvControlCur.array())
+        printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
+      else
+        printf( "%s = ", pvControlCur.name() );
+      printf( "%lf\n", pvControlCur.value() );
+    }
+
+    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
+      if (pvMonitorCur.array())
+        printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
+      else
+        printf( "%s  ", pvMonitorCur.name() );
+      printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
+    }
+
+    for(unsigned int iPvLabel=0; iPvLabel < config.npvLabels(); iPvLabel++) {
+      const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabels()[iPvLabel];
+      printf( "%s = %s\n", pvLabelCur.name(), pvLabelCur.value() );
+    }
+
+  }
+  void process(const Src&, const ControlData::ConfigV3& config) {
+    printf("*** Processing Control config V3 object\n");
 
     printf( "Control PV Number = %d, Monitor PV Number = %d, Label PV Number = %d\n",
             config.npvControls(), config.npvMonitors(), config.npvLabels() );
@@ -270,11 +337,9 @@ public:
     printf("*** Processing EVR config V4 object\n");
   }
   void process(const Src&, const EvrData::ConfigV7& c) {
-    printf("*** Processing EVR config V7 object\n");
-    //    c.print();
-    //    const EvrData::ConfigV7::SeqConfigType& s = c.seq_config();
-    //    printf(" seq src %d/%d : len %d : cycles %d\n",
-    //           s.sync_source(), s.beam_source(), s.length(), s.cycles());
+    _dump_eventcodes (c.eventcodes());
+    _dump_pulses     (c.pulses());
+    _dump_outputs    (c.output_maps());
   }
   void process(const Src&, const Princeton::ConfigV1&) {
     printf("*** Processing Princeton ConfigV1 object\n");
@@ -435,6 +500,9 @@ public:
         break;
       case 2:
         process(info, *(const ControlData::ConfigV2*)(xtc->payload()));
+        break;
+      case 3:
+        process(info, *(const ControlData::ConfigV3*)(xtc->payload()));
         break;
       default:
         break;

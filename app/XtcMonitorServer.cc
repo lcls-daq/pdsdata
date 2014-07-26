@@ -24,6 +24,7 @@
 #include <list>
 
 //#define DBUG
+//#define NO_STEAL
 
 using std::queue;
 using std::stack;
@@ -224,6 +225,29 @@ namespace Pds {
   };
 };
 
+static Pds::XtcMonitorServer* apps;
+
+static struct sigaction old_actions[64];
+
+void sigfunc(int sig_no) {
+  static bool _handled=false;
+  if (!_handled) {
+    _handled = true;
+    printf("handling signal %d app %p\n",sig_no,apps);
+    if (apps) {
+      apps->unlink();
+      apps = 0;
+    }
+    else
+      printf("nothing to do\n");
+
+    printf("done with signal %d\n",sig_no);
+    
+    sigaction(sig_no,&old_actions[sig_no],NULL);
+    raise(sig_no);
+  }
+}
+
 using namespace Pds;
 
 XtcMonitorServer::XtcMonitorServer(const char* tag,
@@ -252,6 +276,28 @@ XtcMonitorServer::XtcMonitorServer(const char* tag,
   _tmo.tv_nsec = 0;
 
   _init();
+
+  apps = this;
+
+  struct sigaction int_action;
+
+  int_action.sa_handler = sigfunc;
+  sigemptyset(&int_action.sa_mask);
+  int_action.sa_flags = 0;
+  int_action.sa_flags |= SA_RESTART;
+
+#define REGISTER(t) {                                               \
+    if (sigaction(t, &int_action, &old_actions[t]) > 0)             \
+      printf("Couldn't set up #t handler\n");                       \
+  }
+
+  REGISTER(SIGINT);
+  REGISTER(SIGSEGV);
+  REGISTER(SIGABRT);
+  REGISTER(SIGTERM);
+  REGISTER(SIGPIPE);
+
+#undef REGISTER
 }
 
 XtcMonitorServer::~XtcMonitorServer() 
@@ -288,6 +334,8 @@ bool XtcMonitorServer::_send(Dgram* dg)
   const timespec no_wait={0,0};
   int r = mq_timedreceive(_myInputEvQueue, (char*)&msg, sizeof(msg), NULL,
                           &no_wait); 
+
+#ifdef NO_STEAL
   if (r>0)
     ;
   else {
@@ -299,6 +347,7 @@ bool XtcMonitorServer::_send(Dgram* dg)
       if (r<0) ; // perror("Error reading output event queue");
     }
   }
+#endif
 
   if (r>0) {
     _msgDest[msg.bufferIndex()]=-1;
