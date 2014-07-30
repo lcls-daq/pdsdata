@@ -55,6 +55,8 @@ bool     TypeId::is_configuration() const
       Id_RayonixConfig,
       Id_EpixConfig,
       Id_EpixSamplerConfig,
+      Id_Epix10kConfig,
+      Id_Epix100aConfig,
       Id_EvsConfig,
       Id_PartitionConfig,
       Id_PimaxConfig, };
@@ -152,7 +154,8 @@ const char* TypeId::name(Type type)
     "PimaxConfig",             // 80
     "PimaxFrame",              // 81
     "Arraychar",               // 82
-    "Epix10kConfig",        // 83
+    "Epix10kConfig",           // 83
+    "Epix100aConfig",          // 84
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

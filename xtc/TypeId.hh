@@ -96,6 +96,7 @@ namespace Pds {
       Id_PimaxFrame,
       Id_Arraychar,
       Id_Epix10kConfig,
+      Id_Epix100aConfig,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
