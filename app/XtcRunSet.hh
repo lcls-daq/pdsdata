@@ -25,6 +25,7 @@ private:
 
 public:
   XtcRunSet();
+  ~XtcRunSet();
   void addSinglePath(string path);
   void addPathsFromDir(string dirPath, string matchString = "");
   void addPathsFromRunPrefix(string runPrefix);

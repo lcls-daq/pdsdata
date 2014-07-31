@@ -112,6 +112,11 @@ XtcRunSet::XtcRunSet() :
   _server(NULL) {
 }
 
+XtcRunSet::~XtcRunSet()
+{
+  if (_server) _server->unlink();
+}
+
 // Fetch the next
 Dgram* XtcRunSet::next() {
   for (;;) {

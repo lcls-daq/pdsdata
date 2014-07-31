@@ -456,6 +456,7 @@ void XtcMonitorServer::discover()
   q_attr.mq_flags   = O_NONBLOCK;
   _discoveryQueue  = _openQueue(fromQname,q_attr);
   delete[] fromQname;
+  _flushQueue(_discoveryQueue);
 
   if (::listen(fd,10)<0)
     printf("ConnectionManager listen failed\n");
