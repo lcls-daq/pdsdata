@@ -1,3 +1,4 @@
+2014-Aug-13 weaver	Tag V08-01-00.  Change to L3TModule interface to supply configuration information.
 2014-Jul-31 weaver	Updated xtcmonserver to cleanup message queues.
 2014-Jul-03 jana	Tag V08-00-12	Added support for ebeam BLD v6 to app/*reader.cc.  Uses psddldata V01-00-12.
 2014-Jun-30 cpo		Tag V08-00-11.  Added 3 photon-energy related doubles to ebeam bld.  uses psddldata v01-00-11.

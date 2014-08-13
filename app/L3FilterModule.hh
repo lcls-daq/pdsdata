@@ -26,9 +26,9 @@ namespace Pds {
     virtual ~L3FilterModule() {}
   public:
     ///  Called prior to any of the configure() methods
-    virtual void pre_configure () {}
+    virtual void pre_configure (const std::string& input_data) {}
     ///  Called after all of the configure() methods
-    virtual void post_configure() {}
+    virtual bool post_configure() { return true; }
     /**
      **  The data (payload) passed in the configure method is only
      **  guaranteed to be valid during the call.  The derived class
