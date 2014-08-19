@@ -358,7 +358,7 @@ bool XtcMonitorServer::_send(Dgram* dg)
     }
   }
   else {
-    printf("No shared memory buffer found.  Dropping new event.\n");
+    // No shared memory buffer found.  Dropping new event.
     _deleteDatagram(dg);
   }
   return true;
