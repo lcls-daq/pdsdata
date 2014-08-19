@@ -854,8 +854,10 @@ void XtcMonitorServer::_moveQueue(mqd_t iq, mqd_t oq)
   do {
     mq_getattr(iq, &attr);
     if (attr.mq_curmsgs) {
-      if (mq_timedreceive(iq, (char*)&m, sizeof(m), NULL, &_tmo) == -1)
+      if (mq_timedreceive(iq, (char*)&m, sizeof(m), NULL, &_tmo) == -1) {
         perror("moveQueue: mq_timedreceive");
+        break;
+      }
       else if (mq_timedsend   (oq, (char*)&m, sizeof(m), 0, &_tmo) == -1) {
         printf("Failed to reclaim buffer %i : %s\n",
 	       m.bufferIndex(), strerror(errno));
