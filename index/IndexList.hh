@@ -42,6 +42,8 @@ struct L1AcceptNode
   uint64_t time() const {return ((uint64_t)uSeconds<<32) | uNanoseconds;}
 };
 
+#pragma pack()
+
 struct L1SegmentIndex
 {
   ProcInfo procNode;
@@ -147,8 +149,6 @@ public:
   const TSegmentToIdMap& getSeg() const {return _mapSegToId;}
 
 }; // class IndexList
-
-#pragma pack()
 
 } // namespace Index
 } // namespace Pds
