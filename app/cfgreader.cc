@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdint.h>
 
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/BldInfo.hh"
@@ -357,7 +358,7 @@ public:
   }
   void process(const Src&, const Partition::ConfigV1& c) {
     printf("*** Processing Partition ConfigV1 object \n");
-    printf("\tBld mask: %016llx\n",c.bldMask());
+    printf("\tBld mask: %016llx\n",(unsigned long long)c.bldMask());
     for(unsigned i=0; i<c.numSources(); i++)
       printf("\t%08x.%08x: group %d\n",
              c.sources()[i].src().log(),

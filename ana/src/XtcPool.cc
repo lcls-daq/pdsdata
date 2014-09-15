@@ -148,7 +148,7 @@ namespace Pds {
             //  Also, must run 64-bit mode
             //
             off_t rwnd = -rsz-sizeof(Dgram);
-            off_t result = lseek64(fd, rwnd, SEEK_CUR);
+            lseek64(fd, rwnd, SEEK_CUR);
             rsz=0;
 #endif
           }

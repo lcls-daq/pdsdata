@@ -259,6 +259,10 @@ public:
   enum { NumberOfBits = 10 };
   enum { BitShift = 6 };
   enum { _extraSize = 32 };
+  DataDescV1Elem(uint32_t indexFirstPoint)
+    : _indexFirstPoint(indexFirstPoint)
+  {
+  }
   DataDescV1Elem() {}
 private:
   DataDescV1Elem(const DataDescV1Elem&);

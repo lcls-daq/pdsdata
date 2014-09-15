@@ -21,6 +21,16 @@ static void printTransition(const Dgram* dg) {
          dg->xtc.damage.value());
 }
 
+static long long int itimeDiff(const timespec& end, const timespec& start)
+{
+  long long int diff;
+  diff =  end.tv_sec - start.tv_sec;
+  diff *= 1000000000;
+  diff += end  .tv_nsec;
+  diff -= start.tv_nsec;
+  return diff;
+}
+
 class MyMonitorServer : public XtcMonitorServer {
 private:
   queue<Dgram*> _pool;
@@ -99,11 +109,7 @@ void XtcRunSet::_addPaths(list<string> newPaths) {
 }
 
 double XtcRunSet::timeDiff(struct timespec* end, struct timespec* start) {
-  double diff;
-  diff =  double(end->tv_sec - start->tv_sec) * 1.e9;
-  diff += double(end->tv_nsec);
-  diff -= double(start->tv_nsec);
-  return diff;
+  return double(itimeDiff(*end,*start));
 }
 
 // Constructor that starts with an empty list of paths.
@@ -248,7 +254,7 @@ void XtcRunSet::run() {
     if (_period != 0) {
       timespec now;
       clock_gettime(CLOCK, &now);
-      long long int busyTime = timeDiff(&now, &dgStart);
+      long long int busyTime = itimeDiff(now, dgStart);
       if (_period > busyTime) {
         timespec sleepTime;
         sleepTime.tv_sec = 0;
