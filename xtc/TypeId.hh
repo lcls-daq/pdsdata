@@ -97,6 +97,8 @@ namespace Pds {
       Id_Arraychar,
       Id_Epix10kConfig,
       Id_Epix100aConfig,
+      Id_GenericPgpConfig,
+      Id_TimeToolConfig,
       NumberOf};
     enum { VCompressed = 0x8000 };
 

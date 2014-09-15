@@ -9,6 +9,7 @@
 #include <cstring>
 #include "pdsdata/xtc/TypeId.hh"
 #include "ndarray/ndarray.h"
+#include "pdsdata/psddl/genericpgp.ddl.h"
 namespace Pds {
 namespace Epix {
 
@@ -551,6 +552,14 @@ public:
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfRows(), cfg.numberOfColumns());
   }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 2> frame(const GenericPgp::ConfigV1& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=32;
+    const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfRows(), cfg.numberOfColumns());
+  }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint16_t, 2> frame(const Epix::ConfigV1& cfg) const { ptrdiff_t offset=32;
@@ -559,6 +568,11 @@ public:
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint16_t, 2> frame(const Epix::Config10KV1& cfg) const { ptrdiff_t offset=32;
+  const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.numberOfRows(), cfg.numberOfColumns()); }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 2> frame(const GenericPgp::ConfigV1& cfg) const { ptrdiff_t offset=32;
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, cfg.numberOfRows(), cfg.numberOfColumns()); }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
@@ -577,6 +591,14 @@ public:
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.lastRowExclusions(), cfg.numberOfColumns());
   }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 2> excludedRows(const GenericPgp::ConfigV1& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns())));
+    const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.lastRowExclusions(), cfg.numberOfColumns());
+  }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint16_t, 2> excludedRows(const Epix::ConfigV1& cfg) const { ptrdiff_t offset=32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns())));
@@ -585,6 +607,11 @@ public:
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint16_t, 2> excludedRows(const Epix::Config10KV1& cfg) const { ptrdiff_t offset=32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns())));
+  const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.lastRowExclusions(), cfg.numberOfColumns()); }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 2> excludedRows(const GenericPgp::ConfigV1& cfg) const { ptrdiff_t offset=32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns())));
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, cfg.lastRowExclusions(), cfg.numberOfColumns()); }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
@@ -603,6 +630,14 @@ public:
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfAsics());
   }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 1> temperatures(const GenericPgp::ConfigV1& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.lastRowExclusions())*(cfg.numberOfColumns())));
+    const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfAsics());
+  }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint16_t, 1> temperatures(const Epix::ConfigV1& cfg) const { ptrdiff_t offset=(32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.lastRowExclusions())*(cfg.numberOfColumns())));
@@ -613,12 +648,20 @@ public:
   ndarray<const uint16_t, 1> temperatures(const Epix::Config10KV1& cfg) const { ptrdiff_t offset=(32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.lastRowExclusions())*(cfg.numberOfColumns())));
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, cfg.numberOfAsics()); }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 1> temperatures(const GenericPgp::ConfigV1& cfg) const { ptrdiff_t offset=(32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.lastRowExclusions())*(cfg.numberOfColumns())));
+  const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.numberOfAsics()); }
   uint32_t lastWord(const Epix::ConfigV1& cfg) const { ptrdiff_t offset=((32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.lastRowExclusions())*(cfg.numberOfColumns()))))+(2*(cfg.numberOfAsics()));
   return *(const uint32_t*)(((const char*)this)+offset); }
   uint32_t lastWord(const Epix::Config10KV1& cfg) const { ptrdiff_t offset=((32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.lastRowExclusions())*(cfg.numberOfColumns()))))+(2*(cfg.numberOfAsics()));
   return *(const uint32_t*)(((const char*)this)+offset); }
+  uint32_t lastWord(const GenericPgp::ConfigV1& cfg) const { ptrdiff_t offset=((32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.lastRowExclusions())*(cfg.numberOfColumns()))))+(2*(cfg.numberOfAsics()));
+  return *(const uint32_t*)(((const char*)this)+offset); }
   static uint32_t _sizeof(const Epix::ConfigV1& cfg) { return (((((((32+(2*(cfg.numberOfRows())*(cfg.numberOfColumns())))+(2*(cfg.lastRowExclusions())*(cfg.numberOfColumns())))+(2*(cfg.numberOfAsics())))+4)+2)-1)/2)*2; }
   static uint32_t _sizeof(const Epix::Config10KV1& cfg) { return (((((((32+(2*(cfg.numberOfRows())*(cfg.numberOfColumns())))+(2*(cfg.lastRowExclusions())*(cfg.numberOfColumns())))+(2*(cfg.numberOfAsics())))+4)+2)-1)/2)*2; }
+  static uint32_t _sizeof(const GenericPgp::ConfigV1& cfg) { return (((((((32+(2*(cfg.numberOfRows())*(cfg.numberOfColumns())))+(2*(cfg.lastRowExclusions())*(cfg.numberOfColumns())))+(2*(cfg.numberOfAsics())))+4)+2)-1)/2)*2; }
 private:
   uint32_t	_first;
   uint32_t	_second;

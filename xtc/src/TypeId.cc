@@ -59,7 +59,9 @@ bool     TypeId::is_configuration() const
       Id_Epix100aConfig,
       Id_EvsConfig,
       Id_PartitionConfig,
-      Id_PimaxConfig, };
+      Id_PimaxConfig, 
+      Id_GenericPgpConfig,
+      Id_TimeToolConfig, };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
   for(unsigned i=0; i<nconfigtypes; i++)
@@ -156,6 +158,8 @@ const char* TypeId::name(Type type)
     "Arraychar",               // 82
     "Epix10kConfig",           // 83
     "Epix100aConfig",          // 84
+    "GenericPgpConfig",        // 85
+    "TimeToolConfig",          // 86
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

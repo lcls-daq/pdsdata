@@ -93,6 +93,53 @@ private:
   uint32_t	_accept;	/**< Module trigger decision */
 };
 #pragma pack(pop)
+
+/** @class DataV2
+
+  
+*/
+
+#pragma pack(push,4)
+
+class DataV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_L3TData /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  enum Result {
+    Fail,
+    Pass,
+    None,
+  };
+  enum Bias {
+    Unbiased,
+    Biased,
+  };
+  DataV2(L3T::DataV2::Result arg__bf_result, L3T::DataV2::Bias arg__bf_bias)
+    : _accept(((arg__bf_result) & 0x3)|(((arg__bf_bias) & 0x1)<<2))
+  {
+  }
+  DataV2() {}
+  DataV2(const DataV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  DataV2& operator=(const DataV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  uint32_t accept() const { return _accept; }
+  /** Returns L3T Decision : None = insufficient information/resources */
+  L3T::DataV2::Result result() const { return Result(this->_accept & 0x3); }
+  /** Returns L3T Bias : Unbiased = recorded independent of decision */
+  L3T::DataV2::Bias bias() const { return Bias((this->_accept>>2) & 0x1); }
+  static uint32_t _sizeof() { return 4; }
+private:
+  uint32_t	_accept;
+};
+std::ostream& operator<<(std::ostream& str, L3T::DataV2::Result enval);
+std::ostream& operator<<(std::ostream& str, L3T::DataV2::Bias enval);
+#pragma pack(pop)
 } // namespace L3T
 } // namespace Pds
 #endif // PDS_L3T_DDL_H

@@ -596,7 +596,7 @@ void XtcMonitorServer::routine()
 
                   //  Force recovery of those still outstanding to the retired client
                   for(int j=0; j<int(_msgDest.size()); j++)
-                    if (_msgDest[j]==q) {
+                    if (_msgDest[j]==int(q)) {
                       printf("Recovering buffer %d\n",j);
                       msg.bufferIndex(j);
                       if (mq_timedsend(_myInputEvQueue, (const char*)&msg, sizeof(msg), 0, &_tmo)<0)
