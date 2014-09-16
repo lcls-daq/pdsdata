@@ -160,6 +160,7 @@ const char* TypeId::name(Type type)
     "Epix100aConfig",          // 84
     "GenericPgpConfig",        // 85
     "TimeToolConfig",          // 86
+    "TimeToolData",            // 87
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
