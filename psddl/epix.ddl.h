@@ -745,6 +745,8 @@ public:
   return make_ndarray(data,  this->numberOfCalibrationRows()  / 2 ,  this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow()); }
   /** Number of pixel rows in a readout unit */
   uint32_t numberOfRows() const { return this->numberOfAsicsPerColumn()*this->numberOfRowsPerAsic(); }
+  /** Number of readable pixel rows in a readout unit */
+  uint32_t numberOfReadableRows() const { return this->numberOfAsicsPerColumn()*this->numberOfReadableRowsPerAsic(); }
   /** Number of pixel columns in a readout unit */
   uint32_t numberOfColumns() const { return  this->numberOfAsicsPerRow()*this->numberOfPixelsPerAsicRow(); }
   /** Number of calibration rows in a readout unit */
@@ -992,55 +994,55 @@ public:
   ndarray<const uint16_t, 2> frame(const Epix::Config100aV1& cfg, const boost::shared_ptr<T>& owner) const { 
     ptrdiff_t offset=32;
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
-    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfRows(), cfg.numberOfColumns());
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfReadableRows(), cfg.numberOfColumns());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint16_t, 2> frame(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=32;
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
-  return make_ndarray(data, cfg.numberOfRows(), cfg.numberOfColumns()); }
+  return make_ndarray(data, cfg.numberOfReadableRows(), cfg.numberOfColumns()); }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint16_t, 2> calibrationRows(const Epix::Config100aV1& cfg, const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns())));
+    ptrdiff_t offset=32+(2*((cfg.numberOfReadableRows())*(cfg.numberOfColumns())));
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfCalibrationRows(), cfg.numberOfColumns());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint16_t, 2> calibrationRows(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns())));
+  ndarray<const uint16_t, 2> calibrationRows(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=32+(2*((cfg.numberOfReadableRows())*(cfg.numberOfColumns())));
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, cfg.numberOfCalibrationRows(), cfg.numberOfColumns()); }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint16_t, 2> environmentalRows(const Epix::Config100aV1& cfg, const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=(32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns())));
+    ptrdiff_t offset=(32+(2*((cfg.numberOfReadableRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns())));
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfEnvironmentalRows(), cfg.numberOfColumns());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint16_t, 2> environmentalRows(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=(32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns())));
+  ndarray<const uint16_t, 2> environmentalRows(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=(32+(2*((cfg.numberOfReadableRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns())));
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, cfg.numberOfEnvironmentalRows(), cfg.numberOfColumns()); }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint16_t, 1> temperatures(const Epix::Config100aV1& cfg, const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=((32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns())));
+    ptrdiff_t offset=((32+(2*((cfg.numberOfReadableRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns())));
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfAsics());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint16_t, 1> temperatures(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=((32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns())));
+  ndarray<const uint16_t, 1> temperatures(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=((32+(2*((cfg.numberOfReadableRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns())));
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, cfg.numberOfAsics()); }
-  uint32_t lastWord(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=(((32+(2*((cfg.numberOfRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns()))))+(2*(cfg.numberOfAsics()));
+  uint32_t lastWord(const Epix::Config100aV1& cfg) const { ptrdiff_t offset=(((32+(2*((cfg.numberOfReadableRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfCalibrationRows())*(cfg.numberOfColumns()))))+(2*((cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns()))))+(2*(cfg.numberOfAsics()));
   return *(const uint32_t*)(((const char*)this)+offset); }
-  static uint32_t _sizeof(const Epix::Config100aV1& cfg) { return ((((((((32+(2*(cfg.numberOfRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfCalibrationRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfAsics())))+4)+2)-1)/2)*2; }
+  static uint32_t _sizeof(const Epix::Config100aV1& cfg) { return ((((((((32+(2*(cfg.numberOfReadableRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfCalibrationRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfAsics())))+4)+2)-1)/2)*2; }
 private:
   uint32_t	_first;
   uint32_t	_second;
@@ -1050,7 +1052,7 @@ private:
   uint32_t	_z0;
   uint32_t	_z1;
   uint32_t	_z2;
-  //uint16_t	_frame[cfg.numberOfRows()][cfg.numberOfColumns()];
+  //uint16_t	_frame[cfg.numberOfReadableRows()][cfg.numberOfColumns()];
   //uint16_t	_calibrationRows[cfg.numberOfCalibrationRows()][cfg.numberOfColumns()];
   //uint16_t	_environmentalRows[cfg.numberOfEnvironmentalRows()][cfg.numberOfColumns()];
   //uint16_t	_temperatures[cfg.numberOfAsics()];
