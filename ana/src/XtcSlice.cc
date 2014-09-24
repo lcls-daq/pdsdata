@@ -120,7 +120,7 @@ void XtcSlice::_close(bool bForceWait)
     pthread_join(_threadID,NULL);
     
     delete[] _lastdg; _lastdg = NULL;    
-    delete _nextdg; _nextdg = NULL;
+    delete[] _nextdg; _nextdg = NULL;
     
     delete _pool;
     _pool = new XtcPool(4,0x4000000);
