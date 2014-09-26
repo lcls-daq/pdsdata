@@ -1212,6 +1212,105 @@ private:
   //EvrData::IOChannel	_channels[this->_nchannels];
 };
 #pragma pack(pop)
+
+/** @class IOChannelV2
+
+  
+*/
+
+
+class IOChannelV2 {
+public:
+  enum { NameLength = 64 };
+  enum { MaxInfos = 16 };
+  IOChannelV2(const EvrData::OutputMapV2& arg__output, const char* arg__name, uint32_t arg__ninfo, const Pds::DetInfo* arg__info)
+    : _output(arg__output), _ninfo(arg__ninfo)
+  {
+    if (arg__name) std::copy(arg__name, arg__name+(64), &_name[0]);
+    if (arg__info) std::copy(arg__info, arg__info+(16), &_info[0]);
+  }
+  IOChannelV2() {}
+  /** Output connector */
+  const EvrData::OutputMapV2& output() const { return _output; }
+  /** Name of channel */
+  const char* name() const { return _name; }
+  /** Number of Detectors connected */
+  uint32_t ninfo() const { return _ninfo; }
+  /** List of Detectors connected
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const Pds::DetInfo, 1> infos(const boost::shared_ptr<T>& owner) const { 
+    const Pds::DetInfo* data = &_info[0];
+    return make_ndarray(boost::shared_ptr<const Pds::DetInfo>(owner, data), MaxInfos);
+  }
+  /** List of Detectors connected
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const Pds::DetInfo, 1> infos() const { return make_ndarray(&_info[0], MaxInfos); }
+  static uint32_t _sizeof() { return (((((((0+(EvrData::OutputMapV2::_sizeof()))+(1*(NameLength)))+4)+(8*(MaxInfos)))+4)-1)/4)*4; }
+  /** Method which returns the shape (dimensions) of the data returned by name() method. */
+  std::vector<int> name_shape() const;
+private:
+  EvrData::OutputMapV2	_output;	/**< Output connector */
+  char	_name[NameLength];	/**< Name of channel */
+  uint32_t	_ninfo;	/**< Number of Detectors connected */
+  Pds::DetInfo	_info[MaxInfos];	/**< List of Detectors connected */
+};
+
+/** @class IOConfigV2
+
+  
+*/
+
+#pragma pack(push,4)
+
+class IOConfigV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_EvrIOConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  IOConfigV2(uint32_t nchannels)
+    : _nchannels(nchannels)
+  {
+  }
+  IOConfigV2(uint32_t arg__nchannels, const EvrData::IOChannelV2* arg__channels);
+  IOConfigV2() {}
+  IOConfigV2(const IOConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  IOConfigV2& operator=(const IOConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Number of Configured output channels */
+  uint32_t nchannels() const { return _nchannels; }
+  /** List of Configured output channels
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const EvrData::IOChannelV2, 1> channels(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=4;
+    const EvrData::IOChannelV2* data = (const EvrData::IOChannelV2*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const EvrData::IOChannelV2>(owner, data), this->_nchannels);
+  }
+  /** List of Configured output channels
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const EvrData::IOChannelV2, 1> channels() const { ptrdiff_t offset=4;
+  const EvrData::IOChannelV2* data = (const EvrData::IOChannelV2*)(((char*)this)+offset);
+  return make_ndarray(data, this->_nchannels); }
+  uint32_t _sizeof() const { return ((((4+(EvrData::IOChannelV2::_sizeof()*(this->_nchannels)))+4)-1)/4)*4; }
+private:
+  uint32_t	_nchannels;	/**< Number of Configured output channels */
+  //EvrData::IOChannelV2	_channels[this->_nchannels];
+};
+#pragma pack(pop)
 } // namespace EvrData
 } // namespace Pds
 #endif // PDS_EVR_DDL_H

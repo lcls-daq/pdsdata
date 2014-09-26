@@ -412,5 +412,21 @@ EvrData::OutputMap::Conn
 IOConfigV1::conn() const {
   return OutputMap::Conn(this->_conn);
 }
+std::vector<int>
+IOChannelV2::name_shape() const {
+  std::vector<int> shape;
+  shape.reserve(1);
+  shape.push_back(NameLength);
+  return shape;
+}
+IOConfigV2::IOConfigV2(uint32_t arg__nchannels, const EvrData::IOChannelV2* arg__channels)
+    : _nchannels(arg__nchannels)
+{
+  if (arg__channels and (this->_nchannels)) {
+    ptrdiff_t offset = 4;
+    EvrData::IOChannelV2* data = reinterpret_cast<EvrData::IOChannelV2*>(((char*)this)+offset);
+    std::copy(arg__channels, arg__channels+(this->_nchannels), data);
+  }
+}
 } // namespace EvrData
 } // namespace Pds
