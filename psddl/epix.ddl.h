@@ -632,13 +632,9 @@ class Config100aV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_Epix100aConfig /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  enum FixedValues {
-    CalibrationRowCountPerASIC = 2,
-    EnvironmentalRowCountPerASIC = 1,
-  };
-  Config100aV1(uint32_t arg__version, uint32_t arg__runTrigDelay, uint32_t arg__daqTrigDelay, uint32_t arg__dacSetting, uint8_t arg__asicGR, uint8_t arg__asicAcq, uint8_t arg__asicR0, uint8_t arg__asicPpmat, uint8_t arg__asicPpbe, uint8_t arg__asicRoClk, uint8_t arg__asicGRControl, uint8_t arg__asicAcqControl, uint8_t arg__asicR0Control, uint8_t arg__asicPpmatControl, uint8_t arg__asicPpbeControl, uint8_t arg__asicR0ClkControl, uint8_t arg__prepulseR0En, uint32_t arg__adcStreamMode, uint8_t arg__testPatternEnable, uint8_t arg__SyncMode, uint8_t arg__R0Mode, uint32_t arg__acqToAsicR0Delay, uint32_t arg__asicR0ToAsicAcq, uint32_t arg__asicAcqWidth, uint32_t arg__asicAcqLToPPmatL, uint32_t arg__asicRoClkHalfT, uint32_t arg__adcReadsPerPixel, uint32_t arg__adcClkHalfT, uint32_t arg__asicR0Width, uint32_t arg__adcPipelineDelay, uint16_t arg__SyncWidth, uint16_t arg__SyncDelay, uint32_t arg__prepulseR0Width, uint32_t arg__prepulseR0Delay, uint32_t arg__digitalCardId0, uint32_t arg__digitalCardId1, uint32_t arg__analogCardId0, uint32_t arg__analogCardId1, uint32_t arg__numberOfAsicsPerRow, uint32_t arg__numberOfAsicsPerColumn, uint32_t arg__numberOfRowsPerAsic, uint32_t arg__numberOfReadableRowsPerAsic, uint32_t arg__numberOfPixelsPerAsicRow, uint32_t arg__baseClockFrequency, uint32_t arg__asicMask, uint8_t arg__scopeEnable, uint8_t arg__scopeTrigEdge, uint8_t arg__scopeTrigChan, uint8_t arg__scopeArmMode, uint16_t arg__scopeADCThreshold, uint16_t arg__scopeTrigHoldoff, uint16_t arg__scopeTrigOffset, uint16_t arg__scopeTraceLength, uint16_t arg__scopeADCsameplesToSkip, uint8_t arg__scopeChanAwaveformSelect, uint8_t arg__scopeChanBwaveformSelect, const Epix::Asic100aConfigV1* arg__asics, const uint16_t* arg__asicPixelConfigArray, const uint8_t* arg__calibPixelConfigArray);
-  Config100aV1(uint32_t numberOfAsicsPerRow, uint32_t numberOfAsicsPerColumn, uint32_t numberOfRowsPerAsic, uint32_t numberOfPixelsPerAsicRow)
-    : _numberOfAsicsPerRow(numberOfAsicsPerRow), _numberOfAsicsPerColumn(numberOfAsicsPerColumn), _numberOfRowsPerAsic(numberOfRowsPerAsic), _numberOfPixelsPerAsicRow(numberOfPixelsPerAsicRow)
+  Config100aV1(uint32_t arg__version, uint32_t arg__runTrigDelay, uint32_t arg__daqTrigDelay, uint32_t arg__dacSetting, uint8_t arg__asicGR, uint8_t arg__asicAcq, uint8_t arg__asicR0, uint8_t arg__asicPpmat, uint8_t arg__asicPpbe, uint8_t arg__asicRoClk, uint8_t arg__asicGRControl, uint8_t arg__asicAcqControl, uint8_t arg__asicR0Control, uint8_t arg__asicPpmatControl, uint8_t arg__asicPpbeControl, uint8_t arg__asicR0ClkControl, uint8_t arg__prepulseR0En, uint32_t arg__adcStreamMode, uint8_t arg__testPatternEnable, uint8_t arg__SyncMode, uint8_t arg__R0Mode, uint32_t arg__acqToAsicR0Delay, uint32_t arg__asicR0ToAsicAcq, uint32_t arg__asicAcqWidth, uint32_t arg__asicAcqLToPPmatL, uint32_t arg__asicRoClkHalfT, uint32_t arg__adcReadsPerPixel, uint32_t arg__adcClkHalfT, uint32_t arg__asicR0Width, uint32_t arg__adcPipelineDelay, uint16_t arg__SyncWidth, uint16_t arg__SyncDelay, uint32_t arg__prepulseR0Width, uint32_t arg__prepulseR0Delay, uint32_t arg__digitalCardId0, uint32_t arg__digitalCardId1, uint32_t arg__analogCardId0, uint32_t arg__analogCardId1, uint32_t arg__numberOfAsicsPerRow, uint32_t arg__numberOfAsicsPerColumn, uint32_t arg__numberOfRowsPerAsic, uint32_t arg__numberOfReadableRowsPerAsic, uint32_t arg__numberOfPixelsPerAsicRow, uint32_t arg__calibrationRowCountPerASIC, uint32_t arg__environmentalRowCountPerASIC, uint32_t arg__baseClockFrequency, uint32_t arg__asicMask, uint8_t arg__scopeEnable, uint8_t arg__scopeTrigEdge, uint8_t arg__scopeTrigChan, uint8_t arg__scopeArmMode, uint16_t arg__scopeADCThreshold, uint16_t arg__scopeTrigHoldoff, uint16_t arg__scopeTrigOffset, uint16_t arg__scopeTraceLength, uint16_t arg__scopeADCsameplesToSkip, uint8_t arg__scopeChanAwaveformSelect, uint8_t arg__scopeChanBwaveformSelect, const Epix::Asic100aConfigV1* arg__asics, const uint16_t* arg__asicPixelConfigArray, const uint8_t* arg__calibPixelConfigArray);
+  Config100aV1(uint32_t numberOfAsicsPerRow, uint32_t numberOfAsicsPerColumn, uint32_t numberOfRowsPerAsic, uint32_t numberOfPixelsPerAsicRow, uint32_t calibrationRowCountPerASIC)
+    : _numberOfAsicsPerRow(numberOfAsicsPerRow), _numberOfAsicsPerColumn(numberOfAsicsPerColumn), _numberOfRowsPerAsic(numberOfRowsPerAsic), _numberOfPixelsPerAsicRow(numberOfPixelsPerAsicRow), _calibrationRowCountPerASIC(calibrationRowCountPerASIC)
   {
   }
   Config100aV1() {}
@@ -696,6 +692,8 @@ public:
   /** for epix100a  352 */
   uint32_t numberOfPixelsPerAsicRow() const { return _numberOfPixelsPerAsicRow; }
   /** for epix100a 96*4 = 384 */
+  uint32_t calibrationRowCountPerASIC() const { return _calibrationRowCountPerASIC; }
+  uint32_t environmentalRowCountPerASIC() const { return _environmentalRowCountPerASIC; }
   uint32_t baseClockFrequency() const { return _baseClockFrequency; }
   uint32_t asicMask() const { return _asicMask; }
   uint8_t scopeEnable() const { return uint8_t(this->_Scope & 0x1); }
@@ -709,7 +707,7 @@ public:
   uint16_t scopeADCsameplesToSkip() const { return uint16_t((this->_ScopeTriggerParms_2>>13) & 0x1fff); }
   uint8_t scopeChanAwaveformSelect() const { return uint8_t(this->_ScopeWaveformSelects & 0x1f); }
   uint8_t scopeChanBwaveformSelect() const { return uint8_t((this->_ScopeWaveformSelects>>5) & 0x1f); }
-  const Epix::Asic100aConfigV1& asics(uint32_t i0) const { ptrdiff_t offset=132;
+  const Epix::Asic100aConfigV1& asics(uint32_t i0) const { ptrdiff_t offset=140;
   const Epix::Asic100aConfigV1* memptr = (const Epix::Asic100aConfigV1*)(((const char*)this)+offset);
   size_t memsize = memptr->_sizeof();
   return *(const Epix::Asic100aConfigV1*)((const char*)memptr + (i0)*memsize); }
@@ -717,30 +715,30 @@ public:
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint16_t, 2> asicPixelConfigArray(const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=132+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()));
+    ptrdiff_t offset=140+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()));
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data),  this->numberOfRows(),  this->numberOfColumns());
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint16_t, 2> asicPixelConfigArray() const { ptrdiff_t offset=132+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()));
+  ndarray<const uint16_t, 2> asicPixelConfigArray() const { ptrdiff_t offset=140+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()));
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data,  this->numberOfRows(),  this->numberOfColumns()); }
-  /** Calibration row config map is one row for every two rows
+  /** Calibration row config map is one row for every two calib rows
 
     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint8_t, 2> calibPixelConfigArray(const boost::shared_ptr<T>& owner) const { 
-    ptrdiff_t offset=(132+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*(( this->numberOfRows())*( this->numberOfColumns())));
+    ptrdiff_t offset=(140+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*(( this->numberOfRows())*( this->numberOfColumns())));
     const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint8_t>(owner, data),  this->numberOfCalibrationRows()  / 2 ,  this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow());
   }
-  /** Calibration row config map is one row for every two rows
+  /** Calibration row config map is one row for every two calib rows
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint8_t, 2> calibPixelConfigArray() const { ptrdiff_t offset=(132+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*(( this->numberOfRows())*( this->numberOfColumns())));
+  ndarray<const uint8_t, 2> calibPixelConfigArray() const { ptrdiff_t offset=(140+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*(( this->numberOfRows())*( this->numberOfColumns())));
   const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
   return make_ndarray(data,  this->numberOfCalibrationRows()  / 2 ,  this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow()); }
   /** Number of pixel rows in a readout unit */
@@ -750,12 +748,12 @@ public:
   /** Number of pixel columns in a readout unit */
   uint32_t numberOfColumns() const { return  this->numberOfAsicsPerRow()*this->numberOfPixelsPerAsicRow(); }
   /** Number of calibration rows in a readout unit */
-  uint32_t numberOfCalibrationRows() const { return this->numberOfAsicsPerColumn()*CalibrationRowCountPerASIC; }
+  uint32_t numberOfCalibrationRows() const { return this->numberOfAsicsPerColumn()*this->calibrationRowCountPerASIC(); }
   /** Number of rows in a readout unit */
-  uint32_t numberOfEnvironmentalRows() const { return this->numberOfAsicsPerColumn()*EnvironmentalRowCountPerASIC; }
+  uint32_t numberOfEnvironmentalRows() const { return this->numberOfAsicsPerColumn()*this->environmentalRowCountPerASIC(); }
   /** Number of columns in a readout unit */
   uint32_t numberOfAsics() const { return  this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn(); }
-  uint32_t _sizeof() const { return ((((((132+(Epix::Asic100aConfigV1::_sizeof()*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*( this->numberOfRows())*( this->numberOfColumns())))+(1*( this->numberOfCalibrationRows()  / 2 )*( this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow())))+4)-1)/4)*4; }
+  uint32_t _sizeof() const { return ((((((140+(Epix::Asic100aConfigV1::_sizeof()*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*( this->numberOfRows())*( this->numberOfColumns())))+(1*( this->numberOfCalibrationRows()  / 2 )*( this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow())))+4)-1)/4)*4; }
   /** Method which returns the shape (dimensions) of the data returned by asics() method. */
   std::vector<int> asics_shape() const;
 private:
@@ -786,7 +784,9 @@ private:
   uint32_t	_numberOfRowsPerAsic;
   uint32_t	_numberOfReadableRowsPerAsic;
   uint32_t	_numberOfPixelsPerAsicRow;	/**< for epix100a  352 */
-  uint32_t	_baseClockFrequency;	/**< for epix100a 96*4 = 384 */
+  uint32_t	_calibrationRowCountPerASIC;	/**< for epix100a 96*4 = 384 */
+  uint32_t	_environmentalRowCountPerASIC;
+  uint32_t	_baseClockFrequency;
   uint32_t	_asicMask;
   uint32_t	_Scope;
   uint32_t	_ScopeTriggerParms_1;
@@ -796,7 +796,6 @@ private:
   //uint16_t	_asicPixelConfigArray[ this->numberOfRows()][ this->numberOfColumns()];
   //uint8_t	_calibPixelConfigArray[ this->numberOfCalibrationRows()  / 2 ][ this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow()];
 };
-std::ostream& operator<<(std::ostream& str, Epix::Config100aV1::FixedValues enval);
 #pragma pack(pop)
 
 /** @class ElementV1
