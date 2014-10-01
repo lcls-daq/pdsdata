@@ -1,3 +1,5 @@
+2014-Oct-01 weaver      Tag V08-01-04.  Adds EvrData::IOConfigV2.  Derived from psddldata V01-00-15.
+			Tag V08-01-03.  Adds TimeTool::DataV1.
 2014-Sep-15 weaver	Tag V08-01-02.  Derived from psddldata V01-00-13.  Adds TimeTool config and GenericPgp config types.
 					Adds L3T::DataV2 type with unbiased selection flag, also in L1AcceptEnv.
 2014-Sep-08 cpo 	Tag V08-01-01.  Tomy and Chris move pragma-pack in index/IndexList.hh
