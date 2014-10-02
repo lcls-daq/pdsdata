@@ -68,8 +68,8 @@ namespace Pds {
                 XcsSb1Ipm02      = 54,
                 XcsSb2Ipm01      = 55,
                 XcsSb2Ipm02      = 56,
-                XcsGonImp01      = 57,
-                XcsLamImp01      = 58,
+                XcsGonIpm01      = 57,
+                XcsLamIpm01      = 58,
                 NumberOf };
 
     BldInfo() {}
