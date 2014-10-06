@@ -1,3 +1,4 @@
+2014-Oct-05 jana	Tag V08-01-05.  Adds some XCS BLD IPIMBs to BldInfo and latest changes to epix.ddl excluding epix100a and elementV2.  Derived from psddldata V01-00-16.
 2014-Oct-01 weaver      Tag V08-01-04.  Adds EvrData::IOConfigV2.  Derived from psddldata V01-00-15.
 			Tag V08-01-03.  Adds TimeTool::DataV1.
 2014-Sep-15 weaver	Tag V08-01-02.  Derived from psddldata V01-00-13.  Adds TimeTool config and GenericPgp config types.
