@@ -993,6 +993,159 @@ private:
   uint32_t	_vproj[256];
 };
 #pragma pack(pop)
+
+/** @class BldDataSpectrometerV1
+
+  Structure which contains image projections and fit parameters for spectrometers. 
+	Changes from V0 include extending size of hproj, removal of vproj,
+	 and addition of fit parameters.
+*/
+
+#pragma pack(push,4)
+
+class BldDataSpectrometerV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_Spectrometer /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  BldDataSpectrometerV1(uint32_t arg__width, uint32_t arg__hproj_y1, uint32_t arg__hproj_y2, double arg__fComRaw, double arg__fBaseline, double arg__fCom, double arg__fIntegral, uint32_t arg__nPeaks, const uint32_t* arg__hproj, const double* arg__peakPos, const double* arg__peakHeight, const double* arg__Fwhm);
+  BldDataSpectrometerV1(uint32_t width, uint32_t nPeaks)
+    : _width(width), _nPeaks(nPeaks)
+  {
+  }
+  BldDataSpectrometerV1() {}
+  BldDataSpectrometerV1(const BldDataSpectrometerV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataSpectrometerV1& operator=(const BldDataSpectrometerV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Width of camera frame and thus size of hproj array 
+     PV TBD */
+  uint32_t width() const { return _width; }
+  /** First row of pixels used in projection ROI  
+     PV TBD */
+  uint32_t hproj_y1() const { return _hproj_y1; }
+  /** Last row of pixels used in projection ROI
+    PV: TBD */
+  uint32_t hproj_y2() const { return _hproj_y2; }
+  /** Raw center of mass, no baseline subtraction 
+     PV: TBD */
+  double comRaw() const { return _fComRaw; }
+  /** Baseline level for calculated values 
+     PV: TBD */
+  double baseline() const { return _fBaseline; }
+  /** Baseline-subtracted center of mass 
+     PV: TBD */
+  double com() const { return _fCom; }
+  /** Integrated area under spectrum (no baseline subtraction) 
+     PV: TBD */
+  double integral() const { return _fIntegral; }
+  /** Number of peak fits performed
+    PV: TBD */
+  uint32_t nPeaks() const { return _nPeaks; }
+  /** Projection of spectrum onto energy axis 
+     PV TBD
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint32_t, 1> hproj(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=48;
+    const uint32_t* data = (const uint32_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint32_t>(owner, data), this->_width);
+  }
+  /** Projection of spectrum onto energy axis 
+     PV TBD
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint32_t, 1> hproj() const { ptrdiff_t offset=48;
+  const uint32_t* data = (const uint32_t*)(((char*)this)+offset);
+  return make_ndarray(data, this->_width); }
+  /** Peak position array, length given by nPeaks
+     PV: TBD
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> peakPos(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=48+(4*(this->_width));
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->_nPeaks);
+  }
+  /** Peak position array, length given by nPeaks
+     PV: TBD
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> peakPos() const { ptrdiff_t offset=48+(4*(this->_width));
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->_nPeaks); }
+  /** Peak height array, length given by nPeaks
+     PV: TBD
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> peakHeight(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(48+(4*(this->_width)))+(8*(this->_nPeaks));
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->_nPeaks);
+  }
+  /** Peak height array, length given by nPeaks
+     PV: TBD
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> peakHeight() const { ptrdiff_t offset=(48+(4*(this->_width)))+(8*(this->_nPeaks));
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->_nPeaks); }
+  /** Peak FWHM array, length given by nPeaks
+     PV: TBD
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> FWHM(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=((48+(4*(this->_width)))+(8*(this->_nPeaks)))+(8*(this->_nPeaks));
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->_nPeaks);
+  }
+  /** Peak FWHM array, length given by nPeaks
+     PV: TBD
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> FWHM() const { ptrdiff_t offset=((48+(4*(this->_width)))+(8*(this->_nPeaks)))+(8*(this->_nPeaks));
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->_nPeaks); }
+  uint32_t _sizeof() const { return (((((((48+(4*(this->_width)))+(8*(this->_nPeaks)))+(8*(this->_nPeaks)))+(8*(this->_nPeaks)))+4)-1)/4)*4; }
+private:
+  uint32_t	_width;	/**< Width of camera frame and thus size of hproj array 
+     PV TBD */
+  uint32_t	_hproj_y1;	/**< First row of pixels used in projection ROI  
+     PV TBD */
+  uint32_t	_hproj_y2;	/**< Last row of pixels used in projection ROI
+    PV: TBD */
+  double	_fComRaw;	/**< Raw center of mass, no baseline subtraction 
+     PV: TBD */
+  double	_fBaseline;	/**< Baseline level for calculated values 
+     PV: TBD */
+  double	_fCom;	/**< Baseline-subtracted center of mass 
+     PV: TBD */
+  double	_fIntegral;	/**< Integrated area under spectrum (no baseline subtraction) 
+     PV: TBD */
+  uint32_t	_nPeaks;	/**< Number of peak fits performed
+    PV: TBD */
+  //uint32_t	_hproj[this->_width];
+  //double	_peakPos[this->_nPeaks];
+  //double	_peakHeight[this->_nPeaks];
+  //double	_Fwhm[this->_nPeaks];
+};
+#pragma pack(pop)
 } // namespace Bld
 } // namespace Pds
 #endif // PDS_BLD_DDL_H

@@ -512,6 +512,294 @@ private:
 };
 #pragma pack(pop)
 
+/** @class Asic100aConfigV1
+
+  
+*/
+
+#pragma pack(push,4)
+
+class Asic100aConfigV1 {
+public:
+  Asic100aConfigV1(uint8_t arg__pulserVsPixelOnDelay, uint8_t arg__pulserSync, uint8_t arg__dummyTest, uint8_t arg__dummyMask, uint16_t arg__testPulserLevel, uint8_t arg__pulserCounterDirection, uint8_t arg__automaticTestModeEnable, uint8_t arg__testMode, uint8_t arg__testModeWithDarkFrame, uint8_t arg__highResolutionModeTest, uint8_t arg__pulserReset, uint8_t arg__digitalMonitorMux1, uint8_t arg__digitalMonitorMux2, uint8_t arg__testPulserCurrent, uint8_t arg__testPointSystemOutputDynamicRange, uint8_t arg__digitalMonitor1Enable, uint8_t arg__digitalMonitor2Enable, uint8_t arg__LVDS_ImpedenceMatchingEnable, uint8_t arg__VRefBaseLineDac, uint8_t arg__extraRowsLowReferenceValue, uint8_t arg__testPointSystemTemperatureCompensationEnable, uint8_t arg__testPointSytemInputSelect, uint8_t arg__programmableReadoutDelay, uint8_t arg__outputDriverOutputDynamicRange0, uint8_t arg__outputDriverOutputDynamicRange1, uint8_t arg__balconyEnable, uint8_t arg__balconyDriverCurrent, uint8_t arg__fastPowerPulsingSpeed, uint8_t arg__fastPowerPulsingEnable, uint8_t arg__preamplifierCurrent, uint8_t arg__pixelOutputBufferCurrent, uint8_t arg__pixelBufferAndPreamplifierDrivingCapabilities, uint8_t arg__outputDriverTemperatureCompensationEnable, uint8_t arg__pixelFilterLevel, uint8_t arg__bandGapReferenceTemperatureCompensationBits, uint8_t arg__outputDriverDrivingCapabilitiesAndStability, uint8_t arg__outputDriverDacReferenceBias, uint8_t arg__testPointSystemTemperatureCompensationGain, uint8_t arg__testPointSystemInputCommonMode, uint8_t arg__outputDriverTemperatureCompensationGain0, uint8_t arg__outputDriverInputCommonMode0, uint8_t arg__testBackEnd, uint8_t arg__interleavedReadOutEnable, uint8_t arg_EXEC_DelayEnable, uint8_t arg__CCK_RegDelayEnable, uint8_t arg__syncPinEnable, uint16_t arg__RowStartAddr, uint16_t arg__RowStopAddr, uint8_t arg__ColumnStartAddr, uint8_t arg__ColumnStopAddr, uint16_t arg__chipID, uint8_t arg__outputDriverOutputDynamicRange2, uint8_t arg__outputDriverOutputDynamicRange3, uint8_t arg__outputDriverTemperatureCompensationGain1, uint8_t arg__outputDriverInputCommonMode1, uint8_t arg__outputDriverTemperatureCompensationGain2, uint8_t arg__outputDriverInputCommonMode2, uint8_t arg__outputDriverTemperatureCompensationGain3, uint8_t arg__outputDriverInputCommonMode3);
+  Asic100aConfigV1() {}
+  Asic100aConfigV1(const Asic100aConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  Asic100aConfigV1& operator=(const Asic100aConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  uint8_t pulserVsPixelOnDelay() const { return uint8_t(this->_reg1 & 0x7); }
+  uint8_t pulserSync() const { return uint8_t((this->_reg1>>7) & 0x1); }
+  uint8_t dummyTest() const { return uint8_t(this->_reg2 & 0x1); }
+  uint8_t dummyMask() const { return uint8_t((this->_reg2>>1) & 0x1); }
+  uint16_t testPulserLevel() const { return uint16_t(this->_reg3 & 0x3ff); }
+  uint8_t pulserCounterDirection() const { return uint8_t((this->_reg3>>10) & 0x1); }
+  uint8_t automaticTestModeEnable() const { return uint8_t((this->_reg3>>11) & 0x1); }
+  uint8_t testMode() const { return uint8_t((this->_reg3>>12) & 0x1); }
+  uint8_t testModeWithDarkFrame() const { return uint8_t((this->_reg3>>13) & 0x1); }
+  uint8_t highResolutionModeTest() const { return uint8_t((this->_reg3>>14) & 0x1); }
+  uint8_t pulserReset() const { return uint8_t((this->_reg3>>15) & 0x1); }
+  uint8_t digitalMonitorMux1() const { return uint8_t(this->_reg4 & 0xf); }
+  uint8_t digitalMonitorMux2() const { return uint8_t((this->_reg4>>4) & 0xf); }
+  uint8_t testPulserCurrent() const { return uint8_t(this->_reg5 & 0x7); }
+  uint8_t testPointSystemOutputDynamicRange() const { return uint8_t((this->_reg5>>4) & 0xf); }
+  uint8_t digitalMonitor1Enable() const { return uint8_t(this->_reg6 & 0x1); }
+  uint8_t digitalMonitor2Enable() const { return uint8_t((this->_reg6>>1) & 0x1); }
+  uint8_t LVDS_ImpedenceMatchingEnable() const { return uint8_t((this->_reg6>>4) & 0x1); }
+  uint8_t VRefBaselineDac() const { return uint8_t(this->_reg7 & 0x3f); }
+  uint8_t extraRowsLowReferenceValue() const { return uint8_t((this->_reg7>>6) & 0x3); }
+  uint8_t testPointSystemTemperatureCompensationEnable() const { return uint8_t(this->_reg8 & 0x1); }
+  uint8_t testPointSytemInputSelect() const { return uint8_t((this->_reg8>>1) & 0xf); }
+  uint8_t programmableReadoutDelay() const { return uint8_t((this->_reg8>>5) & 0x7); }
+  uint8_t outputDriverOutputDynamicRange0() const { return uint8_t(this->_reg9 & 0xf); }
+  uint8_t outputDriverOutputDynamicRange1() const { return uint8_t((this->_reg9>>4) & 0xf); }
+  uint8_t balconyEnable() const { return uint8_t(this->_reg10 & 0x1); }
+  uint8_t balconyDriverCurrent() const { return uint8_t((this->_reg10>>1) & 0x7); }
+  uint8_t fastPowerPulsingSpeed() const { return uint8_t((this->_reg10>>4) & 0x7); }
+  uint8_t fastPowerPulsingEnable() const { return uint8_t((this->_reg10>>7) & 0x1); }
+  uint8_t preamplifierCurrent() const { return uint8_t(this->_reg11 & 0x7); }
+  uint8_t pixelOutputBufferCurrent() const { return uint8_t((this->_reg11>>3) & 0x7); }
+  uint8_t pixelBufferAndPreamplifierDrivingCapabilities() const { return uint8_t((this->_reg11>>6) & 0x3); }
+  uint8_t outputDriverTemperatureCompensationEnable() const { return uint8_t(this->_reg12 & 0x1); }
+  uint8_t pixelFilterLevel() const { return uint8_t((this->_reg12>>1) & 0x3f); }
+  uint8_t bandGapReferenceTemperatureCompensationBits() const { return uint8_t(this->_reg13 & 0x3); }
+  uint8_t outputDriverDrivingCapabilitiesAndStability() const { return uint8_t((this->_reg13>>2) & 0x7); }
+  uint8_t outputDriverDacReferenceBias() const { return uint8_t((this->_reg13>>5) & 0x7); }
+  uint8_t testPointSystemTemperatureCompensationGain() const { return uint8_t(this->_reg14 & 0x3); }
+  uint8_t testPointSystemInputCommonMode() const { return uint8_t((this->_reg14>>2) & 0x3f); }
+  uint8_t outputDriverTemperatureCompensationGain0() const { return uint8_t(this->_reg15 & 0x3); }
+  uint8_t outputDriverInputCommonMode0() const { return uint8_t((this->_reg15>>2) & 0x3f); }
+  uint8_t testBackEnd() const { return uint8_t(this->_reg16 & 0x1); }
+  uint8_t interleavedReadOutEnable() const { return uint8_t((this->_reg16>>1) & 0x1); }
+  uint8_t EXEC_DelayEnable() const { return uint8_t((this->_reg16>>2) & 0x1); }
+  uint8_t CCK_RegDelayEnable() const { return uint8_t((this->_reg16>>3) & 0x1); }
+  uint8_t syncPinEnable() const { return uint8_t((this->_reg16>>4) & 0x1); }
+  uint16_t RowStartAddr() const { return uint16_t(this->_reg17 & 0x1ff); }
+  uint16_t RowStopAddr() const { return uint16_t(this->_reg18 & 0x1ff); }
+  uint8_t ColumnStartAddr() const { return uint8_t(this->_reg19 & 0x7f); }
+  uint8_t ColumnStopAddr() const { return uint8_t(this->_reg20 & 0x7f); }
+  uint16_t chipID() const { return uint16_t(this->_reg21 & 0xffff); }
+  uint8_t outputDriverOutputDynamicRange2() const { return uint8_t(this->_reg22 & 0xf); }
+  uint8_t outputDriverOutputDynamicRange3() const { return uint8_t((this->_reg22>>4) & 0xf); }
+  uint8_t outputDriverTemperatureCompensationGain1() const { return uint8_t(this->_reg23 & 0x3); }
+  uint8_t outputDriverInputCommonMode1() const { return uint8_t((this->_reg23>>2) & 0x3f); }
+  uint8_t outputDriverTemperatureCompensationGain2() const { return uint8_t(this->_reg24 & 0x3); }
+  uint8_t outputDriverInputCommonMode2() const { return uint8_t((this->_reg24>>2) & 0x3f); }
+  uint8_t outputDriverTemperatureCompensationGain3() const { return uint8_t(this->_reg25 & 0x3); }
+  uint8_t outputDriverInputCommonMode3() const { return uint8_t((this->_reg25>>2) & 0x3f); }
+  static uint32_t _sizeof() { return 100; }
+private:
+  uint32_t	_reg1;
+  uint32_t	_reg2;
+  uint32_t	_reg3;
+  uint32_t	_reg4;
+  uint32_t	_reg5;
+  uint32_t	_reg6;
+  uint32_t	_reg7;
+  uint32_t	_reg8;
+  uint32_t	_reg9;
+  uint32_t	_reg10;
+  uint32_t	_reg11;
+  uint32_t	_reg12;
+  uint32_t	_reg13;
+  uint32_t	_reg14;
+  uint32_t	_reg15;
+  uint32_t	_reg16;
+  uint32_t	_reg17;
+  uint32_t	_reg18;
+  uint32_t	_reg19;
+  uint32_t	_reg20;
+  uint32_t	_reg21;
+  uint32_t	_reg22;
+  uint32_t	_reg23;
+  uint32_t	_reg24;
+  uint32_t	_reg25;
+};
+#pragma pack(pop)
+
+/** @class Config100aV1
+
+  
+*/
+
+#pragma pack(push,4)
+
+class Config100aV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_Epix100aConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  Config100aV1(uint32_t arg__version, uint32_t arg__runTrigDelay, uint32_t arg__daqTrigDelay, uint32_t arg__dacSetting, uint8_t arg__asicGR, uint8_t arg__asicAcq, uint8_t arg__asicR0, uint8_t arg__asicPpmat, uint8_t arg__asicPpbe, uint8_t arg__asicRoClk, uint8_t arg__asicGRControl, uint8_t arg__asicAcqControl, uint8_t arg__asicR0Control, uint8_t arg__asicPpmatControl, uint8_t arg__asicPpbeControl, uint8_t arg__asicR0ClkControl, uint8_t arg__prepulseR0En, uint32_t arg__adcStreamMode, uint8_t arg__testPatternEnable, uint8_t arg__SyncMode, uint8_t arg__R0Mode, uint32_t arg__acqToAsicR0Delay, uint32_t arg__asicR0ToAsicAcq, uint32_t arg__asicAcqWidth, uint32_t arg__asicAcqLToPPmatL, uint32_t arg__asicPPmatToReadout, uint32_t arg__asicRoClkHalfT, uint32_t arg__adcReadsPerPixel, uint32_t arg__adcClkHalfT, uint32_t arg__asicR0Width, uint32_t arg__adcPipelineDelay, uint16_t arg__SyncWidth, uint16_t arg__SyncDelay, uint32_t arg__prepulseR0Width, uint32_t arg__prepulseR0Delay, uint32_t arg__digitalCardId0, uint32_t arg__digitalCardId1, uint32_t arg__analogCardId0, uint32_t arg__analogCardId1, uint32_t arg__numberOfAsicsPerRow, uint32_t arg__numberOfAsicsPerColumn, uint32_t arg__numberOfRowsPerAsic, uint32_t arg__numberOfReadableRowsPerAsic, uint32_t arg__numberOfPixelsPerAsicRow, uint32_t arg__calibrationRowCountPerASIC, uint32_t arg__environmentalRowCountPerASIC, uint32_t arg__baseClockFrequency, uint32_t arg__asicMask, uint8_t arg__scopeEnable, uint8_t arg__scopeTrigEdge, uint8_t arg__scopeTrigChan, uint8_t arg__scopeArmMode, uint16_t arg__scopeADCThreshold, uint16_t arg__scopeTrigHoldoff, uint16_t arg__scopeTrigOffset, uint16_t arg__scopeTraceLength, uint16_t arg__scopeADCsameplesToSkip, uint8_t arg__scopeChanAwaveformSelect, uint8_t arg__scopeChanBwaveformSelect, const Epix::Asic100aConfigV1* arg__asics, const uint16_t* arg__asicPixelConfigArray, const uint8_t* arg__calibPixelConfigArray);
+  Config100aV1(uint32_t numberOfAsicsPerRow, uint32_t numberOfAsicsPerColumn, uint32_t numberOfRowsPerAsic, uint32_t numberOfPixelsPerAsicRow, uint32_t calibrationRowCountPerASIC)
+    : _numberOfAsicsPerRow(numberOfAsicsPerRow), _numberOfAsicsPerColumn(numberOfAsicsPerColumn), _numberOfRowsPerAsic(numberOfRowsPerAsic), _numberOfPixelsPerAsicRow(numberOfPixelsPerAsicRow), _calibrationRowCountPerASIC(calibrationRowCountPerASIC)
+  {
+  }
+  Config100aV1() {}
+  Config100aV1(const Config100aV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  Config100aV1& operator=(const Config100aV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  uint32_t version() const { return _version; }
+  uint32_t runTrigDelay() const { return _runTrigDelay; }
+  uint32_t daqTrigDelay() const { return _daqTrigDelay; }
+  uint32_t dacSetting() const { return _dacSetting; }
+  uint8_t asicGR() const { return uint8_t(this->_asicPins & 0x1); }
+  uint8_t asicAcq() const { return uint8_t((this->_asicPins>>1) & 0x1); }
+  uint8_t asicR0() const { return uint8_t((this->_asicPins>>2) & 0x1); }
+  uint8_t asicPpmat() const { return uint8_t((this->_asicPins>>3) & 0x1); }
+  uint8_t asicPpbe() const { return uint8_t((this->_asicPins>>4) & 0x1); }
+  uint8_t asicRoClk() const { return uint8_t((this->_asicPins>>5) & 0x1); }
+  uint8_t asicGRControl() const { return uint8_t(this->_asicControls & 0x1); }
+  uint8_t asicAcqControl() const { return uint8_t((this->_asicControls>>1) & 0x1); }
+  uint8_t asicR0Control() const { return uint8_t((this->_asicControls>>2) & 0x1); }
+  uint8_t asicPpmatControl() const { return uint8_t((this->_asicControls>>3) & 0x1); }
+  uint8_t asicPpbeControl() const { return uint8_t((this->_asicControls>>4) & 0x1); }
+  uint8_t asicR0ClkControl() const { return uint8_t((this->_asicControls>>5) & 0x1); }
+  uint8_t prepulseR0En() const { return uint8_t((this->_asicControls>>6) & 0x1); }
+  uint32_t adcStreamMode() const { return uint32_t((this->_asicControls>>7) & 0x1); }
+  uint8_t testPatternEnable() const { return uint8_t((this->_asicControls>>8) & 0x1); }
+  uint8_t SyncMode() const { return uint8_t((this->_asicControls>>9) & 0x3); }
+  uint8_t R0Mode() const { return uint8_t((this->_asicControls>>11) & 0x1); }
+  uint32_t acqToAsicR0Delay() const { return _acqToAsicR0Delay; }
+  uint32_t asicR0ToAsicAcq() const { return _asicR0ToAsicAcq; }
+  uint32_t asicAcqWidth() const { return _asicAcqWidth; }
+  uint32_t asicAcqLToPPmatL() const { return _asicAcqLToPPmatL; }
+  uint32_t asicPPmatToReadout() const { return _asicPPmatToReadout; }
+  uint32_t asicRoClkHalfT() const { return _asicRoClkHalfT; }
+  uint32_t adcReadsPerPixel() const { return _adcReadsPerPixel; }
+  uint32_t adcClkHalfT() const { return _adcClkHalfT; }
+  uint32_t asicR0Width() const { return _asicR0Width; }
+  uint32_t adcPipelineDelay() const { return _adcPipelineDelay; }
+  uint16_t SyncWidth() const { return uint16_t(this->_Sync & 0xffff); }
+  uint16_t SyncDelay() const { return uint16_t((this->_Sync>>16) & 0xffff); }
+  uint32_t prepulseR0Width() const { return _prepulseR0Width; }
+  uint32_t prepulseR0Delay() const { return _prepulseR0Delay; }
+  uint32_t digitalCardId0() const { return _digitalCardId0; }
+  uint32_t digitalCardId1() const { return _digitalCardId1; }
+  uint32_t analogCardId0() const { return _analogCardId0; }
+  uint32_t analogCardId1() const { return _analogCardId1; }
+  uint32_t numberOfAsicsPerRow() const { return _numberOfAsicsPerRow; }
+  uint32_t numberOfAsicsPerColumn() const { return _numberOfAsicsPerColumn; }
+  uint32_t numberOfRowsPerAsic() const { return _numberOfRowsPerAsic; }
+  uint32_t numberOfReadableRowsPerAsic() const { return _numberOfReadableRowsPerAsic; }
+  /** for epix100a  352 */
+  uint32_t numberOfPixelsPerAsicRow() const { return _numberOfPixelsPerAsicRow; }
+  /** for epix100a 96*4 = 384 */
+  uint32_t calibrationRowCountPerASIC() const { return _calibrationRowCountPerASIC; }
+  uint32_t environmentalRowCountPerASIC() const { return _environmentalRowCountPerASIC; }
+  uint32_t baseClockFrequency() const { return _baseClockFrequency; }
+  uint32_t asicMask() const { return _asicMask; }
+  uint8_t scopeEnable() const { return uint8_t(this->_Scope & 0x1); }
+  uint8_t scopeTrigEdge() const { return uint8_t((this->_Scope>>1) & 0x1); }
+  uint8_t scopeTrigChan() const { return uint8_t((this->_Scope>>2) & 0xf); }
+  uint8_t scopeArmMode() const { return uint8_t((this->_Scope>>6) & 0x3); }
+  uint16_t scopeADCThreshold() const { return uint16_t((this->_Scope>>16) & 0xffff); }
+  uint16_t scopeTrigHoldoff() const { return uint16_t(this->_ScopeTriggerParms_1 & 0x1fff); }
+  uint16_t scopeTrigOffset() const { return uint16_t((this->_ScopeTriggerParms_1>>13) & 0x1fff); }
+  uint16_t scopeTraceLength() const { return uint16_t(this->_ScopeTriggerParms_2 & 0x1fff); }
+  uint16_t scopeADCsameplesToSkip() const { return uint16_t((this->_ScopeTriggerParms_2>>13) & 0x1fff); }
+  uint8_t scopeChanAwaveformSelect() const { return uint8_t(this->_ScopeWaveformSelects & 0x1f); }
+  uint8_t scopeChanBwaveformSelect() const { return uint8_t((this->_ScopeWaveformSelects>>5) & 0x1f); }
+  const Epix::Asic100aConfigV1& asics(uint32_t i0) const { ptrdiff_t offset=144;
+  const Epix::Asic100aConfigV1* memptr = (const Epix::Asic100aConfigV1*)(((const char*)this)+offset);
+  size_t memsize = memptr->_sizeof();
+  return *(const Epix::Asic100aConfigV1*)((const char*)memptr + (i0)*memsize); }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 2> asicPixelConfigArray(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=144+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()));
+    const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data),  this->numberOfRows(),  this->numberOfColumns());
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 2> asicPixelConfigArray() const { ptrdiff_t offset=144+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()));
+  const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+  return make_ndarray(data,  this->numberOfRows(),  this->numberOfColumns()); }
+  /** Calibration row config map is one row for every two calib rows
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint8_t, 2> calibPixelConfigArray(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(144+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*(( this->numberOfRows())*( this->numberOfColumns())));
+    const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint8_t>(owner, data),  this->numberOfCalibrationRows()  / 2 ,  this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow());
+  }
+  /** Calibration row config map is one row for every two calib rows
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint8_t, 2> calibPixelConfigArray() const { ptrdiff_t offset=(144+(100*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*(( this->numberOfRows())*( this->numberOfColumns())));
+  const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
+  return make_ndarray(data,  this->numberOfCalibrationRows()  / 2 ,  this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow()); }
+  /** Number of pixel rows in a readout unit */
+  uint32_t numberOfRows() const { return this->numberOfAsicsPerColumn()*this->numberOfRowsPerAsic(); }
+  /** Number of readable pixel rows in a readout unit */
+  uint32_t numberOfReadableRows() const { return this->numberOfAsicsPerColumn()*this->numberOfReadableRowsPerAsic(); }
+  /** Number of pixel columns in a readout unit */
+  uint32_t numberOfColumns() const { return  this->numberOfAsicsPerRow()*this->numberOfPixelsPerAsicRow(); }
+  /** Number of calibration rows in a readout unit */
+  uint32_t numberOfCalibrationRows() const { return this->numberOfAsicsPerColumn()*this->calibrationRowCountPerASIC(); }
+  /** Number of rows in a readout unit */
+  uint32_t numberOfEnvironmentalRows() const { return this->numberOfAsicsPerColumn()*this->environmentalRowCountPerASIC(); }
+  /** Number of columns in a readout unit */
+  uint32_t numberOfAsics() const { return  this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn(); }
+  uint32_t _sizeof() const { return ((((((144+(Epix::Asic100aConfigV1::_sizeof()*(this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn())))+(2*( this->numberOfRows())*( this->numberOfColumns())))+(1*( this->numberOfCalibrationRows()  / 2 )*( this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow())))+4)-1)/4)*4; }
+  /** Method which returns the shape (dimensions) of the data returned by asics() method. */
+  std::vector<int> asics_shape() const;
+private:
+  uint32_t	_version;
+  uint32_t	_runTrigDelay;
+  uint32_t	_daqTrigDelay;
+  uint32_t	_dacSetting;
+  uint32_t	_asicPins;
+  uint32_t	_asicControls;
+  uint32_t	_acqToAsicR0Delay;
+  uint32_t	_asicR0ToAsicAcq;
+  uint32_t	_asicAcqWidth;
+  uint32_t	_asicAcqLToPPmatL;
+  uint32_t	_asicPPmatToReadout;
+  uint32_t	_asicRoClkHalfT;
+  uint32_t	_adcReadsPerPixel;
+  uint32_t	_adcClkHalfT;
+  uint32_t	_asicR0Width;
+  uint32_t	_adcPipelineDelay;
+  uint32_t	_Sync;	/**< new */
+  uint32_t	_prepulseR0Width;
+  uint32_t	_prepulseR0Delay;
+  uint32_t	_digitalCardId0;
+  uint32_t	_digitalCardId1;
+  uint32_t	_analogCardId0;
+  uint32_t	_analogCardId1;
+  uint32_t	_numberOfAsicsPerRow;
+  uint32_t	_numberOfAsicsPerColumn;
+  uint32_t	_numberOfRowsPerAsic;
+  uint32_t	_numberOfReadableRowsPerAsic;
+  uint32_t	_numberOfPixelsPerAsicRow;	/**< for epix100a  352 */
+  uint32_t	_calibrationRowCountPerASIC;	/**< for epix100a 96*4 = 384 */
+  uint32_t	_environmentalRowCountPerASIC;
+  uint32_t	_baseClockFrequency;
+  uint32_t	_asicMask;
+  uint32_t	_Scope;
+  uint32_t	_ScopeTriggerParms_1;
+  uint32_t	_ScopeTriggerParms_2;
+  uint32_t	_ScopeWaveformSelects;
+  //Epix::Asic100aConfigV1	_asics[this->numberOfAsicsPerRow()*this->numberOfAsicsPerColumn()];
+  //uint16_t	_asicPixelConfigArray[ this->numberOfRows()][ this->numberOfColumns()];
+  //uint8_t	_calibPixelConfigArray[ this->numberOfCalibrationRows()  / 2 ][ this->numberOfPixelsPerAsicRow()*this->numberOfAsicsPerRow()];
+};
+#pragma pack(pop)
+
 /** @class ElementV1
 
   

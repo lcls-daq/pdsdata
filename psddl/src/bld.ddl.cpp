@@ -302,5 +302,29 @@ std::ostream& operator<<(std::ostream& str, Bld::BldDataEBeamV6::DamageMask enva
   }
   return str << val;
 }
+BldDataSpectrometerV1::BldDataSpectrometerV1(uint32_t arg__width, uint32_t arg__hproj_y1, uint32_t arg__hproj_y2, double arg__fComRaw, double arg__fBaseline, double arg__fCom, double arg__fIntegral, uint32_t arg__nPeaks, const uint32_t* arg__hproj, const double* arg__peakPos, const double* arg__peakHeight, const double* arg__Fwhm)
+    : _width(arg__width), _hproj_y1(arg__hproj_y1), _hproj_y2(arg__hproj_y2), _fComRaw(arg__fComRaw), _fBaseline(arg__fBaseline), _fCom(arg__fCom), _fIntegral(arg__fIntegral), _nPeaks(arg__nPeaks)
+{
+  if (arg__hproj and (this->_width)) {
+    ptrdiff_t offset = 48;
+    uint32_t* data = reinterpret_cast<uint32_t*>(((char*)this)+offset);
+    std::copy(arg__hproj, arg__hproj+(this->_width), data);
+  }
+  if (arg__peakPos and (this->_nPeaks)) {
+    ptrdiff_t offset = 48+(4*(this->_width));
+    double* data = reinterpret_cast<double*>(((char*)this)+offset);
+    std::copy(arg__peakPos, arg__peakPos+(this->_nPeaks), data);
+  }
+  if (arg__peakHeight and (this->_nPeaks)) {
+    ptrdiff_t offset = (48+(4*(this->_width)))+(8*(this->_nPeaks));
+    double* data = reinterpret_cast<double*>(((char*)this)+offset);
+    std::copy(arg__peakHeight, arg__peakHeight+(this->_nPeaks), data);
+  }
+  if (arg__Fwhm and (this->_nPeaks)) {
+    ptrdiff_t offset = ((48+(4*(this->_width)))+(8*(this->_nPeaks)))+(8*(this->_nPeaks));
+    double* data = reinterpret_cast<double*>(((char*)this)+offset);
+    std::copy(arg__Fwhm, arg__Fwhm+(this->_nPeaks), data);
+  }
+}
 } // namespace Bld
 } // namespace Pds
