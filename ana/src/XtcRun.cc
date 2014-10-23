@@ -168,6 +168,7 @@ Result XtcRun::next(Pds::Dgram*& dg, int* piSlice, int64_t* pi64OffsetCur)
   //  Process L1A with lowest clock time first
   //
   Pds::ClockTime tmin(-1,-1);
+  unsigned fmin(-1);
 
   int iSlice      = 0;
   int iNextSlice  = 0;
@@ -179,9 +180,11 @@ Result XtcRun::next(Pds::Dgram*& dg, int* piSlice, int64_t* pi64OffsetCur)
       continue;
     }
     if ((*it)->hdr().seq.service()==Pds::TransitionId::L1Accept &&
-        tmin > (*it)->hdr().seq.clock())
+        (tmin > (*it)->hdr().seq.clock() ||
+         (tmin == (*it)->hdr().seq.clock() && fmin > (*it)->hdr().seq.stamp().fiducials() && (*it)->hdr().seq.stamp().fiducials()>2)))
     {
       tmin = (*(n = it))->hdr().seq.clock();
+      fmin = (*it)->hdr().seq.stamp().fiducials();
       iNextSlice  = iSlice;
     }
   }
