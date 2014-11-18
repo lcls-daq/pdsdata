@@ -701,8 +701,8 @@ int XtcIterConfig::process(Xtc * xtc)
      TypeId::name(xtc->contains.id()), xtc->contains.version()
      );
 
-    if ( _depth != 1 )
-      printf( "XtcIterConfig::process(): *** Error depth: Expect 1, but get %d\n", _depth );
+    if ( _depth != 1 && _depth != 2 )
+      printf( "XtcIterConfig::process(): *** Error depth: Expect 1 or 2, but get %d\n", _depth );
   }
   else if (level == Level::Reporter)
   {
