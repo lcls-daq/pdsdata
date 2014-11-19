@@ -1,9 +1,29 @@
 #include "pdsdata/xtc/TypeId.hh"
 
+#include <stdlib.h>
+#include <string.h>
+
 using namespace Pds;
 
 TypeId::TypeId(Type type, uint32_t version, bool cmp) :
   _value((version<<16 )| type | (cmp ? 0x80000000:0)) {}
+
+TypeId::TypeId(const char* s) :
+  _value(NumberOf)
+{
+  char* token = strrchr(s,'_');
+  if (!(token && *(token+1)=='v')) return;
+
+  char* e;
+  unsigned vsn = strtoul(token+2,&e,10);
+  if (e==token+2 || *e!=0) return;
+
+  char* p = strndup(s,token-s);
+  for(unsigned i=0; i<NumberOf; i++)
+    if (strcmp(p,name((Type)i))==0)
+      _value = (vsn<<16) | i;
+  free(p);
+}
 
 TypeId::TypeId(const TypeId& v) : _value(v._value) {}
 

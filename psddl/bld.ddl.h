@@ -53,13 +53,18 @@ private:
 
 /** @class BldDataFEEGasDetEnergyV1
 
-  Four energy measurements from Front End Enclosure Gas Detector.
+  Six energy measurements from Front End Enclosure Gas Detector.
    PV names: GDET:FEE1:241:ENRC, GDET:FEE1:242:ENRC, 
 	GDET:FEE1:361:ENRC, GDET:FEE1:362:ENRC, 
 	GDET:FEE1:363:ENRC, and GDET:FEE1:364:ENRC 
-    *363* and *364* are duplicate measurements of *361* and *362* respectively. 
+   Each pair of methods (e.g. f_11_ENRC(), f_12_ENRC() contains
+   identical measurements using two different phototubes.  "11" and "12"
+   are before the gas attenuation.  "21" and "22" are after gas
+   attenuation.
+   "63" and "64" are duplicate measurements of "21" and "22" respectively. 
     The difference is that they cover a smaller (10%) dynamic range. 
-    When the beam is weak, 361 and 362 don't have good S/N, these 2 extra PVs kick in.
+    When the beam is weak, 361 and 362 don't have good S/N, these 2 extra PVs should be used instead.  Dehong Zhang suggests that the threshold
+    for "weak" is around 0.5 mJ.
 */
 
 #pragma pack(push,4)
@@ -73,26 +78,26 @@ public:
   {
   }
   BldDataFEEGasDetEnergyV1() {}
-  /** Value of GDET:FEE1:241:ENRC, in mJ. */
+  /** First energy measurement (mJ) before attenuation. */
   double f_11_ENRC() const { return _f_11_ENRC; }
-  /** Value of GDET:FEE1:242:ENRC, in mJ. */
+  /** Second (duplicate!) energy measurement (mJ) after attenuation. */
   double f_12_ENRC() const { return _f_12_ENRC; }
-  /** Value of GDET:FEE1:361:ENRC, in mJ. */
+  /** First energy measurement (mJ) after attenuation. */
   double f_21_ENRC() const { return _f_21_ENRC; }
-  /** Value of GDET:FEE1:362:ENRC, in mJ. */
+  /** Second (duplicate!) energy measurement (mJ) after attenuation. */
   double f_22_ENRC() const { return _f_22_ENRC; }
-  /** Value of GDET:FEE1:363:ENRC, in mJ. */
+  /** First energy measurement (mJ) for small signals (<0.5 mJ), after attenuation. */
   double f_63_ENRC() const { return _f_63_ENRC; }
-  /** Value of GDET:FEE1:364:ENRC, in mJ. */
+  /** Second (duplicate!) energy measurement (mJ) for small signals (<0.5mJ), after attenutation. */
   double f_64_ENRC() const { return _f_64_ENRC; }
   static uint32_t _sizeof() { return 48; }
 private:
-  double	_f_11_ENRC;	/**< Value of GDET:FEE1:241:ENRC, in mJ. */
-  double	_f_12_ENRC;	/**< Value of GDET:FEE1:242:ENRC, in mJ. */
-  double	_f_21_ENRC;	/**< Value of GDET:FEE1:361:ENRC, in mJ. */
-  double	_f_22_ENRC;	/**< Value of GDET:FEE1:362:ENRC, in mJ. */
-  double	_f_63_ENRC;	/**< Value of GDET:FEE1:363:ENRC, in mJ. */
-  double	_f_64_ENRC;	/**< Value of GDET:FEE1:364:ENRC, in mJ. */
+  double	_f_11_ENRC;	/**< First energy measurement (mJ) before attenuation. */
+  double	_f_12_ENRC;	/**< Second (duplicate!) energy measurement (mJ) after attenuation. */
+  double	_f_21_ENRC;	/**< First energy measurement (mJ) after attenuation. */
+  double	_f_22_ENRC;	/**< Second (duplicate!) energy measurement (mJ) after attenuation. */
+  double	_f_63_ENRC;	/**< First energy measurement (mJ) for small signals (<0.5 mJ), after attenuation. */
+  double	_f_64_ENRC;	/**< Second (duplicate!) energy measurement (mJ) for small signals (<0.5mJ), after attenutation. */
 };
 #pragma pack(pop)
 
@@ -893,26 +898,26 @@ public:
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
     return *this;
   }
-  /** Shot to shot pulse energy (mJ) */
+  /** Shot to shot pulse energy (mJ).  Not as robust as relativeEnergyPerPulse() method. */
   double milliJoulesPerPulse() const { return _fMilliJoulesPerPulse; }
-  /** Average pulse energy from ION cup current (mJ) */
+  /** Average pulse energy from ION cup current (mJ).  Not as robust as relativeEnergyPerPulse() method. */
   double milliJoulesAverage() const { return _fMilliJoulesAverage; }
-  /** Sum of all peaks, normalized w/ filt bkgd level */
+  /** Sum of all peaks, normalized w/ filt bkgd level.  Not typically used by the user. */
   double sumAllPeaksFiltBkgd() const { return _fSumAllPeaksFiltBkgd; }
-  /** Avg background value per waveform in raw A/D counts */
+  /** Avg background value per waveform in raw A/D counts.  Not typically used by the user. */
   double rawAvgBkgd() const { return _fRawAvgBkgd; }
-  /** Shot by shot pulse energy in arbitrary units */
+  /** Shot by shot pulse energy in arbitrary units.  The most stable measurement.  Most users should use this. */
   double relativeEnergyPerPulse() const { return _fRelativeEnergyPerPulse; }
-  /** Sum of all peaks, normalized w/ raw avg bkgd level */
+  /** Sum of all peaks, normalized w/ raw avg bkgd level.  Not typically used by the user. */
   double sumAllPeaksRawBkgd() const { return _fSumAllPeaksRawBkgd; }
   static uint32_t _sizeof() { return 48; }
 private:
-  double	_fMilliJoulesPerPulse;	/**< Shot to shot pulse energy (mJ) */
-  double	_fMilliJoulesAverage;	/**< Average pulse energy from ION cup current (mJ) */
-  double	_fSumAllPeaksFiltBkgd;	/**< Sum of all peaks, normalized w/ filt bkgd level */
-  double	_fRawAvgBkgd;	/**< Avg background value per waveform in raw A/D counts */
-  double	_fRelativeEnergyPerPulse;	/**< Shot by shot pulse energy in arbitrary units */
-  double	_fSumAllPeaksRawBkgd;	/**< Sum of all peaks, normalized w/ raw avg bkgd level */
+  double	_fMilliJoulesPerPulse;	/**< Shot to shot pulse energy (mJ).  Not as robust as relativeEnergyPerPulse() method. */
+  double	_fMilliJoulesAverage;	/**< Average pulse energy from ION cup current (mJ).  Not as robust as relativeEnergyPerPulse() method. */
+  double	_fSumAllPeaksFiltBkgd;	/**< Sum of all peaks, normalized w/ filt bkgd level.  Not typically used by the user. */
+  double	_fRawAvgBkgd;	/**< Avg background value per waveform in raw A/D counts.  Not typically used by the user. */
+  double	_fRelativeEnergyPerPulse;	/**< Shot by shot pulse energy in arbitrary units.  The most stable measurement.  Most users should use this. */
+  double	_fSumAllPeaksRawBkgd;	/**< Sum of all peaks, normalized w/ raw avg bkgd level.  Not typically used by the user. */
 };
 #pragma pack(pop)
 

@@ -206,6 +206,176 @@ private:
 std::ostream& operator<<(std::ostream& str, TimeTool::ConfigV1::Axis enval);
 #pragma pack(pop)
 
+/** @class ConfigV2
+
+  
+*/
+
+#pragma pack(push,4)
+
+class ConfigV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_TimeToolConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  enum Axis {
+    X = 0,
+    Y = 1,
+  };
+  ConfigV2(TimeTool::ConfigV2::Axis arg__project_axis, uint8_t arg__write_image, uint8_t arg__write_projections, uint8_t arg__subtract_sideband, uint8_t arg__use_reference_roi, uint16_t arg__number_of_weights, uint8_t arg__calib_poly_dim, uint8_t arg__base_name_length, uint16_t arg__number_of_beam_event_codes, uint16_t arg__number_of_laser_event_codes, uint32_t arg__signal_cut, const Camera::FrameCoord& arg__sig_roi_lo, const Camera::FrameCoord& arg__sig_roi_hi, const Camera::FrameCoord& arg__sb_roi_lo, const Camera::FrameCoord& arg__sb_roi_hi, double arg__sb_convergence, const Camera::FrameCoord& arg__ref_roi_lo, const Camera::FrameCoord& arg__ref_roi_hi, double arg__ref_convergence, const TimeTool::EventLogic* arg__beam_logic, const TimeTool::EventLogic* arg__laser_logic, const double* arg__weights, const double* arg__calib_poly, const char* arg__base_name);
+  ConfigV2(uint16_t number_of_beam_event_codes, uint16_t number_of_laser_event_codes, uint16_t number_of_weights, uint8_t calib_poly_dim, uint8_t base_name_length)
+    : _Control((((number_of_weights) & 0xffff)<<5)|(((calib_poly_dim) & 0xf)<<21)|(((base_name_length) & 0xff)<<25)), _number_of_beam_event_codes(number_of_beam_event_codes), _number_of_laser_event_codes(number_of_laser_event_codes)
+  {
+  }
+  ConfigV2() {}
+  ConfigV2(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV2& operator=(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Time Axis of Image */
+  TimeTool::ConfigV2::Axis project_axis() const { return Axis(this->_Control & 0x1); }
+  /** Record Raw Image into Event */
+  uint8_t write_image() const { return uint8_t((this->_Control>>1) & 0x1); }
+  /** Record Time Axis Projections into Event */
+  uint8_t write_projections() const { return uint8_t((this->_Control>>2) & 0x1); }
+  /** Subtract Sideband Region */
+  uint8_t subtract_sideband() const { return uint8_t((this->_Control>>3) & 0x1); }
+  /** Use Separate Reference Region */
+  uint8_t use_reference_roi() const { return uint8_t((this->_Control>>4) & 0x1); }
+  /** Number of Digital Filter Weights */
+  uint16_t number_of_weights() const { return uint16_t((this->_Control>>5) & 0xffff); }
+  /** Pixel to Time Calibration Polynomial Dimension */
+  uint8_t calib_poly_dim() const { return uint8_t((this->_Control>>21) & 0xf); }
+  /** Length of EPICS PV base name */
+  uint8_t base_name_length() const { return uint8_t((this->_Control>>25) & 0xff); }
+  /** Number of Beam Logic Event Codes */
+  uint16_t number_of_beam_event_codes() const { return _number_of_beam_event_codes; }
+  /** Number of Laser Logic Event Codes */
+  uint16_t number_of_laser_event_codes() const { return _number_of_laser_event_codes; }
+  /** Projection Minimum Value for Validation */
+  uint32_t signal_cut() const { return _signal_cut; }
+  /** Signal Region Coordinates Start */
+  const Camera::FrameCoord& sig_roi_lo() const { return _sig_roi_lo; }
+  /** Signal Region Coordinates End */
+  const Camera::FrameCoord& sig_roi_hi() const { return _sig_roi_hi; }
+  /** Sideband Region Coordinates Start */
+  const Camera::FrameCoord& sb_roi_lo() const { return _sb_roi_lo; }
+  /** Sideband Region Coordinates End */
+  const Camera::FrameCoord& sb_roi_hi() const { return _sb_roi_hi; }
+  /** Sideband Rolling Average Factor (1/NFrames) */
+  double sb_convergence() const { return _sb_convergence; }
+  /** Reference Region Coordinates Start */
+  const Camera::FrameCoord& ref_roi_lo() const { return _ref_roi_lo; }
+  /** Sideband Region Coordinates End */
+  const Camera::FrameCoord& ref_roi_hi() const { return _ref_roi_hi; }
+  /** Reference Rolling Average Factor (1/NFrames) */
+  double ref_convergence() const { return _ref_convergence; }
+  /** Beam Logic Event Codes
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const TimeTool::EventLogic, 1> beam_logic(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=52;
+    const TimeTool::EventLogic* data = (const TimeTool::EventLogic*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const TimeTool::EventLogic>(owner, data), this->number_of_beam_event_codes());
+  }
+  /** Beam Logic Event Codes
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const TimeTool::EventLogic, 1> beam_logic() const { ptrdiff_t offset=52;
+  const TimeTool::EventLogic* data = (const TimeTool::EventLogic*)(((char*)this)+offset);
+  return make_ndarray(data, this->number_of_beam_event_codes()); }
+  /** Laser Logic Event Codes
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const TimeTool::EventLogic, 1> laser_logic(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=52+(4*(this->number_of_beam_event_codes()));
+    const TimeTool::EventLogic* data = (const TimeTool::EventLogic*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const TimeTool::EventLogic>(owner, data), this->number_of_laser_event_codes());
+  }
+  /** Laser Logic Event Codes
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const TimeTool::EventLogic, 1> laser_logic() const { ptrdiff_t offset=52+(4*(this->number_of_beam_event_codes()));
+  const TimeTool::EventLogic* data = (const TimeTool::EventLogic*)(((char*)this)+offset);
+  return make_ndarray(data, this->number_of_laser_event_codes()); }
+  /** Digital Filter Weights
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> weights(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(52+(4*(this->number_of_beam_event_codes())))+(4*(this->number_of_laser_event_codes()));
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->number_of_weights());
+  }
+  /** Digital Filter Weights
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> weights() const { ptrdiff_t offset=(52+(4*(this->number_of_beam_event_codes())))+(4*(this->number_of_laser_event_codes()));
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->number_of_weights()); }
+  /** Pixel to Time Calibration Polynomial
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> calib_poly(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=((52+(4*(this->number_of_beam_event_codes())))+(4*(this->number_of_laser_event_codes())))+(8*(this->number_of_weights()));
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->calib_poly_dim());
+  }
+  /** Pixel to Time Calibration Polynomial
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> calib_poly() const { ptrdiff_t offset=((52+(4*(this->number_of_beam_event_codes())))+(4*(this->number_of_laser_event_codes())))+(8*(this->number_of_weights()));
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->calib_poly_dim()); }
+  /** EPICS PV base name */
+  const char* base_name() const { typedef char atype;
+  ptrdiff_t offset=(((52+(4*(this->number_of_beam_event_codes())))+(4*(this->number_of_laser_event_codes())))+(8*(this->number_of_weights())))+(8*(this->calib_poly_dim()));
+  const atype* pchar = (const atype*)(((const char*)this)+offset);
+  return pchar; }
+  /** Size of projections */
+  uint32_t signal_projection_size() const;
+  uint32_t sideband_projection_size() const;
+  uint32_t reference_projection_size() const;
+  uint32_t _sizeof() const { return ((((((((((((((((12+(Camera::FrameCoord::_sizeof()))+(Camera::FrameCoord::_sizeof()))+(Camera::FrameCoord::_sizeof()))+(Camera::FrameCoord::_sizeof()))+8)+(Camera::FrameCoord::_sizeof()))+(Camera::FrameCoord::_sizeof()))+8)+(TimeTool::EventLogic::_sizeof()*(this->number_of_beam_event_codes())))+(TimeTool::EventLogic::_sizeof()*(this->number_of_laser_event_codes())))+(8*(this->number_of_weights())))+(8*(this->calib_poly_dim())))+(1*(this->base_name_length())))+4)-1)/4)*4; }
+  /** Method which returns the shape (dimensions) of the data returned by base_name() method. */
+  std::vector<int> base_name_shape() const;
+private:
+  uint32_t	_Control;
+  uint16_t	_number_of_beam_event_codes;	/**< Number of Beam Logic Event Codes */
+  uint16_t	_number_of_laser_event_codes;	/**< Number of Laser Logic Event Codes */
+  uint32_t	_signal_cut;	/**< Projection Minimum Value for Validation */
+  Camera::FrameCoord	_sig_roi_lo;	/**< Signal Region Coordinates Start */
+  Camera::FrameCoord	_sig_roi_hi;	/**< Signal Region Coordinates End */
+  Camera::FrameCoord	_sb_roi_lo;	/**< Sideband Region Coordinates Start */
+  Camera::FrameCoord	_sb_roi_hi;	/**< Sideband Region Coordinates End */
+  double	_sb_convergence;	/**< Sideband Rolling Average Factor (1/NFrames) */
+  Camera::FrameCoord	_ref_roi_lo;	/**< Reference Region Coordinates Start */
+  Camera::FrameCoord	_ref_roi_hi;	/**< Sideband Region Coordinates End */
+  double	_ref_convergence;	/**< Reference Rolling Average Factor (1/NFrames) */
+  //TimeTool::EventLogic	_beam_logic[this->number_of_beam_event_codes()];
+  //TimeTool::EventLogic	_laser_logic[this->number_of_laser_event_codes()];
+  //double	_weights[this->number_of_weights()];
+  //double	_calib_poly[this->calib_poly_dim()];
+  //char	_base_name[this->base_name_length()];
+};
+std::ostream& operator<<(std::ostream& str, TimeTool::ConfigV2::Axis enval);
+#pragma pack(pop)
+
 /** @class DataV1
 
   
@@ -293,6 +463,112 @@ private:
   //int32_t	_projected_sideband[cfg.sideband_projection_size()];
 };
 std::ostream& operator<<(std::ostream& str, TimeTool::DataV1::EventType enval);
+
+/** @class DataV2
+
+  
+*/
+
+class ConfigV2;
+
+class DataV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_TimeToolData /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  enum EventType {
+    Dark, /**< No Laser */
+    Reference, /**< No Beam */
+    Signal, /**< Laser and Beam */
+  };
+  DataV2(TimeTool::DataV2::EventType event_type, double amplitude, double position_pixel, double position_time, double position_fwhm, double ref_amplitude, double nxt_amplitude)
+    : _event_type(event_type), _amplitude(amplitude), _position_pixel(position_pixel), _position_time(position_time), _position_fwhm(position_fwhm), _ref_amplitude(ref_amplitude), _nxt_amplitude(nxt_amplitude)
+  {
+  }
+  DataV2() {}
+private:
+  DataV2(const DataV2&);
+  DataV2& operator=(const DataV2&);
+public:
+  /** Event designation */
+  TimeTool::DataV2::EventType event_type() const { return TimeTool::DataV2::EventType(_event_type); }
+  /** Amplitude of the edge */
+  double amplitude() const { return _amplitude; }
+  /** Filtered pixel position of the edge */
+  double position_pixel() const { return _position_pixel; }
+  /** Filtered time position of the edge */
+  double position_time() const { return _position_time; }
+  /** Full-width half maximum of filtered edge (in pixels) */
+  double position_fwhm() const { return _position_fwhm; }
+  /** Amplitude of reference at the edge */
+  double ref_amplitude() const { return _ref_amplitude; }
+  /** Amplitude of the next largest edge */
+  double nxt_amplitude() const { return _nxt_amplitude; }
+  /** Projected signal
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const int32_t, 1> projected_signal(const TimeTool::ConfigV2& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=56;
+    const int32_t* data = (const int32_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const int32_t>(owner, data), cfg.signal_projection_size());
+  }
+  /** Projected signal
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const int32_t, 1> projected_signal(const TimeTool::ConfigV2& cfg) const { ptrdiff_t offset=56;
+  const int32_t* data = (const int32_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.signal_projection_size()); }
+  /** Projected sideband
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const int32_t, 1> projected_sideband(const TimeTool::ConfigV2& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=56+(4*(cfg.signal_projection_size()));
+    const int32_t* data = (const int32_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const int32_t>(owner, data), cfg.sideband_projection_size());
+  }
+  /** Projected sideband
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const int32_t, 1> projected_sideband(const TimeTool::ConfigV2& cfg) const { ptrdiff_t offset=56+(4*(cfg.signal_projection_size()));
+  const int32_t* data = (const int32_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.sideband_projection_size()); }
+  /** Projected reference
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const int32_t, 1> projected_reference(const TimeTool::ConfigV2& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(56+(4*(cfg.signal_projection_size())))+(4*(cfg.sideband_projection_size()));
+    const int32_t* data = (const int32_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const int32_t>(owner, data), cfg.reference_projection_size());
+  }
+  /** Projected reference
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const int32_t, 1> projected_reference(const TimeTool::ConfigV2& cfg) const { ptrdiff_t offset=(56+(4*(cfg.signal_projection_size())))+(4*(cfg.sideband_projection_size()));
+  const int32_t* data = (const int32_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.reference_projection_size()); }
+  static uint32_t _sizeof(const TimeTool::ConfigV2& cfg) { return ((((((56+(4*(cfg.signal_projection_size())))+(4*(cfg.sideband_projection_size())))+(4*(cfg.reference_projection_size())))+8)-1)/8)*8; }
+private:
+  uint32_t	_event_type;	/**< Event designation */
+  uint32_t	_z;
+  double	_amplitude;	/**< Amplitude of the edge */
+  double	_position_pixel;	/**< Filtered pixel position of the edge */
+  double	_position_time;	/**< Filtered time position of the edge */
+  double	_position_fwhm;	/**< Full-width half maximum of filtered edge (in pixels) */
+  double	_ref_amplitude;	/**< Amplitude of reference at the edge */
+  double	_nxt_amplitude;	/**< Amplitude of the next largest edge */
+  //int32_t	_projected_signal[cfg.signal_projection_size()];
+  //int32_t	_projected_sideband[cfg.sideband_projection_size()];
+  //int32_t	_projected_reference[cfg.reference_projection_size()];
+};
+std::ostream& operator<<(std::ostream& str, TimeTool::DataV2::EventType enval);
 } // namespace TimeTool
 } // namespace Pds
 #endif // PDS_TIMETOOL_DDL_H

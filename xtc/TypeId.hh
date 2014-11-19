@@ -106,6 +106,7 @@ namespace Pds {
     TypeId() {}
     TypeId(const TypeId& v);
     TypeId(Type type, uint32_t version, bool compressed=false);
+    TypeId(const char*);
 
     Type     id()      const;
     uint32_t version() const;
