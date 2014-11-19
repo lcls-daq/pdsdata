@@ -55,6 +55,10 @@ namespace Pds {
     Dgram*        _dg;
   };
 
+  //
+  //  TransitionCache class - the purpose of this class is to cache transitions for
+  //    clients and track the transitions which are still to be served to latent clients
+  //
   class TransitionCache {
   public:
     TransitionCache(char* p, size_t sz) : _pShm(p), _szShm(sz), _not_ready(0) 
@@ -62,11 +66,41 @@ namespace Pds {
       sem_init(&_sem, 0, 1);
       memset(&_allocated, 0, numberofTrBuffers*sizeof(unsigned)); 
 
-      for(unsigned i=0; i<numberofTrBuffers; i++)
+      for(unsigned i=0; i<numberofTrBuffers; i++) {
+        Dgram* dg = new (p + _szShm*i) Dgram;
+        dg->seq = Sequence(Sequence::Event, TransitionId::Reset,
+                           ClockTime(0),
+                           TimeStamp(0,0,0));
+        dg->env = 0;
 	_freeTr.push_back(i);
+      }
     }    
     ~TransitionCache() { sem_destroy(&_sem); }
   public:
+    void dump() const {
+      printf("---TransitionCache---\n");
+      printf("\tBuffers:\n");
+      for(unsigned i=0; i<numberofTrBuffers; i++) {
+        const Dgram& odg = *reinterpret_cast<const Dgram*>(_pShm + _szShm*i);
+        time_t t=odg.seq.clock().seconds();
+        char cbuf[64]; ctime_r(&t,cbuf); strtok(cbuf,"\n");
+        printf ("%15.15s : %s : %08x\n", 
+                TransitionId::name(odg.seq.service()),
+                cbuf,
+                _allocated[i]);
+      }
+      std::stack<int> cached(_cachedTr);
+      printf("\tCached: ");
+      while(!cached.empty()) {
+        printf("%d ",cached.top());
+        cached.pop();
+      }
+      printf("\n\tFree: ");
+      for(std::list<int>::const_iterator it=_freeTr.begin();
+          it!=_freeTr.end(); it++)
+        printf("%d ",*it);
+      printf("\n");
+    }
     std::stack<int> current() {
       sem_wait(&_sem);
       std::stack<int> cached(_cachedTr);
@@ -78,7 +112,11 @@ namespace Pds {
       sem_post(&_sem);
       return tr;
     }
+    //
+    //  Find a free buffer for the next transition
+    //
     int  allocate  (TransitionId::Value id) {
+      int result = -1;
 #ifdef DBUG
       printf("allocate(%s)\n",TransitionId::name(id));
       for(unsigned i=0; i<numberofTrBuffers; i++)
@@ -101,6 +139,12 @@ namespace Pds {
 	      _freeTr.remove(ibuffer);
 	      _cachedTr.push(ibuffer);
 	    }
+            else {
+              printf("Unexpected state for TransitionCache: _cachedTr empty but tr[%s]!=Map\n",
+                     TransitionId::name(id));
+              dump();
+              abort();
+            }
 	  }
 	  else {
 	    const Dgram& odg = *reinterpret_cast<const Dgram*>(_pShm + _szShm*_cachedTr.top());
@@ -115,6 +159,12 @@ namespace Pds {
 	      _freeTr.push_back(ib);
 	    }
 	    else {  // unexpected transition
+              printf("Unexpected transition for TransitionCache: tr[%s]!=[%s] or [%s]\n",
+                     TransitionId::name(id), 
+                     TransitionId::name(TransitionId::Value(oid+2)),
+                     TransitionId::name(TransitionId::Value(oid+1)));
+              dump();
+              abort();
 	    }
 	  }
 
@@ -134,16 +184,23 @@ namespace Pds {
 	    _not_ready |= not_ready;
 	  }
 
-	  sem_post(&_sem);
-
 #ifdef DBUG
 	  printf("not_ready %08x\n",_not_ready);
 #endif
-	  return ibuffer;
+          result = ibuffer;
+          break;
 	}
-      return -1;
+
+      sem_post(&_sem);
+      
+      return result;
     }
+    //
+    //  Queue this transition for a client
+    //
     bool allocate  (int ibuffer, unsigned client) {
+
+      bool result = true;
 #ifdef DBUG
       printf("allocate[%d,%d] not_ready %08x\n",ibuffer,client,_not_ready);
 #endif
@@ -161,23 +218,27 @@ namespace Pds {
 	
 	TransitionId::Value id = 
 	  reinterpret_cast<const Dgram*>(_pShm + _szShm*ibuffer)->seq.service();
-	if (!((id&1)==1 && id<last)) {
-	  sem_post(&_sem);
-	  return false;
-	}
+	if (!((id&1)==1 && id<last))
+          result=false;
       }
-      _allocated[ibuffer] |= (1<<client);
+
+      if (result)
+        _allocated[ibuffer] |= (1<<client);
 
       sem_post(&_sem);
 
 #ifdef DBUG
       printf("_allocated[%d] = %08x\n",ibuffer,_allocated[ibuffer]);
 #endif 
-      return true;
+      return result;
     }
+    //
+    //  Client has completed this transition.
+    //  Remove client from _allocated list for this buffer.
+    //  Return true if client was previously "not ready" but now is "ready"
     bool deallocate(int ibuffer, unsigned client) {
-      sem_wait(&_sem);
       bool result=false;
+      sem_wait(&_sem);
       { unsigned v = _allocated[ibuffer] & ~(1<<client);
 #ifdef DBUG
 	printf("_deallocate[%d,%d] %08x -> %08x\n",ibuffer,client,
@@ -201,6 +262,10 @@ namespace Pds {
       sem_post(&_sem);
       return result;
     }
+    //
+    //  Retire this client.
+    //  Remove the client from the _allocated list for all buffers.
+    //
     void deallocate(unsigned client) {
       sem_wait(&_sem);
       for(unsigned itr=0; itr<numberofTrBuffers; itr++)
@@ -218,10 +283,10 @@ namespace Pds {
     sem_t            _sem;
     const char*      _pShm;
     size_t           _szShm;
-    unsigned         _not_ready;
-    unsigned         _allocated[numberofTrBuffers];
-    std::stack <int> _cachedTr;
-    std::list  <int> _freeTr;
+    unsigned         _not_ready; // bitmask of clients that are behind in processing
+    unsigned         _allocated[numberofTrBuffers];  // bitmask of clients that are processing
+    std::stack <int> _cachedTr;  // set of transitions for the current DAQ state
+    std::list  <int> _freeTr;    // complement of _cachedTr
   };
 };
 
@@ -386,6 +451,7 @@ XtcMonitorServer::Result XtcMonitorServer::events(Dgram* dg)
 
     if (itr < 0) {
       printf("No buffers available for transition !\n");
+      _transitionCache->dump();
       abort();
     }
 
@@ -766,6 +832,9 @@ void XtcMonitorServer::_initialize_client()
   _update(iclient,TransitionId::Unmap);
 }
 
+//
+//  Send the cached transitions to update the client's state to the current DAQ state
+//
 void XtcMonitorServer::_update(int iclient,
 			       TransitionId::Value last)
 {
@@ -777,9 +846,11 @@ void XtcMonitorServer::_update(int iclient,
     if (reinterpret_cast<const Dgram*>(_myShm+_sizeOfBuffers*ib)->seq.service()>=next) {
       _myMsg.bufferIndex(ib);
 
-      _transitionCache->allocate(itr,iclient);
-      if (::send(_myTrFd[iclient], (const char*)&_myMsg, sizeof(_myMsg), 0)<0) 
-	perror("Error sending current");
+      if (_transitionCache->allocate(itr,iclient))
+        if (::send(_myTrFd[iclient], (const char*)&_myMsg, sizeof(_myMsg), 0)<0) {
+          perror("Error sending current");
+          _transitionCache->deallocate(itr,iclient);
+        }
     }
   }
 }
