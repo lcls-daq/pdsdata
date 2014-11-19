@@ -81,7 +81,9 @@ bool     TypeId::is_configuration() const
       Id_PartitionConfig,
       Id_PimaxConfig, 
       Id_GenericPgpConfig,
-      Id_TimeToolConfig, };
+      Id_TimeToolConfig,
+      Id_EpixSConfig,
+    };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
   for(unsigned i=0; i<nconfigtypes; i++)
@@ -181,6 +183,7 @@ const char* TypeId::name(Type type)
     "GenericPgpConfig",        // 85
     "TimeToolConfig",          // 86
     "TimeToolData",            // 87
+    "EpixSConfig",             // 88
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }

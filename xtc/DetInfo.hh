@@ -102,7 +102,8 @@ namespace Pds {
       Fccd960   = 33,
       Epix10k   = 34,
       Epix100a  = 35,
-      NumDevice = 36
+      EpixS     = 36,
+      NumDevice = 37
     };
 
     DetInfo() {}
