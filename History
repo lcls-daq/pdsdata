@@ -1,3 +1,4 @@
+2014-Nov-25 weaver	Tag V08-01-10.  Added Quartz::ConfigV2 for hw ROI.
 2014-Nov-18 weaver	Tag V08-01-09.  Added TimeTool::ConfigV2,DataV2.  Fix to XtcMonitorServer for slow clients.
 2014-Oct-14 weaver	Tag V08-01-07.  Added BldDataSpectrometerV1.
 2014-Oct-13 weaver	Tag V08-01-06.  Added Epix100a, built with ddl 'devel' tag.
