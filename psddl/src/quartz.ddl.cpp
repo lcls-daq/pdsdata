@@ -65,5 +65,64 @@ std::ostream& operator<<(std::ostream& str, Quartz::ConfigV1::Mirroring enval) {
   }
   return str << val;
 }
+uint16_t
+ConfigV2::output_offset() const {
+  return (uint32_t(this->black_level())*uint32_t(this->gain_percent()))/100;
+}
+uint32_t
+ConfigV2::output_resolution_bits() const {
+  return this->output_resolution()*2+8;
+}
+std::ostream& operator<<(std::ostream& str, Quartz::ConfigV2::Depth enval) {
+  const char* val;
+  switch (enval) {
+  case Quartz::ConfigV2::Eight_bit:
+    val = "Eight_bit";
+    break;
+  case Quartz::ConfigV2::Ten_bit:
+    val = "Ten_bit";
+    break;
+  default:
+    return str << "Depth(" << int(enval) << ")";
+  }
+  return str << val;
+}
+std::ostream& operator<<(std::ostream& str, Quartz::ConfigV2::Binning enval) {
+  const char* val;
+  switch (enval) {
+  case Quartz::ConfigV2::x1:
+    val = "x1";
+    break;
+  case Quartz::ConfigV2::x2:
+    val = "x2";
+    break;
+  case Quartz::ConfigV2::x4:
+    val = "x4";
+    break;
+  default:
+    return str << "Binning(" << int(enval) << ")";
+  }
+  return str << val;
+}
+std::ostream& operator<<(std::ostream& str, Quartz::ConfigV2::Mirroring enval) {
+  const char* val;
+  switch (enval) {
+  case Quartz::ConfigV2::None:
+    val = "None";
+    break;
+  case Quartz::ConfigV2::HFlip:
+    val = "HFlip";
+    break;
+  case Quartz::ConfigV2::VFlip:
+    val = "VFlip";
+    break;
+  case Quartz::ConfigV2::HVFlip:
+    val = "HVFlip";
+    break;
+  default:
+    return str << "Mirroring(" << int(enval) << ")";
+  }
+  return str << val;
+}
 } // namespace Quartz
 } // namespace Pds

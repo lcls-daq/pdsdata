@@ -123,6 +123,7 @@ namespace Pds {
 	printf("%08x ",_allocated[i]);
       printf("\n");
 #endif
+      bool lbegin = ((id&1)==0);
       sem_wait(&_sem);
 
       for(std::list<int>::iterator it=_freeTr.begin();
@@ -149,11 +150,11 @@ namespace Pds {
 	  else {
 	    const Dgram& odg = *reinterpret_cast<const Dgram*>(_pShm + _szShm*_cachedTr.top());
 	    TransitionId::Value oid = odg.seq.service();
-	    if (id == oid+2) {
+	    if (id == oid+2) {       // Next begin transition
 	      _freeTr.remove(ibuffer);
 	      _cachedTr.push(ibuffer);
 	    }
-	    else if (id == oid+1) {
+	    else if (id == oid+1) {  // Matching end transition
 	      int ib=_cachedTr.top();
 	      _cachedTr.pop();
 	      _freeTr.push_back(ib);
@@ -163,12 +164,39 @@ namespace Pds {
                      TransitionId::name(id), 
                      TransitionId::name(TransitionId::Value(oid+2)),
                      TransitionId::name(TransitionId::Value(oid+1)));
-              dump();
-              abort();
+              if (lbegin) { // Begin transition
+                if (id > oid) {  // Missed a begin transition leading up to it
+                  printf("Irrecoverable.\n");
+                  dump();
+                  abort();
+                }
+                else {
+                  printf("Recover by rolling back.\n");
+                  do {
+                    int ib=_cachedTr.top();
+                    _freeTr.push_back(ib);
+                    oid = reinterpret_cast<const Dgram*>(_pShm + _szShm*ib)->seq.service();
+                    _cachedTr.pop();
+                  } while(oid > id);
+                  _freeTr.remove(ibuffer);
+                  _cachedTr.push(ibuffer);
+                }
+              }
+              else { // End transition
+                printf("Recover by rolling back.\n");
+                while( id < oid+3 ) {
+                  int ib=_cachedTr.top();
+                  _freeTr.push_back(ib);
+                  _cachedTr.pop();
+                  if (_cachedTr.empty()) break;
+                  oid = reinterpret_cast<const Dgram*>(_pShm + _szShm*_cachedTr.top())
+                    ->seq.service();
+                }
+              }
 	    }
 	  }
 
-	  if ((id&1)==0) {
+	  if (lbegin) {
 	    unsigned not_ready=0;
 	    for(unsigned itr=0; itr<numberofTrBuffers; itr++) {
 	      if (itr==ibuffer) continue;

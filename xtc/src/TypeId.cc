@@ -11,7 +11,7 @@ TypeId::TypeId(Type type, uint32_t version, bool cmp) :
 TypeId::TypeId(const char* s) :
   _value(NumberOf)
 {
-  char* token = strrchr(s,'_');
+  const char* token = strrchr(s,'_');
   if (!(token && *(token+1)=='v')) return;
 
   char* e;
