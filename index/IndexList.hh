@@ -147,6 +147,7 @@ public:
   const TNodeList&  getL1()    const {return _lNode;}
   const TCalibList& getCalib() const {return _lCalib;}
   const TSegmentToIdMap& getSeg() const {return _mapSegToId;}
+  const TEvrEvtToIdMap& getEvr() const {return _mapEvrToId;}
 
 }; // class IndexList
 
