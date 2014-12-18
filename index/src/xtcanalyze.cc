@@ -16,6 +16,7 @@
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/psddl/evr.ddl.h"
 #include "pdsdata/psddl/acqiris.ddl.h"
+#include "pdsdata/psddl/index.ddl.h"
 #include "pdsdata/index/IndexFileReader.hh"
 #include "pdsdata/index/IndexChunkReader.hh"
 #include "pdsdata/ana/XtcRun.hh"
@@ -719,6 +720,19 @@ int XtcIterConfig::process(Xtc * xtc)
     if ( _depth != 1 )
       printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d\n", _depth );
   }
+  else if (level == Level::Recorder)
+  {
+    unsigned i = _depth;
+    while (i--) printf("  ");
+    printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
+           Level::name(level), (long long) _i64Offset,
+           xtc->damage.value(), xtc->extent,
+           TypeId::name(xtc->contains.id()), xtc->contains.version()
+          );
+
+    if ( _depth != 0 )
+      printf( "XtcIterConfig::process(): *** Error level %s depth = %d\n", Level::name(level), _depth );
+  }
   else
   {
     unsigned i = _depth;
@@ -745,6 +759,14 @@ int XtcIterConfig::process(Xtc * xtc)
       unsigned i = _depth+1;
       while (i--) printf("  ");
       printf( "Xtc Number %d\n", iter._iNumXtc );
+    }
+  } else if (xtc->contains.id() == TypeId::Id_IndexConfig)
+  {
+    if(xtc->contains.version() == 1) {
+      Index::ConfigV1* pConfig = (Index::ConfigV1*) xtc->payload();
+      unsigned i = _depth+1;
+      while (i--) printf("  ");
+      printf("sizeThreshold %d\n", pConfig->sizeThreshold());
     }
   }
 
@@ -824,6 +846,19 @@ int XtcIterL1Accept::process(Xtc * xtc)
     if ( _depth != 1 )
       printf( "XtcIterL1Accept::process(): *** Error depth: Expect 1, but get %d\n", _depth );
   }
+  else if (level == Level::Recorder)
+  {
+    unsigned i = _depth;
+    while (i--) printf("  ");
+    printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
+           Level::name(level), (long long) _i64Offset,
+           xtc->damage.value(), xtc->extent,
+           TypeId::name(xtc->contains.id()), xtc->contains.version()
+          );
+
+    if ( _depth != 0 )
+      printf( "XtcIterL1Accept::process(): *** Error level %s depth = %d\n", Level::name(level), _depth );
+  }
   else
   {
     unsigned i = _depth;
@@ -850,6 +885,25 @@ int XtcIterL1Accept::process(Xtc * xtc)
       unsigned i = _depth+1;
       while (i--) printf("  ");
       printf( "Xtc Number %d\n", iter._iNumXtc );
+    }
+  }
+  else if (xtc->contains.id() == TypeId::Id_IndexProxy)
+  {
+    if(xtc->contains.version() == 1) {
+      Index::ProxyV1* pProxy = (Index::ProxyV1*) xtc->payload();
+      unsigned i = _depth+1;
+      while (i--) printf("  ");
+      printf("orgType %s V%d dgOffset 0x%x extent 0x%x\n", TypeId::name(pProxy->type().id()), pProxy->type().version(),
+             pProxy->dgramOffset(), pProxy->extent());
+    }
+  }
+  else if (xtc->contains.id() == TypeId::Id_IndexTag)
+  {
+    if(xtc->contains.version() == 1) {
+      Index::TagV1* pTag= (Index::TagV1*) xtc->payload();
+      unsigned i = _depth+1;
+      while (i--) printf("  ");
+      printf("fileOffset 0x%Lx extent 0x%x\n", (long long)pTag->fileOffset(), pTag->extent());
     }
   }
 

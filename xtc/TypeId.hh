@@ -101,6 +101,9 @@ namespace Pds {
       Id_TimeToolConfig,
       Id_TimeToolData,
       Id_EpixSConfig,
+      Id_IndexConfig,
+      Id_IndexTag,
+      Id_IndexProxy,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
@@ -119,6 +122,7 @@ namespace Pds {
     bool     is_configuration() const;
 
     static const char* name(Type type);
+    static uint32_t _sizeof() { return sizeof(TypeId); }
 
   private:
     uint32_t _value;

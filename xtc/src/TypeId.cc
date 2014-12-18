@@ -39,7 +39,7 @@ unsigned TypeId::compressed_version() const { return (_value&0x7fff0000)>>16; }
 
 bool     TypeId::is_configuration() const
 {
-  static Type _configuration_types[] = 
+  static Type _configuration_types[] =
     { Id_AcqConfig,
       Id_Opal1kConfig,
       Id_FrameFexConfig,
@@ -79,7 +79,7 @@ bool     TypeId::is_configuration() const
       Id_Epix100aConfig,
       Id_EvsConfig,
       Id_PartitionConfig,
-      Id_PimaxConfig, 
+      Id_PimaxConfig,
       Id_GenericPgpConfig,
       Id_TimeToolConfig,
       Id_EpixSConfig,
@@ -184,6 +184,9 @@ const char* TypeId::name(Type type)
     "TimeToolConfig",          // 86
     "TimeToolData",            // 87
     "EpixSConfig",             // 88
+    "IndexConfig",             // 89
+    "IndexTag",                // 90
+    "IndexProxy",              // 91
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
