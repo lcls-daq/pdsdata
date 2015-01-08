@@ -78,26 +78,26 @@ public:
   {
   }
   BldDataFEEGasDetEnergyV1() {}
-  /** First energy measurement (mJ) before attenuation. */
+  /** First energy measurement (mJ) before attenuation. (pv name GDET:FEE1:241:ENRC) */
   double f_11_ENRC() const { return _f_11_ENRC; }
-  /** Second (duplicate!) energy measurement (mJ) after attenuation. */
+  /** Second (duplicate!) energy measurement (mJ) after attenuation. (pv name GDET:FEE1:242:ENRC) */
   double f_12_ENRC() const { return _f_12_ENRC; }
-  /** First energy measurement (mJ) after attenuation. */
+  /** First energy measurement (mJ) after attenuation. (pv name  GDET:FEE1:361:ENRC) */
   double f_21_ENRC() const { return _f_21_ENRC; }
-  /** Second (duplicate!) energy measurement (mJ) after attenuation. */
+  /** Second (duplicate!) energy measurement (mJ) after attenuation. (pv name GDET:FEE1:362:ENRC) */
   double f_22_ENRC() const { return _f_22_ENRC; }
-  /** First energy measurement (mJ) for small signals (<0.5 mJ), after attenuation. */
+  /** First energy measurement (mJ) for small signals (<0.5 mJ), after attenuation. (pv name GDET:FEE1:363:ENRC) */
   double f_63_ENRC() const { return _f_63_ENRC; }
-  /** Second (duplicate!) energy measurement (mJ) for small signals (<0.5mJ), after attenutation. */
+  /** Second (duplicate!) energy measurement (mJ) for small signals (<0.5mJ), after attenutation. (pv name GDET:FEE1:364:ENRC) */
   double f_64_ENRC() const { return _f_64_ENRC; }
   static uint32_t _sizeof() { return 48; }
 private:
-  double	_f_11_ENRC;	/**< First energy measurement (mJ) before attenuation. */
-  double	_f_12_ENRC;	/**< Second (duplicate!) energy measurement (mJ) after attenuation. */
-  double	_f_21_ENRC;	/**< First energy measurement (mJ) after attenuation. */
-  double	_f_22_ENRC;	/**< Second (duplicate!) energy measurement (mJ) after attenuation. */
-  double	_f_63_ENRC;	/**< First energy measurement (mJ) for small signals (<0.5 mJ), after attenuation. */
-  double	_f_64_ENRC;	/**< Second (duplicate!) energy measurement (mJ) for small signals (<0.5mJ), after attenutation. */
+  double	_f_11_ENRC;	/**< First energy measurement (mJ) before attenuation. (pv name GDET:FEE1:241:ENRC) */
+  double	_f_12_ENRC;	/**< Second (duplicate!) energy measurement (mJ) after attenuation. (pv name GDET:FEE1:242:ENRC) */
+  double	_f_21_ENRC;	/**< First energy measurement (mJ) after attenuation. (pv name  GDET:FEE1:361:ENRC) */
+  double	_f_22_ENRC;	/**< Second (duplicate!) energy measurement (mJ) after attenuation. (pv name GDET:FEE1:362:ENRC) */
+  double	_f_63_ENRC;	/**< First energy measurement (mJ) for small signals (<0.5 mJ), after attenuation. (pv name GDET:FEE1:363:ENRC) */
+  double	_f_64_ENRC;	/**< Second (duplicate!) energy measurement (mJ) for small signals (<0.5mJ), after attenutation. (pv name GDET:FEE1:364:ENRC) */
 };
 #pragma pack(pop)
 

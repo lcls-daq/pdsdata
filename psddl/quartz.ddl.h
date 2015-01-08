@@ -158,8 +158,8 @@ public:
     VFlip,
     HVFlip,
   };
-  ConfigV2(uint16_t arg__bf_offset, uint16_t arg__bf_gain, Quartz::ConfigV2::Depth arg__bf_resol, Quartz::ConfigV2::Binning arg__bf_hbin, Quartz::ConfigV2::Binning arg__bf_vbin, Quartz::ConfigV2::Mirroring arg__bf_mirr, uint8_t arg__bf_lookup, uint8_t arg__bf_corr, uint8_t arg__use_roi, const Camera::FrameCoord& arg__roi_lo, const Camera::FrameCoord& arg__roi_hi, uint32_t arg__defectPixelCount, const uint16_t* arg__lookup_table, const Camera::FrameCoord* arg__defectPixels)
-    : _offsetAndGain(((arg__bf_offset) & 0xffff)|(((arg__bf_gain) & 0xffff)<<16)), _outputOptions(((arg__bf_resol) & 0xf)|(((arg__bf_hbin) & 0x3)<<4)|(((arg__bf_vbin) & 0x3)<<6)|(((arg__bf_mirr) & 0xf)<<8)|(((arg__bf_lookup) & 0x1)<<12)|(((arg__bf_corr) & 0x1)<<13)|(((arg__use_roi) & 0x1)<<14)), _roi_lo(arg__roi_lo), _roi_hi(arg__roi_hi), _defectPixelCount(arg__defectPixelCount)
+  ConfigV2(uint16_t arg__bf_offset, uint16_t arg__bf_gain, Quartz::ConfigV2::Depth arg__bf_resol, Quartz::ConfigV2::Binning arg__bf_hbin, Quartz::ConfigV2::Binning arg__bf_vbin, Quartz::ConfigV2::Mirroring arg__bf_mirr, uint8_t arg__bf_lookup, uint8_t arg__bf_corr, uint8_t arg__use_roi, uint8_t arg__use_test_pattern, uint8_t arg__max_taps, const Camera::FrameCoord& arg__roi_lo, const Camera::FrameCoord& arg__roi_hi, uint32_t arg__defectPixelCount, const uint16_t* arg__lookup_table, const Camera::FrameCoord* arg__defectPixels)
+    : _offsetAndGain(((arg__bf_offset) & 0xffff)|(((arg__bf_gain) & 0xffff)<<16)), _outputOptions(((arg__bf_resol) & 0xf)|(((arg__bf_hbin) & 0x3)<<4)|(((arg__bf_vbin) & 0x3)<<6)|(((arg__bf_mirr) & 0xf)<<8)|(((arg__bf_lookup) & 0x1)<<12)|(((arg__bf_corr) & 0x1)<<13)|(((arg__use_roi) & 0x1)<<14)|(((arg__use_test_pattern) & 0x1)<<15)|(((arg__max_taps) & 0xf)<<16)), _roi_lo(arg__roi_lo), _roi_hi(arg__roi_hi), _defectPixelCount(arg__defectPixelCount)
   {
     if (arg__lookup_table and (Output_LUT_Size*this->output_lookup_table_enabled())) {
       ptrdiff_t offset = 20;
@@ -200,6 +200,10 @@ public:
   uint8_t defect_pixel_correction_enabled() const { return uint8_t((this->_outputOptions>>13) & 0x1); }
   /** enable hardware region of interest */
   uint8_t use_hardware_roi() const { return uint8_t((this->_outputOptions>>14) & 0x1); }
+  /** enable the test pattern */
+  uint8_t use_test_pattern() const { return uint8_t((this->_outputOptions>>15) & 0x1); }
+  /** maximum taps in output driver */
+  uint8_t max_taps() const { return uint8_t((this->_outputOptions>>16) & 0xf); }
   /** hardware ROI begin */
   const Camera::FrameCoord& roi_lo() const { return _roi_lo; }
   /** hardware ROI end */

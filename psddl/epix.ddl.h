@@ -1045,7 +1045,7 @@ public:
   return *(const uint32_t*)(((const char*)this)+offset); }
   static uint32_t _sizeof(const Epix::Config100aV1& cfg) { return ((((((((32+(2*(cfg.numberOfReadableRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfCalibrationRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfEnvironmentalRows())*(cfg.numberOfColumns())))+(2*(cfg.numberOfAsics())))+4)+2)-1)/2)*2; }
 private:
-  uint32_t	_first;
+  uint32_t	_first;	/**< [[config(ConfigSV1)]] */
   uint32_t	_second;
   uint32_t	_frameNumber;
   uint32_t	_ticks;

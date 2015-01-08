@@ -104,6 +104,8 @@ namespace Pds {
       Id_IndexConfig,
       Id_IndexTag,
       Id_IndexProxy,
+      Id_ArrayUInt16,
+      Id_GotthardConfig,
       NumberOf};
     enum { VCompressed = 0x8000 };
 

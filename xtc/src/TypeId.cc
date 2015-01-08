@@ -83,6 +83,7 @@ bool     TypeId::is_configuration() const
       Id_GenericPgpConfig,
       Id_TimeToolConfig,
       Id_EpixSConfig,
+      Id_GotthardConfig,
     };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
@@ -187,6 +188,8 @@ const char* TypeId::name(Type type)
     "IndexConfig",             // 89
     "IndexTag",                // 90
     "IndexProxy",              // 91
+    "ArrayUInt16",             // 92
+    "GotthardConfig",          // 93
   };
   return (type < NumberOf ? _names[type] : "-Invalid-");
 }
