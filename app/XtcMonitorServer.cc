@@ -29,7 +29,7 @@
 using std::queue;
 using std::stack;
 
-static const unsigned numberofTrBuffers=16;
+static const unsigned numberofTrBuffers=18;
 
 //
 //  Recover any shared memory buffer older than 10 seconds
@@ -143,8 +143,8 @@ namespace Pds {
             else {
               printf("Unexpected state for TransitionCache: _cachedTr empty but tr[%s]!=Map\n",
                      TransitionId::name(id));
-              dump();
-              abort();
+              //dump();
+              //abort();
             }
 	  }
 	  else {
@@ -692,6 +692,7 @@ void XtcMonitorServer::routine()
                   for(int j=0; j<int(_msgDest.size()); j++)
                     if (_msgDest[j]==int(q)) {
                       printf("Recovering buffer %d\n",j);
+                      msg = _myMsg;
                       msg.bufferIndex(j);
                       if (mq_timedsend(_myInputEvQueue, (const char*)&msg, sizeof(msg), 0, &_tmo)<0)
                         perror("Failed to recover buffer queued to retired client");
