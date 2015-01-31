@@ -8,13 +8,11 @@
 #include <string.h>
 
 #include "pdsdata/xtc/XtcFileIterator.hh"
-#include "pdsdata/index/IndexXtcIterL1Accept.hh"
-//#include "pdsdata/index/IndexList.hh"
+#include "pdsdata/index/SmlDataIterL1Accept.hh"
 
 using namespace Pds;
-using Index::XtcIterL1Accept;
-using Index::IndexList;
-using Index::XtcObj;
+using SmlData::SmlDataIterL1Accept;
+using SmlData::XtcObj;
 using std::vector;
 
 void usage(char *progname)
@@ -117,7 +115,7 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
 
   vector<XtcObj>    xtcObjPool;
   XtcObj            xtcIndexConfig;
-  XtcObj            xtcIndexTag;
+  XtcObj            xtcIndexOrigDgramOffset;
   XtcFileIterator   iterFile  (fd, 0x4000000); // largest L1 data: 64 MB
   unsigned          lquiet    (0);
   int               debug      = 0;
@@ -131,10 +129,10 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
     if (dg->seq.service() == TransitionId::L1Accept)
     {
       xtcObjPool.clear();
-      XtcIterL1Accept iterL1Accept(&(dg->xtc), 0, i64Offset + sizeof(*dg), dgramOffset, uSizeThreshold, xtcObjPool, lquiet);
+      SmlDataIterL1Accept iterL1Accept(&(dg->xtc), 0, i64Offset + sizeof(*dg), dgramOffset, uSizeThreshold, xtcObjPool, lquiet);
       iterL1Accept.iterate();
 
-      typedef std::vector<XtcIterL1Accept::XtcInfo> XtcInfoList;
+      typedef std::vector<SmlDataIterL1Accept::XtcInfo> XtcInfoList;
       XtcInfoList& xtcInfoList = iterL1Accept.xtcInfoList();
       for (size_t i=0; i < xtcInfoList.size(); ++i)
       {
@@ -154,14 +152,14 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
           return 3;
         }
 
-        new ((char*)&xtcIndexTag) Xtc           (dg->xtc);
-        new (xtcIndexTag.tagV1)   Index::TagV1  (i64Offset, dg->xtc.extent);
-        xtcIndexTag.xtc.src      = Src(Level::Recorder);
-        xtcIndexTag.xtc.contains = TypeId(TypeId::Id_IndexTag, 1);
-        xtcIndexTag.xtc.extent   = sizeof(Xtc) + sizeof(Index::TagV1);
+        new ((char*)&xtcIndexOrigDgramOffset) Xtc           (); // set damage to 0
+        new (xtcIndexOrigDgramOffset.origDgramOffsetV1)   SmlData::OrigDgramOffsetV1  (i64Offset, dg->xtc.extent);
+        xtcIndexOrigDgramOffset.xtc.src      = Src(Level::Recorder);
+        xtcIndexOrigDgramOffset.xtc.contains = TypeId(TypeId::Id_SmlDataOrigDgramOffset, 1);
+        xtcIndexOrigDgramOffset.xtc.extent   = sizeof(Xtc) + sizeof(SmlData::OrigDgramOffsetV1);
 
         XtcInfoList& xtcInfoList = iterL1Accept.xtcInfoList();
-        xtcInfoList[0].uSize    += xtcIndexTag.xtc.extent;
+        xtcInfoList[0].uSize    += xtcIndexOrigDgramOffset.xtc.extent;
         for (size_t i=0; i < xtcInfoList.size(); ++i)
         {
           Xtc* pOrgXtc       = (Xtc*)((char*)dg + (long) (xtcInfoList[i].i64Offset - i64Offset));
@@ -174,7 +172,7 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
             printf("generateIndex(): failed to write to indx file\n");
             return 3;
           }
-          if (i ==0 && writeData(fdIndex, (char*)&xtcIndexTag, xtcIndexTag.xtc.extent) != 0)
+          if (i ==0 && writeData(fdIndex, (char*)&xtcIndexOrigDgramOffset, xtcIndexOrigDgramOffset.xtc.extent) != 0)
           {
             printf("generateIndex(): failed to write to indx file\n");
             return 3;
@@ -186,11 +184,11 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
     {
       if (fdIndex != -1)
       {
-        new ((char*)&xtcIndexConfig)  Xtc             (dg->xtc);
-        new (xtcIndexConfig.configV1) Index::ConfigV1 (uSizeThreshold);
+        new ((char*)&xtcIndexConfig)  Xtc             (); // set damage to 0
+        new (xtcIndexConfig.configV1) SmlData::ConfigV1 (uSizeThreshold);
         xtcIndexConfig.xtc.src      = Src(Level::Recorder);
-        xtcIndexConfig.xtc.contains = TypeId(TypeId::Id_IndexConfig, 1);
-        xtcIndexConfig.xtc.extent   = sizeof(Xtc) + sizeof(Index::ConfigV1);
+        xtcIndexConfig.xtc.contains = TypeId(TypeId::Id_SmlDataConfig, 1);
+        xtcIndexConfig.xtc.extent   = sizeof(Xtc) + sizeof(SmlData::ConfigV1);
 
         uint32_t sizeofPayloadOrg = dg->xtc.sizeofPayload();
         dg->xtc.extent += xtcIndexConfig.xtc.extent;
@@ -233,26 +231,7 @@ int readIndex(char* sInputIndex, char* sOutputIndex)
     return 1;
   }
 
-  //IndexList indexList;
-  //indexList.readFromFile(fd);
-
   ::close(fd);
-
-  //int iVerbose = 2;
-  //indexList.printList(iVerbose);
-  //
-  //if ( sOutputIndex != NULL )
-  //{
-  //  //int fdIndex = open(sOutputIndex, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH );
-  //  int fdIndex = open(sOutputIndex, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ); //!! debug
-  //  if ( fdIndex == -1 )
-  //    printf( "xtcIndex(): Open index file %s failed (%s)\n", sOutputIndex, strerror(errno) );
-  //  else
-  //  {
-  //    indexList.writeToFile(fdIndex);
-  //    ::close(fdIndex);
-  //  }
-  //}
 
   return 0;
 }

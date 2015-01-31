@@ -16,7 +16,7 @@
 #include "pdsdata/xtc/XtcFileIterator.hh"
 #include "pdsdata/psddl/evr.ddl.h"
 #include "pdsdata/psddl/acqiris.ddl.h"
-#include "pdsdata/psddl/index.ddl.h"
+#include "pdsdata/psddl/smldata.ddl.h"
 #include "pdsdata/index/IndexFileReader.hh"
 #include "pdsdata/index/IndexChunkReader.hh"
 #include "pdsdata/ana/XtcRun.hh"
@@ -760,10 +760,10 @@ int XtcIterConfig::process(Xtc * xtc)
       while (i--) printf("  ");
       printf( "Xtc Number %d\n", iter._iNumXtc );
     }
-  } else if (xtc->contains.id() == TypeId::Id_IndexConfig)
+  } else if (xtc->contains.id() == TypeId::Id_SmlDataConfig)
   {
     if(xtc->contains.version() == 1) {
-      Index::ConfigV1* pConfig = (Index::ConfigV1*) xtc->payload();
+      SmlData::ConfigV1* pConfig = (SmlData::ConfigV1*) xtc->payload();
       unsigned i = _depth+1;
       while (i--) printf("  ");
       printf("sizeThreshold %d\n", pConfig->sizeThreshold());
@@ -887,23 +887,23 @@ int XtcIterL1Accept::process(Xtc * xtc)
       printf( "Xtc Number %d\n", iter._iNumXtc );
     }
   }
-  else if (xtc->contains.id() == TypeId::Id_IndexProxy)
+  else if (xtc->contains.id() == TypeId::Id_SmlDataProxy)
   {
     if(xtc->contains.version() == 1) {
-      Index::ProxyV1* pProxy = (Index::ProxyV1*) xtc->payload();
+      SmlData::ProxyV1* pProxy = (SmlData::ProxyV1*) xtc->payload();
       unsigned i = _depth+1;
       while (i--) printf("  ");
-      printf("orgType %s V%d dgOffset 0x%x extent 0x%x\n", TypeId::name(pProxy->type().id()), pProxy->type().version(),
-             pProxy->dgramOffset(), pProxy->extent());
+      printf("orgType %s V%d fileOffset 0x%Lx extent 0x%x\n", TypeId::name(pProxy->type().id()), pProxy->type().version(),
+             (long long) pProxy->fileOffset(), pProxy->extent());
     }
   }
-  else if (xtc->contains.id() == TypeId::Id_IndexTag)
+  else if (xtc->contains.id() == TypeId::Id_SmlDataOrigDgramOffset)
   {
     if(xtc->contains.version() == 1) {
-      Index::TagV1* pTag= (Index::TagV1*) xtc->payload();
+      SmlData::OrigDgramOffsetV1* pOrigDgramOffset = (SmlData::OrigDgramOffsetV1*) xtc->payload();
       unsigned i = _depth+1;
       while (i--) printf("  ");
-      printf("fileOffset 0x%Lx extent 0x%x\n", (long long)pTag->fileOffset(), pTag->extent());
+      printf("fileOffset 0x%Lx extent 0x%x\n", (long long)pOrigDgramOffset->fileOffset(), pOrigDgramOffset->extent());
     }
   }
 

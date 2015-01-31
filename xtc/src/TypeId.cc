@@ -185,9 +185,9 @@ const char* TypeId::name(Type type)
     "TimeToolConfig",          // 86
     "TimeToolData",            // 87
     "EpixSConfig",             // 88
-    "IndexConfig",             // 89
-    "IndexTag",                // 90
-    "IndexProxy",              // 91
+    "SmlDataConfig",           // 89
+    "SmlDataOrigDgramOffset",  // 90
+    "SmlDataProxy",            // 91
     "ArrayUInt16",             // 92
     "GotthardConfig",          // 93
   };

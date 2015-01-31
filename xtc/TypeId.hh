@@ -101,9 +101,9 @@ namespace Pds {
       Id_TimeToolConfig,
       Id_TimeToolData,
       Id_EpixSConfig,
-      Id_IndexConfig,
-      Id_IndexTag,
-      Id_IndexProxy,
+      Id_SmlDataConfig,
+      Id_SmlDataOrigDgramOffset,
+      Id_SmlDataProxy,
       Id_ArrayUInt16,
       Id_GotthardConfig,
       NumberOf};

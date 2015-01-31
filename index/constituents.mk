@@ -1,7 +1,7 @@
 libnames := indexdata
 libsrcs_indexdata := src/IndexList.cc src/XtcIterL1Accept.cc src/IndexFileStruct.cc src/IndexFileReader.cc  src/IndexChunkReader.cc  src/IndexSliceReader.cc
 
-tgtnames = xtcindex xtcanalyze xtcanalyzeone indexxtc
+tgtnames = xtcindex xtcanalyze xtcanalyzeone smldata
 
 #CXXFLAGS += -pthread -m32 -I/reg/g/pcds/package/root/include
 
@@ -19,6 +19,6 @@ tgtsrcs_xtcanalyzeone := src/xtcanalyzeone.cc
 tgtlibs_xtcanalyzeone := xtcdata psddl_pdsdata indexdata
 tgtslib_xtcanalyzeone := $(USRLIBDIR)/rt
 
-tgtsrcs_indexxtc := src/indexxtc.cc src/IndexXtcIterL1Accept.cc
-tgtlibs_indexxtc := xtcdata psddl_pdsdata
-tgtslib_indexxtc := $(USRLIBDIR)/rt
+tgtsrcs_smldata := src/smldata.cc src/SmlDataIterL1Accept.cc
+tgtlibs_smldata := xtcdata psddl_pdsdata
+tgtslib_smldata := $(USRLIBDIR)/rt

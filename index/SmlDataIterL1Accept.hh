@@ -1,14 +1,14 @@
-#ifndef Pds_Index_XtcIterL1Accept_hh
-#define Pds_Index_XtcIterL1Accept_hh
+#ifndef Pds_Index_SmlDataIterL1Accept_hh
+#define Pds_Index_SmlDataIterL1Accept_hh
 
 #include <vector>
 #include "pdsdata/xtc/XtcIterator.hh"
 #include "pdsdata/index/IndexList.hh"
-#include "pdsdata/psddl/index.ddl.h"
+#include "pdsdata/psddl/smldata.ddl.h"
 
 namespace Pds
 {
-namespace Index
+namespace SmlData
 {
 
 #pragma pack(push,4)
@@ -17,20 +17,20 @@ struct XtcObj
   Xtc xtc;
   union
   {
-    char configV1[sizeof(ConfigV1)];
-    char tagV1   [sizeof(TagV1   )];
-    char proxyV1 [sizeof(ProxyV1 )];
+    char configV1           [sizeof(ConfigV1)];
+    char origDgramOffsetV1  [sizeof(OrigDgramOffsetV1)];
+    char proxyV1            [sizeof(ProxyV1 )];
   };
 };
 #pragma pack(pop)
 
-class XtcIterL1Accept: public XtcIterator
+class SmlDataIterL1Accept: public XtcIterator
 {
 public:
   enum
   { Stop, Continue };
 
-  XtcIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset, uint32_t dgramOffset,
+  SmlDataIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset, uint32_t dgramOffset,
     uint32_t uSizeThreshold, std::vector<XtcObj>& xtcObjPool) :
     XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), _dgramOffset(dgramOffset),
     _uSizeThreshold(uSizeThreshold), _xtcObjPool(xtcObjPool),
@@ -40,7 +40,7 @@ public:
     _vecXtcInfo.push_back(xtcInfo);
   }
 
-  XtcIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset, uint32_t dgramOffset,
+  SmlDataIterL1Accept(Xtc * xtc, unsigned depth, int64_t i64Offset, uint32_t dgramOffset,
     int uSizeThreshold, std::vector<XtcObj>& xtcObjPool, unsigned& lquiet ) :
     XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), _dgramOffset(dgramOffset),
     _uSizeThreshold(uSizeThreshold), _xtcObjPool(xtcObjPool),
@@ -77,4 +77,4 @@ private:
 } // namespace Index
 } // namespace Pds
 
-#endif // #ifndef Pds_Index_XtcIterL1Accept_hh
+#endif // #ifndef Pds_Index_SmlDataIterL1Accept_hh
