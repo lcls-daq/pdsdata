@@ -65,6 +65,9 @@ public:
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const double, 1> nonlinCorrect() const { return make_ndarray(&_lfNonlinCorrectCoeff[0], 8); }
   double strayLightConstant() const { return _fStrayLightConstant; }
+  int32_t deviceType() const { 
+    return 0;
+ }
   static uint32_t _sizeof() { return ((((((4+(8*(4)))+(8*(8)))+8)+4)-1)/4)*4; }
 private:
   float	_f32ExposureTime;
