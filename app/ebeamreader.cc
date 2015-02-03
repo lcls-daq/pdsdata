@@ -24,6 +24,7 @@ public:
     ebeamV4  = 0;
     ebeamV5  = 0;
     ebeamV6  = 0;
+    ebeamV7  = 0;
   }
   void dump() const {
     int version = -1;
@@ -34,6 +35,7 @@ public:
     if (ebeamV4) version=4;
     if (ebeamV5) version=5;
     if (ebeamV6) version=6;
+    if (ebeamV7) version=7;
 
     printf("V%1d %10d %9d %6d ",
            version,
@@ -158,6 +160,31 @@ public:
                         ebeamV6->ebeamPhotonEnergy(),
                         ebeamV6->ebeamLTU450());
 
+    if (ebeamV7) printf("%5x\n   % -11g % -10g % -11g % -10g % 10g % -12g % 10g % 10g % 10g % 12g % -12g\n   %10s %10s % -11g % -11g % 10g % -12g % 10g % 10g % 10g % 12g % -12g\n",
+                        ebeamV7->damageMask(),
+                        ebeamV7->ebeamL3Energy(),
+                        ebeamV7->ebeamCharge(),
+                        ebeamV7->ebeamLTUPosX(),
+                        ebeamV7->ebeamLTUAngX(),
+                        ebeamV7->ebeamPkCurrBC2(),
+                        ebeamV7->ebeamEnergyBC2(),
+                        ebeamV7->ebeamUndPosX(),
+                        ebeamV7->ebeamUndAngX(),
+                        ebeamV7->ebeamXTCAVAmpl(),
+                        ebeamV7->ebeamDumpCharge(),
+                        ebeamV7->ebeamLTU250(),
+                        " ",
+                        " ",
+                        ebeamV7->ebeamLTUPosY(),
+                        ebeamV7->ebeamLTUAngY(),
+                        ebeamV7->ebeamPkCurrBC1(),
+                        ebeamV7->ebeamEnergyBC1(),
+                        ebeamV7->ebeamUndPosY(),
+                        ebeamV7->ebeamUndAngY(),
+                        ebeamV7->ebeamXTCAVPhase(),
+                        ebeamV7->ebeamPhotonEnergy(),
+                        ebeamV7->ebeamLTU450());
+
   }
   void header() const {
     printf("%3s %9s %9s %6s %5s %10s %11s %12s %10s %10s %10s\n",
@@ -207,6 +234,7 @@ public:
   const Bld::BldDataEBeamV4*         ebeamV4;
   const Bld::BldDataEBeamV5*         ebeamV5;
   const Bld::BldDataEBeamV6*         ebeamV6;
+  const Bld::BldDataEBeamV7*         ebeamV7;
 };
 
 static bldData bld;
@@ -245,6 +273,9 @@ public:
         }
         if (xtc->contains.version()==6){
           bld.ebeamV6  = reinterpret_cast<const Bld::BldDataEBeamV6*>      (xtc->payload());
+        }
+        if (xtc->contains.version()==7){
+          bld.ebeamV7  = reinterpret_cast<const Bld::BldDataEBeamV7*>      (xtc->payload());
         }
         break;
       default:
