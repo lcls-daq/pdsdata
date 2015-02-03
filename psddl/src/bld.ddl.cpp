@@ -302,6 +302,68 @@ std::ostream& operator<<(std::ostream& str, Bld::BldDataEBeamV6::DamageMask enva
   }
   return str << val;
 }
+std::ostream& operator<<(std::ostream& str, Bld::BldDataEBeamV7::DamageMask enval) {
+  const char* val;
+  switch (enval) {
+  case Bld::BldDataEBeamV7::EbeamChargeDamage:
+    val = "EbeamChargeDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamL3EnergyDamage:
+    val = "EbeamL3EnergyDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamLTUPosXDamage:
+    val = "EbeamLTUPosXDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamLTUPosYDamage:
+    val = "EbeamLTUPosYDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamLTUAngXDamage:
+    val = "EbeamLTUAngXDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamLTUAngYDamage:
+    val = "EbeamLTUAngYDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamPkCurrBC2Damage:
+    val = "EbeamPkCurrBC2Damage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamEnergyBC2Damage:
+    val = "EbeamEnergyBC2Damage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamPkCurrBC1Damage:
+    val = "EbeamPkCurrBC1Damage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamEnergyBC1Damage:
+    val = "EbeamEnergyBC1Damage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamUndPosXDamage:
+    val = "EbeamUndPosXDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamUndPosYDamage:
+    val = "EbeamUndPosYDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamUndAngXDamage:
+    val = "EbeamUndAngXDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamUndAngYDamage:
+    val = "EbeamUndAngYDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamXTCAVAmplDamage:
+    val = "EbeamXTCAVAmplDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamXTCAVPhaseDamage:
+    val = "EbeamXTCAVPhaseDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamDumpChargeDamage:
+    val = "EbeamDumpChargeDamage";
+    break;
+  case Bld::BldDataEBeamV7::EbeamPhotonEnergyDamage:
+    val = "EbeamPhotonEnergyDamage";
+    break;
+  default:
+    return str << "DamageMask(" << int(enval) << ")";
+  }
+  return str << val;
+}
 BldDataSpectrometerV1::BldDataSpectrometerV1(uint32_t arg__width, uint32_t arg__hproj_y1, uint32_t arg__hproj_y2, double arg__fComRaw, double arg__fBaseline, double arg__fCom, double arg__fIntegral, uint32_t arg__nPeaks, const uint32_t* arg__hproj, const double* arg__peakPos, const double* arg__peakHeight, const double* arg__Fwhm)
     : _width(arg__width), _hproj_y1(arg__hproj_y1), _hproj_y2(arg__hproj_y2), _fComRaw(arg__fComRaw), _fBaseline(arg__fBaseline), _fCom(arg__fCom), _fIntegral(arg__fIntegral), _nPeaks(arg__nPeaks)
 {

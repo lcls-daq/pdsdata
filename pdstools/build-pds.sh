@@ -120,7 +120,19 @@ function usage()
 # cd to the directory above pdsdata to compile
 #=================================================================================
 ORIGINALDIR="${PWD}"
-cd ../../
+FILE=`find . -name "SConstruct" -type -f -print -quit`
+if [ -n "$FILE" ]; then
+    echo "Found $FILE"
+else
+    cd ..
+    if [ -n "$FILE" ]; then    
+	echo "Found $FILE"
+    else
+	cd ../
+    fi
+fi
+
+echo `pwd`
 
 #=================================================================================
 # Set reasonable values for defaults: targets=all, packages=pdsdata, version=test
@@ -338,6 +350,7 @@ for ((n=0;n<${#PACKAGES[@]};++n)); do
 	inst=${MYINSTALLDIR}/$tgt
 	echo $inst
 	echo -e "\n=== Build ${PACKAGE[$n]} ${tgt} and install to ${MYINSTALLDIR} ==="
+	echo ${PACKAGES[$n]}  $tgt $inst
 	build ${PACKAGES[$n]} $tgt $inst
     done
 done
