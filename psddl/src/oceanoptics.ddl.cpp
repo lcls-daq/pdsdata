@@ -9,7 +9,7 @@ namespace OceanOptics {
 double
 DataV1::nonlinerCorrected(const OceanOptics::ConfigV1& cfg, uint32_t iPixel) const {
   
-    double fRawValue = (double) (cfg.deviceType() == 0 ? (this->data()[iPixel] ^ 0x2000) : this->data()[iPixel]);
+    double fRawValue = (double) (this->data()[iPixel] ^ 0x2000);
     const ndarray<const double, 1>& corr = cfg.nonlinCorrect();
     return fRawValue / (
   corr[0] + fRawValue *
@@ -25,7 +25,7 @@ DataV1::nonlinerCorrected(const OceanOptics::ConfigV1& cfg, uint32_t iPixel) con
 double
 DataV1::nonlinerCorrected(const OceanOptics::ConfigV2& cfg, uint32_t iPixel) const {
   
-    double fRawValue = (double) (cfg.deviceType() == 0 ? (this->data()[iPixel] ^ 0x2000) : this->data()[iPixel]);
+    double fRawValue = (double) (this->data()[iPixel] ^ 0x2000);
     const ndarray<const double, 1>& corr = cfg.nonlinCorrect();
     return fRawValue / (
   corr[0] + fRawValue *
@@ -42,6 +42,22 @@ double
 DataV2::nonlinerCorrected(const OceanOptics::ConfigV2& cfg, uint32_t iPixel) const {
   
     double fRawValue = (double) (this->data()[iPixel]);
+    const ndarray<const double, 1>& corr = cfg.nonlinCorrect();
+    return fRawValue / (
+  corr[0] + fRawValue *
+       (corr[1] + fRawValue *
+       (corr[2] + fRawValue *
+       (corr[3] + fRawValue *
+       (corr[4] + fRawValue *
+       (corr[5] + fRawValue *
+       (corr[6] + fRawValue *
+        corr[7])))))));
+
+}
+double
+DataV3::nonlinerCorrected(const OceanOptics::ConfigV2& cfg, uint32_t iPixel) const {
+  
+    double fRawValue = (double) this->data()[iPixel];
     const ndarray<const double, 1>& corr = cfg.nonlinCorrect();
     return fRawValue / (
   corr[0] + fRawValue *
