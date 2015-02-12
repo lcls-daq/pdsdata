@@ -119,17 +119,9 @@ function usage()
 #=================================================================================
 # cd to the directory above pdsdata to compile
 #=================================================================================
-ORIGINALDIR="${PWD}"
-FILE=`find . -name "SConstruct" -type -f -print -quit`
-if [ -n "$FILE" ]; then
-    echo "Found $FILE"
-else
-    cd ..
-    if [ -n "$FILE" ]; then    
-	echo "Found $FILE"
-    else
-	cd ../
-    fi
+if [[ ! -d pdsdata ]] || [[ ! -f SConstruct ]]; then
+    echo "Please cd to the directory above pdsdata before running this script"
+    exit 1;
 fi
 
 echo `pwd`
