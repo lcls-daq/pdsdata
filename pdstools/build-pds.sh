@@ -119,12 +119,11 @@ function usage()
 #=================================================================================
 # cd to the directory above pdsdata to compile
 #=================================================================================
-if [[ ! -d pdsdata ]] || [[ ! -f SConstruct ]]; then
-    echo "Please cd to the directory above pdsdata before running this script"
+ORIGINALDIR="${PWD}"
+if [[ ! -d pdsdata ]] || [[! -f SConstruct]]; then
+    echo "Please cd to the directory above pdsdata before running this script."
     exit 1;
 fi
-
-echo `pwd`
 
 #=================================================================================
 # Set reasonable values for defaults: targets=all, packages=pdsdata, version=test
@@ -340,9 +339,7 @@ for ((n=0;n<${#PACKAGES[@]};++n)); do
     for target in $TARGETS; do
 	tgt=${target/x86_64-linux/$x86_64_arch}
 	inst=${MYINSTALLDIR}/$tgt
-	echo $inst
 	echo -e "\n=== Build ${PACKAGE[$n]} ${tgt} and install to ${MYINSTALLDIR} ==="
-	echo ${PACKAGES[$n]}  $tgt $inst
 	build ${PACKAGES[$n]} $tgt $inst
     done
 done
