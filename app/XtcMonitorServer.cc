@@ -296,6 +296,7 @@ namespace Pds {
     //
     void deallocate(unsigned client) {
       sem_wait(&_sem);
+      _not_ready &= ~(1<<client);
       for(unsigned itr=0; itr<numberofTrBuffers; itr++)
 	_allocated[itr] &= ~(1<<client);
       sem_post(&_sem);
@@ -858,6 +859,7 @@ void XtcMonitorServer::_initialize_client()
     abort();
   }
 
+  _transitionCache->deallocate(iclient);
   _update(iclient,TransitionId::Unmap);
 }
 
