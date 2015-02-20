@@ -120,7 +120,7 @@ function usage()
 # cd to the directory above pdsdata to compile
 #=================================================================================
 ORIGINALDIR="${PWD}"
-if [[ ! -d pdsdata ]] || [[! -f SConstruct]]; then
+if [[ ! -d pdsdata ]] || [[ ! -f SConstruct ]]; then
     echo "Please cd to the directory above pdsdata before running this script."
     exit 1;
 fi
