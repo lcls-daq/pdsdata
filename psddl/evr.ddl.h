@@ -1064,14 +1064,17 @@ public:
   {
   }
   FIFOEvent() {}
+  /** 119 MHz timestamp (fiducial) */
   uint32_t timestampHigh() const { return _timestampHigh; }
+  /** 360 Hz timestamp */
   uint32_t timestampLow() const { return _timestampLow; }
+  /** event code (range 0-255) */
   uint32_t eventCode() const { return _eventCode; }
   static uint32_t _sizeof() { return 12; }
 private:
-  uint32_t	_timestampHigh;
-  uint32_t	_timestampLow;
-  uint32_t	_eventCode;
+  uint32_t	_timestampHigh;	/**< 119 MHz timestamp (fiducial) */
+  uint32_t	_timestampLow;	/**< 360 Hz timestamp */
+  uint32_t	_eventCode;	/**< event code (range 0-255) */
 };
 
 /** @class DataV3
@@ -1107,8 +1110,11 @@ public:
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
     return *this;
   }
+  /** length of FIFOEvent list */
   uint32_t numFifoEvents() const { return _u32NumFifoEvents; }
-  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+  /** FIFOEvent list
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const EvrData::FIFOEvent, 1> fifoEvents(const boost::shared_ptr<T>& owner) const { 
@@ -1116,14 +1122,76 @@ public:
     const EvrData::FIFOEvent* data = (const EvrData::FIFOEvent*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const EvrData::FIFOEvent>(owner, data), this->_u32NumFifoEvents);
   }
-  /**     Note: this method returns ndarray instance which does not control lifetime
+  /** FIFOEvent list
+
+    Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const EvrData::FIFOEvent, 1> fifoEvents() const { ptrdiff_t offset=4;
   const EvrData::FIFOEvent* data = (const EvrData::FIFOEvent*)(((char*)this)+offset);
   return make_ndarray(data, this->_u32NumFifoEvents); }
   uint32_t _sizeof() const { return ((((4+(EvrData::FIFOEvent::_sizeof()*(this->_u32NumFifoEvents)))+4)-1)/4)*4; }
 private:
-  uint32_t	_u32NumFifoEvents;
+  uint32_t	_u32NumFifoEvents;	/**< length of FIFOEvent list */
+  //EvrData::FIFOEvent	_fifoEvents[this->_u32NumFifoEvents];
+};
+
+/** @class DataV4
+
+  
+*/
+
+
+class DataV4 {
+public:
+  enum { TypeId = Pds::TypeId::Id_EvrData /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 4 /**< XTC type version number */ };
+  DataV4(uint32_t arg__u32NumFifoEvents, const EvrData::FIFOEvent* arg__fifoEvents)
+    : _u32NumFifoEvents(arg__u32NumFifoEvents)
+  {
+    if (arg__fifoEvents and (this->_u32NumFifoEvents)) {
+      ptrdiff_t offset = 4;
+      EvrData::FIFOEvent* data = reinterpret_cast<EvrData::FIFOEvent*>(((char*)this)+offset);
+      std::copy(arg__fifoEvents, arg__fifoEvents+(this->_u32NumFifoEvents), data);
+    }
+  }
+  DataV4(uint32_t u32NumFifoEvents)
+    : _u32NumFifoEvents(u32NumFifoEvents)
+  {
+  }
+  DataV4() {}
+  DataV4(const DataV4& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  DataV4& operator=(const DataV4& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** length of FIFOEvent list */
+  uint32_t numFifoEvents() const { return _u32NumFifoEvents; }
+  /** FIFOEvent list
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const EvrData::FIFOEvent, 1> fifoEvents(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=4;
+    const EvrData::FIFOEvent* data = (const EvrData::FIFOEvent*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const EvrData::FIFOEvent>(owner, data), this->_u32NumFifoEvents);
+  }
+  /** FIFOEvent list
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const EvrData::FIFOEvent, 1> fifoEvents() const { ptrdiff_t offset=4;
+  const EvrData::FIFOEvent* data = (const EvrData::FIFOEvent*)(((char*)this)+offset);
+  return make_ndarray(data, this->_u32NumFifoEvents); }
+  /** Returns 1 if the opcode is present in the EVR FIFO, otherwise 0. */
+  uint8_t present(uint8_t opcode) const;
+  uint32_t _sizeof() const { return ((((4+(EvrData::FIFOEvent::_sizeof()*(this->_u32NumFifoEvents)))+4)-1)/4)*4; }
+private:
+  uint32_t	_u32NumFifoEvents;	/**< length of FIFOEvent list */
   //EvrData::FIFOEvent	_fifoEvents[this->_u32NumFifoEvents];
 };
 

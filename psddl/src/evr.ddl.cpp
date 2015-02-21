@@ -401,6 +401,18 @@ SrcConfigV1::SrcConfigV1(uint32_t arg__neventcodes, uint32_t arg__npulses, uint3
     std::copy(arg__output_maps, arg__output_maps+(this->_noutputs), data);
   }
 }
+uint8_t
+DataV4::present(uint8_t opcode) const {
+  
+    uint32_t size = this->numFifoEvents();
+    for (uint32_t ii = 0; ii < size; ii++) {
+      if (this->fifoEvents()[ii].eventCode() == opcode) {
+        return 1;
+      }
+    }
+    return 0;
+
+}
 std::vector<int>
 IOChannel::name_shape() const {
   std::vector<int> shape;
