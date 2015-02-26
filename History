@@ -1,3 +1,4 @@
+2015-Feb-26 weaver	Tag V08-02-05.  Change XtcMonitorServer to reject connections from extra clients.
 2015-Feb-20 caf         Tag V08-02-04.  Adds EvrData::DataV4.  Derived from psddldata V01-00-26.
 2014-Nov-25 cpo		Tag V08-01-11.  Add const accessor to IndexList.hh to allow software to convert eventcode-bits to actual event-codes.
 2014-Nov-25 weaver	Tag V08-01-10.  Added Quartz::ConfigV2 for hw ROI.
