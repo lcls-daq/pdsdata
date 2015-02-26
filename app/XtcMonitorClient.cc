@@ -238,7 +238,7 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
     }
 
     if (::read(myTrFd,&myMsg,sizeof(myMsg))!=sizeof(myMsg)) {
-      perror("Reading initial message");
+      printf("Connection rejected by shmem server [too many clients]\n");
       return 1;
     }
 

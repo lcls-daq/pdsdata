@@ -832,11 +832,6 @@ void XtcMonitorServer::_initialize_client()
   printf("initialize client socket %d [%d]\n",s,_nfd);
 #endif
 
-  _pfd[_nfd].fd = s;
-  _pfd[_nfd].events  = POLLIN;
-  _pfd[_nfd].revents = 0;
-  _nfd++;
-
   int iclient=-1;
   for(unsigned i=0; i<_myTrFd.size(); i++) {
     if (_myTrFd[i] == -1) {
@@ -846,8 +841,19 @@ void XtcMonitorServer::_initialize_client()
   }
   if (iclient == -1) {
     iclient = _myTrFd.size();
+    if (iclient == _numberOfEvQueues) {
+      printf("Rejecting client %d : Number of EvQueues = %d\n",
+             iclient, _numberOfEvQueues);
+      ::close(s);
+      return;
+    }
     _myTrFd.push_back(-1);
   }
+
+  _pfd[_nfd].fd = s;
+  _pfd[_nfd].events  = POLLIN;
+  _pfd[_nfd].revents = 0;
+  _nfd++;
 
   _myTrFd[iclient] = s;
   printf("_initialize_client %d [socket %d]\n",iclient,s);
