@@ -451,7 +451,7 @@ int updateEvr(const Xtc& xtc)
 {
   // assume xtc.contains.id() == TypeId::Id_EvrData
 
-  if ( xtc.contains.version() != 3 )
+  if ( (xtc.contains.version() != 3) && (xtc.contains.version() != 4) )
   {
     printf( "UnExtorted Evr Data Ver %d\n", xtc.contains.version() );
     return 1;
