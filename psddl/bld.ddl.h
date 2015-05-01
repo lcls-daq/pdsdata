@@ -1261,6 +1261,62 @@ private:
   //double	_Fwhm[this->_nPeaks];
 };
 #pragma pack(pop)
+
+/** @class BldDataAnalogInputV1
+
+  Structure which contains voltage data from an analog input device.
+*/
+
+#pragma pack(push,4)
+
+class BldDataAnalogInputV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_AnalogInput /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  BldDataAnalogInputV1(uint32_t arg__numChannels, const double* arg__channelVoltages)
+    : _numChannels(arg__numChannels)
+  {
+    if (arg__channelVoltages and (this->_numChannels)) {
+      ptrdiff_t offset = 4;
+      double* data = reinterpret_cast<double*>(((char*)this)+offset);
+      std::copy(arg__channelVoltages, arg__channelVoltages+(this->_numChannels), data);
+    }
+  }
+  BldDataAnalogInputV1() {}
+  BldDataAnalogInputV1(const BldDataAnalogInputV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataAnalogInputV1& operator=(const BldDataAnalogInputV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** The number of active channels on the analog input device. */
+  uint32_t numChannels() const { return _numChannels; }
+  /** Array of voltage values were each entry represents a channel of the analog input device.
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> channelVoltages(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=4;
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->_numChannels);
+  }
+  /** Array of voltage values were each entry represents a channel of the analog input device.
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> channelVoltages() const { ptrdiff_t offset=4;
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->_numChannels); }
+  uint32_t _sizeof() const { return ((((4+(8*(this->_numChannels)))+4)-1)/4)*4; }
+private:
+  uint32_t	_numChannels;	/**< The number of active channels on the analog input device. */
+  //double	_channelVoltages[this->_numChannels];
+};
+#pragma pack(pop)
 } // namespace Bld
 } // namespace Pds
 #endif // PDS_BLD_DDL_H
