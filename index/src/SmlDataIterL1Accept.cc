@@ -69,7 +69,7 @@ int SmlDataIterL1Accept::process(Xtc * xtc)
 
   int64_t   i64OffsetOrg        = _i64Offset;
   int64_t   i64OffsetPayload    = _i64Offset + sizeof(Xtc);
-  uint32_t  dgramOffsetOrg      = _dgramOffset;
+  //  uint32_t  dgramOffsetOrg      = _dgramOffset;
   uint32_t  dgramOffsetPayload  = _dgramOffset + sizeof(Xtc);
   _i64Offset   += sizeof(Xtc) + xtc->sizeofPayload();
   _dgramOffset += sizeof(Xtc) + xtc->sizeofPayload();
