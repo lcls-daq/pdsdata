@@ -1122,7 +1122,7 @@ class BldDataSpectrometerV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_Spectrometer /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
-  BldDataSpectrometerV1(uint32_t arg__width, uint32_t arg__hproj_y1, uint32_t arg__hproj_y2, double arg__fComRaw, double arg__fBaseline, double arg__fCom, double arg__fIntegral, uint32_t arg__nPeaks, const uint32_t* arg__hproj, const double* arg__peakPos, const double* arg__peakHeight, const double* arg__Fwhm);
+  BldDataSpectrometerV1(uint32_t arg__width, uint32_t arg__hproj_y1, uint32_t arg__hproj_y2, double arg__fComRaw, double arg__fBaseline, double arg__fCom, double arg__fIntegral, uint32_t arg__nPeaks, const int32_t* arg__hproj, const double* arg__peakPos, const double* arg__peakHeight, const double* arg__Fwhm);
   BldDataSpectrometerV1(uint32_t width, uint32_t nPeaks)
     : _width(width), _nPeaks(nPeaks)
   {
@@ -1167,18 +1167,18 @@ public:
     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
-  ndarray<const uint32_t, 1> hproj(const boost::shared_ptr<T>& owner) const { 
+  ndarray<const int32_t, 1> hproj(const boost::shared_ptr<T>& owner) const { 
     ptrdiff_t offset=48;
-    const uint32_t* data = (const uint32_t*)(((char*)this)+offset);
-    return make_ndarray(boost::shared_ptr<const uint32_t>(owner, data), this->_width);
+    const int32_t* data = (const int32_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const int32_t>(owner, data), this->_width);
   }
   /** Projection of spectrum onto energy axis 
      PV TBD
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const uint32_t, 1> hproj() const { ptrdiff_t offset=48;
-  const uint32_t* data = (const uint32_t*)(((char*)this)+offset);
+  ndarray<const int32_t, 1> hproj() const { ptrdiff_t offset=48;
+  const int32_t* data = (const int32_t*)(((char*)this)+offset);
   return make_ndarray(data, this->_width); }
   /** Peak position array, length given by nPeaks
      PV: TBD
@@ -1255,7 +1255,7 @@ private:
      PV: TBD */
   uint32_t	_nPeaks;	/**< Number of peak fits performed
     PV: TBD */
-  //uint32_t	_hproj[this->_width];
+  //int32_t	_hproj[this->_width];
   //double	_peakPos[this->_nPeaks];
   //double	_peakHeight[this->_nPeaks];
   //double	_Fwhm[this->_nPeaks];
