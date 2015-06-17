@@ -363,6 +363,7 @@ XtcMonitorServer::XtcMonitorServer(const char* tag,
   _ievt             (0) 
 {
   _myMsg.numberOfBuffers(numberofEvBuffers+numberofTrBuffers);
+  _myMsg.numberOfQueues (numberofEvQueues);
   _myMsg.sizeOfBuffers  (sizeofBuffers);
   _myMsg.return_queue   (0);
 
@@ -841,7 +842,7 @@ void XtcMonitorServer::_initialize_client()
   }
   if (iclient == -1) {
     iclient = _myTrFd.size();
-    if (iclient == _numberOfEvQueues) {
+    if (iclient == int(_numberOfEvQueues)) {
       printf("Rejecting client %d : Number of EvQueues = %d\n",
              iclient, _numberOfEvQueues);
       ::close(s);
