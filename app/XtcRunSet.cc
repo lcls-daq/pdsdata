@@ -61,7 +61,6 @@ public:
   }
 
   XtcMonitorServer::Result events(Dgram* dg) {
-    Xtc xtc = dg->xtc;
     if (XtcMonitorServer::events(dg) == XtcMonitorServer::Handled) {
       _deleteDatagram(dg);
     }

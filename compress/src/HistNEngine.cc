@@ -272,7 +272,6 @@ namespace Pds {
       //
       unsigned nbits = 0;
       unsigned size_nbits  = inDataSize*8;
-      unsigned count_nbits = 0;
       unsigned step_nbits  = 0;
       unsigned int* start_nbits = 0;
 
@@ -305,7 +304,6 @@ namespace Pds {
         if (size < size_nbits) {
           nbits = nb;
           size_nbits  = size;
-          count_nbits = count;
           step_nbits  = step;
           start_nbits = start4compression;
         }
