@@ -1,5 +1,8 @@
 libnames := indexdata smldata
+
 libsrcs_indexdata := src/IndexList.cc src/XtcIterL1Accept.cc src/IndexFileStruct.cc src/IndexFileReader.cc  src/IndexChunkReader.cc  src/IndexSliceReader.cc
+
+libsrcs_smldata := src/SmlDataList.cc src/SmlDataIterL1Accept.cc src/SmlDataFileStruct.cc src/SmlDataFileReader.cc src/SmlDataChunkReader.cc src/SmlDataSliceReader.cc
 
 tgtnames = xtcindex xtcanalyze xtcanalyzeone smldata
 
@@ -20,5 +23,6 @@ tgtlibs_xtcanalyzeone := xtcdata psddl_pdsdata indexdata
 tgtslib_xtcanalyzeone := $(USRLIBDIR)/rt
 
 tgtsrcs_smldata := src/smldata.cc src/SmlDataIterL1Accept.cc
-tgtlibs_smldata := xtcdata psddl_pdsdata
+tgtlibs_smldata := xtcdata psddl_pdsdata smldata
 tgtslib_smldata := $(USRLIBDIR)/rt
+
