@@ -1,4 +1,4 @@
-libnames := indexdata
+libnames := indexdata smldata
 libsrcs_indexdata := src/IndexList.cc src/XtcIterL1Accept.cc src/IndexFileStruct.cc src/IndexFileReader.cc  src/IndexChunkReader.cc  src/IndexSliceReader.cc
 
 tgtnames = xtcindex xtcanalyze xtcanalyzeone smldata
