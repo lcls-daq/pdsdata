@@ -107,6 +107,7 @@ namespace Pds {
       Id_ArrayUInt16,
       Id_GotthardConfig,
       Id_AnalogInput,
+      Id_SmlData,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
