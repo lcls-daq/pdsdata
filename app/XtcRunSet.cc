@@ -47,7 +47,10 @@ public:
                      sizeofBuffers,
                      numberofEvBuffers,
                      numberofClients) {
+    _init();
+
     // Only need these buffers for inserted transitions { Map, Unconfigure, Unmap }
+
     unsigned depth = 4;
     for(unsigned i=0; i<depth; i++)
       _pool.push(reinterpret_cast<Dgram*>(new char[sizeofBuffers]));
