@@ -11,7 +11,7 @@ TransitionCache::TransitionCache(char* p, size_t sz, unsigned nbuff) :
   _allocated(new unsigned[nbuff])
 { 
   sem_init(&_sem, 0, 1);
-  memset(&_allocated, 0, _numberofTrBuffers*sizeof(unsigned)); 
+  memset(_allocated, 0, _numberofTrBuffers*sizeof(unsigned)); 
 
   for(unsigned i=0; i<_numberofTrBuffers; i++) {
     Dgram* dg = new (p + _szShm*i) Dgram;

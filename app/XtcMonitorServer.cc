@@ -169,17 +169,20 @@ bool XtcMonitorServer::_send(Dgram* dg)
   int r = mq_timedreceive(_requestQueue, (char*)&msg, sizeof(msg), NULL,
                           &no_wait); 
 
-#ifdef NO_STEAL
+#ifndef NO_STEAL
+  static unsigned _nsteals=0;
   if (r>0)
     ;
   else {
     if (r<0) ; // perror("Error reading input event queue");
     for(unsigned i=0; i<_numberOfEvQueues; i++) {
-      r=mq_timedreceive(_myOutputEvQueue[i], (char*)&msg, sizeof(msg), NULL,
+      unsigned iq = (i+_nsteals)%_numberOfEvQueues; // fairness
+      r=mq_timedreceive(_myOutputEvQueue[iq], (char*)&msg, sizeof(msg), NULL,
                         &no_wait);
       if (r>0) break;
       if (r<0) ; // perror("Error reading output event queue");
     }
+    _nsteals++;
   }
 #endif
 
@@ -327,20 +330,8 @@ void XtcMonitorServer::discover()
 void XtcMonitorServer::routine()
 {
   while(1) {
-#if 0
-    printf("Enter poll with {");
-    for(int i=0; i<_nfd; i++)
-      printf("%d,",_pfd[i].fd);
-    printf("}\n");
-#endif
-    if (::poll(_pfd,_nfd,-1) > 0) {
 
-#if 0
-      printf("Return poll with {");
-      for(int i=0; i<_nfd; i++)
-	printf("%x,",_pfd[i].revents);
-      printf("}\n");
-#endif
+    if (::poll(_pfd,_nfd,-1) > 0) {
 
       if (_pfd[0].revents & POLLIN) 
 	_initialize_client();
@@ -350,7 +341,8 @@ void XtcMonitorServer::routine()
       //
       if (_pfd[1].revents & POLLIN) {
         XtcMonitorMsg msg;
-        while(mq_receive(_myInputEvQueue, (char*)&msg, sizeof(msg), NULL) < 0) {
+	const timespec no_wait={0,0};
+        while(mq_timedreceive(_myInputEvQueue, (char*)&msg, sizeof(msg), NULL, &no_wait) > 0) {
           if (mq_timedsend(_requestQueue, (const char*)&msg, sizeof(msg), 0, &_tmo))
             perror("Writing to requestQ");
           else
@@ -524,12 +516,14 @@ int XtcMonitorServer::_init()
                                          numberofTrBuffers);
 
   mq_attr q_attr;
+
   q_attr.mq_maxmsg  = _numberOfEvBuffers;
   q_attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
   q_attr.mq_flags   = O_NONBLOCK;
 
   XtcMonitorMsg::eventOutputQueue(p,_numberOfEvQueues-1,toQname);
   _flushQueue(_myInputEvQueue  = _openQueue(toQname,q_attr));
+
   for(unsigned i=0; i<_numberOfEvBuffers; i++) {
     _myMsg.bufferIndex(i);
     _msgDest[i]=-1;
@@ -557,16 +551,20 @@ int XtcMonitorServer::_init()
   }
 
   q_attr.mq_maxmsg  = _numberOfEvBuffers;
-  q_attr.mq_msgsize = (long int)sizeof(ShMsg);
+  q_attr.mq_msgsize = (long int)sizeof(XtcMonitorMsg);
   q_attr.mq_flags   = O_NONBLOCK;
 
   sprintf(toQname, "/PdsRequestQueue_%s",p);
   _requestQueue = _openQueue(toQname, q_attr);
-  { ShMsg m; _flushQueue(_requestQueue,(char*)&m, sizeof(m)); }
+  _flushQueue(_requestQueue);
 
   _pfd[1].fd = _myInputEvQueue;
   _pfd[1].events  = POLLIN;
   _pfd[1].revents = 0;
+
+  q_attr.mq_maxmsg  = _numberOfEvBuffers;
+  q_attr.mq_msgsize = (long int)sizeof(ShMsg);
+  q_attr.mq_flags   = O_NONBLOCK;
 
   sprintf(toQname, "/PdsShuffleQueue_%s",p);
   _shuffleQueue = _openQueue(toQname, q_attr);
@@ -766,6 +764,7 @@ void XtcMonitorServer::unlink()
     XtcMonitorMsg::eventInputQueue     (_tag,i,qname); mq_unlink(qname);
   }
   XtcMonitorMsg::eventInputQueue     (_tag,_numberOfEvQueues,qname); mq_unlink(qname);
+  sprintf(qname, "/PdsRequestQueue_%s",_tag);  mq_unlink(qname);
   sprintf(qname, "/PdsShuffleQueue_%s",_tag);  mq_unlink(qname);
   XtcMonitorMsg::discoveryQueue      (_tag,qname); mq_unlink(qname);
   delete[] qname;
