@@ -36,7 +36,7 @@ CPPFLAGS   := $(CFLAGS) -m32
 USRLIBDIR  := /usr/lib
 endif
 
-ifneq ($(findstring x86_64-linux,$(tgt_arch)),)
+ifneq ($(findstring x86_64-,$(tgt_arch)),)
 CPPFLAGS   := $(CFLAGS)
 USRLIBDIR  := /usr/lib64
 endif

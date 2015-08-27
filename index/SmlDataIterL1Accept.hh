@@ -36,7 +36,8 @@ public:
     _uSizeThreshold(uSizeThreshold), _xtcObjPool(xtcObjPool),
     _lquiet(_vquiet), _vquiet(0)
   {
-    XtcInfo xtcInfo = {_i64Offset - sizeof(Xtc), sizeof(Xtc), _depth, -1};
+    XtcInfo xtcInfo = {_i64Offset - int64_t(sizeof(Xtc)), 
+                       sizeof(Xtc), int(_depth), -1};
     _vecXtcInfo.push_back(xtcInfo);
   }
 
@@ -46,7 +47,8 @@ public:
     _uSizeThreshold(uSizeThreshold), _xtcObjPool(xtcObjPool),
     _lquiet(lquiet), _vquiet(0)
   {
-    XtcInfo xtcInfo = {_i64Offset - sizeof(Xtc), sizeof(Xtc), _depth, -1};
+    XtcInfo xtcInfo = {_i64Offset - int64_t(sizeof(Xtc)), 
+                       sizeof(Xtc), int(_depth), -1};
     _vecXtcInfo.push_back(xtcInfo);
   }
 
