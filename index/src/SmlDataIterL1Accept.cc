@@ -98,7 +98,7 @@ int SmlDataIterL1Accept::process(Xtc * xtc)
       xtcObj.xtc.contains = TypeId(TypeId::Id_SmlDataProxy, 1);
       xtcObj.xtc.extent   = sizeof(Xtc) + sizeof(ProxyV1);
       _vecXtcInfo[0].uSize += xtcObj.xtc.extent;
-      XtcInfo xtcInfo = {i64OffsetOrg, xtcObj.xtc.extent, int(_depth+1), _xtcObjPool.size()-1};
+      XtcInfo xtcInfo = {i64OffsetOrg, xtcObj.xtc.extent, int(_depth+1), int(_xtcObjPool.size()-1)};
       //printf("  storing data for offset 0x%Lx pool %d extent 0x%x (0x%x)\n", (long long) xtcInfo.i64Offset, xtcInfo.iPoolIndex,
       //       xtcInfo.uSize, xtcObj.xtc.extent);
       _vecXtcInfo.push_back(xtcInfo);

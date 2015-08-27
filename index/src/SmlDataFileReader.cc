@@ -492,7 +492,7 @@ int SmlDataFileReader::eventNextFiducialToGlobal(uint32_t uFiducial, int iFromGl
     return eventNextFiducialToGlobalLinearSearch(uFiducial, iFromGlobalEvent, iGlobalEvent);
     
   uint32_t  uFiducialSample [NUM_FIDUCIAL_SAMPLES];
-  int32_t   iFiducialDiff   [NUM_FIDUCIAL_SAMPLES-1];
+  //  int32_t   iFiducialDiff   [NUM_FIDUCIAL_SAMPLES-1];
   
   int32_t   iFiducialDiffAvg = 0;   
   for (int iEvent = 0; iEvent < NUM_FIDUCIAL_SAMPLES; ++iEvent)
@@ -517,7 +517,7 @@ int SmlDataFileReader::eventNextFiducialToGlobal(uint32_t uFiducial, int iFromGl
     else
     { // iEvent > 0
       int32_t iFiducialDiffCur =  uFiducialSample[iEvent] - uFiducialSample[iEvent-1]; 
-      iFiducialDiff[iEvent-1]  =  iFiducialDiffCur;
+      //      iFiducialDiff[iEvent-1]  =  iFiducialDiffCur;
       iFiducialDiffAvg         += iFiducialDiffCur;
       
       //printf("SmlDataFileReader::eventNextFiducialToGlobal(): fiducialDiff[%d] 0x%x\n", iEvent-1, iFiducialDiff[iEvent-1]); //!!debug      

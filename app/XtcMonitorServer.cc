@@ -497,7 +497,7 @@ int XtcMonitorServer::_init()
   unsigned pageSize = (unsigned)sysconf(_SC_PAGESIZE);
 
   int ret = 0;
-  unsigned sizeOfShm = (_numberOfEvBuffers + numberofTrBuffers) * _sizeOfBuffers;
+  size_t sizeOfShm = size_t(_numberOfEvBuffers + numberofTrBuffers) * _sizeOfBuffers;
   unsigned remainder = sizeOfShm%pageSize;
   if (remainder) sizeOfShm += pageSize - remainder;
 
