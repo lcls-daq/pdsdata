@@ -195,13 +195,7 @@ int SmlDataList::updateEvr(const Xtc& xtc)
 {
   // assume xtc.contains.id() == TypeId::Id_EvrData
   
-  if ( xtc.contains.version() != 3 )
-  {
-    printf( "Unsupported Evr Data Ver %d\n", xtc.contains.version() );
-    return 1;
-  }
-  
-  const EvrData::DataV3& evrData = * reinterpret_cast<const EvrData::DataV3*>(xtc.payload());
+  const EvrData::DataV4& evrData = * reinterpret_cast<const EvrData::DataV4*>(xtc.payload());
   
   for ( unsigned int uEvent = 0; uEvent < evrData.numFifoEvents(); uEvent++ )
   {
