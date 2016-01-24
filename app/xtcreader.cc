@@ -29,6 +29,7 @@
 #include "pdsdata/psddl/alias.ddl.h"
 #include "pdsdata/psddl/rayonix.ddl.h"
 #include "pdsdata/psddl/smldata.ddl.h"
+#include "pdsdata/psddl/partition.ddl.h"
 
 static unsigned eventCount = 0;
 
@@ -243,7 +244,36 @@ public:
       printf( "%s = %s\n", pvLabelCur.name(), pvLabelCur.value() );
     }
           
-  }  
+  } 
+  void process(const DetInfo&, const ControlData::ConfigV3& config) {
+    printf("*** Processing Control config object\n");    
+    
+    printf( "Control PV Number = %d, Monitor PV Number = %d, Label PV Number = %d\n", config.npvControls(), config.npvMonitors(), config.npvLabels() );
+    for(unsigned int iPvControl=0; iPvControl < config.npvControls(); iPvControl++) {      
+      const Pds::ControlData::PVControl& pvControlCur = config.pvControls()[iPvControl];
+      if (pvControlCur.array())
+        printf( "%s[%d] = ", pvControlCur.name(), pvControlCur.index() );
+      else
+        printf( "%s = ", pvControlCur.name() );
+      printf( "%lf\n", pvControlCur.value() );
+    }
+    
+    for(unsigned int iPvMonitor=0; iPvMonitor < config.npvMonitors(); iPvMonitor++) {      
+      const Pds::ControlData::PVMonitor& pvMonitorCur = config.pvMonitors()[iPvMonitor];
+      if (pvMonitorCur.array())
+        printf( "%s[%d]  ", pvMonitorCur.name(), pvMonitorCur.index() );
+      else
+        printf( "%s  ", pvMonitorCur.name() );
+      printf( "Low %lf  High %lf\n", pvMonitorCur.loValue(), pvMonitorCur.hiValue() );
+    }
+          
+    for(unsigned int iPvLabel=0; iPvLabel < config.npvLabels(); iPvLabel++) {      
+      const Pds::ControlData::PVLabel& pvLabelCur = config.pvLabels()[iPvLabel];
+      printf( "%s = %s\n", pvLabelCur.name(), pvLabelCur.value() );
+    }
+          
+  } 
+
   void process(const DetInfo&, const Epics::EpicsPvHeader& epicsPv)
   {    
     printf("*** Processing Epics object\n");
@@ -471,6 +501,10 @@ public:
   void process(const DetInfo &, const SmlData::ProxyV1 &)
   {
     printf("*** Processing SmlData::ProxyV1 object\n");
+  }  
+  void process(const DetInfo &, const Partition::ConfigV1 &)
+  {
+    printf("*** Processing Partition::ConfigV1 object\n");
   }  
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
