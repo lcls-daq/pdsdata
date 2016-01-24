@@ -853,6 +853,20 @@ int XtcIterL1Accept::process(Xtc * xtc)
     if ( _depth != 0 )
       printf( "XtcIterL1Accept::process(): *** Error level %s depth = %d\n", Level::name(level), _depth );
   }
+  else if (level == Level::Event)
+  {
+    unsigned i = _depth;
+    while (i--) printf("  ");
+    printf("%s level  offset 0x%Lx damage 0x%x extent 0x%x contains %s V%d\n",
+           Level::name(level), (long long) _i64Offset,
+           xtc->damage.value(), xtc->extent,
+           TypeId::name(xtc->contains.id()), xtc->contains.version()
+          );
+
+    if ( _depth != 0 )
+      printf( "XtcIterL1Accept::process(): *** Error level %s depth = %d\n", Level::name(level), _depth );
+
+  }
   else
   {
     unsigned i = _depth;
