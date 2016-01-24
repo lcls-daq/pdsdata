@@ -28,6 +28,7 @@
 #include "pdsdata/psddl/lusi.ddl.h"
 #include "pdsdata/psddl/alias.ddl.h"
 #include "pdsdata/psddl/rayonix.ddl.h"
+#include "pdsdata/psddl/smldata.ddl.h"
 
 static unsigned eventCount = 0;
 
@@ -463,6 +464,14 @@ public:
     printf("\trawMode: %d\n", rayonixConfig.rawMode());
     printf("\tdarkFlag: %d\n", rayonixConfig.darkFlag());
   }
+  void process(const DetInfo &, const SmlData::ConfigV1 &)
+  {
+    printf("*** Processing SmlData::ConfigV1 object\n");
+  }  
+  void process(const DetInfo &, const SmlData::ProxyV1 &)
+  {
+    printf("*** Processing SmlData::ProxyV1 object\n");
+  }  
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
     Level::Type   level     = xtc->src.level();
@@ -663,6 +672,9 @@ public:
 	break;
       case 2:
 	process(info, *(const ControlData::ConfigV2*)(xtc->payload()));
+	break;
+      case 3:
+	process(info, *(const ControlData::ConfigV3*)(xtc->payload()));
 	break;
       default:
 	printf("Unsupported ControlData::Config version %d\n",xtc->contains.version());
@@ -907,6 +919,45 @@ public:
         break;
       default:
         printf("Unsupported Rayonix configuration version %d\n", version);
+        break;
+      }
+      break;
+    }
+    case (TypeId::Id_SmlDataConfig):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const SmlData::ConfigV1*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported SmlData Config version %d\n", version);
+        break;
+      }
+      break;
+    }
+    case (TypeId::Id_SmlDataProxy):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const SmlData::ProxyV1*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported SmlData Proxy version %d\n", version);
+        break;
+      }
+      break;
+    }
+    case (TypeId::Id_PartitionConfig):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const Partition::ConfigV1*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported Partition Config  version %d\n", version);
         break;
       }
       break;
