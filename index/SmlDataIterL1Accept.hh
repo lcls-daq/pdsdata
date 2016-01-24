@@ -34,7 +34,7 @@ public:
     uint32_t uSizeThreshold, std::vector<XtcObj>& xtcObjPool) :
     XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), _dgramOffset(dgramOffset),
     _uSizeThreshold(uSizeThreshold), _xtcObjPool(xtcObjPool),
-    _lquiet(_vquiet), _vquiet(0)
+    _lquiet(_vquiet), _vquiet(0), _iterationOk(true)
   {
     XtcInfo xtcInfo = {_i64Offset - int64_t(sizeof(Xtc)), 
                        sizeof(Xtc), int(_depth), -1};
@@ -45,12 +45,14 @@ public:
     int uSizeThreshold, std::vector<XtcObj>& xtcObjPool, unsigned& lquiet ) :
     XtcIterator(xtc), _depth(depth), _i64Offset(i64Offset), _dgramOffset(dgramOffset),
     _uSizeThreshold(uSizeThreshold), _xtcObjPool(xtcObjPool),
-    _lquiet(lquiet), _vquiet(0)
+    _lquiet(lquiet), _vquiet(0), _iterationOk(true)
   {
     XtcInfo xtcInfo = {_i64Offset - int64_t(sizeof(Xtc)), 
                        sizeof(Xtc), int(_depth), -1};
     _vecXtcInfo.push_back(xtcInfo);
   }
+
+  bool iterationOk() const { return _iterationOk; };
 
   int  process(Xtc * xtc);
 
@@ -73,6 +75,7 @@ private:
   unsigned&             _lquiet;
   unsigned              _vquiet;
   std::vector<XtcInfo>  _vecXtcInfo;
+  bool                  _iterationOk;
 
 };
 
