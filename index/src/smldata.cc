@@ -125,7 +125,7 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
   while ((dg = iterFile.next()))
   {
     uint32_t dgramOffset = sizeof(Dgram);
-    if (debug == 1) printf("dg 0x%Lx\n", (long long) i64Offset);
+    if (debug == 1) printf("dgramOffset 0x%x, i64Offset  0x%Lx\n", dgramOffset, (long long) i64Offset);
     if (dg->seq.service() == TransitionId::L1Accept)
     {
       xtcObjPool.clear();
@@ -134,6 +134,12 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
 
       typedef std::vector<SmlDataIterL1Accept::XtcInfo> XtcInfoList;
       XtcInfoList& xtcInfoList = iterL1Accept.xtcInfoList();
+
+      if (not iterL1Accept.iterationOk() or (xtcInfoList.size()==1)) {
+        if (debug==1) printf("  iter no good, skipping\n");
+        continue;
+      }
+
       for (size_t i=0; i < xtcInfoList.size(); ++i)
       {
         Xtc* pOrgXtc = (Xtc*)((char*)dg + (long) (xtcInfoList[i].i64Offset - i64Offset));
@@ -148,7 +154,7 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
       {
         if (writeData(fdIndex, dg, sizeof(*dg)-sizeof(Xtc)) != 0)
         {
-          printf("generateIndex(): failed to write to indx file\n");
+          printf("generateIndex(): failed to write to index file\n");
           return 3;
         }
 
