@@ -15,9 +15,12 @@ int SmlDataIterL1Accept::process(Xtc * xtc)
 {
   Level::Type     level             = xtc->src.level();
   bool            bStopUpdate       = false;
-
-  if (xtc->damage.value() & (1<<Damage::IncompleteContribution))
+  
+  if (xtc->damage.value() & (1<<Damage::IncompleteContribution)) 
+  {
+    _iterationOk = false;
     return SmlDataIterL1Accept::Stop;
+  }
 
   if (xtc->extent < sizeof(Xtc) ||
       (xtc->extent&3) ||
@@ -61,6 +64,14 @@ int SmlDataIterL1Accept::process(Xtc * xtc)
   }
   else if (level == Level::Event)
   {
+    // Event level is either L3T result or camrecord, the IOC recorder (both depth 0)
+    if (_depth != 0) {
+      printf( "SmlDataIterL1Accept::process(): *** Error depth: Expect 0, but get %d, level %s\n",
+              _depth, Level::name(level) );
+    }
+  }
+  else if (level == Level::Recorder)
+  {
   }
   else
   {
@@ -99,8 +110,7 @@ int SmlDataIterL1Accept::process(Xtc * xtc)
       xtcObj.xtc.extent   = sizeof(Xtc) + sizeof(ProxyV1);
       _vecXtcInfo[0].uSize += xtcObj.xtc.extent;
       XtcInfo xtcInfo = {i64OffsetOrg, xtcObj.xtc.extent, int(_depth+1), int(_xtcObjPool.size()-1)};
-      //printf("  storing data for offset 0x%Lx pool %d extent 0x%x (0x%x)\n", (long long) xtcInfo.i64Offset, xtcInfo.iPoolIndex,
-      //       xtcInfo.uSize, xtcObj.xtc.extent);
+      printf("  storing data for offset 0x%Lx pool %d extent 0x%x (0x%x)\n", (long long) xtcInfo.i64Offset, xtcInfo.iPoolIndex,xtcInfo.uSize, xtcObj.xtc.extent);
       _vecXtcInfo.push_back(xtcInfo);
     }
   }
