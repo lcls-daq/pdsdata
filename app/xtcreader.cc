@@ -30,6 +30,7 @@
 #include "pdsdata/psddl/rayonix.ddl.h"
 #include "pdsdata/psddl/smldata.ddl.h"
 #include "pdsdata/psddl/partition.ddl.h"
+#include "pdsdata/psddl/timetool.ddl.h"
 
 static unsigned eventCount = 0;
 
@@ -500,11 +501,31 @@ public:
   }  
   void process(const DetInfo &, const SmlData::ProxyV1 &)
   {
+    printf("*** Processing SmlData::SmlDataOrigDgramOffsetV1 object\n");
+  }  
+  void process(const DetInfo &, const SmlData::SmlDataOrigDgramOffsetV1 &)
+  {
     printf("*** Processing SmlData::ProxyV1 object\n");
   }  
   void process(const DetInfo &, const Partition::ConfigV1 &)
   {
     printf("*** Processing Partition::ConfigV1 object\n");
+  }  
+  void process(const DetInfo &, const TimeTool::ConfigV1 &)
+  {
+    printf("*** Processing TimeTool::ConfigV1 object\n");
+  }  
+  void process(const DetInfo &, const TimeTool::ConfigV2 &)
+  {
+    printf("*** Processing TimeTool::ConfigV2 object\n");
+  }  
+  void process(const DetInfo &, const TimeTool::DataV1 &)
+  {
+    printf("*** Processing TimeTool::DataV1 object\n");
+  }  
+  void process(const DetInfo &, const TimeTool::DataV2 &)
+  {
+    printf("*** Processing TimeTool::DataV2 object\n");
   }  
   int process(Xtc* xtc) {
     unsigned      i         =_depth; while (i--) printf("  ");
@@ -983,6 +1004,19 @@ public:
       }
       break;
     }
+    case (TypeId::Id_SmlDataOrigDgramOffset):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const SmlData::SmlDataOrigDgramOffsetV1*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported SmlData SmlDataOrigDgramOffset version %d\n", version);
+        break;
+      }
+      break;
+    }
     case (TypeId::Id_PartitionConfig):
     {
       unsigned version = xtc->contains.version();
@@ -992,6 +1026,38 @@ public:
         break;
       default:
         printf("Unsupported Partition Config  version %d\n", version);
+        break;
+      }
+      break;
+    }
+    case (TypeId::Id_TimeToolConfig):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const TimeTool::ConfigV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info, *(const TimeTool::ConfigV2*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported TimeTool Config version %d\n", version);
+        break;
+      }
+      break;
+    }
+    case (TypeId::Id_TimeToolData):
+    {
+      unsigned version = xtc->contains.version();
+      switch (version) {
+      case 1:
+        process(info, *(const TimeTool::DataV1*)(xtc->payload()));
+        break;
+      case 2:
+        process(info, *(const TimeTool::DataV2*)(xtc->payload()));
+        break;
+      default:
+        printf("Unsupported TimeTool Data version %d\n", version);
         break;
       }
       break;
