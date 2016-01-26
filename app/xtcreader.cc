@@ -501,11 +501,11 @@ public:
   }  
   void process(const DetInfo &, const SmlData::ProxyV1 &)
   {
-    printf("*** Processing SmlData::SmlDataOrigDgramOffsetV1 object\n");
-  }  
-  void process(const DetInfo &, const SmlData::SmlDataOrigDgramOffsetV1 &)
-  {
     printf("*** Processing SmlData::ProxyV1 object\n");
+  }  
+  void process(const DetInfo &, const SmlData::OrigDgramOffsetV1 &)
+  {
+    printf("*** Processing SmlData::OrigDgramOffsetV1 object\n");
   }  
   void process(const DetInfo &, const Partition::ConfigV1 &)
   {
@@ -1009,10 +1009,10 @@ public:
       unsigned version = xtc->contains.version();
       switch (version) {
       case 1:
-        process(info, *(const SmlData::SmlDataOrigDgramOffsetV1*)(xtc->payload()));
+        process(info, *(const SmlData::OrigDgramOffsetV1*)(xtc->payload()));
         break;
       default:
-        printf("Unsupported SmlData SmlDataOrigDgramOffset version %d\n", version);
+        printf("Unsupported SmlData OrigDgramOffset version %d\n", version);
         break;
       }
       break;
