@@ -71,7 +71,7 @@ const char* DetInfo::name(Detector det){
     "XcsBeamline", "CxiSc2",
     "MecXuvSpectrometer","MecXrtsForw","MecXrtsBack","MecFdi","MecTimeTool","MecTargetChamber",
     "FeeHxSpectrometer", "XrayTransportDiagnostic", "Lamp",
-    "MfxEndstation", "MfxDg1", "MfxDg2"
+    "MfxEndstation", "MfxDg1", "MfxDg2", "XrtDiag"
   };
   return (det < NumDetector ? _detNames[det] : "-Invalid-");
 }
