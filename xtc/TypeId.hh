@@ -108,6 +108,8 @@ namespace Pds {
       Id_GotthardConfig,
       Id_AnalogInput,
       Id_SmlData,
+      Id_Andor3dConfig,
+      Id_Andor3dFrame,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
