@@ -84,6 +84,7 @@ bool     TypeId::is_configuration() const
       Id_TimeToolConfig,
       Id_EpixSConfig,
       Id_GotthardConfig,
+      Id_Andor3dConfig,
     };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
@@ -191,6 +192,9 @@ const char* TypeId::name(Type type)
     "ArrayUInt16",             // 92
     "GotthardConfig",          // 93
     "AnalogInput",             // 94
+    "SmlData",                 // 95
+    "Andor3dConfig",           // 96
+    "Andor3dFrame",            // 97
   };
    const char* p = (type < NumberOf ? _names[type] : "-Invalid-");
    if (!p) p = "-Unnamed-";
