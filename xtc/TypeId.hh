@@ -110,6 +110,7 @@ namespace Pds {
       Id_SmlData,
       Id_Andor3dConfig,
       Id_Andor3dFrame,
+      Id_BeamMonitorBldData,
       Id_Generic1DConfig,
       Id_Generic1DData,
       NumberOf};

@@ -109,7 +109,8 @@ namespace Pds {
       EpixS     = 36,
       Gotthard  = 37,
       DualAndor = 38,
-      NumDevice = 39
+      Wave8 = 39,
+      NumDevice = 40
     };
 
     DetInfo() {}

@@ -85,6 +85,7 @@ bool     TypeId::is_configuration() const
       Id_EpixSConfig,
       Id_GotthardConfig,
       Id_Andor3dConfig,
+      Id_Generic1DConfig,
     };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
@@ -195,6 +196,10 @@ const char* TypeId::name(Type type)
     "SmlData",                 // 95
     "Andor3dConfig",           // 96
     "Andor3dFrame",            // 97
+    "BeamMonitorBldData",      // 98
+    "Generic1DData",           // 99
+    "Generic1DConfig",         // 100
+
   };
    const char* p = (type < NumberOf ? _names[type] : "-Invalid-");
    if (!p) p = "-Unnamed-";
