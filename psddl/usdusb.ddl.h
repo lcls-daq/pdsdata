@@ -12,6 +12,117 @@
 namespace Pds {
 namespace UsdUsb {
 
+/** @class FexConfigV1
+
+  Class for creating a FexData for an encoder - takes an offset and scale.
+*/
+
+
+class FexConfigV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_UsdUsbFexConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  enum { NCHANNELS = 4 };
+  enum { NAME_CHAR_MAX = 48 };
+  FexConfigV1(const int32_t* arg__offset, const double* arg__scale, const char* arg__name)
+  {
+    if (arg__offset) std::copy(arg__offset, arg__offset+(4), &_offset[0]);
+    if (arg__scale) std::copy(arg__scale, arg__scale+(4), &_scale[0]);
+    if (arg__name) std::copy(arg__name, arg__name+(192), &_name[0][0]);
+  }
+  FexConfigV1() {}
+  FexConfigV1(const FexConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  FexConfigV1& operator=(const FexConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Offset (in counts) to apply to raw encoder counts
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const int32_t, 1> offset(const boost::shared_ptr<T>& owner) const { 
+    const int32_t* data = &_offset[0];
+    return make_ndarray(boost::shared_ptr<const int32_t>(owner, data), NCHANNELS);
+  }
+  /** Offset (in counts) to apply to raw encoder counts
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const int32_t, 1> offset() const { return make_ndarray(&_offset[0], NCHANNELS); }
+  /** Scale factor for converting encoder counts to units
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> scale(const boost::shared_ptr<T>& owner) const { 
+    const double* data = &_scale[0];
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), NCHANNELS);
+  }
+  /** Scale factor for converting encoder counts to units
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> scale() const { return make_ndarray(&_scale[0], NCHANNELS); }
+  /** Descriptive name for each channel */
+  const char* name(uint32_t i0) const { return _name[i0]; }
+  static uint32_t _sizeof() { return ((((((0+(4*(NCHANNELS)))+(8*(NCHANNELS)))+(1*(NCHANNELS)*(NAME_CHAR_MAX)))+8)-1)/8)*8; }
+  /** Method which returns the shape (dimensions) of the data returned by name() method. */
+  std::vector<int> name_shape() const;
+private:
+  int32_t	_offset[NCHANNELS];	/**< Offset (in counts) to apply to raw encoder counts */
+  double	_scale[NCHANNELS];	/**< Scale factor for converting encoder counts to units */
+  char	_name[NCHANNELS][NAME_CHAR_MAX];	/**< Descriptive name for each channel */
+};
+
+/** @class FexDataV1
+
+  Class for holding the encoder value after application of an offset and scale.
+*/
+
+
+class FexDataV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_UsdUsbFexData /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  enum { Encoder_Inputs = 4 };
+  FexDataV1(const double* arg__encoder_value)
+  {
+    if (arg__encoder_value) std::copy(arg__encoder_value, arg__encoder_value+(4), &_encoder_value[0]);
+  }
+  FexDataV1() {}
+  FexDataV1(const FexDataV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  FexDataV1& operator=(const FexDataV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Corrected encoder value = (raw_count + offset) * scale
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> _encoder_values(const boost::shared_ptr<T>& owner) const { 
+    const double* data = &_encoder_value[0];
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), Encoder_Inputs);
+  }
+  /** Corrected encoder value = (raw_count + offset) * scale
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> _encoder_values() const { return make_ndarray(&_encoder_value[0], Encoder_Inputs); }
+  static uint32_t _sizeof() { return ((((0+(8*(Encoder_Inputs)))+8)-1)/8)*8; }
+private:
+  double	_encoder_value[Encoder_Inputs];	/**< Corrected encoder value = (raw_count + offset) * scale */
+};
+
 /** @class ConfigV1
 
   

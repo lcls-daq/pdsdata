@@ -86,6 +86,7 @@ bool     TypeId::is_configuration() const
       Id_GotthardConfig,
       Id_Andor3dConfig,
       Id_Generic1DConfig,
+      Id_UsdUsbFexConfig,
     };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
@@ -199,7 +200,8 @@ const char* TypeId::name(Type type)
     "BeamMonitorBldData",      // 98
     "Generic1DData",           // 99
     "Generic1DConfig",         // 100
-
+    "UsdUsbFexConfig",         // 101
+    "UsdUsbFexData",           // 102
   };
    const char* p = (type < NumberOf ? _names[type] : "-Invalid-");
    if (!p) p = "-Unnamed-";

@@ -6,6 +6,14 @@
 #include <iostream>
 namespace Pds {
 namespace UsdUsb {
+std::vector<int>
+FexConfigV1::name_shape() const {
+  std::vector<int> shape;
+  shape.reserve(2);
+  shape.push_back(NCHANNELS);
+  shape.push_back(NAME_CHAR_MAX);
+  return shape;
+}
 std::ostream& operator<<(std::ostream& str, UsdUsb::ConfigV1::Count_Mode enval) {
   const char* val;
   switch (enval) {

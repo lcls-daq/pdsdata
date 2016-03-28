@@ -113,6 +113,8 @@ namespace Pds {
       Id_BeamMonitorBldData,
       Id_Generic1DConfig,
       Id_Generic1DData,
+      Id_UsdUsbFexConfig,
+      Id_UsdUsbFexData,
       NumberOf};
     enum { VCompressed = 0x8000 };
 
