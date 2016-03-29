@@ -198,8 +198,8 @@ const char* TypeId::name(Type type)
     "Andor3dConfig",           // 96
     "Andor3dFrame",            // 97
     "BeamMonitorBldData",      // 98
-    "Generic1DData",           // 99
-    "Generic1DConfig",         // 100
+    "Generic1DConfig",         // 99
+    "Generic1DData",           // 100
     "UsdUsbFexConfig",         // 101
     "UsdUsbFexData",           // 102
   };

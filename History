@@ -1,3 +1,4 @@
+2016-Mar-28 ddamiani    Tag V08-06-04.  Fixed a bug with string names of the Generic1DConfig and Generic1DData types.
 2016-Mar-28 ddamiani    Tag V08-06-03.  Added FexConfigV1 and FexDataV1 for usdusb encoders. Derived from psddldata V01-00-38.
 2016-Feb-05 ddamiani    Tag V08-06-01.  Fixed bug with TypeId and DetInfo for multi-ccd Andor cameras. Derived from psddldata V01-00-36.
 2016-Feb-04 ddamiani    Tag V08-06-00.  Added ConfigV1 and FrameV1 for multi-ccd Andor cameras. Derived from psddldata V01-00-36.
