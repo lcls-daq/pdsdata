@@ -109,7 +109,7 @@ public:
     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
-  ndarray<const double, 1> _encoder_values(const boost::shared_ptr<T>& owner) const { 
+  ndarray<const double, 1> encoder_values(const boost::shared_ptr<T>& owner) const { 
     const double* data = &_encoder_value[0];
     return make_ndarray(boost::shared_ptr<const double>(owner, data), Encoder_Inputs);
   }
@@ -117,7 +117,7 @@ public:
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const double, 1> _encoder_values() const { return make_ndarray(&_encoder_value[0], Encoder_Inputs); }
+  ndarray<const double, 1> encoder_values() const { return make_ndarray(&_encoder_value[0], Encoder_Inputs); }
   static uint32_t _sizeof() { return ((((0+(8*(Encoder_Inputs)))+8)-1)/8)*8; }
 private:
   double	_encoder_value[Encoder_Inputs];	/**< Corrected encoder value = (raw_count + offset) * scale */

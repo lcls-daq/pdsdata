@@ -159,6 +159,15 @@ class DataV0 {
 public:
   enum { TypeId = Pds::TypeId::Id_Generic1DData /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 0 /**< XTC type version number */ };
+  DataV0(uint32_t arg__size_of, const uint8_t* arg__data)
+    : _size_of(arg__size_of)
+  {
+    if (arg__data and (this->_size_of)) {
+      ptrdiff_t offset = 4;
+      uint8_t* data = reinterpret_cast<uint8_t*>(((char*)this)+offset);
+      std::copy(arg__data, arg__data+(this->_size_of), data);
+    }
+  }
   DataV0() {}
   uint32_t size_of() const { return _size_of; }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
