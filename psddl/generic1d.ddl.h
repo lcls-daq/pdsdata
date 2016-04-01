@@ -159,39 +159,48 @@ class DataV0 {
 public:
   enum { TypeId = Pds::TypeId::Id_Generic1DData /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 0 /**< XTC type version number */ };
-  DataV0(uint32_t arg__size_of, const uint8_t* arg__data)
-    : _size_of(arg__size_of)
+  DataV0(uint32_t arg__data_size, const uint8_t* arg__data)
+    : _data_size(arg__data_size)
   {
-    if (arg__data and (this->_size_of)) {
+    if (arg__data and (this->_data_size)) {
       ptrdiff_t offset = 4;
       uint8_t* data = reinterpret_cast<uint8_t*>(((char*)this)+offset);
-      std::copy(arg__data, arg__data+(this->_size_of), data);
+      std::copy(arg__data, arg__data+(this->_data_size), data);
     }
   }
   DataV0() {}
-  uint32_t size_of() const { return _size_of; }
+  DataV0(const DataV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  DataV0& operator=(const DataV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  uint32_t data_size() const { return _data_size; }
   /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
   ndarray<const uint8_t, 1> _int_data(const boost::shared_ptr<T>& owner) const { 
     ptrdiff_t offset=4;
     const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
-    return make_ndarray(boost::shared_ptr<const uint8_t>(owner, data), this->_size_of);
+    return make_ndarray(boost::shared_ptr<const uint8_t>(owner, data), this->_data_size);
   }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint8_t, 1> _int_data() const { ptrdiff_t offset=4;
   const uint8_t* data = (const uint8_t*)(((char*)this)+offset);
-  return make_ndarray(data, this->_size_of); }
+  return make_ndarray(data, this->_data_size); }
   ndarray<const uint8_t, 1> data_u8(const Generic1D::ConfigV0& cfg, uint32_t channel) const;
   ndarray<const uint16_t, 1> data_u16(const Generic1D::ConfigV0& cfg, uint32_t channel) const;
   ndarray<const uint32_t, 1> data_u32(const Generic1D::ConfigV0& cfg, uint32_t channel) const;
   ndarray<const float, 1> data_f32(const Generic1D::ConfigV0& cfg, uint32_t channel) const;
   ndarray<const double, 1> data_f64(const Generic1D::ConfigV0& cfg, uint32_t channel) const;
-  uint32_t _sizeof() const { return ((((4+(1*(this->_size_of)))+4)-1)/4)*4; }
+  uint32_t _sizeof() const { return ((((4+(1*(this->_data_size)))+4)-1)/4)*4; }
 private:
-  uint32_t	_size_of;
-  //uint8_t	_data[this->_size_of];
+  uint32_t	_data_size;
+  //uint8_t	_data[this->_data_size];
 };
 #pragma pack(pop)
 } // namespace Generic1D
