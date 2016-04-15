@@ -1,3 +1,4 @@
+2016-Apr-15 ddamiani    Tag V08-06-08.  Added a ConfigV2 for the Andor cameras with support of crop mode.
 2016-Mar-31 ddamiani    Tag V08-06-06.  Added a LeCroy type to DetInfo.
 2016-Mar-29 ddamiani    Tag V08-06-05.  Added a constructor to Generic1D::DataV0.
 2016-Mar-28 ddamiani    Tag V08-06-04.  Fixed a bug with string names of the Generic1DConfig and Generic1DData types.
