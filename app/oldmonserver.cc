@@ -91,9 +91,9 @@ static Dgram* next(int fd, int sizeOfBuffers)
 
 static void printTransition(const Dgram* dg)
 {
-  printf("%18s transition: time %08x/%08x, payloadSize 0x%08x dmg 0x%x\n",
+  printf("%18s transition: time %016lx, payloadSize 0x%08x dmg 0x%x\n",
 	 TransitionId::name(dg->seq.service()),
-	 dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
+	 dg->seq.stamp().fiducials(),
 	 dg->xtc.sizeofPayload(),
 	 dg->xtc.damage.value());
 }
@@ -104,7 +104,7 @@ static void printTransition(const Dgram* dg)
 static Dgram* insert(TransitionId::Value tr)
 {
   Dgram* dg = apps->newDatagram();
-  new((void*)&dg->seq) Sequence(Sequence::Event, tr, ClockTime(0,0), TimeStamp(0,0,0,0));
+  new((void*)&dg->seq) Sequence(Sequence::Event, tr, ClockTime(0,0), TimeStamp(0,0));
   new((char*)&dg->xtc) Xtc(TypeId(TypeId::Id_Xtc,0),ProcInfo(Level::Event,0,0));
   printTransition(dg);
   return dg;
@@ -226,9 +226,9 @@ int main(int argc, char* argv[]) {
       if (dg->seq.service() != TransitionId::L1Accept)
 	printTransition(dg);
       else if (verbose)
-	printf("%18s transition: time %08x/%08x, payloadSize 0x%08x, raw rate %8.3f Hz%c",
+	printf("%18s transition: time %016lx, payloadSize 0x%08x, raw rate %8.3f Hz%c",
 	       TransitionId::name(dg->seq.service()),
-	       dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
+	       dg->seq.stamp().fiducials(),
 	       dg->xtc.sizeofPayload(), 1.e9/busyTime,
 	       veryverbose ? '\n' : '\r');
       if (period > busyTime) {

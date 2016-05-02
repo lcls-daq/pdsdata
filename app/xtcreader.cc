@@ -1117,10 +1117,10 @@ int main(int argc, char* argv[]) {
   Dgram* dg;
   long long int lliOffset = lseek64( fd, 0, SEEK_CUR );  
   while ((dg = iter.next())) {
-    printf("%s transition: time %d.%09d, fid/ticks 0x%0x/0x%x, env 0x%x, offset %Ld (0x%Lx), payloadSize %d\n",
+    printf("%s transition: time %d.%09d, fid 0x%0lx, env 0x%x, offset %Ld (0x%Lx), payloadSize %d\n",
            TransitionId::name(dg->seq.service()),
            dg->seq.clock().seconds(),dg->seq.clock().nanoseconds(),
-           dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(), 
+           dg->seq.stamp().fiducials(),
            dg->env.value(),
            lliOffset, lliOffset, dg->xtc.sizeofPayload());
     myLevelIter iter(&(dg->xtc),0, lliOffset + sizeof(Xtc) + sizeof(*dg) - sizeof(dg->xtc));

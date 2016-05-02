@@ -13,4 +13,3 @@ libsrcs_xtcdata := src/TypeId.cc \
                    src/ProcInfo.cc \
                    src/DetInfo.cc \
                    src/L1AcceptEnv.cc
-

@@ -169,8 +169,8 @@ namespace Pds {
 using namespace Pds;
 
 int XtcMonitorClient::processDgram(Dgram* dg) {
-  printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
-      dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
+  printf("%s transition: time 0x%lx, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
+      dg->seq.stamp().fiducials(),dg->xtc.sizeofPayload());
   return 0;
 }
 

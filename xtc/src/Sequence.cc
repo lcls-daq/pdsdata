@@ -1,11 +1,11 @@
 #include "pdsdata/xtc/Sequence.hh"
 
 /* bit field access enums
-*	v is the index of the rightmost bit
-*	k is the number bits in the field
-*	m is the mask, right justified
-*	s is the mask shifted into place
-*/
+ *	v is the index of the rightmost bit
+ *	k is the number bits in the field
+ *	m is the mask, right justified
+ *	s is the mask shifted into place
+ */
 
 namespace Pds {
   enum {v_cntrl   = 0, k_cntrl   = 8};
@@ -30,9 +30,9 @@ Pds::Sequence::Sequence(const ClockTime& clock, const TimeStamp& stamp) :
 {}
 
 Pds::Sequence::Sequence(Type type,
-                        TransitionId::Value service,
-                        const ClockTime& clock,
-                        const TimeStamp& stamp) :
+                            TransitionId::Value service,
+                            const ClockTime& clock,
+                            const TimeStamp& stamp) :
   _clock(clock),
   _stamp(stamp, 
          ((type & m_seqtype) << v_seqtype) | 

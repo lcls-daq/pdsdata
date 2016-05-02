@@ -700,8 +700,8 @@ int main(int argc, char* argv[]) {
     if (dg->seq.service() == TransitionId::L1Accept)
       if (++count>nevents) break;
 
-    printf("%s transition: time 0x%x/0x%x, payloadSize %d\n",TransitionId::name(dg->seq.service()),
-            dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(), dg->xtc.sizeofPayload());
+    printf("%s transition: time 0x%lx, payloadSize %d\n",TransitionId::name(dg->seq.service()),
+            dg->seq.stamp().fiducials(), dg->xtc.sizeofPayload());
     myLevelIter liter(&(dg->xtc),0);
     liter.iterate();
   }

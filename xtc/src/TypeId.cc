@@ -87,6 +87,7 @@ bool     TypeId::is_configuration() const
       Id_Andor3dConfig,
       Id_Generic1DConfig,
       Id_UsdUsbFexConfig,
+      Id_XpmConfig,
     };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
@@ -202,6 +203,7 @@ const char* TypeId::name(Type type)
     "Generic1DData",           // 100
     "UsdUsbFexConfig",         // 101
     "UsdUsbFexData",           // 102
+    "XpmConfig",
   };
    const char* p = (type < NumberOf ? _names[type] : "-Invalid-");
    if (!p) p = "-Unnamed-";

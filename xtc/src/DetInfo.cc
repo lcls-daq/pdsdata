@@ -7,10 +7,10 @@
 
 using namespace Pds;
 
-DetInfo::DetInfo(uint32_t processId,
-         Detector det, uint32_t detId,
-         Device dev,   uint32_t devId) : Src(Level::Source) {
-  _log |= processId&0x00ffffff;
+DetInfo::DetInfo(unsigned addr,
+                 Detector det, uint32_t detId,
+                 Device dev,   uint32_t devId) : Src(Level::Source) {
+  _log |= addr&0x00ffffff;
   _phy = ((det&0xff)<<24) | ((detId&0xff)<<16) | ((dev&0xff)<<8) |(devId&0xff);
 }
 
@@ -52,7 +52,7 @@ DetInfo::DetInfo(const char* sname) : Src(Level::Source)
 
 bool DetInfo::operator==(const DetInfo& s) const { return _phy==s._phy; }
 
-uint32_t DetInfo::processId() const { return _log&0xffffff; }
+uint32_t DetInfo::partitionAddr() const { return _log&0xffffff; }
 
 DetInfo::Detector DetInfo::detector() const {return (Detector)((_phy&0xff000000)>>24);}
 DetInfo::Device   DetInfo::device()   const {return (Device)((_phy&0xff00)>>8);}

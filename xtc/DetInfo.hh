@@ -115,12 +115,12 @@ namespace Pds {
     };
 
     DetInfo() {}
-    DetInfo(uint32_t processId, Detector det, uint32_t detId, Device dev, uint32_t devId);
+    DetInfo(uint32_t pAddr, Detector det, uint32_t detId, Device dev, uint32_t devId);
     DetInfo(const char*);
 
     bool operator==(const DetInfo &) const;
 
-    uint32_t processId() const;
+    uint32_t partitionAddr() const;
     Detector detector() const;
     Device device() const;
     uint32_t detId() const;

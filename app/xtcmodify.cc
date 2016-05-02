@@ -24,11 +24,11 @@ public:
     XtcIterator(xtc), _depth(depth), _fd(fd), _outfd(outfd), _selectname(selectname) {}
 
   void process(DetInfo& info, Princeton::ConfigV1& config) {
-    info = DetInfo(info.processId(), DetInfo::SxrEndstation, info.detId(), info.device(), info.devId() );
+    info = DetInfo(info.partitionAddr(), DetInfo::SxrEndstation, info.detId(), info.device(), info.devId() );
     printf("*** Processing Princeton ConfigV1 object\n");
   }
   void process(DetInfo& info, const Princeton::FrameV1& frame) {
-    info = DetInfo(info.processId(), DetInfo::SxrEndstation, info.detId(), info.device(), info.devId() );
+    info = DetInfo(info.partitionAddr(), DetInfo::SxrEndstation, info.detId(), info.device(), info.devId() );
     static int frameV1Count = 0;
     if (_fd >= 0) {
       int imageSize = 512 * 512 * 2; // !! hard-coded image size
@@ -239,8 +239,8 @@ int main(int argc, char* argv[]) {
   Dgram* dg;
   
   while ((dg = iter.next())) {
-    printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
-           dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
+    printf("%s transition: time 0x%lx, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
+           dg->seq.stamp().fiducials(),dg->xtc.sizeofPayload());
     if (selectname) {
       myLevelIter iter(&(dg->xtc),0,imagefd,xtcoutfd,selectname);
       iter.iterate();

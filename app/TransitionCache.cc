@@ -17,7 +17,7 @@ TransitionCache::TransitionCache(char* p, size_t sz, unsigned nbuff) :
     Dgram* dg = new (p + _szShm*i) Dgram;
     dg->seq = Sequence(Sequence::Event, TransitionId::Reset,
                        ClockTime(0),
-                       TimeStamp(0,0,0));
+                       TimeStamp(0,0));
     dg->env = 0;
     _freeTr.push_back(i);
   }

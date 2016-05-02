@@ -459,8 +459,8 @@ int main(int argc, char* argv[]) {
       fflush(ofd);
     }
 
-    printf("%s transition: time 0x%x/0x%x, payloadSize %d (%d)\n",TransitionId::name(dg->seq.service()),
-           dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(), dg->xtc.sizeofPayload(), odg->xtc.sizeofPayload());
+    printf("%s transition: time 0x%lx, payloadSize %d (%d)\n",TransitionId::name(dg->seq.service()),
+           dg->seq.stamp().fiducials(), dg->xtc.sizeofPayload(), odg->xtc.sizeofPayload());
 
     total_payload += dg ->xtc.sizeofPayload();
     total_comp    += odg->xtc.sizeofPayload();

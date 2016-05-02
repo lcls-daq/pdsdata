@@ -8,60 +8,43 @@
 */
 
 namespace Pds {
-  enum {v_ticks =  0, k_ticks = 24};
-  enum {v_cntrl = 24, k_cntrl = 8};
-  enum {m_ticks = ((1 << k_ticks)-1), s_ticks = (m_ticks << v_ticks)};
-  enum {m_cntrl = ((1 << k_cntrl)-1), s_cntrl = (m_cntrl << v_cntrl)};
-  enum {v_fiduc =  0, k_fiduc = TimeStamp::NumFiducialBits};
-  enum {v_vecto = TimeStamp::NumFiducialBits, k_vecto = 32-TimeStamp::NumFiducialBits};
-  enum {m_fiduc = ((1 << k_fiduc)-1), s_fiduc = (m_fiduc <<v_fiduc)};
-  enum {m_vecto = ((1 << k_vecto)-1), s_vecto = (m_vecto <<v_vecto)};
+  enum {v_fiduc =  0, k_fiduc = 56 };
+  enum {v_cntrl = 56, k_cntrl = 8};
+  static const uint64_t m_fiduc = ((1ULL << k_fiduc)-1);
+  static const uint64_t s_fiduc = (m_fiduc << v_fiduc);
+  static const uint64_t m_cntrl = ((1ULL << k_cntrl)-1);
+  static const uint64_t s_cntrl = (m_cntrl << v_cntrl);
 }
  
 Pds::TimeStamp::TimeStamp() :
-  _low (0),
-  _high(0)
+  _value (0)
 {}
 
 Pds::TimeStamp::TimeStamp(const Pds::TimeStamp& input) :
-  _low (input._low ),
-  _high(input._high)
+  _value (input._value)
 {}
 
 Pds::TimeStamp::TimeStamp(const Pds::TimeStamp& input, unsigned control) :
-  _low((input._low & s_ticks) | ((control & m_cntrl) << v_cntrl)),
-  _high(input._high)
+  _value ((input._value & s_fiduc) | ((uint64_t(control) & m_cntrl) << v_cntrl))
 {}
 
-Pds::TimeStamp::TimeStamp(unsigned low, unsigned high, unsigned vector, unsigned control) :
-  _low ((low  & s_ticks) | ((control & m_cntrl) << v_cntrl)),
-  _high((high & s_fiduc) | ((vector  & m_vecto) << v_vecto))
+Pds::TimeStamp::TimeStamp(uint64_t fiducials, unsigned control) :
+  _value ((fiducials & s_fiduc) | ((uint64_t(control) & m_cntrl) << v_cntrl))
 {}
 
-unsigned Pds::TimeStamp::ticks() const
+uint64_t Pds::TimeStamp::fiducials() const
 {
-  return (_low  & s_ticks) >> v_ticks;
-}
-
-unsigned Pds::TimeStamp::fiducials() const
-{
-  return (_high & s_fiduc) >> v_fiduc;
+  return (_value & s_fiduc) >> v_fiduc;
 }
 
 unsigned Pds::TimeStamp::control() const
 {
-  return (_low & s_cntrl) >> v_cntrl;
-}
-
-unsigned Pds::TimeStamp::vector() const
-{
-  return (_high & s_vecto) >> v_vecto;
+  return (_value & s_cntrl) >> v_cntrl;
 }
 
 Pds::TimeStamp& Pds::TimeStamp::operator=(const Pds::TimeStamp& input)
 {
-  _low  = input._low ;
-  _high = input._high;
+  _value  = input._value ;
   return *this;
 }
 

@@ -161,8 +161,9 @@ int main(int argc, char* argv[]) {
     dg = iter.next();
     if (dg->xtc.damage.value()) ++ndamaged;
     if (dg->seq.service()!=TransitionId::L1Accept || verbose)
-      printf("%s transition: time 0x%x/0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
-	     dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),dg->xtc.sizeofPayload());
+      printf("%s transition: time 0x%lx, payloadSize 0x%x\n",
+             TransitionId::name(dg->seq.service()),
+	     dg->seq.stamp().fiducials(),dg->xtc.sizeofPayload());
     myLevelIter xiter(&(dg->xtc),0);
     xiter.iterate();
   } while (dg->seq.service()!=TransitionId::EndRun);

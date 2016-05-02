@@ -13,10 +13,9 @@ using namespace std;
 #define CLOCK CLOCK_REALTIME
 
 static void printTransition(const Dgram* dg) {
-  printf("%18s transition: time %08x/%08x, payloadSize 0x%08x dmg 0x%x\n",
+  printf("%18s transition: time %016lx, payloadSize 0x%08x dmg 0x%x\n",
          TransitionId::name(dg->seq.service()),
          dg->seq.stamp().fiducials(),
-         dg->seq.stamp().ticks(),
          dg->xtc.sizeofPayload(),
          dg->xtc.damage.value());
 }
@@ -74,7 +73,7 @@ public:
   void insert(TransitionId::Value tr) {
     Dgram* dg = _pool.front(); 
     _pool.pop(); 
-    new((void*)&dg->seq) Sequence(Sequence::Event, tr, ClockTime(0,0), TimeStamp(0,0,0,0));
+    new((void*)&dg->seq) Sequence(Sequence::Event, tr, ClockTime(0,0), TimeStamp(0,0));
     new((char*)&dg->xtc) Xtc(TypeId(TypeId::Id_Xtc,0),ProcInfo(Level::Event,0,0));
     ::printTransition(dg);
     events(dg);
@@ -246,9 +245,9 @@ void XtcRunSet::run() {
       timespec now;
       clock_gettime(CLOCK, &now);
       double hz = double(dgCount) / (timeDiff(&now, &loopStart) / 1.e9);
-      printf("%18s transition: time %08x/%08x, payloadSize 0x%08x, avg rate %8.3f Hz%c",
+      printf("%18s transition: time %016lx, payloadSize 0x%08x, avg rate %8.3f Hz%c",
              TransitionId::name(dg->seq.service()),
-             dg->seq.stamp().fiducials(),dg->seq.stamp().ticks(),
+             dg->seq.stamp().fiducials(),
              dg->xtc.sizeofPayload(), hz,
              _veryverbose ? '\n' : '\r');
     }
