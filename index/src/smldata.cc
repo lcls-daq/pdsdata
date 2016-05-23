@@ -137,6 +137,7 @@ int generateIndex(char* sXtcFilename, char* sOutputIndex, uint32_t uSizeThreshol
 
       if (not iterL1Accept.iterationOk() or (xtcInfoList.size()==1)) {
         if (debug==1) printf("  iter no good, skipping\n");
+        i64Offset = lseek64(fd, 0, SEEK_CUR); // get the file offset for the next iteration
         continue;
       }
 
