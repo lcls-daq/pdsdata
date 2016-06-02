@@ -775,6 +775,15 @@ public:
   {
   }
   BldDataEOrbitsV0() {}
+  BldDataEOrbitsV0(const BldDataEOrbitsV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataEOrbitsV0& operator=(const BldDataEOrbitsV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
   /** Number of BPM in each array */
   uint32_t nBPMS() const { return _nBPMS; }
   /** Array of BPM X values (mm)
