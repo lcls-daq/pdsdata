@@ -1,3 +1,4 @@
+2016-Jun-09 ddamiani    Tag V08-06-11.  Added Partition::ConfigV2 to support bld masks with an arbitrary number of bits.
 2016-Jun-02 ddamiani    Tag V08-06-10.  Fix for BldDataEOrbitsV0 which removes the value_type tag from the ddl.
 2016-May-23 ddamiani    Tag V08-06-09.  Added BldDataEOrbitsV0 electron beam orbit parameters.
 2016-Apr-15 ddamiani    Tag V08-06-08.  Added a ConfigV2 for the Andor cameras with support of crop mode.
