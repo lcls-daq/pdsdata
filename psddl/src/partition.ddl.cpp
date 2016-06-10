@@ -46,11 +46,11 @@ ConfigV2::bldMaskIsNotZero() const {
   for (unsigned idx = 0; idx != _numWords; ++ idx) if (this->bldMask()[idx]) return 1; return 0;
 }
 uint32_t
-ConfigV2::bldMaskHasBitSet(uint8_t iBit) const {
+ConfigV2::bldMaskHasBitSet(uint32_t iBit) const {
   return (this->bldMask()[iBit >> 5] & (1 << (iBit & 0x1f)));
 }
 uint32_t
-ConfigV2::bldMaskHasBitClear(uint8_t iBit) const {
+ConfigV2::bldMaskHasBitClear(uint32_t iBit) const {
   return !bldMaskHasBitSet(iBit);
 }
 } // namespace Partition

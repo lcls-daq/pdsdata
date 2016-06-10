@@ -148,9 +148,9 @@ public:
   /** Returns non-zero if any bits in the mask are set, zero otherwise. */
   uint32_t bldMaskIsNotZero() const;
   /** Returns non-zero if the bit cooresponding to iBit in the word is set, zero otherwise. */
-  uint32_t bldMaskHasBitSet(uint8_t iBit) const;
+  uint32_t bldMaskHasBitSet(uint32_t iBit) const;
   /** Returns non-zero if the bit cooresponding to iBit in the word is unset, zero otherwise. */
-  uint32_t bldMaskHasBitClear(uint8_t iBit) const;
+  uint32_t bldMaskHasBitClear(uint32_t iBit) const;
   uint32_t _sizeof() const { return (((((8+(4*(this->numWords())))+(Partition::Source::_sizeof()*(this->numSources())))+4)-1)/4)*4; }
 private:
   uint32_t	_numWords;	/**< Number of words for the bit mask */
