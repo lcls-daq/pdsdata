@@ -55,8 +55,8 @@ private:
 
   Six energy measurements from Front End Enclosure Gas Detector.
    PV names: GDET:FEE1:241:ENRC, GDET:FEE1:242:ENRC, 
-	GDET:FEE1:361:ENRC, GDET:FEE1:362:ENRC, 
-	GDET:FEE1:363:ENRC, and GDET:FEE1:364:ENRC 
+    GDET:FEE1:361:ENRC, GDET:FEE1:362:ENRC, 
+    GDET:FEE1:363:ENRC, and GDET:FEE1:364:ENRC 
    Each pair of methods (e.g. f_11_ENRC(), f_12_ENRC() contains
    identical measurements using two different phototubes.  "11" and "12"
    are before the gas attenuation.  "21" and "22" are after gas
@@ -740,6 +740,112 @@ private:
 std::ostream& operator<<(std::ostream& str, Bld::BldDataEBeamV7::DamageMask enval);
 #pragma pack(pop)
 
+/** @class BldDataEOrbitsV0
+
+  Orbit parameters.
+*/
+
+#pragma pack(push,4)
+
+class BldDataEOrbitsV0 {
+public:
+  enum { TypeId = Pds::TypeId::Id_EOrbits /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 0 /**< XTC type version number */ };
+  BldDataEOrbitsV0(uint32_t arg__nBPMS, const double* arg__fBPM_X, const double* arg__fBPM_Y, const double* arg__fBPM_TMIT)
+    : _nBPMS(arg__nBPMS)
+  {
+    if (arg__fBPM_X and (this->_nBPMS)) {
+      ptrdiff_t offset = 4;
+      double* data = reinterpret_cast<double*>(((char*)this)+offset);
+      std::copy(arg__fBPM_X, arg__fBPM_X+(this->_nBPMS), data);
+    }
+    if (arg__fBPM_Y and (this->_nBPMS)) {
+      ptrdiff_t offset = 4+(8*(this->_nBPMS));
+      double* data = reinterpret_cast<double*>(((char*)this)+offset);
+      std::copy(arg__fBPM_Y, arg__fBPM_Y+(this->_nBPMS), data);
+    }
+    if (arg__fBPM_TMIT and (this->_nBPMS)) {
+      ptrdiff_t offset = (4+(8*(this->_nBPMS)))+(8*(this->_nBPMS));
+      double* data = reinterpret_cast<double*>(((char*)this)+offset);
+      std::copy(arg__fBPM_TMIT, arg__fBPM_TMIT+(this->_nBPMS), data);
+    }
+  }
+  BldDataEOrbitsV0(uint32_t nBPMS)
+    : _nBPMS(nBPMS)
+  {
+  }
+  BldDataEOrbitsV0() {}
+  BldDataEOrbitsV0(const BldDataEOrbitsV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataEOrbitsV0& operator=(const BldDataEOrbitsV0& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Number of BPM in each array */
+  uint32_t nBPMS() const { return _nBPMS; }
+  /** Array of BPM X values (mm)
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> fBPM_X(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=4;
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->_nBPMS);
+  }
+  /** Array of BPM X values (mm)
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> fBPM_X() const { ptrdiff_t offset=4;
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->_nBPMS); }
+  /** Array of BPM Y values (mm)
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> fBPM_Y(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=4+(8*(this->_nBPMS));
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->_nBPMS);
+  }
+  /** Array of BPM Y values (mm)
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> fBPM_Y() const { ptrdiff_t offset=4+(8*(this->_nBPMS));
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->_nBPMS); }
+  /** Array of BPM TMIT values (Nel)
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const double, 1> fBPM_TMIT(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=(4+(8*(this->_nBPMS)))+(8*(this->_nBPMS));
+    const double* data = (const double*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), this->_nBPMS);
+  }
+  /** Array of BPM TMIT values (Nel)
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const double, 1> fBPM_TMIT() const { ptrdiff_t offset=(4+(8*(this->_nBPMS)))+(8*(this->_nBPMS));
+  const double* data = (const double*)(((char*)this)+offset);
+  return make_ndarray(data, this->_nBPMS); }
+  uint32_t _sizeof() const { return ((((((4+(8*(this->_nBPMS)))+(8*(this->_nBPMS)))+(8*(this->_nBPMS)))+4)-1)/4)*4; }
+private:
+  uint32_t	_nBPMS;	/**< Number of BPM in each array */
+  //double	_fBPM_X[this->_nBPMS];
+  //double	_fBPM_Y[this->_nBPMS];
+  //double	_fBPM_TMIT[this->_nBPMS];
+};
+#pragma pack(pop)
+
 /** @class BldDataPhaseCavity
 
   PV names: UND:R02:IOC:16:BAT:FitTime1, UND:R02:IOC:16:BAT:FitTime2,
@@ -1112,8 +1218,8 @@ private:
 /** @class BldDataSpectrometerV1
 
   Structure which contains image projections and fit parameters for spectrometers. 
-	Changes from V0 include extending size of hproj, removal of vproj,
-	 and addition of fit parameters.
+    Changes from V0 include extending size of hproj, removal of vproj,
+     and addition of fit parameters.
 */
 
 #pragma pack(push,4)

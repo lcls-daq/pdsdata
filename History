@@ -1,3 +1,8 @@
+2016-Jun-14 ddamiani    Tag V08-06-13.  Adds entries in BldInfo for the new spectrometer bld for the profile monitor cameras in MFX.
+2016-Jun-10 ddamiani    Tag V08-06-12.  Fix Partition::ConfigV2 so that helper methods can be used on bits higher than 255.
+2016-Jun-09 ddamiani    Tag V08-06-11.  Added Partition::ConfigV2 to support bld masks with an arbitrary number of bits.
+2016-Jun-02 ddamiani    Tag V08-06-10.  Fix for BldDataEOrbitsV0 which removes the value_type tag from the ddl.
+2016-May-23 ddamiani    Tag V08-06-09.  Added BldDataEOrbitsV0 electron beam orbit parameters.
 2016-Apr-15 ddamiani    Tag V08-06-08.  Added a ConfigV2 for the Andor cameras with support of crop mode.
 2016-Mar-31 ddamiani    Tag V08-06-06.  Added a LeCroy type to DetInfo.
 2016-Mar-29 ddamiani    Tag V08-06-05.  Added a constructor to Generic1D::DataV0.

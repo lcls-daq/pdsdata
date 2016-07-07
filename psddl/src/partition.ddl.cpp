@@ -19,5 +19,39 @@ ConfigV1::ConfigV1(uint64_t arg__bldMask, uint32_t arg__numSources, const Partit
     std::copy(arg__sources, arg__sources+(this->numSources()), data);
   }
 }
+ConfigV2::ConfigV2(uint32_t arg__numWords, uint32_t arg__numSources, const uint32_t* arg__bldMask, const Partition::Source* arg__sources)
+    : _numWords(arg__numWords), _numSources(arg__numSources)
+{
+  if (arg__bldMask and (this->numWords())) {
+    ptrdiff_t offset = 8;
+    uint32_t* data = reinterpret_cast<uint32_t*>(((char*)this)+offset);
+    std::copy(arg__bldMask, arg__bldMask+(this->numWords()), data);
+  }
+  if (arg__sources and (this->numSources())) {
+    ptrdiff_t offset = 8+(4*(this->numWords()));
+    Partition::Source* data = reinterpret_cast<Partition::Source*>(((char*)this)+offset);
+    std::copy(arg__sources, arg__sources+(this->numSources()), data);
+  }
+}
+uint32_t
+ConfigV2::numBldMaskBits() const {
+  return this->numWords() * 32;
+}
+uint32_t
+ConfigV2::bldMaskIsZero() const {
+  for (unsigned idx = 0; idx != _numWords; ++ idx) if (this->bldMask()[idx]) return 0; return 1;
+}
+uint32_t
+ConfigV2::bldMaskIsNotZero() const {
+  for (unsigned idx = 0; idx != _numWords; ++ idx) if (this->bldMask()[idx]) return 1; return 0;
+}
+uint32_t
+ConfigV2::bldMaskHasBitSet(uint32_t iBit) const {
+  return (this->bldMask()[iBit >> 5] & (1 << (iBit & 0x1f)));
+}
+uint32_t
+ConfigV2::bldMaskHasBitClear(uint32_t iBit) const {
+  return !bldMaskHasBitSet(iBit);
+}
 } // namespace Partition
 } // namespace Pds

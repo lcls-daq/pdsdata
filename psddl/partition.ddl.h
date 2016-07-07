@@ -81,6 +81,83 @@ private:
   uint32_t	_numSources;	/**< Number of source definitions */
   //Partition::Source	_sources[this->numSources()];
 };
+
+/** @class ConfigV2
+
+  
+*/
+
+
+class ConfigV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_PartitionConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  ConfigV2(uint32_t arg__numWords, uint32_t arg__numSources, const uint32_t* arg__bldMask, const Partition::Source* arg__sources);
+  ConfigV2() {}
+  ConfigV2(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV2& operator=(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Number of words for the bit mask */
+  uint32_t numWords() const { return _numWords; }
+  /** Number of source definitions */
+  uint32_t numSources() const { return _numSources; }
+  /** Mask of requested BLD
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint32_t, 1> bldMask(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=8;
+    const uint32_t* data = (const uint32_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint32_t>(owner, data), this->numWords());
+  }
+  /** Mask of requested BLD
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint32_t, 1> bldMask() const { ptrdiff_t offset=8;
+  const uint32_t* data = (const uint32_t*)(((char*)this)+offset);
+  return make_ndarray(data, this->numWords()); }
+  /** Source configuration objects
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const Partition::Source, 1> sources(const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=8+(4*(this->numWords()));
+    const Partition::Source* data = (const Partition::Source*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const Partition::Source>(owner, data), this->numSources());
+  }
+  /** Source configuration objects
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const Partition::Source, 1> sources() const { ptrdiff_t offset=8+(4*(this->numWords()));
+  const Partition::Source* data = (const Partition::Source*)(((char*)this)+offset);
+  return make_ndarray(data, this->numSources()); }
+  /** Returns the total number of bits in the mask */
+  uint32_t numBldMaskBits() const;
+  /** Returns non-zero if all bits in the mask are unset, zero otherwise. */
+  uint32_t bldMaskIsZero() const;
+  /** Returns non-zero if any bits in the mask are set, zero otherwise. */
+  uint32_t bldMaskIsNotZero() const;
+  /** Returns non-zero if the bit cooresponding to iBit in the word is set, zero otherwise. */
+  uint32_t bldMaskHasBitSet(uint32_t iBit) const;
+  /** Returns non-zero if the bit cooresponding to iBit in the word is unset, zero otherwise. */
+  uint32_t bldMaskHasBitClear(uint32_t iBit) const;
+  uint32_t _sizeof() const { return (((((8+(4*(this->numWords())))+(Partition::Source::_sizeof()*(this->numSources())))+4)-1)/4)*4; }
+private:
+  uint32_t	_numWords;	/**< Number of words for the bit mask */
+  uint32_t	_numSources;	/**< Number of source definitions */
+  //uint32_t	_bldMask[this->numWords()];
+  //Partition::Source	_sources[this->numSources()];
+};
 } // namespace Partition
 } // namespace Pds
 #endif // PDS_PARTITION_DDL_H

@@ -115,6 +115,7 @@ namespace Pds {
       Id_Generic1DData,
       Id_UsdUsbFexConfig,
       Id_UsdUsbFexData,
+      Id_EOrbits,
       // Beginning of LCLS-II: keep these at the end. OK to move.
       Id_XpmConfig, 
       Id_TriggerConfig, 
