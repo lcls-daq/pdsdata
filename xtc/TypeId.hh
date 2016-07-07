@@ -117,6 +117,8 @@ namespace Pds {
       Id_UsdUsbFexData,
       // Beginning of LCLS-II: keep these at the end. OK to move.
       Id_XpmConfig, 
+      Id_TriggerConfig, 
+      Id_TprDSConfig, 
       NumberOf};
     enum { VCompressed = 0x8000 };
 
