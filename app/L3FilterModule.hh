@@ -25,6 +25,9 @@ namespace Pds {
   public:
     virtual ~L3FilterModule() {}
   public:
+    ///  Called prior to any other methods
+    virtual void set_experiment(const std::string& expname) {}
+
     ///  Called prior to any of the configure() methods
     virtual void pre_configure (const std::string& input_data) {}
     ///  Called after all of the configure() methods
