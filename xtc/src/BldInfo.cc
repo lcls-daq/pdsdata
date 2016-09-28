@@ -97,7 +97,7 @@ const char* BldInfo::name(const BldInfo& src){
     "XPP-AIN-01",
     "XCS-AIN-01",
     "AMO-AIN-01",
-    "XCS-BEAMMON-01",
+    "MFX-BEAMMON-01",
     "EOrbits",
     "MfxDg1_Pim",
     "MfxDg2_Pim"

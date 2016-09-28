@@ -116,6 +116,7 @@ namespace Pds {
       Id_UsdUsbFexConfig,
       Id_UsdUsbFexData,
       Id_EOrbits,
+      Id_SharedUsdUsb,
       NumberOf};
     enum { VCompressed = 0x8000 };
 

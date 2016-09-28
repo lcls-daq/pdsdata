@@ -1,3 +1,4 @@
+2016-Sep-27 ddamiani    Tag V08-06-15.  Added BldDataUsdUsbV1 for shared UsdUsb encoder boxes and minor fixes for BldDataBeamMonitor type.
 2016-Jun-14 ddamiani    Tag V08-06-13.  Adds entries in BldInfo for the new spectrometer bld for the profile monitor cameras in MFX.
 2016-Jun-10 ddamiani    Tag V08-06-12.  Fix Partition::ConfigV2 so that helper methods can be used on bits higher than 255.
 2016-Jun-09 ddamiani    Tag V08-06-11.  Added Partition::ConfigV2 to support bld masks with an arbitrary number of bits.

@@ -14,6 +14,7 @@
 #include "pdsdata/psddl/ipimb.ddl.h"
 #include "pdsdata/psddl/lusi.ddl.h"
 #include "pdsdata/psddl/pulnix.ddl.h"
+#include "pdsdata/psddl/usdusb.ddl.h"
 namespace Pds {
 namespace Bld {
 
@@ -979,6 +980,40 @@ private:
 };
 #pragma pack(pop)
 
+/** @class BldDataUsdUsbV1
+
+  Combined structure which includes UsdUsb.ConfigV1, UsdUsb.FexConfigV1, UsdUsb.DataV1, and
+            UsdUsb.FexDataV1 objects.
+*/
+
+#pragma pack(push,4)
+
+class BldDataUsdUsbV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_SharedUsdUsb /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  BldDataUsdUsbV1() {}
+  BldDataUsdUsbV1(const BldDataUsdUsbV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataUsdUsbV1& operator=(const BldDataUsdUsbV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  const UsdUsb::ConfigV1& config() const { return _config; }
+  const UsdUsb::FexConfigV1& fexConfig() const { return _fexConfig; }
+  const UsdUsb::DataV1& data() const { return _data; }
+  static uint32_t _sizeof() { return (((((((0+(UsdUsb::ConfigV1::_sizeof()))+(UsdUsb::FexConfigV1::_sizeof()))+(UsdUsb::DataV1::_sizeof()))+(UsdUsb::FexDataV1::_sizeof()))+4)-1)/4)*4; }
+private:
+  UsdUsb::ConfigV1	_config;
+  UsdUsb::FexConfigV1	_fexConfig;
+  UsdUsb::DataV1	_data;
+  UsdUsb::FexDataV1	_fexData;
+};
+#pragma pack(pop)
+
 /** @class BldDataGMDV0
 
   Gas Monitor Detector data.
@@ -1435,12 +1470,22 @@ class BldDataBeamMonitor {
 public:
   enum { TypeId = Pds::TypeId::Id_BeamMonitorBldData /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 0 /**< XTC type version number */ };
+  enum { NCHANNELS = 16 };
   BldDataBeamMonitor(double arg__TotalIntensity, double arg__X_Position, double arg__Y_Position, double arg__peakA, double arg__peakT, const double* arg__Channel_Intensity)
     : _TotalIntensity(arg__TotalIntensity), _X_Position(arg__X_Position), _Y_Position(arg__Y_Position), _peakA(arg__peakA), _peakT(arg__peakT)
   {
     if (arg__Channel_Intensity) std::copy(arg__Channel_Intensity, arg__Channel_Intensity+(16), &_Channel_Intensity[0]);
   }
   BldDataBeamMonitor() {}
+  BldDataBeamMonitor(const BldDataBeamMonitor& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  BldDataBeamMonitor& operator=(const BldDataBeamMonitor& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
   /** Value of Total Intensity, in J. */
   double TotalIntensity() const { return _TotalIntensity; }
   /** Value of X Position, in m. */
@@ -1458,21 +1503,21 @@ public:
   template <typename T>
   ndarray<const double, 1> Channel_Intensity(const boost::shared_ptr<T>& owner) const { 
     const double* data = &_Channel_Intensity[0];
-    return make_ndarray(boost::shared_ptr<const double>(owner, data), 16);
+    return make_ndarray(boost::shared_ptr<const double>(owner, data), NCHANNELS);
   }
   /** Value of Channel Intensity, in J.
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const double, 1> Channel_Intensity() const { return make_ndarray(&_Channel_Intensity[0], 16); }
-  static uint32_t _sizeof() { return ((((40+(8*(16)))+4)-1)/4)*4; }
+  ndarray<const double, 1> Channel_Intensity() const { return make_ndarray(&_Channel_Intensity[0], NCHANNELS); }
+  static uint32_t _sizeof() { return ((((40+(8*(NCHANNELS)))+4)-1)/4)*4; }
 private:
   double	_TotalIntensity;	/**< Value of Total Intensity, in J. */
   double	_X_Position;	/**< Value of X Position, in m. */
   double	_Y_Position;	/**< Value of Y Position, in m. */
   double	_peakA;	/**< Peak Amplitude of Channel */
   double	_peakT;	/**< Location of Peak Amplitude of Channel */
-  double	_Channel_Intensity[16];	/**< Value of Channel Intensity, in J. */
+  double	_Channel_Intensity[NCHANNELS];	/**< Value of Channel Intensity, in J. */
 };
 #pragma pack(pop)
 } // namespace Bld
