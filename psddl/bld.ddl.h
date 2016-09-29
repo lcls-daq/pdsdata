@@ -1005,6 +1005,7 @@ public:
   const UsdUsb::ConfigV1& config() const { return _config; }
   const UsdUsb::FexConfigV1& fexConfig() const { return _fexConfig; }
   const UsdUsb::DataV1& data() const { return _data; }
+  const UsdUsb::FexDataV1& fexData() const { return _fexData; }
   static uint32_t _sizeof() { return (((((((0+(UsdUsb::ConfigV1::_sizeof()))+(UsdUsb::FexConfigV1::_sizeof()))+(UsdUsb::DataV1::_sizeof()))+(UsdUsb::FexDataV1::_sizeof()))+4)-1)/4)*4; }
 private:
   UsdUsb::ConfigV1	_config;
@@ -1459,29 +1460,29 @@ private:
 };
 #pragma pack(pop)
 
-/** @class BldDataBeamMonitor
+/** @class BldDataBeamMonitorV1
 
   Intensity and Position Measurements
 */
 
 #pragma pack(push,4)
 
-class BldDataBeamMonitor {
+class BldDataBeamMonitorV1 {
 public:
   enum { TypeId = Pds::TypeId::Id_BeamMonitorBldData /**< XTC type ID value (from Pds::TypeId class) */ };
-  enum { Version = 0 /**< XTC type version number */ };
+  enum { Version = 1 /**< XTC type version number */ };
   enum { NCHANNELS = 16 };
-  BldDataBeamMonitor(double arg__TotalIntensity, double arg__X_Position, double arg__Y_Position, double arg__peakA, double arg__peakT, const double* arg__Channel_Intensity)
+  BldDataBeamMonitorV1(double arg__TotalIntensity, double arg__X_Position, double arg__Y_Position, double arg__peakA, double arg__peakT, const double* arg__Channel_Intensity)
     : _TotalIntensity(arg__TotalIntensity), _X_Position(arg__X_Position), _Y_Position(arg__Y_Position), _peakA(arg__peakA), _peakT(arg__peakT)
   {
     if (arg__Channel_Intensity) std::copy(arg__Channel_Intensity, arg__Channel_Intensity+(16), &_Channel_Intensity[0]);
   }
-  BldDataBeamMonitor() {}
-  BldDataBeamMonitor(const BldDataBeamMonitor& other) {
+  BldDataBeamMonitorV1() {}
+  BldDataBeamMonitorV1(const BldDataBeamMonitorV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
   }
-  BldDataBeamMonitor& operator=(const BldDataBeamMonitor& other) {
+  BldDataBeamMonitorV1& operator=(const BldDataBeamMonitorV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);
     std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
     return *this;
