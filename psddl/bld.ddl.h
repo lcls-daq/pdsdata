@@ -1472,10 +1472,11 @@ public:
   enum { TypeId = Pds::TypeId::Id_BeamMonitorBldData /**< XTC type ID value (from Pds::TypeId class) */ };
   enum { Version = 1 /**< XTC type version number */ };
   enum { NCHANNELS = 16 };
-  BldDataBeamMonitorV1(double arg__TotalIntensity, double arg__X_Position, double arg__Y_Position, double arg__peakA, double arg__peakT, const double* arg__Channel_Intensity)
-    : _TotalIntensity(arg__TotalIntensity), _X_Position(arg__X_Position), _Y_Position(arg__Y_Position), _peakA(arg__peakA), _peakT(arg__peakT)
+  BldDataBeamMonitorV1(double arg__TotalIntensity, double arg__X_Position, double arg__Y_Position, const double* arg__peakA, const uint16_t* arg__peakT)
+    : _TotalIntensity(arg__TotalIntensity), _X_Position(arg__X_Position), _Y_Position(arg__Y_Position)
   {
-    if (arg__Channel_Intensity) std::copy(arg__Channel_Intensity, arg__Channel_Intensity+(16), &_Channel_Intensity[0]);
+    if (arg__peakA) std::copy(arg__peakA, arg__peakA+(16), &_peakA[0]);
+    if (arg__peakT) std::copy(arg__peakT, arg__peakT+(16), &_peakT[0]);
   }
   BldDataBeamMonitorV1() {}
   BldDataBeamMonitorV1(const BldDataBeamMonitorV1& other) {
@@ -1493,32 +1494,41 @@ public:
   double X_Position() const { return _X_Position; }
   /** Value of Y Position, in m. */
   double Y_Position() const { return _Y_Position; }
-  /** Peak Amplitude of Channel */
-  double peakA() const { return _peakA; }
-  /** Location of Peak Amplitude of Channel */
-  double peakT() const { return _peakT; }
-  /** Value of Channel Intensity, in J.
+  /** Peak Amplitude of Channel
 
     Note: this overloaded method accepts shared pointer argument which must point to an object containing
     this instance, the returned ndarray object can be used even after this instance disappears. */
   template <typename T>
-  ndarray<const double, 1> Channel_Intensity(const boost::shared_ptr<T>& owner) const { 
-    const double* data = &_Channel_Intensity[0];
+  ndarray<const double, 1> peakA(const boost::shared_ptr<T>& owner) const { 
+    const double* data = &_peakA[0];
     return make_ndarray(boost::shared_ptr<const double>(owner, data), NCHANNELS);
   }
-  /** Value of Channel Intensity, in J.
+  /** Peak Amplitude of Channel
 
     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
-  ndarray<const double, 1> Channel_Intensity() const { return make_ndarray(&_Channel_Intensity[0], NCHANNELS); }
-  static uint32_t _sizeof() { return ((((40+(8*(NCHANNELS)))+4)-1)/4)*4; }
+  ndarray<const double, 1> peakA() const { return make_ndarray(&_peakA[0], NCHANNELS); }
+  /** Location of Peak Amplitude of Channel
+
+    Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 1> peakT(const boost::shared_ptr<T>& owner) const { 
+    const uint16_t* data = &_peakT[0];
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), NCHANNELS);
+  }
+  /** Location of Peak Amplitude of Channel
+
+    Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 1> peakT() const { return make_ndarray(&_peakT[0], NCHANNELS); }
+  static uint32_t _sizeof() { return (((((24+(8*(NCHANNELS)))+(2*(NCHANNELS)))+4)-1)/4)*4; }
 private:
   double	_TotalIntensity;	/**< Value of Total Intensity, in J. */
   double	_X_Position;	/**< Value of X Position, in m. */
   double	_Y_Position;	/**< Value of Y Position, in m. */
-  double	_peakA;	/**< Peak Amplitude of Channel */
-  double	_peakT;	/**< Location of Peak Amplitude of Channel */
-  double	_Channel_Intensity[NCHANNELS];	/**< Value of Channel Intensity, in J. */
+  double	_peakA[NCHANNELS];	/**< Peak Amplitude of Channel */
+  uint16_t	_peakT[NCHANNELS];	/**< Location of Peak Amplitude of Channel */
 };
 #pragma pack(pop)
 } // namespace Bld

@@ -1,3 +1,4 @@
+2016-Oct-17 ddamiani    Tag V08-06-17.  Fix bug in BldDataBeamMonitorV1 so it reflects the actual recorded data
 2016-Sep-30 ddamiani    Tag V08-06-16.  Update BldDataBeamMonitor type to be BldDataBeamMonitorV1.
 2016-Sep-27 ddamiani    Tag V08-06-15.  Added BldDataUsdUsbV1 for shared UsdUsb encoder boxes and minor fixes for BldDataBeamMonitor type.
 2016-Jun-14 ddamiani    Tag V08-06-13.  Adds entries in BldInfo for the new spectrometer bld for the profile monitor cameras in MFX.
