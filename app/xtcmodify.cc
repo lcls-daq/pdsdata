@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
   Dgram* dg;
   
   while ((dg = iter.next())) {
-    printf("%s transition: time 0x%lx, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
+    printf("%s transition: time 0x%x, payloadSize 0x%x\n",TransitionId::name(dg->seq.service()),
            dg->seq.stamp().fiducials(),dg->xtc.sizeofPayload());
     if (selectname) {
       myLevelIter iter(&(dg->xtc),0,imagefd,xtcoutfd,selectname);

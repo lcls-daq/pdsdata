@@ -18,6 +18,9 @@ std::ostream& operator<<(std::ostream& str, TriggerData::L0SelectV1::RateSelect 
   case TriggerData::L0SelectV1::_ControlSequence:
     val = "_ControlSequence";
     break;
+  case TriggerData::L0SelectV1::_EventCode:
+    val = "_EventCode";
+    break;
   case TriggerData::L0SelectV1::_Partition:
     val = "_Partition";
     break;
@@ -94,14 +97,8 @@ std::ostream& operator<<(std::ostream& str, TriggerData::L0SelectV1::FixedRate e
   case TriggerData::L0SelectV1::_1MHz:
     val = "_1MHz";
     break;
-  case TriggerData::L0SelectV1::_500kHz:
-    val = "_500kHz";
-    break;
-  case TriggerData::L0SelectV1::_200kHz:
-    val = "_200kHz";
-    break;
-  case TriggerData::L0SelectV1::_100kHz:
-    val = "_100kHz";
+  case TriggerData::L0SelectV1::_71kHz:
+    val = "_71kHz";
     break;
   case TriggerData::L0SelectV1::_10kHz:
     val = "_10kHz";

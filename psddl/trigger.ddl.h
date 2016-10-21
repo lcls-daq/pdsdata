@@ -83,6 +83,7 @@ public:
     _FixedRate,
     _PowerSyncRate,
     _ControlSequence,
+    _EventCode, /**< LCLS-I */
     _Partition,
   };
   enum Destination {
@@ -107,9 +108,7 @@ public:
   };
   enum FixedRate {
     _1MHz,
-    _500kHz,
-    _200kHz,
-    _100kHz,
+    _71kHz,
     _10kHz,
     _1kHz,
     _100Hz,
@@ -125,24 +124,28 @@ public:
     _AC1Hz,
     _NotPowerSyncRate,
   };
-  L0SelectV1(TriggerData::L0SelectV1::RateSelect arg__rateSelect, TriggerData::L0SelectV1::FixedRate arg__fixedRate, TriggerData::L0SelectV1::PowerSyncRate arg__powerSyncRate, uint8_t arg__powerSyncMask, uint8_t arg__controlSeqNum, uint8_t arg__controlSeqBit, uint16_t arg__partition, uint32_t arg__destinations)
-    : _rateSelect(arg__rateSelect), _fixedRate(arg__fixedRate), _powerSyncRate(arg__powerSyncRate), _powerSyncMask(arg__powerSyncMask), _controlSeqNum(arg__controlSeqNum), _controlSeqBit(arg__controlSeqBit), _partition(arg__partition), _destinations(arg__destinations)
+  L0SelectV1(TriggerData::L0SelectV1::RateSelect arg__rateSelect, TriggerData::L0SelectV1::FixedRate arg__fixedRate, TriggerData::L0SelectV1::PowerSyncRate arg__powerSyncRate, uint8_t arg__powerSyncMask, uint8_t arg__controlSeqNum, uint8_t arg__controlSeqBit, uint8_t arg__eventCode, uint8_t arg__partition, uint32_t arg__destinations)
+    : _rateSelect(arg__rateSelect), _fixedRate(arg__fixedRate), _powerSyncRate(arg__powerSyncRate), _powerSyncMask(arg__powerSyncMask), _controlSeqNum(arg__controlSeqNum), _controlSeqBit(arg__controlSeqBit), _eventCode(arg__eventCode), _partition(arg__partition), _destinations(arg__destinations)
   {
   }
   L0SelectV1(TriggerData::L0SelectV1::FixedRate frate, uint32_t dst)
-    : _rateSelect(_FixedRate), _fixedRate(frate), _powerSyncRate(_NotPowerSyncRate), _destinations(dst)
+    : _rateSelect(_FixedRate), _fixedRate(frate), _powerSyncRate(_NotPowerSyncRate), _eventCode(0), _destinations(dst)
   {
   }
   L0SelectV1(TriggerData::L0SelectV1::PowerSyncRate prate, uint8_t pmask, uint32_t dst)
-    : _rateSelect(_PowerSyncRate), _fixedRate(_NotFixedRate), _powerSyncRate(prate), _powerSyncMask(pmask), _partition(0), _destinations(dst)
+    : _rateSelect(_PowerSyncRate), _fixedRate(_NotFixedRate), _powerSyncRate(prate), _powerSyncMask(pmask), _eventCode(0), _partition(0), _destinations(dst)
   {
   }
   L0SelectV1(uint8_t seqnum, uint8_t seqbit, uint32_t dst)
-    : _rateSelect(_ControlSequence), _fixedRate(_NotFixedRate), _powerSyncRate(_NotPowerSyncRate), _controlSeqNum(seqnum), _controlSeqBit(seqbit), _partition(0), _destinations(dst)
+    : _rateSelect(_ControlSequence), _fixedRate(_NotFixedRate), _powerSyncRate(_NotPowerSyncRate), _controlSeqNum(seqnum), _controlSeqBit(seqbit), _eventCode(0), _partition(0), _destinations(dst)
   {
   }
-  L0SelectV1(uint16_t partition, uint32_t dst)
-    : _rateSelect(_Partition), _fixedRate(_NotFixedRate), _powerSyncRate(_NotPowerSyncRate), _controlSeqNum(0), _controlSeqBit(0), _partition(partition), _destinations(dst)
+  L0SelectV1(uint8_t eventCode)
+    : _rateSelect(_EventCode), _fixedRate(_NotFixedRate), _powerSyncRate(_NotPowerSyncRate), _controlSeqNum(0), _controlSeqBit(0), _eventCode(eventCode), _partition(0), _destinations(_DontCare)
+  {
+  }
+  L0SelectV1(uint8_t partition, uint32_t dst)
+    : _rateSelect(_Partition), _fixedRate(_NotFixedRate), _powerSyncRate(_NotPowerSyncRate), _controlSeqNum(0), _controlSeqBit(0), _eventCode(0), _partition(partition), _destinations(dst)
   {
   }
   L0SelectV1() {}
@@ -152,7 +155,8 @@ public:
   uint8_t powerSyncMask() const { return _powerSyncMask; }
   uint8_t controlSeqNum() const { return _controlSeqNum; }
   uint8_t controlSeqBit() const { return _controlSeqBit; }
-  uint16_t partition() const { return _partition; }
+  uint8_t eventCode() const { return _eventCode; }
+  uint8_t partition() const { return _partition; }
   uint32_t destinations() const { return _destinations; }
   static uint32_t _sizeof() { return 12; }
 private:
@@ -162,7 +166,8 @@ private:
   uint8_t	_powerSyncMask;
   uint8_t	_controlSeqNum;
   uint8_t	_controlSeqBit;
-  uint16_t	_partition;
+  uint8_t	_eventCode;
+  uint8_t	_partition;
   uint32_t	_destinations;
 };
 std::ostream& operator<<(std::ostream& str, TriggerData::L0SelectV1::RateSelect enval);

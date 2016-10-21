@@ -56,7 +56,7 @@ namespace Pds {
   class DgramHandler {
   public:
     DgramHandler(XtcMonitorClient& client, 
-		 int trfd, mqd_t evqin, mqd_t* evqout, unsigned ev_index,
+		 int trfd, mqd_t evqin, mqd_t evqout, unsigned ev_index,
 	      const char* tag, char* myShm) :
       _client(client), 
       _trfd(trfd), _evqin(evqin), _evqout(evqout), _ev_index(ev_index),
@@ -80,35 +80,28 @@ namespace Pds {
 #endif
 	return Reconnect;
       }
-      int i = myMsg.bufferIndex();
+      unsigned offs = myMsg.bufferOffset();
 #ifdef DBUG
-      printf("Received tr buffer %d [%d]\n",i,_trfd);
+      printf("Received tr buffer offs 0x%x [%p]\n",offs,_shm+offs);
 #endif
-      if ( (i>=0) && (i<myMsg.numberOfBuffers())) {
-	Dgram* dg = (Dgram*) (_shm + (myMsg.sizeOfBuffers() * i));
+      {
+	Dgram* dg = (Dgram*) (_shm + offs);
 	_last = dg->seq.service();
 	if (_client.processDgram(dg))
 	  return Return;
 #ifdef DBUG
-	printf("Returning tr buffer %d [%d]\n",i,_trfd);
+	printf("Returning tr buffer offs 0x%x [%p]\n",offs,dg);
 #endif
 	if (::send(_trfd,(char*)&myMsg,sizeof(myMsg),0)<0) {
 	  perror("transition send");
 	  return Return;
 	}
       }
-      else {
-	fprintf(stderr, "ILLEGAL BUFFER INDEX %d\n", i);
-        uint32_t* p = reinterpret_cast<uint32_t*>(&myMsg);
-        fprintf(stderr, "XtcMonitorMsg: %x/%x/%x/%x [%d]\n",p[0],p[1],p[2],p[3],nb);
-	return Return;
-      }
       return Continue;
     }
     Request event     () { 
       mqd_t  iq = _evqin;
-      mqd_t* oq = _evqout;
-      unsigned ioq = _ev_index;
+      mqd_t  oq = _evqout;
 
       XtcMonitorMsg myMsg;
       unsigned priority(0);
@@ -118,37 +111,18 @@ namespace Pds {
 	return Return;
       } 
       else {
-	int i = myMsg.bufferIndex();
+        unsigned offs = myMsg.bufferOffset();
 #ifdef DBUG
-	printf("Received ev buffer %d [%d]\n",i,iq);
+	printf("Received ev buffer 0x%x [%p]\n",offs,_shm+offs);
 #endif
-	if ( (i>=0) && (i<myMsg.numberOfBuffers())) {
-	  Dgram* dg = (Dgram*) (_shm + (myMsg.sizeOfBuffers() * i));
+        {
+	  Dgram* dg = (Dgram*) (_shm + offs);
 	  if (_last==TransitionId::Enable &&
 	      _client.processDgram(dg))
 	    return Return;
-	  if (oq==NULL)
-	    ;
-	  else if (myMsg.serial()) {
-	    while (mq_timedsend(oq[ioq], (const char *)&myMsg, sizeof(myMsg), priority, &_tmo)) {
-	      if (oq[++ioq]==-1) {
-		char qname[128];
-		XtcMonitorMsg::eventOutputQueue(_tag, ioq, qname);
-		oq[ioq] = _openQueue(qname, O_WRONLY, PERMS_OUT, false);
-	      }
-	    }
+          if (mq_timedsend(oq, (const char *)&myMsg, sizeof(myMsg), priority, &_tmo)) {
+            ;
 	  }
-	  else {
-	    if (mq_timedsend(oq[0], (const char *)&myMsg, sizeof(myMsg), priority, &_tmo)) {
-	      ;
-	    }
-	  }
-	}
-	else {
-	  fprintf(stderr, "ILLEGAL BUFFER INDEX %d\n", i);
-          uint32_t* p = reinterpret_cast<uint32_t*>(&myMsg);
-          fprintf(stderr, "XtcMonitorMsg: %x/%x/%x/%x [%d]\n",p[0],p[1],p[2],p[3],nb);
-	  return Return;
 	}
       }
       return Continue;
@@ -157,7 +131,7 @@ namespace Pds {
     XtcMonitorClient& _client;
     int               _trfd;
     mqd_t             _evqin;
-    mqd_t*            _evqout;
+    mqd_t             _evqout;
     unsigned          _ev_index;
     const char*       _tag;
     char*             _shm;
@@ -174,6 +148,9 @@ int XtcMonitorClient::processDgram(Dgram* dg) {
   return 0;
 }
 
+std::list<Src> XtcMonitorClient::select(const std::list<Src>& src)
+{ return src; }
+
 int XtcMonitorClient::run(const char* tag, int tr_index) 
 { return run(tag, tr_index, tr_index); }
 
@@ -186,7 +163,7 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
   XtcMonitorMsg myMsg;
   unsigned priority;
 
-  mqd_t* myOutputEvQueues = 0;
+  mqd_t myOutputEvQueue = (mqd_t)-1;
 
   //
   //  Request initialization
@@ -215,7 +192,7 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
       sockaddr_in saddr;
       saddr.sin_family = AF_INET;
       saddr.sin_addr.s_addr = htonl(0x7f000001);
-      saddr.sin_port        = htons(myMsg.bufferIndex());
+      saddr.sin_port        = htons(myMsg.trPort());
       
       if (::connect(myTrFd, (sockaddr*)&saddr, sizeof(saddr)) < 0) {
 	perror("Connecting myTrFd socket");
@@ -242,15 +219,15 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
     //
     //  Initialize shared memory from first message
     //
-    unsigned sizeOfShm = myMsg.numberOfBuffers() * myMsg.sizeOfBuffers();
+    unsigned sizeOfShm = myMsg.sizeOfMem();
     unsigned pageSize  = (unsigned)sysconf(_SC_PAGESIZE);
     unsigned remainder = sizeOfShm % pageSize;
     if (remainder)
       sizeOfShm += pageSize - remainder;
 
     XtcMonitorMsg::sharedMemoryName(tag, qname);
-    printf("Opening shared memory %s of size 0x%x (0x%x * 0x%x)\n",
-	   qname,sizeOfShm,myMsg.numberOfBuffers(),myMsg.sizeOfBuffers());
+    printf("Opening shared memory %s of size 0x%x\n",
+	   qname,sizeOfShm);
 
     int shm = shm_open(qname, OFLAGS, PERMS_IN);
     if (shm < 0) perror("shm_open");
@@ -258,28 +235,16 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
     if (myShm == MAP_FAILED) perror("mmap");
     else printf("Shared memory at %p\n", (void*)myShm);
   
-    int ev_index = myMsg.bufferIndex();
+    int ev_index = myMsg.queueIndex();
     XtcMonitorMsg::eventInputQueue(tag,ev_index,qname);
     mqd_t myInputEvQueue = _openQueue(qname, O_RDONLY, PERMS_IN);
     if (myInputEvQueue == (mqd_t)-1)
       error++;
 
-    myOutputEvQueues = new mqd_t[myMsg.numberOfQueues()+1];
-    for(int i=0; i<=myMsg.numberOfQueues(); i++)
-      myOutputEvQueues[i]=-1;
-
-    if (myMsg.serial()) {
-      XtcMonitorMsg::eventOutputQueue(tag,ev_index,qname);
-      myOutputEvQueues[ev_index] = _openQueue(qname, O_WRONLY, PERMS_OUT);
-      if (myOutputEvQueues[ev_index] == (mqd_t)-1)
-	error++;
-    }
-    else {
-      XtcMonitorMsg::eventInputQueue(tag,myMsg.return_queue(),qname);
-      myOutputEvQueues[0] = _openQueue(qname, O_WRONLY, PERMS_OUT);
-      if (myOutputEvQueues[0] == (mqd_t)-1)
-	error++;
-    }
+    XtcMonitorMsg::eventInputQueue(tag,myMsg.return_queue(),qname);
+    myOutputEvQueue = _openQueue(qname, O_WRONLY, PERMS_OUT);
+    if (myOutputEvQueue == (mqd_t)-1)
+      error++;
   
     if (error) {
       fprintf(stderr, "Could not open at least one message queue!\n");
@@ -297,9 +262,9 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
 	return ++error;
       } 
       else {
-	int i = myMsg.bufferIndex();
-	if ( (i>=0) && (i<myMsg.numberOfBuffers())) {
-	  Dgram* dg = (Dgram*) (myShm + (myMsg.sizeOfBuffers() * i));
+        unsigned offs = myMsg.bufferOffset();
+        {
+	  Dgram* dg = (Dgram*) (myShm + offs);
 	  if (dg->seq.service()==TransitionId::Map) {
 	    if (!processDgram(dg)) {
 	      if (::send(myTrFd,(char*)&myMsg,sizeof(myMsg),0)<0) {
@@ -312,8 +277,6 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
           else
             printf("Unexpected transition %s != Map\n",TransitionId::name(dg->seq.service()));
 	}
-        else
-          printf("Illegal transition buffer index %d\n",i);
       }
     } while(1);
 
@@ -331,7 +294,7 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
 
     DgramHandler handler(*this,
 			 myTrFd,
-			 myInputEvQueue,myOutputEvQueues,ev_index,
+			 myInputEvQueue,myOutputEvQueue,ev_index,
 			 tag,myShm);
 
     DgramHandler::Request r=DgramHandler::Continue;
@@ -345,9 +308,6 @@ int XtcMonitorClient::run(const char* tag, int tr_index, int) {
 	}
       }
     }
-
-    if (myOutputEvQueues) 
-      delete[] myOutputEvQueues;
 
     close(myTrFd);
 

@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
     events++;
     if (dg->xtc.damage.value()&damage) {
       damaged++;
-      printf("%s transition: time %08x/%08x  stamp %016lx, dmg %08x, payloadSize 0x%x  evt %d  pos 0x%llx\n",
+      printf("%s transition: time %08x/%08x  stamp %08x, dmg %08x, payloadSize 0x%x  evt %d  pos 0x%llx\n",
 	     TransitionId::name(dg->seq.service()),
 	     dg->seq.clock().seconds(),dg->seq.clock().nanoseconds(),
 	     dg->seq.stamp().fiducials(),

@@ -411,7 +411,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
       time_t t = dg->seq.clock().seconds();
       strftime(sTimeBuff,128,"%H:%M:%S",localtime(&t));
 
-      printf( "\n<%d> %s #%d ctl 0x%x fid 0x%x %s.%03u "
+      printf( "\n<%d> %s #%d ctl 0x%x fid 0x%lx %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x calib %d event %d\n",
        iSlice, TransitionId::name(dg->seq.service()), uCurEvent, dg->seq.stamp().control(),
        dg->seq.stamp().fiducials(),
@@ -471,7 +471,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
       time_t t = dg->seq.clock().seconds();
       strftime(sDateTimeBuff,128,"%Z %a %F %T",localtime(&t));
 
-      printf( "\n<%d> %s ctl 0x%x fid 0x%x %s.%03u "
+      printf( "\n<%d> %s ctl 0x%x fid 0x%lx %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
        iSlice, TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
        dg->seq.stamp().fiducials(),
@@ -488,7 +488,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
       time_t t = dg->seq.clock().seconds();
       strftime(sDateTimeBuff,128,"%Z %a %F %T",localtime(&t));
 
-      printf( "\n<%d> %s ctl 0x%x fid 0x%x %s.%03u "
+      printf( "\n<%d> %s ctl 0x%x fid 0x%lx %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
        iSlice, TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
        dg->seq.stamp().fiducials(),

@@ -1,6 +1,9 @@
 #ifndef XTC_MONITOR_CLIENT_HH
 #define XTC_MONITOR_CLIENT_HH
 
+#include <list>
+
+#include "pdsdata/xtc/Src.hh"
 
 namespace Pds {
 
@@ -20,6 +23,10 @@ namespace Pds {
     int run(const char* tag, int tr_index=0);
     int run(const char* tag, int tr_index, int ev_index);
     virtual int processDgram(Dgram*);
+    //
+    //  Select requested data sources from list of available sources
+    //
+    virtual std::list<Src> select(const std::list<Src>&);
   };
 }
 #endif

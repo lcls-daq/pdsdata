@@ -43,6 +43,7 @@
 //
 //-----------------------------------
 
+#include "pdsdata/app/XtcMonitorSrc.hh"
 #include "pdsdata/app/XtcMonitorMsg.hh"
 
 #include "pdsdata/xtc/TransitionId.hh"
@@ -51,6 +52,7 @@
 #include <queue>
 #include <stack>
 #include <vector>
+#include <list>
 #include <poll.h>
 #include <time.h>
 
@@ -59,40 +61,41 @@ namespace Pds {
   class Dgram;
   class TransitionCache;
 
-  class XtcMonitorServer {
+  class XtcMonitorServer : public XtcMonitorSrc {
   public:
     XtcMonitorServer(const char* tag,
-		     unsigned sizeofBuffers, 
-		     unsigned numberofEvBuffers, 
-		     unsigned numberofEvQueues); 
+                     uint64_t    sizeofMem,
+                     unsigned    numberofEvBuffers,
+		     unsigned    numberofEvQueues); 
     virtual ~XtcMonitorServer();
   public:
-    enum Result { Handled, Deferred };
-    Result events   (Dgram* dg);
-    void discover   ();
-    void routine    ();
-    void unlink     ();
-  public:
-    void distribute (bool);
+    void setSources              (const std::list<Src>&) {}
+
+    void events                  (Dgram* dg);  // Start event handling
+  private:
+    virtual void _deleteDatagram (Dgram* dg);  // Event handling is complete
+
   protected:
-    int  _init             ();
+    char*  _init           ();
+
+  private:
+    void _discover   ();
+    void _routine    ();
+    void _unlink     ();
+
   private:
     void _initialize_client();
     mqd_t _openQueue       (const char* name, mq_attr&);
     void _flushQueue       (mqd_t q);
     void _flushQueue       (mqd_t q, char* m, unsigned sz);
-    void _moveQueue        (mqd_t iq, mqd_t oq);
+    void _moveQueue        (mqd_t iq, mqd_t oq, unsigned q);
     bool _send             (Dgram*);
     void _update           (int,TransitionId::Value);
-    void _clearDest        (mqd_t);
-  private:
-    virtual void _copyDatagram  (Dgram* dg, char*);
-    virtual void _deleteDatagram(Dgram* dg);
-    virtual void _requestDatagram();
+    void _clearInput       ();
   private:
     const char*     _tag;               // name of the complete shared memory segment
-    unsigned        _sizeOfBuffers;     // size of each shared memory datagram buffer
-    unsigned        _numberOfEvBuffers; // number of shared memory buffers for events
+    uint64_t        _sizeofMem;         // size of shared memory
+    unsigned        _numberOfEvBuffers; // size of message queues for events
     unsigned        _numberOfEvQueues;  // number of message queues for events
     char*           _myShm;             // the pointer to start of shared memory
     XtcMonitorMsg   _myMsg;             // template for messages
@@ -102,21 +105,23 @@ namespace Pds {
     mqd_t*          _myOutputEvQueue;   // message queues[nclients] for distributing events
     std::vector<int> _myTrFd;           // TCP sockets to clients for distributing
                                         // transitions and detecting disconnects.
-    std::vector<int> _msgDest;          // last client to which the buffer was sent
+    typedef std::vector<std::list<uint64_t> > MdType;
+    MdType           _msgDest;          // last client to which the buffer was sent
+    friend class TransitionCache;
     TransitionCache* _transitionCache;
     int             _initFd;
     pollfd*         _pfd;               /* poll descriptors for:
 					**   0  new client connections
 					**   1  buffer returned from client
-                                        **   2  events to be distributed
-					**   3+ transition send/receive  */
+					**   2+ transition send/receive  */
     int             _nfd;
-    mqd_t           _shuffleQueue;      // message queue for pre-distribution event processing
     mqd_t           _requestQueue;      // message queue for buffers awaiting request completion
     timespec        _tmo;
     pthread_t       _discThread;        // thread for receiving new client connections
     pthread_t       _taskThread;        // thread for datagram distribution
     unsigned        _ievt;              // event vector
+    
+    friend class XtcMonitorServerF;
   };
 };
 

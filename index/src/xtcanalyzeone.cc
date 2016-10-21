@@ -539,7 +539,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
     {
     case TransitionId::Configure:
     {
-      printf( "\n# %s ctl 0x%x fid 0x%x %s.%03u "
+      printf( "\n# %s ctl 0x%x fid 0x%lx %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
        TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
        dg->seq.stamp().fiducials(),
@@ -554,7 +554,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
     }
     case TransitionId::L1Accept:
     {
-      printf( "\n# %s #%d ctl 0x%x fid 0x%x %s.%03u "
+      printf( "\n# %s #%d ctl 0x%x fid 0x%lx %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x calib %d event %d\n",
        TransitionId::name(dg->seq.service()), iGlobalEvent, dg->seq.stamp().control(),
        dg->seq.stamp().fiducials(),
@@ -578,7 +578,7 @@ int xtcAnalyze( const char* sXtcFilename, const char* sIndexFilename,
         iCalibEvent = 0;
       }
 
-      printf( "\n# %s ctl 0x%x fid 0x%x %s.%03u "
+      printf( "\n# %s ctl 0x%x fid 0x%lx %s.%03u "
        "offset 0x%Lx env 0x%x damage 0x%x extent 0x%x\n",
        TransitionId::name(dg->seq.service()), dg->seq.stamp().control(),
        dg->seq.stamp().fiducials(),

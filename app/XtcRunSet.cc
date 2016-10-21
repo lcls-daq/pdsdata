@@ -5,6 +5,7 @@
 #include <iostream>
 #include <dirent.h>
 #include <string.h>
+#include <semaphore.h>
 
 using namespace Pds;
 using namespace std;
@@ -30,11 +31,22 @@ static long long int itimeDiff(const timespec& end, const timespec& start)
   return diff;
 }
 
+static const unsigned numberofTrBuffers = 8;
+
 class MyMonitorServer : public XtcMonitorServer {
 private:
-  queue<Dgram*> _pool;
+  queue<char*>  _evpool;
+  queue<char*>  _trpool;
+  queue<char*>  _simpool;
+  sem_t         _sem;
 
   void _deleteDatagram(Dgram* dg) {
+    if (dg->seq.service()==TransitionId::L1Accept)
+      _evpool.push((char*)dg);
+    else {
+      _trpool.push((char*)dg);
+    }
+    sem_post(&_sem);
   }
 
 public:
@@ -43,41 +55,51 @@ public:
                   unsigned numberofEvBuffers, 
                   unsigned numberofClients) :
     XtcMonitorServer(tag,
-                     sizeofBuffers,
+                     sizeofBuffers*(numberofEvBuffers+numberofTrBuffers),
                      numberofEvBuffers,
                      numberofClients) {
-    _init();
 
-    // Only need these buffers for inserted transitions { Map, Unconfigure, Unmap }
+    sem_init(&_sem,0,1);
 
-    unsigned depth = 4;
-    for(unsigned i=0; i<depth; i++)
-      _pool.push(reinterpret_cast<Dgram*>(new char[sizeofBuffers]));
+    char* shm = _init();
+    for(unsigned i=0; i<numberofEvBuffers; i++) {
+      _evpool.push(shm);
+      shm += sizeofBuffers;
+    }
+    for(unsigned i=0; i<numberofTrBuffers; i++) {
+      _trpool.push(shm);
+      shm += sizeofBuffers;
+    }
+    for(unsigned i=0; i<4; i++)
+      _simpool.push(new char[sizeofBuffers]);
   }
 
   ~MyMonitorServer() {
-    while(!_pool.empty()) {
-      delete _pool.front();
-      _pool.pop();
+    while(!_simpool.empty()) {
+      delete _simpool.front();
+      _simpool.pop();
     }
   }
 
-  XtcMonitorServer::Result events(Dgram* dg) {
-    if (XtcMonitorServer::events(dg) == XtcMonitorServer::Handled) {
-      _deleteDatagram(dg);
-    }
-    return XtcMonitorServer::Deferred;
+  void events(Dgram* dg) {
+    queue<char*>& q = (dg->seq.service()==TransitionId::L1Accept) ? _evpool : _trpool;
+    while(q.empty())
+      sem_wait(&_sem);
+    char* p = q.front();
+    q.pop();
+    memcpy(p, dg, sizeof(*dg)+dg->xtc.sizeofPayload());
+    XtcMonitorServer::events((Dgram*)p);
   }
 
   // Insert a simulated transition
   void insert(TransitionId::Value tr) {
-    Dgram* dg = _pool.front(); 
-    _pool.pop(); 
+    Dgram* dg = (Dgram*)_simpool.front(); 
+    _simpool.pop(); 
     new((void*)&dg->seq) Sequence(Sequence::Event, tr, ClockTime(0,0), TimeStamp(0,0));
     new((char*)&dg->xtc) Xtc(TypeId(TypeId::Id_Xtc,0),ProcInfo(Level::Event,0,0));
     ::printTransition(dg);
     events(dg);
-    _pool.push(dg);
+    _simpool.push((char*)dg);
   }
 };
 
@@ -121,7 +143,7 @@ XtcRunSet::XtcRunSet() :
 
 XtcRunSet::~XtcRunSet()
 {
-  if (_server) _server->unlink();
+  if (_server) delete _server;
 }
 
 // Fetch the next

@@ -9,35 +9,37 @@
 #include "pdsdata/xtc/TransitionId.hh"
 
 #include <list>
-#include <stack>
+#include <map>
 
 #include <semaphore.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 namespace Pds {
+  class XtcMonitorServer;
+  class Dgram;
   class TransitionCache {
   public:
-    TransitionCache(char* p, size_t sz, unsigned);
+    TransitionCache(XtcMonitorServer& srv);
     ~TransitionCache();
   public:
     void dump() const;
-    std::stack<int> current();
-    int  allocate  (TransitionId::Value);
-    bool allocate  (int ibuffer, unsigned client);
-    bool deallocate(int ibuffer, unsigned client);
+    std::list<Dgram*> current();
+    void allocate  (Dgram* dg, TransitionId::Value);
+    bool allocate  (Dgram* dg, unsigned client);
+    bool deallocate(Dgram* dg, unsigned client);
     void deallocate(unsigned client);
     unsigned not_ready() const { return _not_ready; }
   private:
+    XtcMonitorServer& _srv;
     sem_t            _sem;
-    const char*      _pShm;
-    size_t           _szShm;
-    unsigned         _numberofTrBuffers;
     unsigned         _not_ready; // bitmask of clients that are behind in processing
-    unsigned*        _allocated; // bitmask of clients that are processing
-    std::stack <int> _cachedTr;  // set of transitions for the current DAQ state
-    std::list  <int> _freeTr;    // complement of _cachedTr
+    typedef std::map<Dgram*,uint32_t> AllocType;
+    AllocType        _allocated; // bitmask of clients that were sent a transition
+    typedef std::list<Dgram*> CacheType;
+    CacheType        _cachedTr;  // set of transitions for the current DAQ state
   };
 };
 

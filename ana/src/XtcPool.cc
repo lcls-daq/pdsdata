@@ -115,7 +115,7 @@ namespace Pds {
       if (rsz == ssize_t(sz)) {
         Pds::Dgram* dg = reinterpret_cast<Pds::Dgram*>(b);
         sz = dg->xtc.sizeofPayload();
-    
+
 #ifdef DUMP_DMGOFF
         if (dg->xtc.damage.value()&(1<<Pds::Damage::DroppedContribution)) {
           off64_t pos = ::lseek64(fd,0,SEEK_CUR);
