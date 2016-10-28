@@ -77,6 +77,7 @@ namespace Pds {
                 EOrbits          = 63,
                 MfxDg1Pim        = 64,
                 MfxDg2Pim        = 65,
+                SxrAin01         = 66,
                 NumberOf };
 
     BldInfo() {}
