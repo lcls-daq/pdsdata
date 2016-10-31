@@ -79,5 +79,22 @@ TwoDGaussianV1::TwoDGaussianV1(uint64_t arg__integral, double arg__xmean, double
     : _integral(arg__integral), _xmean(arg__xmean), _ymean(arg__ymean), _major_axis_width(arg__major_axis_width), _minor_axis_width(arg__minor_axis_width), _major_axis_tilt(arg__major_axis_tilt)
 {
 }
+std::ostream& operator<<(std::ostream& str, Camera::ControlsCameraConfigV1::ColorMode enval) {
+  const char* val;
+  switch (enval) {
+  case Camera::ControlsCameraConfigV1::Mono:
+    val = "Mono";
+    break;
+  case Camera::ControlsCameraConfigV1::Bayer:
+    val = "Bayer";
+    break;
+  case Camera::ControlsCameraConfigV1::RGB1:
+    val = "RGB1";
+    break;
+  default:
+    return str << "ColorMode(" << int(enval) << ")";
+  }
+  return str << val;
+}
 } // namespace Camera
 } // namespace Pds

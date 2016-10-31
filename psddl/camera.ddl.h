@@ -240,6 +240,61 @@ private:
   double	_minor_axis_width;
   double	_major_axis_tilt;
 };
+
+/** @class ControlsCameraConfigV1
+
+  Class containing configuration data for cameras recorded by the controls recorder.
+*/
+
+
+class ControlsCameraConfigV1 {
+public:
+  enum { TypeId = Pds::TypeId::Id_ControlsCameraConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 1 /**< XTC type version number */ };
+  enum { DESC_CHAR_MAX = 48 };
+  enum ColorMode {
+    Mono,
+    Bayer,
+    RGB1,
+  };
+  ControlsCameraConfigV1() {}
+  ControlsCameraConfigV1(const ControlsCameraConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ControlsCameraConfigV1& operator=(const ControlsCameraConfigV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** Number of pixels in a row. */
+  uint32_t width() const { return _width; }
+  /** Number of pixels in a column. */
+  uint32_t height() const { return _height; }
+  /** Number of bits per pixel. */
+  uint32_t depth() const { return _depth; }
+  /** The color mode of the camera. */
+  Camera::ControlsCameraConfigV1::ColorMode color_mode() const { return Camera::ControlsCameraConfigV1::ColorMode(_color_mode); }
+  /** The configured exposure time of the camera in seconds. */
+  double exposure_time() const { return _exposure_time; }
+  /** Camera gain value. */
+  double gain() const { return _gain; }
+  /** The manufacturer of the camera. */
+  const char* manufacturer() const { return _manufacturer; }
+  /** The model name of the camera. */
+  const char* model() const { return _model; }
+  static uint32_t _sizeof() { return (((((32+(1*(DESC_CHAR_MAX)))+(1*(DESC_CHAR_MAX)))+8)-1)/8)*8; }
+private:
+  uint32_t	_width;	/**< Number of pixels in a row. */
+  uint32_t	_height;	/**< Number of pixels in a column. */
+  uint32_t	_depth;	/**< Number of bits per pixel. */
+  uint32_t	_color_mode;	/**< The color mode of the camera. */
+  double	_exposure_time;	/**< The configured exposure time of the camera in seconds. */
+  double	_gain;	/**< Camera gain value. */
+  char	_manufacturer[DESC_CHAR_MAX];	/**< The manufacturer of the camera. */
+  char	_model[DESC_CHAR_MAX];	/**< The model name of the camera. */
+};
+std::ostream& operator<<(std::ostream& str, Camera::ControlsCameraConfigV1::ColorMode enval);
 } // namespace Camera
 } // namespace Pds
 #endif // PDS_CAMERA_DDL_H

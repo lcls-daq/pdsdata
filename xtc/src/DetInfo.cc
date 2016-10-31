@@ -119,6 +119,7 @@ const char* DetInfo::name(Device dev) {
     "DualAndor",
     "Wave8",
     "LeCroy",
+    "ControlsCamera",
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
 }
