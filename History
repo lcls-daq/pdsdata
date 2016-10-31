@@ -1,3 +1,4 @@
+2016-Oct-31 ddamiani    Tag V08-06-18.  Added analog input bld for SXR. Added new ControlsCameraConfigV1 ddl type for IOC cameras.
 2016-Oct-17 ddamiani    Tag V08-06-17.  Fix bug in BldDataBeamMonitorV1 so it reflects the actual recorded data
 2016-Sep-30 ddamiani    Tag V08-06-16.  Update BldDataBeamMonitor type to be BldDataBeamMonitorV1.
 2016-Sep-27 ddamiani    Tag V08-06-15.  Added BldDataUsdUsbV1 for shared UsdUsb encoder boxes and minor fixes for BldDataBeamMonitor type.
