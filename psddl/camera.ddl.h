@@ -257,6 +257,7 @@ public:
     Bayer,
     RGB1,
   };
+  ControlsCameraConfigV1(uint32_t arg__width, uint32_t arg__height, uint32_t arg__depth, Camera::ControlsCameraConfigV1::ColorMode arg__color_mode, double arg__exposure_time, double arg__gain, const char* arg__manufacturer, const char* arg__model);
   ControlsCameraConfigV1() {}
   ControlsCameraConfigV1(const ControlsCameraConfigV1& other) {
     const char* src = reinterpret_cast<const char*>(&other);

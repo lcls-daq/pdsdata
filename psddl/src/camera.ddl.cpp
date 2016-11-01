@@ -79,6 +79,12 @@ TwoDGaussianV1::TwoDGaussianV1(uint64_t arg__integral, double arg__xmean, double
     : _integral(arg__integral), _xmean(arg__xmean), _ymean(arg__ymean), _major_axis_width(arg__major_axis_width), _minor_axis_width(arg__minor_axis_width), _major_axis_tilt(arg__major_axis_tilt)
 {
 }
+ControlsCameraConfigV1::ControlsCameraConfigV1(uint32_t arg__width, uint32_t arg__height, uint32_t arg__depth, Camera::ControlsCameraConfigV1::ColorMode arg__color_mode, double arg__exposure_time, double arg__gain, const char* arg__manufacturer, const char* arg__model)
+    : _width(arg__width), _height(arg__height), _depth(arg__depth), _color_mode(arg__color_mode), _exposure_time(arg__exposure_time), _gain(arg__gain)
+{
+  if (arg__manufacturer) std::copy(arg__manufacturer, arg__manufacturer+(48), &_manufacturer[0]);
+  if (arg__model) std::copy(arg__model, arg__model+(48), &_model[0]);
+}
 std::ostream& operator<<(std::ostream& str, Camera::ControlsCameraConfigV1::ColorMode enval) {
   const char* val;
   switch (enval) {
