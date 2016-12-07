@@ -78,6 +78,7 @@ namespace Pds {
                 MfxDg1Pim        = 64,
                 MfxDg2Pim        = 65,
                 SxrAin01         = 66,
+                Hx2BeamMon01     = 67,
                 NumberOf };
 
     BldInfo() {}

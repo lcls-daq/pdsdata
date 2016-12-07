@@ -101,7 +101,8 @@ const char* BldInfo::name(const BldInfo& src){
     "EOrbits",
     "MfxDg1_Pim",
     "MfxDg2_Pim",
-    "SXR-AIN-01"
+    "SXR-AIN-01",
+    "HX2-BEAMMON-01"
   };
   return (src.type() < NumberOf ? _typeNames[src.type()] : "-Invalid-");
 }

@@ -120,6 +120,7 @@ const char* DetInfo::name(Device dev) {
     "Wave8",
     "LeCroy",
     "ControlsCamera",
+    "Archon",
   };
   return (dev < NumDevice ? _devNames[dev] : "-Invalid-");
 }
