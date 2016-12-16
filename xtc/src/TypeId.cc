@@ -89,6 +89,7 @@ bool     TypeId::is_configuration() const
       Id_UsdUsbFexConfig,
       Id_ControlsCameraConfig,
       Id_ArchonConfig,
+      Id_JungfrauConfig,
     };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
@@ -208,6 +209,8 @@ const char* TypeId::name(Type type)
     "SharedUsdUsb",            // 104
     "ControlsCameraConfig",    // 105
     "ArchonConfig",            // 106
+    "JungfrauConfig",          // 107
+    "JungfrauElement",         // 108
   };
    const char* p = (type < NumberOf ? _names[type] : "-Invalid-");
    if (!p) p = "-Unnamed-";

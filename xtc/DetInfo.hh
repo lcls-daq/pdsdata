@@ -113,7 +113,8 @@ namespace Pds {
       LeCroy    = 40,
       ControlsCamera = 41,
       Archon    = 42,
-      NumDevice = 43
+      Jungfrau  = 43,
+      NumDevice = 44
     };
 
     DetInfo() {}
