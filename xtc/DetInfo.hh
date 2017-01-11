@@ -66,7 +66,8 @@ namespace Pds {
       MfxDg1        = 49,
       MfxDg2        = 50,
       XrtDiag       = 51,
-      NumDetector   = 52
+      DetLab        = 52,
+      NumDetector   = 53
     };
 
     enum Device {
