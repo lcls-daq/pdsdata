@@ -54,5 +54,53 @@ std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV1::SpeedMode enval)
   }
   return str << val;
 }
+ConfigV2::ConfigV2(uint32_t arg__numberOfModules, uint32_t arg__numberOfRowsPerModule, uint32_t arg__numberOfColumnsPerModule, uint32_t arg__biasVoltage, Jungfrau::ConfigV2::GainMode arg__gainMode, Jungfrau::ConfigV2::SpeedMode arg__speedMode, double arg__triggerDelay, double arg__exposureTime, double arg__exposurePeriod, uint16_t arg__vb_ds, uint16_t arg__vb_comp, uint16_t arg__vb_pixbuf, uint16_t arg__vref_ds, uint16_t arg__vref_comp, uint16_t arg__vref_prech, uint16_t arg__vin_com, uint16_t arg__vdd_prot)
+    : _numberOfModules(arg__numberOfModules), _numberOfRowsPerModule(arg__numberOfRowsPerModule), _numberOfColumnsPerModule(arg__numberOfColumnsPerModule), _biasVoltage(arg__biasVoltage), _gainMode(arg__gainMode), _speedMode(arg__speedMode), _triggerDelay(arg__triggerDelay), _exposureTime(arg__exposureTime), _exposurePeriod(arg__exposurePeriod), _vb_ds(arg__vb_ds), _vb_comp(arg__vb_comp), _vb_pixbuf(arg__vb_pixbuf), _vref_ds(arg__vref_ds), _vref_comp(arg__vref_comp), _vref_prech(arg__vref_prech), _vin_com(arg__vin_com), _vdd_prot(arg__vdd_prot)
+{
+}
+uint32_t
+ConfigV2::frameSize() const {
+  return 12 + this->numPixels()*2;
+}
+std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::GainMode enval) {
+  const char* val;
+  switch (enval) {
+  case Jungfrau::ConfigV2::Normal:
+    val = "Normal";
+    break;
+  case Jungfrau::ConfigV2::FixedGain1:
+    val = "FixedGain1";
+    break;
+  case Jungfrau::ConfigV2::FixedGain2:
+    val = "FixedGain2";
+    break;
+  case Jungfrau::ConfigV2::ForcedGain1:
+    val = "ForcedGain1";
+    break;
+  case Jungfrau::ConfigV2::ForcedGain2:
+    val = "ForcedGain2";
+    break;
+  case Jungfrau::ConfigV2::HighGain0:
+    val = "HighGain0";
+    break;
+  default:
+    return str << "GainMode(" << int(enval) << ")";
+  }
+  return str << val;
+}
+std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::SpeedMode enval) {
+  const char* val;
+  switch (enval) {
+  case Jungfrau::ConfigV2::Quarter:
+    val = "Quarter";
+    break;
+  case Jungfrau::ConfigV2::Half:
+    val = "Half";
+    break;
+  default:
+    return str << "SpeedMode(" << int(enval) << ")";
+  }
+  return str << val;
+}
 } // namespace Jungfrau
 } // namespace Pds

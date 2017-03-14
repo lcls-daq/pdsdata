@@ -81,12 +81,109 @@ std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV1::GainMode enval);
 std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV1::SpeedMode enval);
 #pragma pack(pop)
 
+/** @class ConfigV2
+
+  
+*/
+
+#pragma pack(push,4)
+
+class ConfigV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_JungfrauConfig /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  enum GainMode {
+    Normal = 0,
+    FixedGain1 = 1,
+    FixedGain2 = 2,
+    ForcedGain1 = 3,
+    ForcedGain2 = 4,
+    HighGain0 = 5,
+  };
+  enum SpeedMode {
+    Quarter = 0,
+    Half = 1,
+  };
+  ConfigV2(uint32_t arg__numberOfModules, uint32_t arg__numberOfRowsPerModule, uint32_t arg__numberOfColumnsPerModule, uint32_t arg__biasVoltage, Jungfrau::ConfigV2::GainMode arg__gainMode, Jungfrau::ConfigV2::SpeedMode arg__speedMode, double arg__triggerDelay, double arg__exposureTime, double arg__exposurePeriod, uint16_t arg__vb_ds, uint16_t arg__vb_comp, uint16_t arg__vb_pixbuf, uint16_t arg__vref_ds, uint16_t arg__vref_comp, uint16_t arg__vref_prech, uint16_t arg__vin_com, uint16_t arg__vdd_prot);
+  ConfigV2() {}
+  ConfigV2(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ConfigV2& operator=(const ConfigV2& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** The number of modules in a physical camera. */
+  uint32_t numberOfModules() const { return _numberOfModules; }
+  /** The number of rows per module. */
+  uint32_t numberOfRowsPerModule() const { return _numberOfRowsPerModule; }
+  /** The number of columns per module. */
+  uint32_t numberOfColumnsPerModule() const { return _numberOfColumnsPerModule; }
+  /** The bias applied to the sensor in volts. */
+  uint32_t biasVoltage() const { return _biasVoltage; }
+  /** The gain mode set for the camera. */
+  Jungfrau::ConfigV2::GainMode gainMode() const { return Jungfrau::ConfigV2::GainMode(_gainMode); }
+  /** The camera clock speed setting. */
+  Jungfrau::ConfigV2::SpeedMode speedMode() const { return Jungfrau::ConfigV2::SpeedMode(_speedMode); }
+  /** Internal delay from receiving a trigger input until the start of an acquisiton in seconds. */
+  double triggerDelay() const { return _triggerDelay; }
+  /** The exposure time in seconds. */
+  double exposureTime() const { return _exposureTime; }
+  /** The period between exposures of the camera. In triggered mode this should be smaller than the trigger period. */
+  double exposurePeriod() const { return _exposurePeriod; }
+  /** Value of vb_ds in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vb_ds() const { return _vb_ds; }
+  /** Value of vb_comp in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vb_comp() const { return _vb_comp; }
+  /** Value of vb_pixbuf in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vb_pixbuf() const { return _vb_pixbuf; }
+  /** Value of vref_ds in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vref_ds() const { return _vref_ds; }
+  /** Value of vref_comp in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vref_comp() const { return _vref_comp; }
+  /** Value of vref_prech in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vref_prech() const { return _vref_prech; }
+  /** Value of vin_com in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vin_com() const { return _vin_com; }
+  /** Value of vdd_prot in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t vdd_prot() const { return _vdd_prot; }
+  /** Total size in bytes of the Frame object */
+  uint32_t frameSize() const;
+  /** calculate total frame size in pixels based on the current ROI and binning settings */
+  uint32_t numPixels() const { return numberOfModules()*numberOfRowsPerModule()*numberOfColumnsPerModule(); }
+  static uint32_t _sizeof() { return 60; }
+private:
+  uint32_t	_numberOfModules;	/**< The number of modules in a physical camera. */
+  uint32_t	_numberOfRowsPerModule;	/**< The number of rows per module. */
+  uint32_t	_numberOfColumnsPerModule;	/**< The number of columns per module. */
+  uint32_t	_biasVoltage;	/**< The bias applied to the sensor in volts. */
+  uint16_t	_gainMode;	/**< The gain mode set for the camera. */
+  uint16_t	_speedMode;	/**< The camera clock speed setting. */
+  double	_triggerDelay;	/**< Internal delay from receiving a trigger input until the start of an acquisiton in seconds. */
+  double	_exposureTime;	/**< The exposure time in seconds. */
+  double	_exposurePeriod;	/**< The period between exposures of the camera. In triggered mode this should be smaller than the trigger period. */
+  uint16_t	_vb_ds;	/**< Value of vb_ds in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t	_vb_comp;	/**< Value of vb_comp in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t	_vb_pixbuf;	/**< Value of vb_pixbuf in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t	_vref_ds;	/**< Value of vref_ds in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t	_vref_comp;	/**< Value of vref_comp in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t	_vref_prech;	/**< Value of vref_prech in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t	_vin_com;	/**< Value of vin_com in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+  uint16_t	_vdd_prot;	/**< Value of vdd_prot in bits. 12bit on 0 to 2.5V (i.e. 2.5V = 4096). */
+};
+std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::GainMode enval);
+std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::SpeedMode enval);
+#pragma pack(pop)
+
 /** @class ElementV1
 
   
 */
 
 class ConfigV1;
+class ConfigV2;
 #pragma pack(push,2)
 
 class ElementV1 {
@@ -112,12 +209,26 @@ public:
     const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
     return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule());
   }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 3> frame(const Jungfrau::ConfigV2& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=12;
+    const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule());
+  }
   /**     Note: this method returns ndarray instance which does not control lifetime
     of the data, do not use returned ndarray after this instance disappears. */
   ndarray<const uint16_t, 3> frame(const Jungfrau::ConfigV1& cfg) const { ptrdiff_t offset=12;
   const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
   return make_ndarray(data, cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule()); }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 3> frame(const Jungfrau::ConfigV2& cfg) const { ptrdiff_t offset=12;
+  const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule()); }
   static uint32_t _sizeof(const Jungfrau::ConfigV1& cfg) { return ((((12+(2*(cfg.numberOfModules())*(cfg.numberOfRowsPerModule())*(cfg.numberOfColumnsPerModule())))+2)-1)/2)*2; }
+  static uint32_t _sizeof(const Jungfrau::ConfigV2& cfg) { return ((((12+(2*(cfg.numberOfModules())*(cfg.numberOfRowsPerModule())*(cfg.numberOfColumnsPerModule())))+2)-1)/2)*2; }
 private:
   uint32_t	_frameNumber;	/**< The internal frame counter number of the detector. */
   uint32_t	_ticks;	/**< The LCLS timing tick associated with the detector frame. */
