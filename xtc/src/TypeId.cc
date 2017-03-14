@@ -90,6 +90,7 @@ bool     TypeId::is_configuration() const
       Id_ControlsCameraConfig,
       Id_ArchonConfig,
       Id_JungfrauConfig,
+      Id_QuadAdcConfig,
     };
   const unsigned nconfigtypes = sizeof(_configuration_types)/sizeof(Type);
   Type t = id();
@@ -211,6 +212,7 @@ const char* TypeId::name(Type type)
     "ArchonConfig",            // 106
     "JungfrauConfig",          // 107
     "JungfrauElement",         // 108
+    "QuadAdcConfig",           // 109
   };
    const char* p = (type < NumberOf ? _names[type] : "-Invalid-");
    if (!p) p = "-Unnamed-";
