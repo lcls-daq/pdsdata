@@ -115,7 +115,8 @@ namespace Pds {
       ControlsCamera = 41,
       Archon    = 42,
       Jungfrau  = 43,
-      NumDevice = 44
+      Zyla      = 44,
+      NumDevice = 45
     };
 
     DetInfo() {}
