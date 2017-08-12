@@ -21,6 +21,8 @@
 
 #include "XtcMonitorClient.hh"
 
+using namespace Pds;
+
 static PNCCD::ConfigV1 cfg;
 
 class myLevelIter : public XtcIterator {

@@ -10,6 +10,8 @@
 #include "pdsdata/xtc/DetInfo.hh"
 #include "pdsdata/xtc/ProcInfo.hh"
 
+using namespace Pds;
+
 class myLevelIter : public XtcIterator {
 public:
   enum {Stop, Continue};

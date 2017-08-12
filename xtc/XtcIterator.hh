@@ -56,8 +56,6 @@ class XtcIterator
 
 }
 
-using namespace Pds;
-
 /*
 ** ++
 **
@@ -68,7 +66,7 @@ using namespace Pds;
 ** --
 */
 
-inline XtcIterator::XtcIterator(Xtc* root) :
+inline Pds::XtcIterator::XtcIterator(Pds::Xtc* root) :
   _root(root)
   {
   } 
@@ -81,7 +79,7 @@ inline XtcIterator::XtcIterator(Xtc* root) :
 ** --
 */
 
-inline const Xtc* XtcIterator::root() const
+inline const Pds::Xtc* Pds::XtcIterator::root() const
   {
   return _root;
   } 
@@ -95,7 +93,7 @@ inline const Xtc* XtcIterator::root() const
 ** --
 */
 
-inline void XtcIterator::iterate() 
+inline void Pds::XtcIterator::iterate() 
   {
   iterate(_root);
   } 
