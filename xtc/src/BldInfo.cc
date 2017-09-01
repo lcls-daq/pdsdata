@@ -102,7 +102,7 @@ const char* BldInfo::name(const BldInfo& src){
     "MfxDg1_Pim",
     "MfxDg2_Pim",
     "SXR-AIN-01",
-    "HX2-SB2-BMMON",
+    "HX2-SB1-BMMON",
     "XRT-USB-ENCODER-01",
     "XPP-USB-ENCODER-01",
     "XPP-USB-ENCODER-02",
