@@ -177,6 +177,49 @@ std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::GainMode enval);
 std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::SpeedMode enval);
 #pragma pack(pop)
 
+/** @class ModuleInfoV1
+
+  
+*/
+
+#pragma pack(push,2)
+
+class ModuleInfoV1 {
+public:
+  ModuleInfoV1(uint64_t arg__timestamp, uint32_t arg__exposureTime, uint16_t arg__moduleID, uint16_t arg__xCoord, uint16_t arg__yCoord, uint16_t arg__zCoord);
+  ModuleInfoV1() {}
+  ModuleInfoV1(const ModuleInfoV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+  }
+  ModuleInfoV1& operator=(const ModuleInfoV1& other) {
+    const char* src = reinterpret_cast<const char*>(&other);
+    std::copy(src, src+other._sizeof(), reinterpret_cast<char*>(this));
+    return *this;
+  }
+  /** The camera timestamp associated with the detector frame in 100 ns ticks. */
+  uint64_t timestamp() const { return _timestamp; }
+  /** The actual exposure time of the image in 100 ns ticks. */
+  uint32_t exposureTime() const { return _exposureTime; }
+  /** The unique module ID number. */
+  uint16_t moduleID() const { return _moduleID; }
+  /** The X coordinate in the complete detector system. */
+  uint16_t xCoord() const { return _xCoord; }
+  /** The Y coordinate in the complete detector system. */
+  uint16_t yCoord() const { return _yCoord; }
+  /** The Z coordinate in the complete detector system. */
+  uint16_t zCoord() const { return _zCoord; }
+  static uint32_t _sizeof() { return 20; }
+private:
+  uint64_t	_timestamp;	/**< The camera timestamp associated with the detector frame in 100 ns ticks. */
+  uint32_t	_exposureTime;	/**< The actual exposure time of the image in 100 ns ticks. */
+  uint16_t	_moduleID;	/**< The unique module ID number. */
+  uint16_t	_xCoord;	/**< The X coordinate in the complete detector system. */
+  uint16_t	_yCoord;	/**< The Y coordinate in the complete detector system. */
+  uint16_t	_zCoord;	/**< The Z coordinate in the complete detector system. */
+};
+#pragma pack(pop)
+
 /** @class ElementV1
 
   
@@ -233,6 +276,76 @@ private:
   uint32_t	_frameNumber;	/**< The internal frame counter number of the detector. */
   uint32_t	_ticks;	/**< The LCLS timing tick associated with the detector frame. */
   uint32_t	_fiducials;	/**< The LCLS timing fiducial associated with the detector frame. */
+  //uint16_t	_frame[cfg.numberOfModules()][cfg.numberOfRowsPerModule()][cfg.numberOfColumnsPerModule()];
+};
+#pragma pack(pop)
+
+/** @class ElementV2
+
+  
+*/
+
+class ConfigV1;
+class ConfigV2;
+#pragma pack(push,2)
+
+class ElementV2 {
+public:
+  enum { TypeId = Pds::TypeId::Id_JungfrauElement /**< XTC type ID value (from Pds::TypeId class) */ };
+  enum { Version = 2 /**< XTC type version number */ };
+  ElementV2() {}
+private:
+  ElementV2(const ElementV2&);
+  ElementV2& operator=(const ElementV2&);
+public:
+  /** The internal frame counter number of the detector. */
+  uint64_t frameNumber() const { return _frameNumber; }
+  /** The LCLS timing tick associated with the detector frame. */
+  uint32_t ticks() const { return _ticks; }
+  /** The LCLS timing fiducial associated with the detector frame. */
+  uint32_t fiducials() const { return _fiducials; }
+  /** Information about each of the modules in the detector system. */
+  const Jungfrau::ModuleInfoV1& moduleInfo(uint32_t i0) const { ptrdiff_t offset=16;
+  const Jungfrau::ModuleInfoV1* memptr = (const Jungfrau::ModuleInfoV1*)(((const char*)this)+offset);
+  size_t memsize = memptr->_sizeof();
+  return *(const Jungfrau::ModuleInfoV1*)((const char*)memptr + (i0)*memsize); }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 3> frame(const Jungfrau::ConfigV1& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=16+(20*(cfg.numberOfModules()));
+    const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule());
+  }
+  /**     Note: this overloaded method accepts shared pointer argument which must point to an object containing
+    this instance, the returned ndarray object can be used even after this instance disappears. */
+  template <typename T>
+  ndarray<const uint16_t, 3> frame(const Jungfrau::ConfigV2& cfg, const boost::shared_ptr<T>& owner) const { 
+    ptrdiff_t offset=16+(20*(cfg.numberOfModules()));
+    const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+    return make_ndarray(boost::shared_ptr<const uint16_t>(owner, data), cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule());
+  }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 3> frame(const Jungfrau::ConfigV1& cfg) const { ptrdiff_t offset=16+(20*(cfg.numberOfModules()));
+  const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule()); }
+  /**     Note: this method returns ndarray instance which does not control lifetime
+    of the data, do not use returned ndarray after this instance disappears. */
+  ndarray<const uint16_t, 3> frame(const Jungfrau::ConfigV2& cfg) const { ptrdiff_t offset=16+(20*(cfg.numberOfModules()));
+  const uint16_t* data = (const uint16_t*)(((char*)this)+offset);
+  return make_ndarray(data, cfg.numberOfModules(), cfg.numberOfRowsPerModule(), cfg.numberOfColumnsPerModule()); }
+  static uint32_t _sizeof(const Jungfrau::ConfigV1& cfg) { return (((((16+(Jungfrau::ModuleInfoV1::_sizeof()*(cfg.numberOfModules())))+(2*(cfg.numberOfModules())*(cfg.numberOfRowsPerModule())*(cfg.numberOfColumnsPerModule())))+2)-1)/2)*2; }
+  static uint32_t _sizeof(const Jungfrau::ConfigV2& cfg) { return (((((16+(Jungfrau::ModuleInfoV1::_sizeof()*(cfg.numberOfModules())))+(2*(cfg.numberOfModules())*(cfg.numberOfRowsPerModule())*(cfg.numberOfColumnsPerModule())))+2)-1)/2)*2; }
+  /** Method which returns the shape (dimensions) of the data returned by moduleInfo() method. */
+  std::vector<int> moduleInfo_shape(const Jungfrau::ConfigV1& cfg) const;
+  /** Method which returns the shape (dimensions) of the data returned by moduleInfo() method. */
+  std::vector<int> moduleInfo_shape(const Jungfrau::ConfigV2& cfg) const;
+private:
+  uint64_t	_frameNumber;	/**< The internal frame counter number of the detector. */
+  uint32_t	_ticks;	/**< The LCLS timing tick associated with the detector frame. */
+  uint32_t	_fiducials;	/**< The LCLS timing fiducial associated with the detector frame. */
+  //Jungfrau::ModuleInfoV1	_moduleInfo[cfg.numberOfModules()];
   //uint16_t	_frame[cfg.numberOfModules()][cfg.numberOfRowsPerModule()][cfg.numberOfColumnsPerModule()];
 };
 #pragma pack(pop)

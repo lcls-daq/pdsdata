@@ -12,7 +12,7 @@ ConfigV1::ConfigV1(uint32_t arg__numberOfModules, uint32_t arg__numberOfRowsPerM
 }
 uint32_t
 ConfigV1::frameSize() const {
-  return 12 + this->numPixels()*2;
+  return this->numPixels()*2;
 }
 std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV1::GainMode enval) {
   const char* val;
@@ -60,7 +60,7 @@ ConfigV2::ConfigV2(uint32_t arg__numberOfModules, uint32_t arg__numberOfRowsPerM
 }
 uint32_t
 ConfigV2::frameSize() const {
-  return 12 + this->numPixels()*2;
+  return this->numPixels()*2;
 }
 std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::GainMode enval) {
   const char* val;
@@ -101,6 +101,24 @@ std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::SpeedMode enval)
     return str << "SpeedMode(" << int(enval) << ")";
   }
   return str << val;
+}
+ModuleInfoV1::ModuleInfoV1(uint64_t arg__timestamp, uint32_t arg__exposureTime, uint16_t arg__moduleID, uint16_t arg__xCoord, uint16_t arg__yCoord, uint16_t arg__zCoord)
+    : _timestamp(arg__timestamp), _exposureTime(arg__exposureTime), _moduleID(arg__moduleID), _xCoord(arg__xCoord), _yCoord(arg__yCoord), _zCoord(arg__zCoord)
+{
+}
+std::vector<int>
+ElementV2::moduleInfo_shape(const Jungfrau::ConfigV1& cfg) const {
+  std::vector<int> shape;
+  shape.reserve(1);
+  shape.push_back(cfg.numberOfModules());
+  return shape;
+}
+std::vector<int>
+ElementV2::moduleInfo_shape(const Jungfrau::ConfigV2& cfg) const {
+  std::vector<int> shape;
+  shape.reserve(1);
+  shape.push_back(cfg.numberOfModules());
+  return shape;
 }
 } // namespace Jungfrau
 } // namespace Pds
