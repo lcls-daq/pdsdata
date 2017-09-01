@@ -1,3 +1,4 @@
+2017-Sep-01 ddamiani    Tag V08-08-01.  Add ElementV2 and ModuleInfoV1 for the Jungfrau detector from PSI plus some new BLD ids.
 2017-Aug-11 ddamiani    Tag V08-08-00.  Removed 'using namespace Pds' from header file of the XtcIterator class.
 2017-Jun-21 ddamiani    Tag V08-07-05.  Added entries in BldInfo for controls usdusb4 encoder boxes.
 2017-Jun-02 ddamiani    Tag V08-07-04.  Added ConfigV1 and FrameV1 for the Andor Zyla CMOS camera.
