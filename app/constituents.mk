@@ -3,7 +3,7 @@ libsrcs_appdata := XtcMonitorServer.cc XtcMonitorClient.cc XtcMonitorMsg.cc Tran
 libsrcs_xtcrunset := XtcRunSet.cc
 
 #tgtnames = xtcreader xtcmonserver xtcmonclient xtcmonclientexample acqconfig agatfile
-tgtnames = cfgreader xtcreader ebeamreader livextcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest dmgreader bldreader xtcmodify xtcmonwriter oldmonserver xtccompress
+tgtnames = cfgreader xtcreader ebeamreader livextcreader xtcmonserver xtcmonclient xtcmonclientexample xtcEpicsReaderTest dmgreader bldreader xtcmodify xtcmonwriter oldmonserver xtccompress xtcfilter
 
 #CXXFLAGS += -pthread -m32 -I/reg/g/pcds/package/root/include
 
@@ -12,6 +12,10 @@ tgtnames = cfgreader xtcreader ebeamreader livextcreader xtcmonserver xtcmonclie
 tgtsrcs_xtcreader := xtcreader.cc
 tgtlibs_xtcreader := psddl_pdsdata xtcdata 
 tgtslib_xtcreader := $(USRLIBDIR)/rt
+
+tgtsrcs_xtcfilter := xtcfilter.cc
+tgtlibs_xtcfilter := psddl_pdsdata xtcdata 
+tgtslib_xtcfilter := $(USRLIBDIR)/rt
 
 tgtsrcs_cfgreader := cfgreader.cc
 tgtlibs_cfgreader := psddl_pdsdata xtcdata 
