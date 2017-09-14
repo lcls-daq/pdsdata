@@ -44,10 +44,10 @@ public:
              xtc->damage.value());
     if (level==Level::Source) {
       DetInfo& info = *(DetInfo*)(&xtc->src);
-      printf("DetInfo %s\n",DetInfo::name(info));
+      if (_dumpIpInfo) printf("DetInfo %s\n",DetInfo::name(info));
     } else if (level==Level::Reporter) {
       BldInfo& info = *(BldInfo*)(&xtc->src);
-      printf("BldInfo %s\n",BldInfo::name(info));
+      if (_dumpIpInfo) printf("BldInfo %s\n",BldInfo::name(info));
     } else if (level==Level::Segment) {
       ProcInfo& info = *(ProcInfo*)(&xtc->src);
       bool copyEvent = true;
@@ -58,10 +58,12 @@ public:
         void* dest = _newxtc->alloc(xtc->extent);
         memcpy(dest,xtc,xtc->extent);
       }
-      if (!_dumpIpInfo)
-        return Continue;
-      else
+      if (_dumpIpInfo)
         printf("IpAddress 0x%x ProcessId 0x%x\n",info.ipAddr(),info.processId());
+    } else if (level==Level::Recorder) {
+      // this is to save the EventOffset info in smd files
+      void* dest = _newxtc->alloc(xtc->extent);
+      memcpy(dest,xtc,xtc->extent);
     }
     switch (xtc->contains.id()) {
     case (TypeId::Id_Xtc) : {
