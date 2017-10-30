@@ -30,14 +30,17 @@ CXX := g++
 LD  := g++
 LX  := g++
 
+#override CPPFLAGS += -I$(RELEASE_DIR)
+CPPFLAGS := -I$(RELEASE_DIR)
+
 ifneq ($(findstring i386-linux,$(tgt_arch)),)
 CXXFLAGS   := -m32
-CPPFLAGS   := $(CFLAGS) -m32
+CPPFLAGS   += $(CFLAGS) -m32
 USRLIBDIR  := /usr/lib
 endif
 
 ifneq ($(findstring x86_64-,$(tgt_arch)),)
-CPPFLAGS   := $(CFLAGS)
+CPPFLAGS   += $(CFLAGS)
 USRLIBDIR  := /usr/lib64
 endif
 
@@ -49,7 +52,6 @@ ifneq ($(findstring -opt,$(tgt_arch)),)
 CPPFLAGS   += -O4
 endif
 
-override CPPFLAGS += -I$(RELEASE_DIR)
 
 # Procedures
 # ----------
