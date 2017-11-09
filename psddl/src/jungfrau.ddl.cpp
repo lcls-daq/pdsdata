@@ -6,6 +6,10 @@
 #include <iostream>
 namespace Pds {
 namespace Jungfrau {
+ModuleConfigV1::ModuleConfigV1(uint64_t arg__serialNumber, uint64_t arg__moduleVerion, uint64_t arg__firmwareVersion)
+    : _serialNumber(arg__serialNumber), _moduleVerion(arg__moduleVerion), _firmwareVersion(arg__firmwareVersion)
+{
+}
 ConfigV1::ConfigV1(uint32_t arg__numberOfModules, uint32_t arg__numberOfRowsPerModule, uint32_t arg__numberOfColumnsPerModule, uint32_t arg__biasVoltage, Jungfrau::ConfigV1::GainMode arg__gainMode, Jungfrau::ConfigV1::SpeedMode arg__speedMode, double arg__triggerDelay, double arg__exposureTime)
     : _numberOfModules(arg__numberOfModules), _numberOfRowsPerModule(arg__numberOfRowsPerModule), _numberOfColumnsPerModule(arg__numberOfColumnsPerModule), _biasVoltage(arg__biasVoltage), _gainMode(arg__gainMode), _speedMode(arg__speedMode), _triggerDelay(arg__triggerDelay), _exposureTime(arg__exposureTime)
 {
@@ -102,6 +106,62 @@ std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV2::SpeedMode enval)
   }
   return str << val;
 }
+ConfigV3::ConfigV3(uint32_t arg__numberOfModules, uint32_t arg__numberOfRowsPerModule, uint32_t arg__numberOfColumnsPerModule, uint32_t arg__biasVoltage, Jungfrau::ConfigV3::GainMode arg__gainMode, Jungfrau::ConfigV3::SpeedMode arg__speedMode, double arg__triggerDelay, double arg__exposureTime, double arg__exposurePeriod, uint16_t arg__vb_ds, uint16_t arg__vb_comp, uint16_t arg__vb_pixbuf, uint16_t arg__vref_ds, uint16_t arg__vref_comp, uint16_t arg__vref_prech, uint16_t arg__vin_com, uint16_t arg__vdd_prot, const Jungfrau::ModuleConfigV1* arg__moduleConfig)
+    : _numberOfModules(arg__numberOfModules), _numberOfRowsPerModule(arg__numberOfRowsPerModule), _numberOfColumnsPerModule(arg__numberOfColumnsPerModule), _biasVoltage(arg__biasVoltage), _gainMode(arg__gainMode), _speedMode(arg__speedMode), _triggerDelay(arg__triggerDelay), _exposureTime(arg__exposureTime), _exposurePeriod(arg__exposurePeriod), _vb_ds(arg__vb_ds), _vb_comp(arg__vb_comp), _vb_pixbuf(arg__vb_pixbuf), _vref_ds(arg__vref_ds), _vref_comp(arg__vref_comp), _vref_prech(arg__vref_prech), _vin_com(arg__vin_com), _vdd_prot(arg__vdd_prot)
+{
+  if (arg__moduleConfig) std::copy(arg__moduleConfig, arg__moduleConfig+(8), &_moduleConfig[0]);
+}
+uint32_t
+ConfigV3::frameSize() const {
+  return this->numPixels()*2;
+}
+std::vector<int>
+ConfigV3::moduleConfig_shape() const {
+  std::vector<int> shape;
+  shape.reserve(1);
+  shape.push_back(MaxModulesPerDetector);
+  return shape;
+}
+std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV3::GainMode enval) {
+  const char* val;
+  switch (enval) {
+  case Jungfrau::ConfigV3::Normal:
+    val = "Normal";
+    break;
+  case Jungfrau::ConfigV3::FixedGain1:
+    val = "FixedGain1";
+    break;
+  case Jungfrau::ConfigV3::FixedGain2:
+    val = "FixedGain2";
+    break;
+  case Jungfrau::ConfigV3::ForcedGain1:
+    val = "ForcedGain1";
+    break;
+  case Jungfrau::ConfigV3::ForcedGain2:
+    val = "ForcedGain2";
+    break;
+  case Jungfrau::ConfigV3::HighGain0:
+    val = "HighGain0";
+    break;
+  default:
+    return str << "GainMode(" << int(enval) << ")";
+  }
+  return str << val;
+}
+std::ostream& operator<<(std::ostream& str, Jungfrau::ConfigV3::SpeedMode enval) {
+  const char* val;
+  switch (enval) {
+  case Jungfrau::ConfigV3::Quarter:
+    val = "Quarter";
+    break;
+  case Jungfrau::ConfigV3::Half:
+    val = "Half";
+    break;
+  default:
+    return str << "SpeedMode(" << int(enval) << ")";
+  }
+  return str << val;
+}
 ModuleInfoV1::ModuleInfoV1(uint64_t arg__timestamp, uint32_t arg__exposureTime, uint16_t arg__moduleID, uint16_t arg__xCoord, uint16_t arg__yCoord, uint16_t arg__zCoord)
     : _timestamp(arg__timestamp), _exposureTime(arg__exposureTime), _moduleID(arg__moduleID), _xCoord(arg__xCoord), _yCoord(arg__yCoord), _zCoord(arg__zCoord)
 {
@@ -115,6 +175,13 @@ ElementV2::moduleInfo_shape(const Jungfrau::ConfigV1& cfg) const {
 }
 std::vector<int>
 ElementV2::moduleInfo_shape(const Jungfrau::ConfigV2& cfg) const {
+  std::vector<int> shape;
+  shape.reserve(1);
+  shape.push_back(cfg.numberOfModules());
+  return shape;
+}
+std::vector<int>
+ElementV2::moduleInfo_shape(const Jungfrau::ConfigV3& cfg) const {
   std::vector<int> shape;
   shape.reserve(1);
   shape.push_back(cfg.numberOfModules());
